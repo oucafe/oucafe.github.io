@@ -1,0 +1,478 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>转换 diagramo 绘制的拓扑图成 fig.yml 格式</title>
+    
+    <meta name="author" content="陈子">
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!-- Le styles -->
+    <link href="/assets/themes/twitter/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/themes/twitter/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+    <link href="/assets/themes/twitter/css/pygments/default.css" rel="stylesheet" type="text/css">
+    <!-- Le fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+  </head>
+  <body>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="/">三斗室</a>
+          <ul class="nav">
+            
+            
+            
+
+
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/archive.html">归档</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">分类</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/errata.html">《网站运维技术与实践》勘误</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/pages.html">Pages</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/projects.html">学习记录</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">标签</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+
+
+
+
+            <li><a href="http://chenlinux.com/poetry/index.html" />诗文集</a></li>
+            <li><link title="RSS 2.0" type="application/rss+xml" href="http://chenlinux.com/feed.xml" rel="alternate" /><a href="http://chenlinux.com/feed.xml" target="_blank">RSS订阅</a></li>
+          </ul>
+          <ul class="nav pull-right"><li><a href="/about.html">有关我</a></li></ul>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+    <div class="row">
+      <div class="span7">
+        
+<div class="row">
+  <div class="page-header">
+    <h1>转换 diagramo 绘制的拓扑图成 fig.yml 格式 <small></small></h1>
+    <div class="date"><span>07 March 2014</span></div>
+  
+    <ul class="tag_box pull-right">
+    
+    
+
+
+  
+     
+    	<li><a href="/tags.html#perl-ref">perl <span>67</span></a></li>
+     
+    	<li><a href="/tags.html#php-ref">php <span>11</span></a></li>
+     
+    	<li><a href="/tags.html#docker-ref">docker <span>3</span></a></li>
+    
+  
+
+
+
+    </ul>
+    
+  </div>
+  <div style='background-color: #FFF;'>
+    <p>前几天在微博上跟 <a href="http://weibo.com/panjunyong">@易度-潘俊勇</a> 在评论里提到，已经有了 <a href="http://orchardup.github.io/fig/">Fig</a> 工具可以通过写一个 <code>fig.yml</code> 来快速定义主机上各 docker 容器的配置和角色。如果再进一步，可以通过绘图的方式，直接拖拽生成整个 docker 集群，那就更好了。</p>
+
+<blockquote>
+  <p>这个FIG挺有趣的，我自己写了一个类似的脚本。
+不过我觉得终极的解决方案是画个关系图，就配置好了。
+这个图的存储形式应该就是这个FIG，或者FIG可以转换为图。然后又可以转换为systemd的配置文件。</p>
+</blockquote>
+
+<p>画关系图，桌面上肯定是 visio，visio保存成 XML 后分析 XML 就可以了。不过 visio 本身也算笨重的了，如果可以在浏览器中完成这个工作，才算够 cool！</p>
+
+<p>网页上的 visio 已经有些产品，不过有名的几个都是有限免费试用的。好在找到一个叫做 <a href="http://diagramo.com">diagramo</a> 的项目，虽然提供的元素图表不多，但是也够用了。</p>
+
+<p>下载源码包，在 LAMP/LEMP 环境下就直接跑起来，首次访问会要求注册一个用户名。环境配置中有一点必须重点点出来的：</p>
+
+<p><strong>Apache/Nginx 上配置的 <code>server_name</code> 必须跟你浏览器访问的完全一致</strong></p>
+
+<p>我曾经因为测试，所以写了个 localhost 做 server_name，然后用服务器 IP 地址来访问页面，结果在绘图完成保存的时候会出错！<strong>因为这是一个 HTML5 项目，保存这步是调用的 <code>canvas.toDataURL()</code> 函数，这个函数有强制性安全限定，以保证调用这个函数的页面，跟生成的图片路径必须是同一个域名！否则跨域抓图太方便了。</strong></p>
+
+<p>(写到这里感慨一下，chrome的调试工具不会用，这问题最后还是在 IE开发者工具的帮助下发现的 ==！)</p>
+
+<p>然后就可以画关系图了，比如下图这样：</p>
+
+<p><img src="/images/uploads/dia.png" alt="sample of diagramo" /></p>
+
+<p>点击保存后，就会在服务器上的 <code>$document_root/editor/data/diagrams</code> 目录下生成对应的 <code>.dia</code> 和 <code>.png</code> 文件。这个所谓的 <code>.dia</code> 文件，其实内容就是 JSON数据。下面我们只要抽取 JSON 里有关的数据就可以了：</p>
+
+<div class="highlight"><pre><code class="language-perl" data-lang="perl"><span class="k">use</span> <span class="nn">File::</span><span class="n">Slurp</span><span class="p">;</span>
+<span class="k">use</span> <span class="n">JSON</span><span class="p">;</span>
+<span class="k">use</span> <span class="n">YAML</span><span class="p">;</span>
+<span class="k">use</span> <span class="nn">Test::Deep::</span><span class="n">NoTest</span><span class="p">;</span>
+<span class="k">use</span> <span class="mf">5.010</span><span class="p">;</span>
+<span class="k">use</span> <span class="n">warnings</span><span class="p">;</span>
+<span class="k">use</span> <span class="n">strict</span><span class="p">;</span>
+
+<span class="k">my</span> <span class="nv">$hash</span> <span class="o">=</span> <span class="n">from_json</span><span class="p">(</span> <span class="n">read_file</span><span class="p">(</span> <span class="nv">$ARGV</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">)</span> <span class="p">);</span>
+
+<span class="k">my</span> <span class="nv">$hostinfo</span><span class="p">;</span>
+<span class="k">for</span> <span class="k">my</span> <span class="nv">$host</span> <span class="p">(</span> <span class="nv">@</span><span class="p">{</span> <span class="nv">$hash</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">s</span><span class="p">}</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">figures</span><span class="p">}</span> <span class="p">}</span> <span class="p">)</span> <span class="p">{</span>
+    <span class="nv">$hostinfo</span><span class="o">-&gt;</span><span class="p">{</span> <span class="nv">$host</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">id</span><span class="p">}</span> <span class="p">}</span> <span class="o">=</span> <span class="n">Load</span><span class="p">(</span> <span class="nv">$host</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">primitives</span><span class="p">}</span><span class="o">-&gt;</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">str</span><span class="p">}</span> <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">for</span> <span class="k">my</span> <span class="nv">$conn</span> <span class="p">(</span> <span class="nv">@</span><span class="p">{</span> <span class="nv">$hash</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">m</span><span class="p">}</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">connectors</span><span class="p">}</span> <span class="p">}</span> <span class="p">)</span> <span class="p">{</span>
+    <span class="k">my</span> <span class="nv">$connid</span> <span class="o">=</span> <span class="nv">$conn</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">id</span><span class="p">};</span>
+    <span class="k">my</span> <span class="nv">$start</span>  <span class="o">=</span> <span class="nv">$conn</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">turningPoints</span><span class="p">}</span><span class="o">-&gt;</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+    <span class="k">my</span> <span class="nv">$end</span>    <span class="o">=</span> <span class="nv">$conn</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">turningPoints</span><span class="p">}</span><span class="o">-&gt;</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+    <span class="k">if</span> <span class="p">(</span> <span class="nv">$conn</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">endStyle</span><span class="p">}</span> <span class="ow">eq</span> <span class="s">&#39;Normal&#39;</span> <span class="ow">and</span> <span class="nv">$conn</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">startStyle</span><span class="p">}</span> <span class="ow">eq</span> <span class="s">&#39;Arrow&#39;</span> <span class="p">)</span> <span class="p">{</span>
+        <span class="p">(</span> <span class="nv">$start</span><span class="p">,</span> <span class="nv">$end</span> <span class="p">)</span> <span class="o">=</span> <span class="p">(</span> <span class="nv">$end</span><span class="p">,</span> <span class="nv">$start</span> <span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">my</span> <span class="p">(</span> <span class="nv">$startid</span><span class="p">,</span> <span class="nv">$endid</span> <span class="p">);</span>
+    <span class="k">for</span> <span class="k">my</span> <span class="nv">$point</span> <span class="p">(</span> <span class="nv">@</span><span class="p">{</span> <span class="nv">$hash</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">m</span><span class="p">}</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">connectionPoints</span><span class="p">}</span> <span class="p">}</span> <span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span>    <span class="n">eq_deeply</span><span class="p">(</span> <span class="nv">$point</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">point</span><span class="p">},</span> <span class="nv">$start</span> <span class="p">)</span>
+            <span class="ow">and</span> <span class="nv">$point</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">parentId</span><span class="p">}</span> <span class="o">!=</span> <span class="nv">$connid</span>
+            <span class="ow">and</span> <span class="nb">exists</span> <span class="nv">$hostinfo</span><span class="o">-&gt;</span><span class="p">{</span> <span class="nv">$point</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">parentId</span><span class="p">}</span> <span class="p">}</span> <span class="p">)</span>
+        <span class="p">{</span>
+            <span class="nv">$startid</span> <span class="o">=</span> <span class="nv">$point</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">parentId</span><span class="p">};</span>
+        <span class="p">}</span>
+        <span class="k">elsif</span> <span class="p">(</span> <span class="n">eq_deeply</span><span class="p">(</span> <span class="nv">$point</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">point</span><span class="p">},</span> <span class="nv">$end</span> <span class="p">)</span>
+            <span class="ow">and</span> <span class="nv">$point</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">parentId</span><span class="p">}</span> <span class="o">!=</span> <span class="nv">$connid</span>
+            <span class="ow">and</span> <span class="nb">exists</span> <span class="nv">$hostinfo</span><span class="o">-&gt;</span><span class="p">{</span> <span class="nv">$point</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">parentId</span><span class="p">}</span> <span class="p">}</span> <span class="p">)</span>
+        <span class="p">{</span>
+            <span class="nv">$endid</span> <span class="o">=</span> <span class="nv">$point</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">parentId</span><span class="p">};</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">my</span> <span class="p">(</span><span class="nv">$startname</span><span class="p">)</span> <span class="o">=</span> <span class="nb">keys</span> <span class="nv">%</span><span class="p">{</span> <span class="nv">$hostinfo</span><span class="o">-&gt;</span><span class="p">{</span><span class="nv">$startid</span><span class="p">}</span> <span class="p">};</span>
+    <span class="k">my</span> <span class="p">(</span><span class="nv">$endname</span><span class="p">)</span> <span class="o">=</span> <span class="nb">keys</span> <span class="nv">%</span><span class="p">{</span> <span class="nv">$hostinfo</span><span class="o">-&gt;</span><span class="p">{</span><span class="nv">$endid</span><span class="p">}</span> <span class="p">};</span>
+    <span class="nb">push</span> <span class="nv">@</span><span class="p">{</span> <span class="nv">$hostinfo</span><span class="o">-&gt;</span><span class="p">{</span><span class="nv">$startid</span><span class="p">}</span><span class="o">-&gt;</span><span class="p">{</span><span class="nv">$startname</span><span class="p">}</span><span class="o">-&gt;</span><span class="p">{</span><span class="nb">link</span><span class="p">}</span> <span class="p">},</span> <span class="nv">$endname</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">say</span> <span class="n">Dump</span> <span class="p">{</span> <span class="nb">map</span> <span class="p">{</span> <span class="k">my</span> <span class="p">(</span><span class="nv">$k</span><span class="p">)</span> <span class="o">=</span> <span class="nb">keys</span> <span class="nv">$_</span><span class="p">;</span> <span class="nv">$k</span> <span class="o">=&gt;</span> <span class="nv">$_</span><span class="o">-&gt;</span><span class="p">{</span><span class="nv">$y</span><span class="p">}</span> <span class="p">}</span> <span class="nb">values</span> <span class="nv">$hostinfo</span><span class="p">};</span></code></pre></div>
+
+<p>生成的 <code>fig.yml</code> 如下：</p>
+
+<div class="highlight"><pre><code class="language-yaml" data-lang="yaml"><span class="nn">---</span>
+<span class="l-Scalar-Plain">Haproxy</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">link</span><span class="p-Indicator">:</span>
+   <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">Serf</span>
+<span class="l-Scalar-Plain">Nginx1</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">link</span><span class="p-Indicator">:</span>
+   <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">Serf</span>
+<span class="l-Scalar-Plain">Serf</span><span class="p-Indicator">:</span>
+<span class="l-Scalar-Plain">Nginx2</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">link</span><span class="p-Indicator">:</span>
+   <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">Serf</span>
+<span class="l-Scalar-Plain">MySQL</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">link</span><span class="p-Indicator">:</span>
+   <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">Serf</span></code></pre></div>
+
+<p>只是根据关系图生成了 link，其他配置都在图里的 Text 里照样写 yaml 格式，会自动带入。当然，示例另一个意思是：大家尽量都只 link 像 serf/etcd 这样的服务自动发现服务器。在 docker 层面就简洁明了。</p>
+
+    <hr>
+    <div class="pagination">
+      <ul>
+      
+        <li class="prev"><a href="/2014/02/20/gearman-task-priority" title="Gearman 任务的优先级">&larr; Previous</a></li>
+      
+        <li><a href="/archive.html">Archive</a></li>
+      
+        <li class="next"><a href="/2014/03/07/howto-search-dynamic-url-in-elasticsearch" title="如何搜索 Elasticsearch 中存储的动态请求 URL">Next &rarr;</a></li>
+      
+      </ul>
+    </div>
+    <hr>
+    
+
+
+  <!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" id="UYScript" src="http://v1.uyan.cc/js/iframe.js?UYUserId=1589850" async=""></script>
+<!-- UY END -->
+
+
+
+
+
+
+  </div>
+</div>
+  
+
+
+      </div>
+      <div class="span4">
+          
+          <div class="well sidebar-nav">
+             <ul id="relate_blog" class="nav nav-list">
+               <li class="nav-header">最近文章</li>
+               
+                 <li><a href="/2014/07/08/rex-test-spec">Rex::Test::Spec 模块</a></li>
+               
+                 <li><a href="/2014/06/13/serverspec-intro">Serverspec 工具介绍</a></li>
+               
+                 <li><a href="/2014/06/13/anyevent-redis-for-dns-check">用 Redis 做分布式 DNS/HTTP 检测汇总系统</a></li>
+               
+                 <li><a href="/2014/06/12/rex-usage">Rex 简明手册</a></li>
+               
+                 <li><a href="/2014/06/12/perldancer-tips">PerlDancer 框架笔记</a></li>
+               
+                 <li><a href="/2014/06/12/perl-tips">Perl 编程的个人惯例</a></li>
+               
+                 <li><a href="/2014/06/11/nginx-access-log-to-elasticsearch">用 LEK 组合处理 Nginx 访问日志</a></li>
+               
+                 <li><a href="/2014/06/08/perl-script-for-avbot">配合 avbot 的 HTTP 接口做自动应答的 Perl 脚本</a></li>
+               
+                 <li><a href="/2014/06/04/skyline-port-to-perl">用 Perl5 改写 skyline 异常检测算法</a></li>
+               
+            </ul>
+          </div>
+        
+        <div class="well sidebar-nav">
+          <iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=1&ptype=1&speed=0&skin=2&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=1035836154&verifier=a26926d5&dpc=1"></iframe>
+        </div>
+        <div class="well sidebar-nav">
+            <div id="uyan_list_time_frame"></div>
+            <script type="text/javascript" id="UYScriptTime" src="http://v1.uyan.cc/js/iframe_time_list.js?UYUserId=1589850&rankType=time" async=""></script>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(英文)</li>
+            
+              <li><a href="http://codeascraft.com/" title="Etsy 运维团队博客">Code as Craft</a></li>
+            
+              <li><a href="http://devopsanywhere.blogspot.jp/" title="">devopsanywhere</a></li>
+            
+              <li><a href="http://www.jedi.be/blog/" title="">Jong En Dynamische Informatica</a></li>
+            
+              <li><a href="http://www.planetdevops.net/" title="">planetdevops</a></li>
+            
+              <li><a href="http://www.kitchensoap.com/" title="《网站运维》作者，Etsy 运维">Kitchen Soap</a></li>
+            
+              <li><a href="http://blog.johngoulah.com" title="Musings of linux, open source, cloud computing and systems">John Goulah</a></li>
+            
+              <li><a href="http://serverfault.com/" title="stackexchange下属的系统工程师问答网站">serverfault</a></li>
+            
+              <li><a href="http://www.thegeekstuff.com/" title="各种超酷Linux命令用法">TheGeekStuff</a></li>
+            
+              <li><a href="http://neilb.org/" title="The good,the bad,and the beautiful">neilb</a></li>
+            
+              <li><a href="http://www.reddit.com/r/perl/" title="">reddit perl 频道</a></li>
+            
+              <li><a href="http://jpetazzo.github.io/" title="">~jpetazzo</a></li>
+            
+              <li><a href="http://www.perfplanet.com/" title="News and views from the web performance blogosphere">Performance Planet</a></li>
+            
+              <li><a href="http://cuddletech.com/blog/" title="Use UNIX or die">Cuddle Tech</a></li>
+            
+              <li><a href="http://showmetheco.de/" title="Viacheslav Tykhanovskyi(PocketIO/Text::Haml)">No time to wait</a></li>
+            
+              <li><a href="http://blog.dataloop.io/" title="A new SaaS monitoring tool for DevOps & Operations">Dataloop.IO</a></li>
+            
+              <li><a href="http://www.ducea.com/" title="">MDLog:/sysadmin</a></li>
+            
+              <li><a href="http://planeteria.org/perl6/" title="Perl6 文集">Planet Perl 6</a></li>
+            
+              <li><a href="http://www.metaforsoftware.com/blog/" title="">metafor</a></li>
+            
+              <li><a href="http://blog.kablamo.org/" title="Eric Johnson，一个游走在伦敦和北京的 Perler">kablamo</a></li>
+            
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(中文)</li>
+            
+              <li><a href="http://www.nginxs.com/" title="">eric</a></li>
+            
+              <li><a href="http://www.hellodb.net/" title="Ali DBA 张瑞">Hello DBA</a></li>
+            
+              <li><a href="http://blog.nosqlfan.com/" title="not only sql信息集散地">NoSQLfan</a></li>
+            
+              <li><a href="http://ourmysql.com/" title="">OurMySQL</a></li>
+            
+              <li><a href="http://zauc.wordpress.com/" title="">Timo</a></li>
+            
+              <li><a href="http://www.liurongxing.com/" title="">刘荣星</a></li>
+            
+              <li><a href="http://www.cnadn.net/" title="F5工程师">应用交付学习之路</a></li>
+            
+              <li><a href="http://scmbob.org/" title="杭州NSN工程师，shell高人~">扛一肩记忆</a></li>
+            
+              <li><a href="http://www.php-oa.com/" title="音悦台技术经理">扶凯</a></li>
+            
+              <li><a href="http://www.lark.net.cn/" title="王剑">lark's cloud</a></li>
+            
+              <li><a href="http://log.heartoutside.com/" title="HeartOutSide">HeartOutside</a></li>
+            
+              <li><a href="http://blog.liulantao.com/" title="刘兰涛">Lax</a></li>
+            
+              <li><a href="http://niubie.me/" title="莫言">莫言</a></li>
+            
+              <li><a href="http://noops.me/" title="小米运维部">NoOps</a></li>
+            
+              <li><a href="http://www.searchtech.pro/" title="">云端分布式搜索技术</a></li>
+            
+              <li><a href="http://www.usefulshare.com" title="当当网安全运维">UsefulShare</a></li>
+            
+              <li><a href="http://junqili.com/" title="深入研究puppet">纸飞机</a></li>
+            
+              <li><a href="http://www.chinaxing.org/" title="">ChinaXing</a></li>
+            
+              <li><a href="http://bubbyroom.com/" title="守住每一天">Liuyu's blog</a></li>
+            
+              <li><a href="http://blog.aka-cool.net/" title="">Aka.Why</a></li>
+            
+              <li><a href="http://blog.l8ii.com/" title="刘侨">LairdNote</a></li>
+            
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="booklists" class="nav nav-list">
+          <li class="nav-header">我写的第一本技术书籍</li>
+          <li><a href='http://product.china-pub.com/3769604'><img src='http://images.china-pub.com/ebook3765001-3770000/3769604/shupi.jpg' border='0' alt='网站运维技术与实践'/></a></li>
+        </div>
+      </div>
+    </div> <!-- row -->
+      <footer>
+        <p>&copy; 陈子 2012 
+          with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
+          and <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap</a>
+        </p>
+      </footer>
+    </div> <!-- /container -->
+    
+
+    <!-- JiaThis Button BEGIN -->
+    <script type="text/javascript">var jiathis_config = {data_track_clickback:true};</script>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jiathis_r.js?move=0&amp;uid=1589850" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    <!-- UJian Button BEGIN -->
+    <script type="text/javascript" src="http://v1.ujian.cc/code/ujian.js?type=slide&uid=1589850"></script>
+    <!-- UJian Button END -->
+  </body>
+</html>
+

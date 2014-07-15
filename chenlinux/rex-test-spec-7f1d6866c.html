@@ -1,0 +1,460 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Rex::Test::Spec 模块</title>
+    
+    <meta name="author" content="陈子">
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!-- Le styles -->
+    <link href="/assets/themes/twitter/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/themes/twitter/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+    <link href="/assets/themes/twitter/css/pygments/default.css" rel="stylesheet" type="text/css">
+    <!-- Le fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+  </head>
+  <body>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="/">三斗室</a>
+          <ul class="nav">
+            
+            
+            
+
+
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/archive.html">归档</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">分类</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/errata.html">《网站运维技术与实践》勘误</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/pages.html">Pages</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/projects.html">学习记录</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">标签</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+
+
+
+
+            <li><a href="http://chenlinux.com/poetry/index.html" />诗文集</a></li>
+            <li><link title="RSS 2.0" type="application/rss+xml" href="http://chenlinux.com/feed.xml" rel="alternate" /><a href="http://chenlinux.com/feed.xml" target="_blank">RSS订阅</a></li>
+          </ul>
+          <ul class="nav pull-right"><li><a href="/about.html">有关我</a></li></ul>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+    <div class="row">
+      <div class="span7">
+        
+<div class="row">
+  <div class="page-header">
+    <h1>Rex::Test::Spec 模块 <small></small></h1>
+    <div class="date"><span>08 July 2014</span></div>
+  
+    <ul class="tag_box pull-right">
+    
+    
+
+
+  
+     
+    	<li><a href="/tags.html#devops-ref">devops <span>2</span></a></li>
+     
+    	<li><a href="/tags.html#serverspec-ref">serverspec <span>1</span></a></li>
+     
+    	<li><a href="/tags.html#rex-ref">rex <span>7</span></a></li>
+     
+    	<li><a href="/tags.html#testing-ref">testing <span>1</span></a></li>
+    
+  
+
+
+
+    </ul>
+    
+  </div>
+  <div style='background-color: #FFF;'>
+    <p>上篇说了 serverspec 工具，我一直对 Rspec 的语法蛮有好感的，于是昨晚花了点时间模仿这个给 Rex 写了个类似的工具，叫 Rex::Test::Spec，源代码地址见：<a href="https://github.com/chenryn/Rex--Test--Spec">https://github.com/chenryn/Rex--Test--Spec</a>。</p>
+
+<p>语法大概是这样的：</p>
+
+<div class="highlight"><pre><code class="language-perl" data-lang="perl"><span class="k">use</span> <span class="nn">Rex::Test::</span><span class="n">Spec</span><span class="p">;</span>
+    <span class="n">describe</span> <span class="s">&quot;Nginx Test&quot;</span><span class="p">,</span> <span class="k">sub </span><span class="p">{</span>
+        <span class="n">context</span> <span class="n">run</span><span class="p">(</span><span class="s">&quot;nginx -t&quot;</span><span class="p">),</span> <span class="s">&quot;nginx.conf testing&quot;</span><span class="p">,</span> <span class="k">sub </span><span class="p">{</span>
+            <span class="n">like</span> <span class="n">its</span><span class="p">(</span><span class="s">&#39;stdout&#39;</span><span class="p">),</span> <span class="sx">qr/ok/</span><span class="p">;</span>
+        <span class="p">};</span>
+        <span class="n">context</span> <span class="n">file</span><span class="p">(</span><span class="s">&quot;/etc/nginx.conf&quot;</span><span class="p">),</span> <span class="k">sub </span><span class="p">{</span>
+            <span class="n">is</span> <span class="n">its</span><span class="p">(</span><span class="s">&#39;ensure&#39;</span><span class="p">),</span> <span class="s">&#39;present&#39;</span><span class="p">;</span>
+            <span class="n">like</span> <span class="n">its</span><span class="p">(</span><span class="s">&#39;content&#39;</span><span class="p">),</span> <span class="sx">qr/listen\s+80;/</span><span class="p">;</span>
+        <span class="p">};</span>
+        <span class="n">context</span> <span class="n">service</span><span class="p">(</span><span class="s">&quot;nginx&quot;</span><span class="p">),</span> <span class="k">sub </span><span class="p">{</span>
+            <span class="n">is</span> <span class="n">its</span><span class="p">(</span><span class="s">&#39;ensure&#39;</span><span class="p">),</span> <span class="s">&#39;running&#39;</span><span class="p">;</span>
+        <span class="p">};</span>
+        <span class="n">context</span> <span class="n">pkg</span><span class="p">(</span><span class="s">&quot;nginx&quot;</span><span class="p">),</span> <span class="k">sub </span><span class="p">{</span>
+            <span class="n">is</span> <span class="n">its</span><span class="p">(</span><span class="s">&#39;ensure&#39;</span><span class="p">),</span> <span class="s">&#39;present&#39;</span><span class="p">;</span>
+            <span class="n">is</span> <span class="n">its</span><span class="p">(</span><span class="s">&#39;version&#39;</span><span class="p">),</span> <span class="s">&#39;1.5.8&#39;</span><span class="p">;</span>
+        <span class="p">};</span>
+        <span class="n">context</span> <span class="n">cron</span><span class="p">,</span> <span class="k">sub </span><span class="p">{</span>
+            <span class="n">like</span> <span class="n">its</span><span class="p">(</span><span class="s">&#39;www&#39;</span><span class="p">),</span> <span class="s">&#39;logrotate&#39;</span><span class="p">;</span>
+        <span class="p">};</span>
+        <span class="n">context</span> <span class="n">gateway</span><span class="p">,</span> <span class="k">sub </span><span class="p">{</span>
+            <span class="n">is</span> <span class="n">it</span><span class="p">,</span> <span class="s">&#39;192.168.0.1&#39;</span><span class="p">;</span>
+        <span class="p">};</span>
+        <span class="n">context</span> <span class="n">group</span><span class="p">(</span><span class="s">&#39;www&#39;</span><span class="p">),</span> <span class="k">sub </span><span class="p">{</span>
+            <span class="n">ok</span> <span class="n">its</span><span class="p">(</span><span class="s">&#39;ensure&#39;</span><span class="p">);</span>
+        <span class="p">};</span>
+        <span class="n">context</span> <span class="n">port</span><span class="p">(</span><span class="mi">80</span><span class="p">),</span> <span class="k">sub </span><span class="p">{</span>
+            <span class="n">is</span> <span class="n">its</span><span class="p">(</span><span class="s">&#39;bind&#39;</span><span class="p">),</span> <span class="s">&#39;0.0.0.0&#39;</span><span class="p">;</span>
+            <span class="n">is</span> <span class="n">its</span><span class="p">(</span><span class="s">&#39;proto&#39;</span><span class="p">),</span> <span class="s">&#39;tcp&#39;</span><span class="p">;</span>
+            <span class="n">is</span> <span class="n">its</span><span class="p">(</span><span class="s">&#39;command&#39;</span><span class="p">),</span> <span class="s">&#39;nginx&#39;</span><span class="p">;</span>
+        <span class="p">};</span>
+        <span class="n">context</span> <span class="n">process</span><span class="p">(</span><span class="s">&#39;nginx&#39;</span><span class="p">),</span> <span class="k">sub </span><span class="p">{</span>
+            <span class="n">like</span> <span class="n">its</span><span class="p">(</span><span class="s">&#39;command&#39;</span><span class="p">),</span> <span class="sx">qr(nginx -c /etc/nginx.conf)</span><span class="p">;</span>
+            <span class="n">ok</span> <span class="n">its</span><span class="p">(</span><span class="s">&#39;mem&#39;</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1024</span><span class="p">;</span>
+        <span class="p">};</span>
+        <span class="n">context</span> <span class="n">routes</span><span class="p">,</span> <span class="k">sub </span><span class="p">{</span>
+            <span class="n">is_deeply</span> <span class="n">its</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="p">{</span>
+                <span class="n">destination</span> <span class="o">=&gt;</span> <span class="nv">$dest</span><span class="p">,</span>
+                <span class="n">gateway</span>     <span class="o">=&gt;</span> <span class="nv">$gw</span><span class="p">,</span>
+                <span class="n">genmask</span>     <span class="o">=&gt;</span> <span class="nv">$genmask</span><span class="p">,</span>
+                <span class="n">flags</span>       <span class="o">=&gt;</span> <span class="nv">$flags</span><span class="p">,</span>
+                <span class="n">mss</span>         <span class="o">=&gt;</span> <span class="nv">$mss</span><span class="p">,</span>
+                <span class="n">irtt</span>        <span class="o">=&gt;</span> <span class="nv">$irtt</span><span class="p">,</span>
+                <span class="n">iface</span>       <span class="o">=&gt;</span> <span class="nv">$iface</span><span class="p">,</span>
+            <span class="p">};</span>
+        <span class="p">};</span>
+        <span class="n">context</span> <span class="n">sysctl</span><span class="p">,</span> <span class="k">sub </span><span class="p">{</span>
+            <span class="n">is</span> <span class="n">its</span><span class="p">(</span><span class="s">&#39;vm.swapiness&#39;</span><span class="p">),</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="p">};</span>
+        <span class="n">context</span> <span class="n">user</span><span class="p">(</span><span class="s">&#39;www&#39;</span><span class="p">),</span> <span class="k">sub </span><span class="p">{</span>
+            <span class="n">ok</span> <span class="n">its</span><span class="p">(</span><span class="s">&#39;ensure&#39;</span><span class="p">);</span>
+            <span class="n">is</span> <span class="n">its</span><span class="p">(</span><span class="s">&#39;home&#39;</span><span class="p">),</span> <span class="s">&#39;/var/www/html&#39;</span><span class="p">;</span>
+            <span class="n">is</span> <span class="n">its</span><span class="p">(</span><span class="s">&#39;shell&#39;</span><span class="p">),</span> <span class="s">&#39;/sbin/nologin&#39;</span><span class="p">;</span>
+            <span class="n">is_deeply</span> <span class="n">its</span><span class="p">(</span><span class="s">&#39;belong_to&#39;</span><span class="p">),</span> <span class="p">[</span><span class="s">&#39;www&#39;</span><span class="p">,</span> <span class="s">&#39;nogroup&#39;</span><span class="p">];</span>
+        <span class="p">};</span>
+    <span class="p">};</span>
+    <span class="n">done_testing</span><span class="p">;</span></code></pre></div>
+
+<p>从 Rspec 学来的 context/describe/it/its 语法，保留了 Test::More 的 is/like/is_deeply/done_testing 语法。</p>
+
+<p>这里把 Test::More 里导入的指令都重载了，因为把 context 指令后面的资源类型通过 <code>local $msg</code> 变量传递过来，就可以显示出来每个 <code>its</code> 测试是什么资源类型的了。因为这个原因，指令导出的时候就没法用 <code>Exporter</code> 模块，因为 Exporter 里的 import 函数没有 <code>no strict;no warnings</code>。所以得自己写 import 函数导出。</p>
+
+<p>具体的资源类型，第一次学习了一下 AUTOLOAD 的用法。还是蛮好玩的~</p>
+
+<p>因为我是在 Mac 上写的代码，而 Rex 本身不怎么支持 Darwin 平台，所以源码里就测了一下 run 指令可用。欢迎大家帮忙补齐其他指令的测试用例，以及如何在 Rex 的 task 里通过 SSH 方式远程做这些测试（公司平台也没法让我做这个 SSH 测试）。</p>
+
+    <hr>
+    <div class="pagination">
+      <ul>
+      
+        <li class="prev"><a href="/2014/06/13/serverspec-intro" title="Serverspec 工具介绍">&larr; Previous</a></li>
+      
+        <li><a href="/archive.html">Archive</a></li>
+      
+        <li class="next disabled"><a>Next &rarr;</a>
+      
+      </ul>
+    </div>
+    <hr>
+    
+
+
+  <!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" id="UYScript" src="http://v1.uyan.cc/js/iframe.js?UYUserId=1589850" async=""></script>
+<!-- UY END -->
+
+
+
+
+
+
+  </div>
+</div>
+  
+
+
+      </div>
+      <div class="span4">
+          
+          <div class="well sidebar-nav">
+             <ul id="relate_blog" class="nav nav-list">
+               <li class="nav-header">最近文章</li>
+               
+                 <li><a href="/2014/06/13/serverspec-intro">Serverspec 工具介绍</a></li>
+               
+                 <li><a href="/2014/06/13/anyevent-redis-for-dns-check">用 Redis 做分布式 DNS/HTTP 检测汇总系统</a></li>
+               
+                 <li><a href="/2014/06/12/rex-usage">Rex 简明手册</a></li>
+               
+                 <li><a href="/2014/06/12/perldancer-tips">PerlDancer 框架笔记</a></li>
+               
+                 <li><a href="/2014/06/12/perl-tips">Perl 编程的个人惯例</a></li>
+               
+                 <li><a href="/2014/06/11/nginx-access-log-to-elasticsearch">用 LEK 组合处理 Nginx 访问日志</a></li>
+               
+                 <li><a href="/2014/06/08/perl-script-for-avbot">配合 avbot 的 HTTP 接口做自动应答的 Perl 脚本</a></li>
+               
+                 <li><a href="/2014/06/04/skyline-port-to-perl">用 Perl5 改写 skyline 异常检测算法</a></li>
+               
+                 <li><a href="/2014/06/04/record-webqq-logs-by-avbot">用 avbot 机器人记录 QQ 群聊天记录</a></li>
+               
+            </ul>
+          </div>
+        
+        <div class="well sidebar-nav">
+          <iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=1&ptype=1&speed=0&skin=2&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=1035836154&verifier=a26926d5&dpc=1"></iframe>
+        </div>
+        <div class="well sidebar-nav">
+            <div id="uyan_list_time_frame"></div>
+            <script type="text/javascript" id="UYScriptTime" src="http://v1.uyan.cc/js/iframe_time_list.js?UYUserId=1589850&rankType=time" async=""></script>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(英文)</li>
+            
+              <li><a href="http://codeascraft.com/" title="Etsy 运维团队博客">Code as Craft</a></li>
+            
+              <li><a href="http://devopsanywhere.blogspot.jp/" title="">devopsanywhere</a></li>
+            
+              <li><a href="http://www.jedi.be/blog/" title="">Jong En Dynamische Informatica</a></li>
+            
+              <li><a href="http://www.planetdevops.net/" title="">planetdevops</a></li>
+            
+              <li><a href="http://www.kitchensoap.com/" title="《网站运维》作者，Etsy 运维">Kitchen Soap</a></li>
+            
+              <li><a href="http://blog.johngoulah.com" title="Musings of linux, open source, cloud computing and systems">John Goulah</a></li>
+            
+              <li><a href="http://serverfault.com/" title="stackexchange下属的系统工程师问答网站">serverfault</a></li>
+            
+              <li><a href="http://www.thegeekstuff.com/" title="各种超酷Linux命令用法">TheGeekStuff</a></li>
+            
+              <li><a href="http://neilb.org/" title="The good,the bad,and the beautiful">neilb</a></li>
+            
+              <li><a href="http://www.reddit.com/r/perl/" title="">reddit perl 频道</a></li>
+            
+              <li><a href="http://jpetazzo.github.io/" title="">~jpetazzo</a></li>
+            
+              <li><a href="http://www.perfplanet.com/" title="News and views from the web performance blogosphere">Performance Planet</a></li>
+            
+              <li><a href="http://cuddletech.com/blog/" title="Use UNIX or die">Cuddle Tech</a></li>
+            
+              <li><a href="http://showmetheco.de/" title="Viacheslav Tykhanovskyi(PocketIO/Text::Haml)">No time to wait</a></li>
+            
+              <li><a href="http://blog.dataloop.io/" title="A new SaaS monitoring tool for DevOps & Operations">Dataloop.IO</a></li>
+            
+              <li><a href="http://www.ducea.com/" title="">MDLog:/sysadmin</a></li>
+            
+              <li><a href="http://planeteria.org/perl6/" title="Perl6 文集">Planet Perl 6</a></li>
+            
+              <li><a href="http://www.metaforsoftware.com/blog/" title="">metafor</a></li>
+            
+              <li><a href="http://blog.kablamo.org/" title="Eric Johnson，一个游走在伦敦和北京的 Perler">kablamo</a></li>
+            
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(中文)</li>
+            
+              <li><a href="http://www.nginxs.com/" title="">eric</a></li>
+            
+              <li><a href="http://www.hellodb.net/" title="Ali DBA 张瑞">Hello DBA</a></li>
+            
+              <li><a href="http://blog.nosqlfan.com/" title="not only sql信息集散地">NoSQLfan</a></li>
+            
+              <li><a href="http://ourmysql.com/" title="">OurMySQL</a></li>
+            
+              <li><a href="http://zauc.wordpress.com/" title="">Timo</a></li>
+            
+              <li><a href="http://www.liurongxing.com/" title="">刘荣星</a></li>
+            
+              <li><a href="http://www.cnadn.net/" title="F5工程师">应用交付学习之路</a></li>
+            
+              <li><a href="http://scmbob.org/" title="杭州NSN工程师，shell高人~">扛一肩记忆</a></li>
+            
+              <li><a href="http://www.php-oa.com/" title="音悦台技术经理">扶凯</a></li>
+            
+              <li><a href="http://www.lark.net.cn/" title="王剑">lark's cloud</a></li>
+            
+              <li><a href="http://log.heartoutside.com/" title="HeartOutSide">HeartOutside</a></li>
+            
+              <li><a href="http://blog.liulantao.com/" title="刘兰涛">Lax</a></li>
+            
+              <li><a href="http://niubie.me/" title="莫言">莫言</a></li>
+            
+              <li><a href="http://noops.me/" title="小米运维部">NoOps</a></li>
+            
+              <li><a href="http://www.searchtech.pro/" title="">云端分布式搜索技术</a></li>
+            
+              <li><a href="http://www.usefulshare.com" title="当当网安全运维">UsefulShare</a></li>
+            
+              <li><a href="http://junqili.com/" title="深入研究puppet">纸飞机</a></li>
+            
+              <li><a href="http://www.chinaxing.org/" title="">ChinaXing</a></li>
+            
+              <li><a href="http://bubbyroom.com/" title="守住每一天">Liuyu's blog</a></li>
+            
+              <li><a href="http://blog.aka-cool.net/" title="">Aka.Why</a></li>
+            
+              <li><a href="http://blog.l8ii.com/" title="刘侨">LairdNote</a></li>
+            
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="booklists" class="nav nav-list">
+          <li class="nav-header">我写的第一本技术书籍</li>
+          <li><a href='http://product.china-pub.com/3769604'><img src='http://images.china-pub.com/ebook3765001-3770000/3769604/shupi.jpg' border='0' alt='网站运维技术与实践'/></a></li>
+        </div>
+      </div>
+    </div> <!-- row -->
+      <footer>
+        <p>&copy; 陈子 2012 
+          with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
+          and <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap</a>
+        </p>
+      </footer>
+    </div> <!-- /container -->
+    
+
+    <!-- JiaThis Button BEGIN -->
+    <script type="text/javascript">var jiathis_config = {data_track_clickback:true};</script>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jiathis_r.js?move=0&amp;uid=1589850" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    <!-- UJian Button BEGIN -->
+    <script type="text/javascript" src="http://v1.ujian.cc/code/ujian.js?type=slide&uid=1589850"></script>
+    <!-- UJian Button END -->
+  </body>
+</html>
+
