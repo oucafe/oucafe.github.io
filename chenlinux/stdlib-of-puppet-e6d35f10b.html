@@ -1,0 +1,444 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>巧用 Puppet 的 stdlib 库</title>
+    
+    <meta name="author" content="陈子">
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!-- Le styles -->
+    <link href="/assets/themes/twitter/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/themes/twitter/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+    <link href="/assets/themes/twitter/css/pygments/default.css" rel="stylesheet" type="text/css">
+    <!-- Le fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+  </head>
+  <body>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="/">三斗室</a>
+          <ul class="nav">
+            
+            
+            
+
+
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/archive.html">归档</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">分类</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/errata.html">《网站运维技术与实践》勘误</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/pages.html">Pages</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/projects.html">学习记录</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">标签</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+
+
+
+
+            <li><a href="http://chenlinux.com/poetry/index.html" />诗文集</a></li>
+            <li><link title="RSS 2.0" type="application/rss+xml" href="http://chenlinux.com/feed.xml" rel="alternate" /><a href="http://chenlinux.com/feed.xml" target="_blank">RSS订阅</a></li>
+          </ul>
+          <ul class="nav pull-right"><li><a href="/about.html">有关我</a></li></ul>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+    <div class="row">
+      <div class="span7">
+        
+<div class="row">
+  <div class="page-header">
+    <h1>巧用 Puppet 的 stdlib 库 <small></small></h1>
+    <div class="date"><span>28 May 2014</span></div>
+  
+    <ul class="tag_box pull-right">
+    
+    
+
+
+  
+     
+    	<li><a href="/tags.html#puppet-ref">puppet <span>14</span></a></li>
+     
+    	<li><a href="/tags.html#ruby-ref">ruby <span>15</span></a></li>
+    
+  
+
+
+
+    </ul>
+    
+  </div>
+  <div style='background-color: #FFF;'>
+    <p>这几天上线机器给 Elasticsearch 集群扩容，开始撰写 Puppet 的 elasticsearch 类来规范化管理。这里碰到一个小问题，相信在很多大容量集群的机器上都会有。那就是每台机器上都挂载有十几二十块磁盘，怎么用 Puppet 给快速方便的创建各磁盘上的工作目录呢？</p>
+
+<p>一个一个写 File 资源申明肯定不可取；File 资源申明支持接受数组，但是二十多个元素写一个大数组也没方便到哪里去。有没有比较简单的办法来生成这个大数组，而不是手写呢？</p>
+
+<p>有，就是使用 Puppet 官方出的这个 stdlib 库 <a href="http://forge.puppetlabs.com/puppetlabs/stdlib">http://forge.puppetlabs.com/puppetlabs/stdlib</a>。</p>
+
+<p>安装方法很简单，在 Puppet Master 上运行命令 <code>puppet module install puppetlabs-stdlib</code> 即可。</p>
+
+<p>因为 puppet 默认会分发所有 module 的 lib/ 目录，所以即便你没有在自己的类里 <code>import stdlib</code>，也是可以直接使用它提供的各种函数的。</p>
+
+<p>下面就是我的 elsticsearch 类配置：</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">class</span> <span class="n">elasticsearch</span> <span class="p">{</span>
+
+    <span class="vg">$esdatadir</span> <span class="o">=</span> <span class="n">suffix</span><span class="p">(</span> <span class="n">prefix</span><span class="p">(</span> <span class="n">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="vg">$:</span><span class="ss">:datadircount</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="s1">&#39;/data&#39;</span><span class="p">),</span> <span class="s1">&#39;/elasticsearch&#39;</span><span class="p">)</span>
+
+    <span class="n">package</span> <span class="p">{</span><span class="o">[</span><span class="s1">&#39;java-1.7.0-openjdk&#39;</span><span class="p">,</span> <span class="s1">&#39;elasticsearch&#39;</span><span class="o">]</span><span class="p">:</span>
+        <span class="k">ensure</span>  <span class="o">=&gt;</span> <span class="s1">&#39;present&#39;</span><span class="p">,</span>
+        <span class="nb">require</span> <span class="o">=&gt;</span> <span class="no">Class</span><span class="o">[</span><span class="s1">&#39;repos&#39;</span><span class="o">]</span><span class="p">,</span>
+    <span class="p">}</span><span class="o">-&gt;</span>
+    <span class="n">file</span> <span class="p">{</span><span class="vg">$esdatadir</span><span class="p">:</span>
+        <span class="k">ensure</span>  <span class="o">=&gt;</span> <span class="s1">&#39;directory&#39;</span><span class="p">,</span>
+        <span class="n">owner</span>   <span class="o">=&gt;</span> <span class="s1">&#39;elasticsearch&#39;</span><span class="p">,</span>
+    <span class="p">}</span><span class="o">-&gt;</span>
+    <span class="n">file</span> <span class="p">{</span><span class="s1">&#39;/etc/elasticsearch/elasticsearch.yml&#39;</span><span class="p">:</span>
+        <span class="k">ensure</span>  <span class="o">=&gt;</span> <span class="s1">&#39;file&#39;</span><span class="p">,</span>
+        <span class="n">owner</span>   <span class="o">=&gt;</span> <span class="s1">&#39;elasticsearch&#39;</span><span class="p">,</span>
+        <span class="n">content</span> <span class="o">=&gt;</span> <span class="n">template</span><span class="p">(</span><span class="s1">&#39;elasticsearch/elasticsearch.yml.erb&#39;</span><span class="p">),</span>
+    <span class="p">}</span>
+    <span class="p">}</span><span class="o">~&gt;</span>
+    <span class="n">service</span> <span class="p">{</span><span class="s1">&#39;elasticsearch&#39;</span><span class="p">:</span>
+        <span class="k">ensure</span>  <span class="o">=&gt;</span> <span class="kp">true</span><span class="p">,</span>
+        <span class="n">enable</span>  <span class="o">=&gt;</span> <span class="kp">true</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></div>
+
+<p>其中 <code>$::datadircount</code> 是我自定义的 Facts 变量，插件代码见两年前的博客<a href="http://chenlinux.com/2012/05/10/quick-start-for-puppet-facter-erb">《puppet安装／Facter插件和puppet模板编写》</a>。</p>
+
+<p>然后 <code>elasticsearch.yml.erb</code> 里的数据目录配置定义如下：</p>
+
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">path</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+<span class="o">&lt;</span><span class="sx">% scope.lookupvar(&quot;elasticsearch::esdatadir&quot;).each </span><span class="k">do</span> <span class="o">|</span><span class="n">dir</span><span class="o">|</span> <span class="o">-</span><span class="sx">%&gt;</span>
+<span class="sx">  - &lt;%= dir %&gt;</span>
+<span class="o">&lt;</span><span class="sx">% end </span><span class="o">%&gt;</span></code></pre></div>
+
+<p><code>puppetlibs-stdlib</code> 实现了很多对基础类型的扩展函数，比如本例中用到了 <code>range</code>、<code>prefix</code> 和 <code>suffix</code> 三个。依次生成了 1 到 N 的数组，给数组每个元素加上 <code>/data</code> 前缀字符串，再给每个元素加上 <code>/elasticsearch</code> 后缀字符串，最后变成了 <code>/dataN/elasticsearch</code> 这种格式的元素构成的数组。</p>
+
+<p><code>puppetlibs-stdlib</code> 实现的非常漂亮的地方是，很多函数都根据常见用途提供了不同场景下的不同行为。</p>
+
+<ul>
+  <li>比如 <code>range</code> 即可以 1 到 N，也可以 01 到 NN，甚至可以先加上 prefix 后再 &lsquo;/data1&rsquo; 到 &lsquo;/dataN&rsquo; 都支持。</li>
+  <li>比如 <code>unique</code> 既可以针对字符串去重，也可以针对数组元素去重。</li>
+</ul>
+
+<p>更多函数说明，见源码仓库 <a href="https://github.com/puppetlabs/puppetlabs-stdlib/blob/master/README.markdown">README</a> 文档。</p>
+
+
+    <hr>
+    <div class="pagination">
+      <ul>
+      
+        <li class="prev"><a href="/2014/05/20/my-first-experience-of-perlxs" title="XS 初体验">&larr; Previous</a></li>
+      
+        <li><a href="/archive.html">Archive</a></li>
+      
+        <li class="next"><a href="/2014/06/04/elasticsearch-direct-to-skyline" title="直接从 elasticsearch 获取数据进入 skyline 异常检测">Next &rarr;</a></li>
+      
+      </ul>
+    </div>
+    <hr>
+    
+
+
+  <!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" id="UYScript" src="http://v1.uyan.cc/js/iframe.js?UYUserId=1589850" async=""></script>
+<!-- UY END -->
+
+
+
+
+
+
+  </div>
+</div>
+  
+
+
+      </div>
+      <div class="span4">
+          
+          <div class="well sidebar-nav">
+             <ul id="relate_blog" class="nav nav-list">
+               <li class="nav-header">最近文章</li>
+               
+                 <li><a href="/2014/07/08/rex-test-spec">Rex::Test::Spec 模块</a></li>
+               
+                 <li><a href="/2014/06/13/serverspec-intro">Serverspec 工具介绍</a></li>
+               
+                 <li><a href="/2014/06/13/anyevent-redis-for-dns-check">用 Redis 做分布式 DNS/HTTP 检测汇总系统</a></li>
+               
+                 <li><a href="/2014/06/12/rex-usage">Rex 简明手册</a></li>
+               
+                 <li><a href="/2014/06/12/perldancer-tips">PerlDancer 框架笔记</a></li>
+               
+                 <li><a href="/2014/06/12/perl-tips">Perl 编程的个人惯例</a></li>
+               
+                 <li><a href="/2014/06/11/nginx-access-log-to-elasticsearch">用 LEK 组合处理 Nginx 访问日志</a></li>
+               
+                 <li><a href="/2014/06/08/perl-script-for-avbot">配合 avbot 的 HTTP 接口做自动应答的 Perl 脚本</a></li>
+               
+                 <li><a href="/2014/06/04/skyline-port-to-perl">用 Perl5 改写 skyline 异常检测算法</a></li>
+               
+            </ul>
+          </div>
+        
+        <div class="well sidebar-nav">
+          <iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=1&ptype=1&speed=0&skin=2&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=1035836154&verifier=a26926d5&dpc=1"></iframe>
+        </div>
+        <div class="well sidebar-nav">
+            <div id="uyan_list_time_frame"></div>
+            <script type="text/javascript" id="UYScriptTime" src="http://v1.uyan.cc/js/iframe_time_list.js?UYUserId=1589850&rankType=time" async=""></script>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(英文)</li>
+            
+              <li><a href="http://codeascraft.com/" title="Etsy 运维团队博客">Code as Craft</a></li>
+            
+              <li><a href="http://devopsanywhere.blogspot.jp/" title="">devopsanywhere</a></li>
+            
+              <li><a href="http://www.jedi.be/blog/" title="">Jong En Dynamische Informatica</a></li>
+            
+              <li><a href="http://www.planetdevops.net/" title="">planetdevops</a></li>
+            
+              <li><a href="http://www.kitchensoap.com/" title="《网站运维》作者，Etsy 运维">Kitchen Soap</a></li>
+            
+              <li><a href="http://blog.johngoulah.com" title="Musings of linux, open source, cloud computing and systems">John Goulah</a></li>
+            
+              <li><a href="http://serverfault.com/" title="stackexchange下属的系统工程师问答网站">serverfault</a></li>
+            
+              <li><a href="http://www.thegeekstuff.com/" title="各种超酷Linux命令用法">TheGeekStuff</a></li>
+            
+              <li><a href="http://neilb.org/" title="The good,the bad,and the beautiful">neilb</a></li>
+            
+              <li><a href="http://www.reddit.com/r/perl/" title="">reddit perl 频道</a></li>
+            
+              <li><a href="http://jpetazzo.github.io/" title="">~jpetazzo</a></li>
+            
+              <li><a href="http://www.perfplanet.com/" title="News and views from the web performance blogosphere">Performance Planet</a></li>
+            
+              <li><a href="http://cuddletech.com/blog/" title="Use UNIX or die">Cuddle Tech</a></li>
+            
+              <li><a href="http://showmetheco.de/" title="Viacheslav Tykhanovskyi(PocketIO/Text::Haml)">No time to wait</a></li>
+            
+              <li><a href="http://blog.dataloop.io/" title="A new SaaS monitoring tool for DevOps & Operations">Dataloop.IO</a></li>
+            
+              <li><a href="http://www.ducea.com/" title="">MDLog:/sysadmin</a></li>
+            
+              <li><a href="http://planeteria.org/perl6/" title="Perl6 文集">Planet Perl 6</a></li>
+            
+              <li><a href="http://www.metaforsoftware.com/blog/" title="">metafor</a></li>
+            
+              <li><a href="http://blog.kablamo.org/" title="Eric Johnson，一个游走在伦敦和北京的 Perler">kablamo</a></li>
+            
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(中文)</li>
+            
+              <li><a href="http://www.nginxs.com/" title="">eric</a></li>
+            
+              <li><a href="http://www.hellodb.net/" title="Ali DBA 张瑞">Hello DBA</a></li>
+            
+              <li><a href="http://blog.nosqlfan.com/" title="not only sql信息集散地">NoSQLfan</a></li>
+            
+              <li><a href="http://ourmysql.com/" title="">OurMySQL</a></li>
+            
+              <li><a href="http://zauc.wordpress.com/" title="">Timo</a></li>
+            
+              <li><a href="http://www.liurongxing.com/" title="">刘荣星</a></li>
+            
+              <li><a href="http://www.cnadn.net/" title="F5工程师">应用交付学习之路</a></li>
+            
+              <li><a href="http://scmbob.org/" title="杭州NSN工程师，shell高人~">扛一肩记忆</a></li>
+            
+              <li><a href="http://www.php-oa.com/" title="音悦台技术经理">扶凯</a></li>
+            
+              <li><a href="http://www.lark.net.cn/" title="王剑">lark's cloud</a></li>
+            
+              <li><a href="http://log.heartoutside.com/" title="HeartOutSide">HeartOutside</a></li>
+            
+              <li><a href="http://blog.liulantao.com/" title="刘兰涛">Lax</a></li>
+            
+              <li><a href="http://niubie.me/" title="莫言">莫言</a></li>
+            
+              <li><a href="http://noops.me/" title="小米运维部">NoOps</a></li>
+            
+              <li><a href="http://www.searchtech.pro/" title="">云端分布式搜索技术</a></li>
+            
+              <li><a href="http://www.usefulshare.com" title="当当网安全运维">UsefulShare</a></li>
+            
+              <li><a href="http://junqili.com/" title="深入研究puppet">纸飞机</a></li>
+            
+              <li><a href="http://www.chinaxing.org/" title="">ChinaXing</a></li>
+            
+              <li><a href="http://bubbyroom.com/" title="守住每一天">Liuyu's blog</a></li>
+            
+              <li><a href="http://blog.aka-cool.net/" title="">Aka.Why</a></li>
+            
+              <li><a href="http://blog.l8ii.com/" title="刘侨">LairdNote</a></li>
+            
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="booklists" class="nav nav-list">
+          <li class="nav-header">我写的第一本技术书籍</li>
+          <li><a href='http://product.china-pub.com/3769604'><img src='http://images.china-pub.com/ebook3765001-3770000/3769604/shupi.jpg' border='0' alt='网站运维技术与实践'/></a></li>
+        </div>
+      </div>
+    </div> <!-- row -->
+      <footer>
+        <p>&copy; 陈子 2012 
+          with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
+          and <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap</a>
+        </p>
+      </footer>
+    </div> <!-- /container -->
+    
+
+    <!-- JiaThis Button BEGIN -->
+    <script type="text/javascript">var jiathis_config = {data_track_clickback:true};</script>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jiathis_r.js?move=0&amp;uid=1589850" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    <!-- UJian Button BEGIN -->
+    <script type="text/javascript" src="http://v1.ujian.cc/code/ujian.js?type=slide&uid=1589850"></script>
+    <!-- UJian Button END -->
+  </body>
+</html>
+

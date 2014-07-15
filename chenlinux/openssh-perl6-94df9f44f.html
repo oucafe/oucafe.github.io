@@ -1,0 +1,522 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>在 Perl6 脚本中并发执行 ssh 命令</title>
+    
+    <meta name="author" content="陈子">
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!-- Le styles -->
+    <link href="/assets/themes/twitter/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/themes/twitter/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+    <link href="/assets/themes/twitter/css/pygments/default.css" rel="stylesheet" type="text/css">
+    <!-- Le fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+  </head>
+  <body>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="/">三斗室</a>
+          <ul class="nav">
+            
+            
+            
+
+
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/archive.html">归档</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">分类</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/errata.html">《网站运维技术与实践》勘误</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/pages.html">Pages</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/projects.html">学习记录</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">标签</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+
+
+
+
+            <li><a href="http://chenlinux.com/poetry/index.html" />诗文集</a></li>
+            <li><link title="RSS 2.0" type="application/rss+xml" href="http://chenlinux.com/feed.xml" rel="alternate" /><a href="http://chenlinux.com/feed.xml" target="_blank">RSS订阅</a></li>
+          </ul>
+          <ul class="nav pull-right"><li><a href="/about.html">有关我</a></li></ul>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+    <div class="row">
+      <div class="span7">
+        
+<div class="row">
+  <div class="page-header">
+    <h1>在 Perl6 脚本中并发执行 ssh 命令 <small></small></h1>
+    <div class="date"><span>04 May 2014</span></div>
+  
+    <ul class="tag_box pull-right">
+    
+    
+
+
+  
+     
+    	<li><a href="/tags.html#perl-ref">perl <span>67</span></a></li>
+     
+    	<li><a href="/tags.html#perl6-ref">perl6 <span>3</span></a></li>
+     
+    	<li><a href="/tags.html#thread-ref">thread <span>1</span></a></li>
+     
+    	<li><a href="/tags.html#openssh-ref">openssh <span>1</span></a></li>
+    
+  
+
+
+
+    </ul>
+    
+  </div>
+  <div style='background-color: #FFF;'>
+    <p>前几天翻 Perl6 模块清单，发现没有用作 SSH 的。虽说 Perl6 里可以很方便的用 NativeCall 包装 C/C++ 库，但是 libssh2 本身就不支持我的 kerberos5 认证环境，所以还是只能通过调用系统命令的方式来完成。</p>
+
+<h1 id="thread-">Thread 示例</h1>
+
+<p>说起来 Perl6 近年一直在宣传 Promise 啊，Supply 啊并发编程，但是 API 变化太快，2013 年中期 jnthn 演讲里演示的 <code>async</code> 用法，现在就直接报这个函数不存在了，似乎改成 <code>start</code> 了？天知道什么时候又变。所以还是用底层的 Thread 和 Channel 来写。话说其实这还是我第一次写 Thread 呢。</p>
+
+<div class="highlight"><pre><code class="language-perl" data-lang="perl"><span class="k">use</span> <span class="n">v6</span><span class="p">;</span>
+<span class="n">class</span> <span class="n">OpenSSH</span> <span class="p">{</span>
+    <span class="n">has</span> <span class="nv">$</span><span class="err">!</span><span class="nv">user</span> <span class="o">=</span> <span class="s">&#39;root&#39;</span><span class="p">;</span>
+    <span class="n">has</span> <span class="nv">$</span><span class="err">!</span><span class="nv">port</span> <span class="o">=</span> <span class="mi">22</span><span class="p">;</span>
+    <span class="n">has</span> <span class="nv">$</span><span class="err">!</span><span class="nv">ssh</span>  <span class="o">=</span> <span class="s">&quot;ssh -oStrictHostKeyChecking=no -l{$!user} -p{$!port} &quot;</span><span class="p">;</span>
+    <span class="n">multi</span> <span class="n">method</span> <span class="nb">exec</span><span class="p">(</span><span class="nv">$host</span><span class="p">,</span> <span class="nv">$cmd</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">my</span> <span class="nv">$out</span><span class="p">;</span>
+        <span class="k">my</span> <span class="nv">$shell</span> <span class="o">=</span> <span class="nv">$</span><span class="err">!</span><span class="nv">ssh</span> <span class="o">~</span> <span class="nv">$host</span> <span class="o">~</span> <span class="s">&#39; &#39;</span> <span class="o">~</span> <span class="nv">$cmd</span><span class="p">;</span>
+        <span class="n">try</span> <span class="p">{</span> <span class="nv">$out</span> <span class="o">=</span> <span class="n">qqx</span><span class="p">{</span> <span class="nv">$shell</span> <span class="p">}</span><span class="o">.</span><span class="nb">chomp</span> <span class="p">}</span>
+        <span class="n">CATCH</span> <span class="p">{</span> <span class="n">note</span><span class="p">(</span><span class="s">&quot;Failed: $!&quot;</span><span class="p">)</span> <span class="p">};</span>
+        <span class="k">return</span> <span class="nv">$out</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">multi</span> <span class="n">method</span> <span class="nb">exec</span><span class="p">(</span><span class="nv">@hosts</span><span class="p">,</span> <span class="nv">$cmd</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">my</span> <span class="nv">$c</span> <span class="o">=</span> <span class="n">Channel</span><span class="o">.</span><span class="k">new</span><span class="p">;</span>
+        <span class="k">my</span> <span class="nv">@t</span> <span class="o">=</span> <span class="nv">@hosts</span><span class="o">.</span><span class="nb">map</span><span class="p">({</span>
+            <span class="n">Thread</span><span class="o">.</span><span class="n">start</span><span class="p">({</span>
+                <span class="k">my</span> <span class="nv">$r</span> <span class="o">=</span> <span class="nv">$</span><span class="err">.</span><span class="nv">exec</span><span class="p">(</span><span class="nv">$_</span><span class="p">,</span> <span class="nv">$cmd</span><span class="p">);</span>
+                <span class="nv">$c</span><span class="o">.</span><span class="nb">send</span><span class="p">(</span><span class="nv">$r</span><span class="p">);</span>
+            <span class="p">})</span>
+        <span class="p">});</span>
+        <span class="nv">@t</span><span class="o">&gt;&gt;.</span><span class="n">finish</span><span class="p">;</span>
+        <span class="k">return</span> <span class="nv">@hosts</span><span class="o">.</span><span class="nb">map</span><span class="p">:</span> <span class="p">{</span> <span class="nv">$c</span><span class="o">.</span><span class="n">receive</span> <span class="p">};</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">my</span> <span class="nv">$ssh</span> <span class="o">=</span> <span class="n">OpenSSH</span><span class="o">.</span><span class="k">new</span><span class="p">(</span><span class="n">user</span> <span class="o">=&gt;</span> <span class="s">&#39;root&#39;</span><span class="p">);</span>
+<span class="n">say</span> <span class="nv">$ssh</span><span class="o">.</span><span class="nb">exec</span><span class="p">(</span><span class="s">&#39;10.4.1.21&#39;</span><span class="p">,</span> <span class="s">&#39;uptime&#39;</span><span class="p">);</span>
+<span class="k">my</span> <span class="nv">@hosts</span> <span class="o">=</span> <span class="s">&#39;10.4.1.21&#39;</span> <span class="n">xx</span> <span class="mi">5</span><span class="p">;</span>
+<span class="k">my</span> <span class="nv">@ret</span> <span class="o">=</span> <span class="nv">$ssh</span><span class="o">.</span><span class="nb">exec</span><span class="p">(</span><span class="nv">@hosts</span><span class="p">,</span> <span class="s">&#39;sleep 3;echo $$&#39;</span><span class="p">);</span>
+<span class="n">say</span> <span class="nv">@ret</span><span class="o">.</span><span class="n">perl</span><span class="p">;</span></code></pre></div>
+
+<p>很简陋的代码。首先一个是要确认 ssh 不用密码登陆，因为没有写 Expect；其次是没用 ThreadPool，所以并发操作不能太猛，会扭着腰的。</p>
+
+<p>这里演示了几个地方：</p>
+
+<ul>
+  <li>class 的定义和 attr 的定义和<a href="http://doc.perl6.org/language/classtut">用法</a></li>
+  <li>
+    <p>try-catch 的用法</p>
+
+    <p>也可以不写 try，直接 <code>CATCH {}</code> </p>
+  </li>
+  <li>
+    <p>qqx{} 的用法</p>
+
+    <p>这是变动比较大的地方，<code>qqx</code> 后面只能用 <code>{}</code> 不能用其他字符对了。Perl6 提供另外的 <code>shell()</code> 指令，返回 <code>Proc::Status</code> 对象。
+  不过这个对象其实也就是个状态码，不包括标准输出、错误输出什么的。</p>
+  </li>
+  <li>字符串连接符 ~ 的用法</li>
+  <li>multi method 的定义和用法</li>
+  <li><a href="http://doc.perl6.org/type/Method#signature">函数 signature</a> 的定义和用法，可选参数和命名参数的定义和用法见下一小节。</li>
+  <li>
+    <p><code>&gt;&gt;</code> 操作符的用法</p>
+
+    <p>这里其实相当于是 <code>.finish for @t</code>。这个怪怪的操作符据说可以在可能的时候自动线程化数组操作，所以返回顺序不会跟<code>.map</code>一样。</p>
+  </li>
+  <li>
+    <p>xx 操作符的用法</p>
+
+    <p>Perl5 里有 <code>x</code> 操作符，Perl6 里又增加了 <code>xx</code>、 <code>X</code> 和 <code>Z</code> 等操作符。
+  分别是<a href="http://doc.perl6.org/language/operators#infix_xx">字符扩展成数组</a>、<a href="http://doc.perl6.org/language/operators#infix_X">数组扩展成多维数组</a>和<a href="http://doc.perl6.org/language/operators#infix_Z">多数组压缩单个数组</a>(也就是zip操作)。</p>
+  </li>
+  <li>
+    <p>Channel 和 Thread 对象的用法</p>
+
+    <p>在 roast 测试集里，只有 thread 和 lock 的<a href="https://github.com/perl6/roast/blob/master/S17-lowlevel/lock.t">测试用例</a>。
+  semaphore 其实也支持(因为 MoarVM 是基于 libuv 的嘛，libuv 支持它当然也支持)，但是连测试用例都没写……</p>
+  </li>
+</ul>
+
+<p>默认的并发编程会采用 <code>ThreadPoolScheduler</code> 类，稍微看了一下，默认设置的线程数是 16。考虑下一步是仿照该类完善我的小脚本呢，还是重新学习一下 <code>Supply</code> 或者 <code>Promise</code> 看看到底怎么用。</p>
+
+<p>有兴趣用 libssh2 的童鞋，可以学习一下 <a href="https://github.com/jnthn/zavolaj">NativeCall</a> 的用法。</p>
+
+<h1 id="threadpoolscheduler-">ThreadPoolScheduler 示例</h1>
+
+<p>根据 <a href="https://github.com/perl6/specs/blob/master/S17-concurrency.pod">S17-concurrency 文档</a> 的内容，改写了几行脚本，实现了 ThreadPool 的效果：</p>
+
+<div class="highlight"><pre><code class="language-perl" data-lang="perl"><span class="n">multi</span> <span class="n">method</span> <span class="nb">exec</span><span class="p">(</span><span class="nv">@hosts</span><span class="p">,</span> <span class="nv">$cmd</span><span class="p">,</span> <span class="p">:</span><span class="nv">$parallel</span> <span class="o">=</span> <span class="mi">16</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">my</span> <span class="nv">$c</span> <span class="o">=</span> <span class="n">Channel</span><span class="o">.</span><span class="k">new</span><span class="p">;</span>
+        <span class="k">my</span> <span class="nv">$s</span> <span class="o">=</span> <span class="n">ThreadPoolScheduler</span><span class="o">.</span><span class="k">new</span><span class="p">(</span><span class="n">max_threads</span> <span class="o">=&gt;</span> <span class="nv">$parallel</span><span class="p">);</span>
+        <span class="nv">@hosts</span><span class="o">.</span><span class="nb">map</span><span class="p">({</span>
+            <span class="nv">$s</span><span class="o">.</span><span class="n">cue</span><span class="p">({</span>
+                <span class="k">my</span> <span class="nv">$r</span> <span class="o">=</span> <span class="nv">$</span><span class="err">.</span><span class="nv">exec</span><span class="p">(</span><span class="nv">$_</span><span class="p">,</span> <span class="nv">$cmd</span><span class="p">);</span>
+                <span class="nv">$c</span><span class="o">.</span><span class="nb">send</span><span class="p">(</span><span class="nv">$r</span><span class="p">);</span>
+            <span class="p">})</span>
+        <span class="p">});</span>
+        <span class="k">return</span> <span class="nv">@hosts</span><span class="o">.</span><span class="nb">map</span><span class="p">:</span> <span class="p">{</span> <span class="nv">$c</span><span class="o">.</span><span class="n">receive</span> <span class="p">};</span>
+    <span class="p">}</span></code></pre></div>
+
+<p>这里把默认并发值改成了 16，跟 Rakudo 保持一致。如果不需要可调的话，这里其实可以直接写成 <code>$*SCHEDULER.cue({})</code>。</p>
+
+<p>然后调用方法也对应修改一下，考虑到辨识度，把并发值改成了命名参数。调用方法如下：</p>
+
+<div class="highlight"><pre><code class="language-perl" data-lang="perl"><span class="k">my</span> <span class="nv">@hosts</span> <span class="o">=</span> <span class="n">slurp</span><span class="p">(</span><span class="s">&#39;iplist.txt&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lines</span><span class="p">;</span>
+<span class="k">my</span> <span class="nv">@ret</span> <span class="o">=</span> <span class="nv">$ssh</span><span class="o">.</span><span class="nb">exec</span><span class="p">(</span><span class="nv">@hosts</span><span class="p">,</span> <span class="s">&#39;sleep 3;echo $$&#39;</span><span class="p">,</span> <span class="p">:</span><span class="n">parallel</span><span class="p">(</span><span class="mi">5</span><span class="p">));</span></code></pre></div>
+
+<p>运行可以看到，虽然 iplist.txt 里放了 40 个ip，但是并发的 ssh 只有 5 个。</p>
+
+<h1 id="promise-">Promise 示例</h1>
+
+<p>继续，S17 内容下一节是 Promise，之前博客里已经提过几次 Perl5 的 <a href="https://metacpan.org/pod/Promises">Promises 模块</a> 或者类似的东西(比如 <a href="/2014/01/22/explain-mojo-ioloop-delay-testing">Mojo::IOLoop::Delay</a> )，包括 JavaScript 等也有一样的名字。</p>
+
+<p>不过 Perl5 的 Promises 思路参照的是 Scala，语法则偏向 nodejs 和 golang(都用一个叫 <code>defer</code> 的指令来创建 Promises 对象)，写起来跟 Perl6 的原生 Promise 差距较大。</p>
+
+<p>考虑 ssh 这个场景可能不太用的上 Promise 的 <code>.in</code>、<code>.then</code>、<code>.anyof</code> 之类的流程控制(尤其 <code>.in</code> 这个还不一定能用，因为 Promise 底层也是用的 <code>$*SCHEDULER.cue()</code>，而这个在 MoarVM 上目前还不支持 :in/:at/:every 等参数)，就直接展示最简单的并发了：</p>
+
+<div class="highlight"><pre><code class="language-perl" data-lang="perl"><span class="n">multi</span> <span class="n">method</span> <span class="nb">exec</span><span class="p">(</span><span class="nv">@hosts</span><span class="p">,</span> <span class="nv">$cmd</span><span class="p">,</span> <span class="p">:</span><span class="nv">$parallel</span> <span class="o">=</span> <span class="mi">16</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nv">$</span><span class="err">*</span><span class="nv">SCHEDULER</span> <span class="o">=</span> <span class="n">ThreadPoolScheduler</span><span class="o">.</span><span class="k">new</span><span class="p">(</span><span class="n">max_threads</span> <span class="o">=&gt;</span> <span class="nv">$parallel</span><span class="p">);</span>
+        <span class="n">await</span> <span class="nv">@hosts</span><span class="o">.</span><span class="nb">map</span><span class="p">:</span> <span class="p">{</span>
+            <span class="n">start</span> <span class="p">{</span>
+                <span class="nv">$</span><span class="err">.</span><span class="nv">exec</span><span class="p">(</span><span class="nv">$_</span><span class="p">,</span> <span class="nv">$cmd</span><span class="p">);</span>
+            <span class="p">};</span>
+        <span class="p">};</span>
+    <span class="p">}</span></code></pre></div>
+
+<p>简单来说，就是每个 <code>start {&amp;c}</code> 创建一个 Promise 对象，根据 &amp;c 的返回值自动作 <code>$p.keep($result)</code> 或  <code>$p.break(Exception)</code>。然后 <code>await(*@p)</code> 回收全部 Promise 的结果。</p>
+
+<p>这里直接修改了 <code>$*SCHEDULER</code> ，这是一个全局变量，即当前进程的调度方式。Promise 类默认就采用这个变量。如果想跟上一小节一样使用 <code>$s</code>，那这里就不能用 <code>start {}</code> 而是要用 <code>Promise.start({}, $s)</code>。显然写起来不怎么漂亮。</p>
+
+<h1 id="supply-">Supply 示例</h1>
+
+<p>Supply 是响应式编程，类似 Java 里的 Reactive 概念。应该适合的是一件事情多个进程重复做。场景不太对，二来目前 S17 也不全，就不写了。</p>
+
+
+    <hr>
+    <div class="pagination">
+      <ul>
+      
+        <li class="prev"><a href="/2014/04/24/yaml-dump-pm6" title="Perl6 的 YAML::Dumper 模块">&larr; Previous</a></li>
+      
+        <li><a href="/archive.html">Archive</a></li>
+      
+        <li class="next"><a href="/2014/05/10/graphite-grafana-on-nagios" title="用 Graphite 存储 Nagios 数据">Next &rarr;</a></li>
+      
+      </ul>
+    </div>
+    <hr>
+    
+
+
+  <!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" id="UYScript" src="http://v1.uyan.cc/js/iframe.js?UYUserId=1589850" async=""></script>
+<!-- UY END -->
+
+
+
+
+
+
+  </div>
+</div>
+  
+
+
+      </div>
+      <div class="span4">
+          
+          <div class="well sidebar-nav">
+             <ul id="relate_blog" class="nav nav-list">
+               <li class="nav-header">最近文章</li>
+               
+                 <li><a href="/2014/07/08/rex-test-spec">Rex::Test::Spec 模块</a></li>
+               
+                 <li><a href="/2014/06/13/serverspec-intro">Serverspec 工具介绍</a></li>
+               
+                 <li><a href="/2014/06/13/anyevent-redis-for-dns-check">用 Redis 做分布式 DNS/HTTP 检测汇总系统</a></li>
+               
+                 <li><a href="/2014/06/12/rex-usage">Rex 简明手册</a></li>
+               
+                 <li><a href="/2014/06/12/perldancer-tips">PerlDancer 框架笔记</a></li>
+               
+                 <li><a href="/2014/06/12/perl-tips">Perl 编程的个人惯例</a></li>
+               
+                 <li><a href="/2014/06/11/nginx-access-log-to-elasticsearch">用 LEK 组合处理 Nginx 访问日志</a></li>
+               
+                 <li><a href="/2014/06/08/perl-script-for-avbot">配合 avbot 的 HTTP 接口做自动应答的 Perl 脚本</a></li>
+               
+                 <li><a href="/2014/06/04/skyline-port-to-perl">用 Perl5 改写 skyline 异常检测算法</a></li>
+               
+            </ul>
+          </div>
+        
+        <div class="well sidebar-nav">
+          <iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=1&ptype=1&speed=0&skin=2&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=1035836154&verifier=a26926d5&dpc=1"></iframe>
+        </div>
+        <div class="well sidebar-nav">
+            <div id="uyan_list_time_frame"></div>
+            <script type="text/javascript" id="UYScriptTime" src="http://v1.uyan.cc/js/iframe_time_list.js?UYUserId=1589850&rankType=time" async=""></script>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(英文)</li>
+            
+              <li><a href="http://codeascraft.com/" title="Etsy 运维团队博客">Code as Craft</a></li>
+            
+              <li><a href="http://devopsanywhere.blogspot.jp/" title="">devopsanywhere</a></li>
+            
+              <li><a href="http://www.jedi.be/blog/" title="">Jong En Dynamische Informatica</a></li>
+            
+              <li><a href="http://www.planetdevops.net/" title="">planetdevops</a></li>
+            
+              <li><a href="http://www.kitchensoap.com/" title="《网站运维》作者，Etsy 运维">Kitchen Soap</a></li>
+            
+              <li><a href="http://blog.johngoulah.com" title="Musings of linux, open source, cloud computing and systems">John Goulah</a></li>
+            
+              <li><a href="http://serverfault.com/" title="stackexchange下属的系统工程师问答网站">serverfault</a></li>
+            
+              <li><a href="http://www.thegeekstuff.com/" title="各种超酷Linux命令用法">TheGeekStuff</a></li>
+            
+              <li><a href="http://neilb.org/" title="The good,the bad,and the beautiful">neilb</a></li>
+            
+              <li><a href="http://www.reddit.com/r/perl/" title="">reddit perl 频道</a></li>
+            
+              <li><a href="http://jpetazzo.github.io/" title="">~jpetazzo</a></li>
+            
+              <li><a href="http://www.perfplanet.com/" title="News and views from the web performance blogosphere">Performance Planet</a></li>
+            
+              <li><a href="http://cuddletech.com/blog/" title="Use UNIX or die">Cuddle Tech</a></li>
+            
+              <li><a href="http://showmetheco.de/" title="Viacheslav Tykhanovskyi(PocketIO/Text::Haml)">No time to wait</a></li>
+            
+              <li><a href="http://blog.dataloop.io/" title="A new SaaS monitoring tool for DevOps & Operations">Dataloop.IO</a></li>
+            
+              <li><a href="http://www.ducea.com/" title="">MDLog:/sysadmin</a></li>
+            
+              <li><a href="http://planeteria.org/perl6/" title="Perl6 文集">Planet Perl 6</a></li>
+            
+              <li><a href="http://www.metaforsoftware.com/blog/" title="">metafor</a></li>
+            
+              <li><a href="http://blog.kablamo.org/" title="Eric Johnson，一个游走在伦敦和北京的 Perler">kablamo</a></li>
+            
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(中文)</li>
+            
+              <li><a href="http://www.nginxs.com/" title="">eric</a></li>
+            
+              <li><a href="http://www.hellodb.net/" title="Ali DBA 张瑞">Hello DBA</a></li>
+            
+              <li><a href="http://blog.nosqlfan.com/" title="not only sql信息集散地">NoSQLfan</a></li>
+            
+              <li><a href="http://ourmysql.com/" title="">OurMySQL</a></li>
+            
+              <li><a href="http://zauc.wordpress.com/" title="">Timo</a></li>
+            
+              <li><a href="http://www.liurongxing.com/" title="">刘荣星</a></li>
+            
+              <li><a href="http://www.cnadn.net/" title="F5工程师">应用交付学习之路</a></li>
+            
+              <li><a href="http://scmbob.org/" title="杭州NSN工程师，shell高人~">扛一肩记忆</a></li>
+            
+              <li><a href="http://www.php-oa.com/" title="音悦台技术经理">扶凯</a></li>
+            
+              <li><a href="http://www.lark.net.cn/" title="王剑">lark's cloud</a></li>
+            
+              <li><a href="http://log.heartoutside.com/" title="HeartOutSide">HeartOutside</a></li>
+            
+              <li><a href="http://blog.liulantao.com/" title="刘兰涛">Lax</a></li>
+            
+              <li><a href="http://niubie.me/" title="莫言">莫言</a></li>
+            
+              <li><a href="http://noops.me/" title="小米运维部">NoOps</a></li>
+            
+              <li><a href="http://www.searchtech.pro/" title="">云端分布式搜索技术</a></li>
+            
+              <li><a href="http://www.usefulshare.com" title="当当网安全运维">UsefulShare</a></li>
+            
+              <li><a href="http://junqili.com/" title="深入研究puppet">纸飞机</a></li>
+            
+              <li><a href="http://www.chinaxing.org/" title="">ChinaXing</a></li>
+            
+              <li><a href="http://bubbyroom.com/" title="守住每一天">Liuyu's blog</a></li>
+            
+              <li><a href="http://blog.aka-cool.net/" title="">Aka.Why</a></li>
+            
+              <li><a href="http://blog.l8ii.com/" title="刘侨">LairdNote</a></li>
+            
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="booklists" class="nav nav-list">
+          <li class="nav-header">我写的第一本技术书籍</li>
+          <li><a href='http://product.china-pub.com/3769604'><img src='http://images.china-pub.com/ebook3765001-3770000/3769604/shupi.jpg' border='0' alt='网站运维技术与实践'/></a></li>
+        </div>
+      </div>
+    </div> <!-- row -->
+      <footer>
+        <p>&copy; 陈子 2012 
+          with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
+          and <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap</a>
+        </p>
+      </footer>
+    </div> <!-- /container -->
+    
+
+    <!-- JiaThis Button BEGIN -->
+    <script type="text/javascript">var jiathis_config = {data_track_clickback:true};</script>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jiathis_r.js?move=0&amp;uid=1589850" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    <!-- UJian Button BEGIN -->
+    <script type="text/javascript" src="http://v1.ujian.cc/code/ujian.js?type=slide&uid=1589850"></script>
+    <!-- UJian Button END -->
+  </body>
+</html>
+

@@ -1,0 +1,621 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>PerlDancer 框架笔记</title>
+    
+    <meta name="author" content="陈子">
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!-- Le styles -->
+    <link href="/assets/themes/twitter/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/themes/twitter/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+    <link href="/assets/themes/twitter/css/pygments/default.css" rel="stylesheet" type="text/css">
+    <!-- Le fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+  </head>
+  <body>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="/">三斗室</a>
+          <ul class="nav">
+            
+            
+            
+
+
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/archive.html">归档</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">分类</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/errata.html">《网站运维技术与实践》勘误</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/pages.html">Pages</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/projects.html">学习记录</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">标签</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+
+
+
+
+            <li><a href="http://chenlinux.com/poetry/index.html" />诗文集</a></li>
+            <li><link title="RSS 2.0" type="application/rss+xml" href="http://chenlinux.com/feed.xml" rel="alternate" /><a href="http://chenlinux.com/feed.xml" target="_blank">RSS订阅</a></li>
+          </ul>
+          <ul class="nav pull-right"><li><a href="/about.html">有关我</a></li></ul>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+    <div class="row">
+      <div class="span7">
+        
+<div class="row">
+  <div class="page-header">
+    <h1>PerlDancer 框架笔记 <small></small></h1>
+    <div class="date"><span>12 June 2014</span></div>
+  
+    <ul class="tag_box pull-right">
+    
+    
+
+
+  
+     
+    	<li><a href="/tags.html#dancer-ref">dancer <span>3</span></a></li>
+    
+  
+
+
+
+    </ul>
+    
+  </div>
+  <div style='background-color: #FFF;'>
+    <p>Dancer 是 Perl 的 web 开发框架，在 metacpan 上有 100 多个 like。其语法结构都起源自 Ruby 的 sinatra 框架，sinatra 曾经在自己官网上悬挂“perldancer is good”标语以示对 perldancer 的支持。Dancer 官网见： <a href="http://perldancer.org/">http://perldancer.org/</a> 本文系本人在部门 Wiki 上稍微写的几行介绍性质的笔记。</p>
+
+<h2 id="section">简单示例</h2>
+
+<p>Dancer 作为微框架，可以直接单文件快速运行简单的 web 功能。示例如下：</p>
+
+<div class="highlight"><pre><code class="language-perl" data-lang="perl"><span class="k">use</span> <span class="n">Dancer</span><span class="p">;</span>
+    <span class="n">get</span> <span class="s">&#39;/&#39;</span> <span class="o">=&gt;</span> <span class="k">sub </span><span class="p">{</span>
+        <span class="k">return</span> <span class="s">&quot;hello world&quot;</span><span class="p">;</span>
+    <span class="p">};</span>
+    <span class="n">dance</span><span class="p">;</span></code></pre></div>
+
+<p>然后直接通过 <code>perl test.pl</code> 命令既可以在 localhost:3000 运行起来一个 hello world 页面了。</p>
+
+<h2 id="section-1">目录结构</h2>
+
+<p>完整的 Dancer 应用，可以通过 <code>dancer -a MyApp</code> 命令创建，目录结构如下：</p>
+
+<pre><code>MyApp/
+├── bin
+│   └── app.pl                    # 程序运行入口，可以直接通过./app.pl运行，也可以通过plackup -s Starman app.pl来切换其他高性能服务器
+├── config.yml                     # 主配置文件
+├── environments
+│   ├── development.yml
+│   └── production.yml
+├── lib
+│   └── MyApp.pm                  # Perl代码入口，route、controller、ORM 等都在 lib 下
+├── Makefile.PL
+├── MANIFEST
+├── MANIFEST.SKIP
+├── public                         # public/ 下的文件会直接作为静态文件发布，相当于 DocumentRoot
+│   ├── 404.html
+│   ├── 500.html
+│   ├── css
+│   │   ├── error.css
+│   │   └── style.css
+│   ├── dispatch.cgi
+│   ├── dispatch.fcgi
+│   ├── favicon.ico
+│   ├── images
+│   │   ├── perldancer-bg.jpg
+│   │   └── perldancer.jpg
+│   └── javascripts
+│       └── jquery.js
+├── t
+│   ├── 001_base.t
+│   └── 002_index_route.t
+└── views                           # views/ 下的文件是页面模板，在 lib 里通过 template('index') 方式调用
+    ├── index.tt
+    └── layouts
+        └── main.tt                 # layouts 是页面模板的底层模板，主底层模板可以在 config.yml 里指定
+</code></pre>
+
+<h2 id="section-2">常用插件</h2>
+
+<p>目前用 Dancer 写的 CdnManage 平台，用到的插件包括：</p>
+
+<ul>
+  <li>Dancer::Template::Xslate</li>
+</ul>
+
+<p>采用 Text::Xslate 作为模板引擎。xslate 引擎是用 XS 写的类 Perl6 语法模板引擎，性能很好。语法示例如下：</p>
+
+<pre><code>&lt;: $object.accessor :&gt;
+&lt;: $str :&gt;
+&lt;: $array.0 :&gt;
+&lt;: $hash.key :&gt;
+: for $arrayref -&gt; $item {
+    index: &lt;: $~item :&gt; value: &lt;: $item :&gt;
+: }
+: if ( $var == nil ) {
+: } else if ( $val == "text" ) {
+: } else {
+:     while $dbh.fetch() -&gt; $item {
+:     }
+: }
+</code></pre>
+
+<p>注意，CdnManage 中，因为是从 TT2 模板迁移到 xslate 里的，所以单独配置了 config.yml，没有用 : 号而是沿用了 % 号。</p>
+
+<ul>
+  <li>Dancer::Session::YAML</li>
+</ul>
+
+<p>采用 YAML 存储 session，这个作为内部应用足够了，升级的话应该用 mysql、mongo、elasticsearch之类的存储，都有现成插件。</p>
+
+<ul>
+  <li>Plack::Middleware::Deflater</li>
+  <li>Plack::Middleware::ETag</li>
+</ul>
+
+<p>上面两个作为给 public/ 下文件加缓存和压缩的优化。在 config.yml 里添加如下配置即可使用：</p>
+
+<div class="highlight"><pre><code class="language-yaml" data-lang="yaml"><span class="l-Scalar-Plain">plack_middlewares</span><span class="p-Indicator">:</span>
+  <span class="p-Indicator">-</span>
+    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">Plack::Middleware::Deflater</span>
+    <span class="p-Indicator">-</span> <span class="l-Scalar-Plain">Plack::Middleware::ETag</span></code></pre></div>
+
+<ul>
+  <li>Dancer::Plugin::Auth::Extensible</li>
+</ul>
+
+<p>给 route 加认证功能，有 require_role 和 require_user 两种形式，示例如下：</p>
+
+<div class="highlight"><pre><code class="language-perl" data-lang="perl"><span class="n">get</span> <span class="s">&#39;/admin&#39;</span> <span class="o">=&gt;</span> <span class="n">require_user</span> <span class="s">&#39;admin&#39;</span> <span class="o">=&gt;</span> <span class="k">sub </span><span class="p">{};</span>
+    <span class="n">post</span> <span class="s">&#39;/purge&#39;</span> <span class="o">=&gt;</span> <span class="n">require_role</span> <span class="sx">qr/^purge_\w+/</span> <span class="o">=&gt;</span> <span class="k">sub </span><span class="p">{};</span></code></pre></div>
+
+<ul>
+  <li>Dancer::Plugin::Email</li>
+</ul>
+
+<p>发邮件</p>
+
+<ul>
+  <li>Dancer::Plugin::GearmanXS</li>
+</ul>
+
+<p>将需要较长时间运行完的任务通过 gearman 分发到其他后台任务脚本上去完成。</p>
+
+<ul>
+  <li>Dancer::Plugin::Datebase</li>
+</ul>
+
+<p>数据库插件，可以直接按照 DBI 操作，也提供了简单的 quick_select/insert 等指令。示例如下：</p>
+
+<div class="highlight"><pre><code class="language-perl" data-lang="perl"><span class="n">get</span> <span class="s">&#39;/users/:id&#39;</span> <span class="o">=&gt;</span> <span class="k">sub </span><span class="p">{</span>
+        <span class="n">template</span> <span class="s">&#39;display_user&#39;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="n">person</span> <span class="o">=&gt;</span> <span class="n">database</span><span class="o">-&gt;</span><span class="n">quick_select</span><span class="p">(</span><span class="s">&#39;users&#39;</span><span class="p">,</span> <span class="p">{</span> <span class="n">id</span> <span class="o">=&gt;</span> <span class="n">params</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">id</span><span class="p">}</span> <span class="p">}),</span>
+        <span class="p">};</span>
+    <span class="p">};</span></code></pre></div>
+
+<p>如果在 config.yml 定义了多个库，则通过 <code>database('name')</code> 的方式来调用。</p>
+
+<div class="highlight"><pre><code class="language-yaml" data-lang="yaml"><span class="l-Scalar-Plain">Database</span><span class="p-Indicator">:</span>
+    <span class="l-Scalar-Plain">connections</span><span class="p-Indicator">:</span>
+      <span class="l-Scalar-Plain">puppet</span><span class="p-Indicator">:</span>
+        <span class="l-Scalar-Plain">driver</span><span class="p-Indicator">:</span> <span class="s">&quot;SQLite&quot;</span>
+        <span class="l-Scalar-Plain">database</span><span class="p-Indicator">:</span> <span class="s">&quot;/etc/puppet/webui/node_info.db&quot;</span>
+      <span class="l-Scalar-Plain">cdnmanage</span><span class="p-Indicator">:</span>
+        <span class="l-Scalar-Plain">driver</span><span class="p-Indicator">:</span> <span class="s">&quot;mysql&quot;</span>
+        <span class="l-Scalar-Plain">database</span><span class="p-Indicator">:</span> <span class="s">&quot;cdnmanage&quot;</span>
+        <span class="l-Scalar-Plain">host</span><span class="p-Indicator">:</span> <span class="s">&quot;127.0.0.1&quot;</span>
+        <span class="l-Scalar-Plain">port</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">3306</span>
+        <span class="l-Scalar-Plain">username</span><span class="p-Indicator">:</span> <span class="s">&quot;user&quot;</span>
+        <span class="l-Scalar-Plain">password</span><span class="p-Indicator">:</span> <span class="s">&quot;pass&quot;</span>
+        <span class="l-Scalar-Plain">connection_check_threshold</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">10</span>
+        <span class="l-Scalar-Plain">on_connect_do</span><span class="p-Indicator">:</span> <span class="p-Indicator">[</span><span class="s">&quot;SET</span><span class="nv"> </span><span class="s">NAMES</span><span class="nv"> </span><span class="s">&#39;utf8&#39;&quot;</span><span class="p-Indicator">,</span> <span class="s">&quot;SET</span><span class="nv"> </span><span class="s">CHARACTER</span><span class="nv"> </span><span class="s">SET</span><span class="nv"> </span><span class="s">&#39;utf8&#39;&quot;</span> <span class="p-Indicator">]</span></code></pre></div>
+
+<p>更完善的 ORM 使用，见 Dancer::Plugin::DBIC 插件，他使用的是 DBIx::Class 框架做 ORM，示例如下：</p>
+
+<div class="highlight"><pre><code class="language-perl" data-lang="perl"><span class="n">get</span> <span class="s">&#39;/users/:user_id&#39;</span> <span class="o">=&gt;</span> <span class="k">sub </span><span class="p">{</span>
+        <span class="k">my</span> <span class="nv">$user</span> <span class="o">=</span> <span class="n">schema</span><span class="p">(</span><span class="s">&#39;default&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">resultset</span><span class="p">(</span><span class="s">&#39;User&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">find</span><span class="p">(</span><span class="n">param</span> <span class="s">&#39;user_id&#39;</span><span class="p">);</span>
+        <span class="c1"># 如果只有一个默认的schema在config.yml里那么上面这行可以简写成下行</span>
+        <span class="nv">$user</span> <span class="o">=</span> <span class="n">rset</span><span class="p">(</span><span class="s">&#39;User&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">find</span><span class="p">(</span><span class="n">param</span> <span class="s">&#39;user_id&#39;</span><span class="p">);</span>
+        <span class="n">template</span> <span class="n">user_profile</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="n">user</span> <span class="o">=&gt;</span> <span class="nv">$user</span>
+        <span class="p">};</span>
+    <span class="p">};</span></code></pre></div>
+
+<ul>
+  <li>Dancer::Plugin::ElasticSearch</li>
+</ul>
+
+<p>elasticsearch 插件，类似 Dancer::Plugin::Database；所以同理，也有更偏 ORM 一点的 Dancer::Plugin::ElasticModel 插件。</p>
+
+<ul>
+  <li>Dancer::Plugin::Deferred</li>
+</ul>
+
+<p>页面消息提示插件。使用示例：</p>
+
+<div class="highlight"><pre><code class="language-perl" data-lang="perl"><span class="n">hook</span> <span class="n">before</span> <span class="o">=&gt;</span> <span class="k">sub </span><span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span>    <span class="n">request</span><span class="o">-&gt;</span><span class="n">uri</span> <span class="o">=~</span> <span class="n">m</span><span class="c1">#^/puppetdb/#</span>
+            <span class="ow">and</span> <span class="n">request</span><span class="o">-&gt;</span><span class="n">uri</span> <span class="o">!~</span> <span class="n">m</span><span class="c1">#^/puppetdb/api/#</span>
+            <span class="ow">and</span> <span class="o">!</span><span class="n">user_has_role</span><span class="p">(</span><span class="s">&#39;SOM&#39;</span><span class="p">)</span> <span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">deferred</span> <span class="n">error</span> <span class="o">=&gt;</span> <span class="s">&#39;no permission&#39;</span><span class="p">;</span>
+            <span class="n">redirect</span> <span class="s">&#39;/&#39;</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">};</span></code></pre></div>
+
+<p>然后在底层模板layouts/main.tt 中：</p>
+
+<pre><code>%% if $deferred.error {
+  &lt;div class="alert alert-success"&gt; [% $deferred.error %] &lt;/div&gt;
+%% }
+</code></pre>
+
+<ul>
+  <li>Dancer::Plugin::Ajax</li>
+</ul>
+
+<p>扩展默认的 get/post/delete/put 指令，提供 ajax 指令。</p>
+
+<ul>
+  <li>Dancer::Plugin::SimpleCRUD</li>
+</ul>
+
+<p>提供简便的数据库 CRUD 操作表单。目前 Puppet 的 SQLite 操作实例如下：</p>
+
+<div class="highlight"><pre><code class="language-perl" data-lang="perl"><span class="n">simple_crud</span><span class="p">(</span>
+    <span class="n">db_connection_name</span> <span class="o">=&gt;</span> <span class="s">&#39;puppet&#39;</span><span class="p">,</span>
+    <span class="n">db_table</span>           <span class="o">=&gt;</span> <span class="s">&#39;node_info&#39;</span><span class="p">,</span>
+    <span class="n">key_column</span>         <span class="o">=&gt;</span> <span class="s">&#39;id&#39;</span><span class="p">,</span>
+    <span class="n">prefix</span>             <span class="o">=&gt;</span> <span class="s">&#39;node_info&#39;</span><span class="p">,</span>
+    <span class="n">record_title</span>       <span class="o">=&gt;</span> <span class="s">&#39;Puppet Node&#39;</span><span class="p">,</span>
+    <span class="n">deleteable</span>         <span class="o">=&gt;</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="n">paginate</span>           <span class="o">=&gt;</span> <span class="mi">50</span><span class="p">,</span>
+    <span class="n">validation</span>         <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="n">classes</span>     <span class="o">=&gt;</span> <span class="s">&#39;/^(\w,?)+$/&#39;</span><span class="p">,</span>
+        <span class="n">role</span>        <span class="o">=&gt;</span> <span class="s">&#39;/^\w+$/&#39;</span><span class="p">,</span>
+        <span class="n">environment</span> <span class="o">=&gt;</span> <span class="s">&#39;/^\w+$/&#39;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="n">message</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="n">classes</span> <span class="o">=&gt;</span> <span class="s">&#39;enter like &quot;puppetd,repos&quot;&#39;</span><span class="p">,</span>
+        <span class="n">role</span>    <span class="o">=&gt;</span> <span class="s">&#39;an english word only&#39;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="n">display_columns</span> <span class="o">=&gt;</span> <span class="p">[</span><span class="sx">qw(node_fqdn environment role)</span><span class="p">],</span>
+    <span class="n">custom_columns</span>  <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="n">include_classes</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="n">raw_column</span> <span class="o">=&gt;</span> <span class="s">&#39;classes&#39;</span><span class="p">,</span>
+            <span class="n">transform</span>  <span class="o">=&gt;</span> <span class="k">sub </span><span class="p">{</span>
+                <span class="k">my</span> <span class="nv">@classes</span> <span class="o">=</span> <span class="nb">split</span><span class="p">(</span><span class="sr"> /,/</span><span class="p">,</span> <span class="nb">shift</span> <span class="p">);</span>
+                <span class="k">my</span> <span class="nv">$self</span>    <span class="o">=</span> <span class="nb">shift</span><span class="p">;</span>
+                <span class="k">my</span> <span class="nv">$role</span>    <span class="o">=</span> <span class="nv">$self</span><span class="o">-&gt;</span><span class="p">{</span><span class="s">&#39;role&#39;</span><span class="p">};</span>
+                <span class="k">my</span> <span class="nv">$env</span>     <span class="o">=</span> <span class="nv">$self</span><span class="o">-&gt;</span><span class="p">{</span><span class="s">&#39;environment&#39;</span><span class="p">};</span>
+                <span class="k">my</span> <span class="nv">@lines</span><span class="p">;</span>
+                <span class="nb">push</span> <span class="nv">@lines</span><span class="p">,</span> <span class="s">&quot;&lt;a href=&#39;/puppetdb/$env/$_/$role/view&#39;&gt;$_&lt;/a&gt;&quot;</span>
+                  <span class="k">for</span> <span class="nv">@classes</span><span class="p">;</span>
+                <span class="k">return</span> <span class="nb">join</span><span class="p">(</span> <span class="s">&quot; / &quot;</span><span class="p">,</span> <span class="nv">@lines</span> <span class="p">);</span>
+            <span class="p">},</span>
+        <span class="p">},</span>
+    <span class="p">},</span>
+  <span class="p">);</span></code></pre></div>
+
+
+    <hr>
+    <div class="pagination">
+      <ul>
+      
+        <li class="prev"><a href="/2014/06/12/perl-tips" title="Perl 编程的个人惯例">&larr; Previous</a></li>
+      
+        <li><a href="/archive.html">Archive</a></li>
+      
+        <li class="next"><a href="/2014/06/12/rex-usage" title="Rex 简明手册">Next &rarr;</a></li>
+      
+      </ul>
+    </div>
+    <hr>
+    
+
+
+  <!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" id="UYScript" src="http://v1.uyan.cc/js/iframe.js?UYUserId=1589850" async=""></script>
+<!-- UY END -->
+
+
+
+
+
+
+  </div>
+</div>
+  
+
+
+      </div>
+      <div class="span4">
+          
+          <div class="well sidebar-nav">
+             <ul id="relate_blog" class="nav nav-list">
+               <li class="nav-header">最近文章</li>
+               
+                 <li><a href="/2014/07/08/rex-test-spec">Rex::Test::Spec 模块</a></li>
+               
+                 <li><a href="/2014/06/13/serverspec-intro">Serverspec 工具介绍</a></li>
+               
+                 <li><a href="/2014/06/13/anyevent-redis-for-dns-check">用 Redis 做分布式 DNS/HTTP 检测汇总系统</a></li>
+               
+                 <li><a href="/2014/06/12/rex-usage">Rex 简明手册</a></li>
+               
+                 <li><a href="/2014/06/12/perl-tips">Perl 编程的个人惯例</a></li>
+               
+                 <li><a href="/2014/06/11/nginx-access-log-to-elasticsearch">用 LEK 组合处理 Nginx 访问日志</a></li>
+               
+                 <li><a href="/2014/06/08/perl-script-for-avbot">配合 avbot 的 HTTP 接口做自动应答的 Perl 脚本</a></li>
+               
+                 <li><a href="/2014/06/04/skyline-port-to-perl">用 Perl5 改写 skyline 异常检测算法</a></li>
+               
+                 <li><a href="/2014/06/04/record-webqq-logs-by-avbot">用 avbot 机器人记录 QQ 群聊天记录</a></li>
+               
+            </ul>
+          </div>
+        
+        <div class="well sidebar-nav">
+          <iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=1&ptype=1&speed=0&skin=2&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=1035836154&verifier=a26926d5&dpc=1"></iframe>
+        </div>
+        <div class="well sidebar-nav">
+            <div id="uyan_list_time_frame"></div>
+            <script type="text/javascript" id="UYScriptTime" src="http://v1.uyan.cc/js/iframe_time_list.js?UYUserId=1589850&rankType=time" async=""></script>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(英文)</li>
+            
+              <li><a href="http://codeascraft.com/" title="Etsy 运维团队博客">Code as Craft</a></li>
+            
+              <li><a href="http://devopsanywhere.blogspot.jp/" title="">devopsanywhere</a></li>
+            
+              <li><a href="http://www.jedi.be/blog/" title="">Jong En Dynamische Informatica</a></li>
+            
+              <li><a href="http://www.planetdevops.net/" title="">planetdevops</a></li>
+            
+              <li><a href="http://www.kitchensoap.com/" title="《网站运维》作者，Etsy 运维">Kitchen Soap</a></li>
+            
+              <li><a href="http://blog.johngoulah.com" title="Musings of linux, open source, cloud computing and systems">John Goulah</a></li>
+            
+              <li><a href="http://serverfault.com/" title="stackexchange下属的系统工程师问答网站">serverfault</a></li>
+            
+              <li><a href="http://www.thegeekstuff.com/" title="各种超酷Linux命令用法">TheGeekStuff</a></li>
+            
+              <li><a href="http://neilb.org/" title="The good,the bad,and the beautiful">neilb</a></li>
+            
+              <li><a href="http://www.reddit.com/r/perl/" title="">reddit perl 频道</a></li>
+            
+              <li><a href="http://jpetazzo.github.io/" title="">~jpetazzo</a></li>
+            
+              <li><a href="http://www.perfplanet.com/" title="News and views from the web performance blogosphere">Performance Planet</a></li>
+            
+              <li><a href="http://cuddletech.com/blog/" title="Use UNIX or die">Cuddle Tech</a></li>
+            
+              <li><a href="http://showmetheco.de/" title="Viacheslav Tykhanovskyi(PocketIO/Text::Haml)">No time to wait</a></li>
+            
+              <li><a href="http://blog.dataloop.io/" title="A new SaaS monitoring tool for DevOps & Operations">Dataloop.IO</a></li>
+            
+              <li><a href="http://www.ducea.com/" title="">MDLog:/sysadmin</a></li>
+            
+              <li><a href="http://planeteria.org/perl6/" title="Perl6 文集">Planet Perl 6</a></li>
+            
+              <li><a href="http://www.metaforsoftware.com/blog/" title="">metafor</a></li>
+            
+              <li><a href="http://blog.kablamo.org/" title="Eric Johnson，一个游走在伦敦和北京的 Perler">kablamo</a></li>
+            
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(中文)</li>
+            
+              <li><a href="http://www.nginxs.com/" title="">eric</a></li>
+            
+              <li><a href="http://www.hellodb.net/" title="Ali DBA 张瑞">Hello DBA</a></li>
+            
+              <li><a href="http://blog.nosqlfan.com/" title="not only sql信息集散地">NoSQLfan</a></li>
+            
+              <li><a href="http://ourmysql.com/" title="">OurMySQL</a></li>
+            
+              <li><a href="http://zauc.wordpress.com/" title="">Timo</a></li>
+            
+              <li><a href="http://www.liurongxing.com/" title="">刘荣星</a></li>
+            
+              <li><a href="http://www.cnadn.net/" title="F5工程师">应用交付学习之路</a></li>
+            
+              <li><a href="http://scmbob.org/" title="杭州NSN工程师，shell高人~">扛一肩记忆</a></li>
+            
+              <li><a href="http://www.php-oa.com/" title="音悦台技术经理">扶凯</a></li>
+            
+              <li><a href="http://www.lark.net.cn/" title="王剑">lark's cloud</a></li>
+            
+              <li><a href="http://log.heartoutside.com/" title="HeartOutSide">HeartOutside</a></li>
+            
+              <li><a href="http://blog.liulantao.com/" title="刘兰涛">Lax</a></li>
+            
+              <li><a href="http://niubie.me/" title="莫言">莫言</a></li>
+            
+              <li><a href="http://noops.me/" title="小米运维部">NoOps</a></li>
+            
+              <li><a href="http://www.searchtech.pro/" title="">云端分布式搜索技术</a></li>
+            
+              <li><a href="http://www.usefulshare.com" title="当当网安全运维">UsefulShare</a></li>
+            
+              <li><a href="http://junqili.com/" title="深入研究puppet">纸飞机</a></li>
+            
+              <li><a href="http://www.chinaxing.org/" title="">ChinaXing</a></li>
+            
+              <li><a href="http://bubbyroom.com/" title="守住每一天">Liuyu's blog</a></li>
+            
+              <li><a href="http://blog.aka-cool.net/" title="">Aka.Why</a></li>
+            
+              <li><a href="http://blog.l8ii.com/" title="刘侨">LairdNote</a></li>
+            
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="booklists" class="nav nav-list">
+          <li class="nav-header">我写的第一本技术书籍</li>
+          <li><a href='http://product.china-pub.com/3769604'><img src='http://images.china-pub.com/ebook3765001-3770000/3769604/shupi.jpg' border='0' alt='网站运维技术与实践'/></a></li>
+        </div>
+      </div>
+    </div> <!-- row -->
+      <footer>
+        <p>&copy; 陈子 2012 
+          with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
+          and <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap</a>
+        </p>
+      </footer>
+    </div> <!-- /container -->
+    
+
+    <!-- JiaThis Button BEGIN -->
+    <script type="text/javascript">var jiathis_config = {data_track_clickback:true};</script>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jiathis_r.js?move=0&amp;uid=1589850" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    <!-- UJian Button BEGIN -->
+    <script type="text/javascript" src="http://v1.ujian.cc/code/ujian.js?type=slide&uid=1589850"></script>
+    <!-- UJian Button END -->
+  </body>
+</html>
+

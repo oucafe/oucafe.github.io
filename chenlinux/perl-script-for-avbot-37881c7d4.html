@@ -1,0 +1,438 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>配合 avbot 的 HTTP 接口做自动应答的 Perl 脚本</title>
+    
+    <meta name="author" content="陈子">
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!-- Le styles -->
+    <link href="/assets/themes/twitter/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/themes/twitter/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+    <link href="/assets/themes/twitter/css/pygments/default.css" rel="stylesheet" type="text/css">
+    <!-- Le fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+  </head>
+  <body>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="/">三斗室</a>
+          <ul class="nav">
+            
+            
+            
+
+
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/archive.html">归档</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">分类</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/errata.html">《网站运维技术与实践》勘误</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/pages.html">Pages</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/projects.html">学习记录</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">标签</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+
+
+
+
+            <li><a href="http://chenlinux.com/poetry/index.html" />诗文集</a></li>
+            <li><link title="RSS 2.0" type="application/rss+xml" href="http://chenlinux.com/feed.xml" rel="alternate" /><a href="http://chenlinux.com/feed.xml" target="_blank">RSS订阅</a></li>
+          </ul>
+          <ul class="nav pull-right"><li><a href="/about.html">有关我</a></li></ul>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+    <div class="row">
+      <div class="span7">
+        
+<div class="row">
+  <div class="page-header">
+    <h1>配合 avbot 的 HTTP 接口做自动应答的 Perl 脚本 <small></small></h1>
+    <div class="date"><span>08 June 2014</span></div>
+  
+    <ul class="tag_box pull-right">
+    
+    
+
+
+  
+     
+    	<li><a href="/tags.html#anyevent-ref">anyevent <span>4</span></a></li>
+     
+    	<li><a href="/tags.html#devops-ref">devops <span>2</span></a></li>
+    
+  
+
+
+
+    </ul>
+    
+  </div>
+  <div style='background-color: #FFF;'>
+    <p>前两天<a href="http://chenlinux.com/2014/06/04/record-webqq-logs-by-avbot">博客里介绍了 avbot</a>，其中提到 avbot 提供了 HTTP 接口可以收发信息。那么，我们就可以自己写脚本来实现比原先的 <code>.qqbot help</code> 更详细的自动应答啦。今晚有空就写了几行 Perl ，实现了一个简单的扩展：</p>
+
+<div class="highlight"><pre><code class="language-perl" data-lang="perl"><span class="k">use</span> <span class="n">utf8</span><span class="p">;</span>
+<span class="k">use</span> <span class="n">strict</span><span class="p">;</span>
+<span class="k">use</span> <span class="n">warnings</span><span class="p">;</span>
+<span class="k">use</span> <span class="nn">JSON::</span><span class="n">XS</span><span class="p">;</span>
+<span class="k">use</span> <span class="n">AnyEvent</span><span class="p">;</span>
+<span class="k">use</span> <span class="nn">AnyEvent::</span><span class="n">HTTP</span><span class="p">;</span>
+
+<span class="k">my</span> <span class="nv">$f</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">help</span> <span class="o">=&gt;</span> <span class="s">&quot;.logstashbot support subcommand:\n\t&quot;</span><span class="p">,</span>
+    <span class="n">grok</span> <span class="o">=&gt;</span> <span class="s">&#39;请主动使用 http://grokdebug.herokuapp.com&#39;</span><span class="p">,</span>
+    <span class="n">tnnd</span> <span class="o">=&gt;</span> <span class="s">&#39;请直接说问题不要浪费口水问有人帮忙么&#39;</span><span class="p">,</span>
+    <span class="n">book</span> <span class="o">=&gt;</span> <span class="s">&#39;支持原作者，请购买 www.logstashbook.com 上电子版&#39;</span><span class="p">,</span>
+<span class="p">};</span>
+<span class="nv">$f</span><span class="o">-&gt;</span><span class="p">{</span><span class="s">&#39;help&#39;</span><span class="p">}</span> <span class="o">.=</span> <span class="nb">join</span><span class="p">(</span><span class="s">&quot;\n\t&quot;</span><span class="p">,</span> <span class="nb">keys</span> <span class="nv">%$f</span><span class="p">);</span>
+
+<span class="nv">$</span><span class="nn">AnyEvent::HTTP::</span><span class="nv">TIMEOUT</span> <span class="o">=</span> <span class="mi">86400</span><span class="p">;</span>
+<span class="k">my</span> <span class="nv">$url</span> <span class="o">=</span> <span class="s">&#39;http://127.0.0.1:6176/message&#39;</span><span class="p">;</span>
+<span class="k">my</span> <span class="nv">$cv</span> <span class="o">=</span> <span class="n">AnyEvent</span><span class="o">-&gt;</span><span class="n">condvar</span><span class="p">;</span>
+
+<span class="k">my</span> <span class="nv">$ua</span><span class="p">;</span><span class="nv">$ua</span> <span class="o">=</span> <span class="k">sub </span><span class="p">{</span>
+    <span class="nv">$cv</span><span class="o">-&gt;</span><span class="n">begin</span><span class="p">;</span>
+    <span class="n">http_get</span> <span class="nv">$url</span><span class="p">,</span> <span class="k">sub </span><span class="p">{</span>
+        <span class="k">my</span> <span class="p">(</span><span class="nv">$data</span><span class="p">,</span> <span class="nv">$header</span><span class="p">)</span> <span class="o">=</span> <span class="nv">@_</span><span class="p">;</span>
+        <span class="k">my</span> <span class="nv">$hash</span> <span class="o">=</span> <span class="n">decode_json</span> <span class="nv">$data</span><span class="p">;</span>
+        <span class="k">my</span> <span class="nv">$msg</span> <span class="o">=</span> <span class="nv">$hash</span><span class="o">-&gt;</span><span class="p">{</span><span class="s">&#39;message&#39;</span><span class="p">}{</span><span class="s">&#39;text&#39;</span><span class="p">};</span>
+        <span class="k">my</span> <span class="nv">$from</span> <span class="o">=</span> <span class="s">&#39;@&#39;</span> <span class="o">.</span> <span class="nv">$hash</span><span class="o">-&gt;</span><span class="p">{</span><span class="s">&#39;who&#39;</span><span class="p">}{</span><span class="s">&#39;nick&#39;</span><span class="p">}</span> <span class="o">.</span> <span class="s">&#39;(&#39;</span> <span class="o">.</span> <span class="nv">$hash</span><span class="o">-&gt;</span><span class="p">{</span><span class="s">&#39;who&#39;</span><span class="p">}{</span><span class="s">&#39;code&#39;</span><span class="p">}</span> <span class="o">.</span> <span class="s">&quot;)\n&quot;</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span> <span class="nv">$msg</span> <span class="o">=~</span><span class="sr"> /^\.logstashbot (\w+)/</span> <span class="p">)</span> <span class="p">{</span>
+            <span class="k">my</span> <span class="nv">$body</span> <span class="o">=</span> <span class="n">encode_json</span><span class="p">({</span>
+                <span class="n">protocol</span> <span class="o">=&gt;</span> <span class="nb">delete</span> <span class="nv">$hash</span><span class="o">-&gt;</span><span class="p">{</span><span class="s">&#39;protocol&#39;</span><span class="p">},</span>
+                <span class="n">channel</span>  <span class="o">=&gt;</span> <span class="nb">delete</span> <span class="nv">$hash</span><span class="o">-&gt;</span><span class="p">{</span><span class="s">&#39;channel&#39;</span><span class="p">},</span>
+                <span class="n">message</span>  <span class="o">=&gt;</span> <span class="p">{</span>
+                    <span class="n">text</span> <span class="o">=&gt;</span> <span class="nv">$from</span> <span class="o">.</span> <span class="p">(</span> <span class="nv">$f</span><span class="o">-&gt;</span><span class="p">{</span><span class="nv">$1</span><span class="p">}</span> <span class="sr">//</span> <span class="nv">$f</span><span class="o">-&gt;</span><span class="p">{</span><span class="s">&#39;help&#39;</span><span class="p">}</span> <span class="p">),</span>
+                <span class="p">},</span>
+            <span class="p">});</span>
+            <span class="nv">$cv</span><span class="o">-&gt;</span><span class="n">begin</span><span class="p">;</span>
+            <span class="n">http_post</span> <span class="nv">$url</span><span class="p">,</span> <span class="nv">$body</span><span class="p">,</span> <span class="k">sub </span><span class="p">{</span>
+                <span class="nv">$cv</span><span class="o">-&gt;</span><span class="n">end</span><span class="p">;</span>
+            <span class="p">};</span>
+        <span class="p">};</span>
+        <span class="nv">$ua</span><span class="o">-&gt;</span><span class="p">();</span>
+        <span class="nv">$cv</span><span class="o">-&gt;</span><span class="n">end</span><span class="p">;</span>
+    <span class="p">};</span>
+<span class="p">};</span>
+<span class="nv">$ua</span><span class="o">-&gt;</span><span class="p">();</span>
+
+<span class="nv">$cv</span><span class="o">-&gt;</span><span class="nb">recv</span><span class="p">;</span></code></pre></div>
+
+<p>原先是打算在回调里 <code>undef $ua</code> 然后通过 <code>AnyEvent-&gt;timer</code> 里检测 $ua 是否还在，否则再起来的方式。后来一想 <code>timer</code> 还有间隔，直接函数内部通过 <code>$cv-&gt;end</code> 控制计数，不断的重新运行 <code>$ua-&gt;()</code> 来保持持续获取，间隔更短，就改成现在这样了。</p>
+
+    <hr>
+    <div class="pagination">
+      <ul>
+      
+        <li class="prev"><a href="/2014/06/04/skyline-port-to-perl" title="用 Perl5 改写 skyline 异常检测算法">&larr; Previous</a></li>
+      
+        <li><a href="/archive.html">Archive</a></li>
+      
+        <li class="next"><a href="/2014/06/11/nginx-access-log-to-elasticsearch" title="用 LEK 组合处理 Nginx 访问日志">Next &rarr;</a></li>
+      
+      </ul>
+    </div>
+    <hr>
+    
+
+
+  <!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" id="UYScript" src="http://v1.uyan.cc/js/iframe.js?UYUserId=1589850" async=""></script>
+<!-- UY END -->
+
+
+
+
+
+
+  </div>
+</div>
+  
+
+
+      </div>
+      <div class="span4">
+          
+          <div class="well sidebar-nav">
+             <ul id="relate_blog" class="nav nav-list">
+               <li class="nav-header">最近文章</li>
+               
+                 <li><a href="/2014/07/08/rex-test-spec">Rex::Test::Spec 模块</a></li>
+               
+                 <li><a href="/2014/06/13/serverspec-intro">Serverspec 工具介绍</a></li>
+               
+                 <li><a href="/2014/06/13/anyevent-redis-for-dns-check">用 Redis 做分布式 DNS/HTTP 检测汇总系统</a></li>
+               
+                 <li><a href="/2014/06/12/rex-usage">Rex 简明手册</a></li>
+               
+                 <li><a href="/2014/06/12/perldancer-tips">PerlDancer 框架笔记</a></li>
+               
+                 <li><a href="/2014/06/12/perl-tips">Perl 编程的个人惯例</a></li>
+               
+                 <li><a href="/2014/06/11/nginx-access-log-to-elasticsearch">用 LEK 组合处理 Nginx 访问日志</a></li>
+               
+                 <li><a href="/2014/06/04/skyline-port-to-perl">用 Perl5 改写 skyline 异常检测算法</a></li>
+               
+                 <li><a href="/2014/06/04/record-webqq-logs-by-avbot">用 avbot 机器人记录 QQ 群聊天记录</a></li>
+               
+            </ul>
+          </div>
+        
+        <div class="well sidebar-nav">
+          <iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=1&ptype=1&speed=0&skin=2&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=1035836154&verifier=a26926d5&dpc=1"></iframe>
+        </div>
+        <div class="well sidebar-nav">
+            <div id="uyan_list_time_frame"></div>
+            <script type="text/javascript" id="UYScriptTime" src="http://v1.uyan.cc/js/iframe_time_list.js?UYUserId=1589850&rankType=time" async=""></script>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(英文)</li>
+            
+              <li><a href="http://codeascraft.com/" title="Etsy 运维团队博客">Code as Craft</a></li>
+            
+              <li><a href="http://devopsanywhere.blogspot.jp/" title="">devopsanywhere</a></li>
+            
+              <li><a href="http://www.jedi.be/blog/" title="">Jong En Dynamische Informatica</a></li>
+            
+              <li><a href="http://www.planetdevops.net/" title="">planetdevops</a></li>
+            
+              <li><a href="http://www.kitchensoap.com/" title="《网站运维》作者，Etsy 运维">Kitchen Soap</a></li>
+            
+              <li><a href="http://blog.johngoulah.com" title="Musings of linux, open source, cloud computing and systems">John Goulah</a></li>
+            
+              <li><a href="http://serverfault.com/" title="stackexchange下属的系统工程师问答网站">serverfault</a></li>
+            
+              <li><a href="http://www.thegeekstuff.com/" title="各种超酷Linux命令用法">TheGeekStuff</a></li>
+            
+              <li><a href="http://neilb.org/" title="The good,the bad,and the beautiful">neilb</a></li>
+            
+              <li><a href="http://www.reddit.com/r/perl/" title="">reddit perl 频道</a></li>
+            
+              <li><a href="http://jpetazzo.github.io/" title="">~jpetazzo</a></li>
+            
+              <li><a href="http://www.perfplanet.com/" title="News and views from the web performance blogosphere">Performance Planet</a></li>
+            
+              <li><a href="http://cuddletech.com/blog/" title="Use UNIX or die">Cuddle Tech</a></li>
+            
+              <li><a href="http://showmetheco.de/" title="Viacheslav Tykhanovskyi(PocketIO/Text::Haml)">No time to wait</a></li>
+            
+              <li><a href="http://blog.dataloop.io/" title="A new SaaS monitoring tool for DevOps & Operations">Dataloop.IO</a></li>
+            
+              <li><a href="http://www.ducea.com/" title="">MDLog:/sysadmin</a></li>
+            
+              <li><a href="http://planeteria.org/perl6/" title="Perl6 文集">Planet Perl 6</a></li>
+            
+              <li><a href="http://www.metaforsoftware.com/blog/" title="">metafor</a></li>
+            
+              <li><a href="http://blog.kablamo.org/" title="Eric Johnson，一个游走在伦敦和北京的 Perler">kablamo</a></li>
+            
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(中文)</li>
+            
+              <li><a href="http://www.nginxs.com/" title="">eric</a></li>
+            
+              <li><a href="http://www.hellodb.net/" title="Ali DBA 张瑞">Hello DBA</a></li>
+            
+              <li><a href="http://blog.nosqlfan.com/" title="not only sql信息集散地">NoSQLfan</a></li>
+            
+              <li><a href="http://ourmysql.com/" title="">OurMySQL</a></li>
+            
+              <li><a href="http://zauc.wordpress.com/" title="">Timo</a></li>
+            
+              <li><a href="http://www.liurongxing.com/" title="">刘荣星</a></li>
+            
+              <li><a href="http://www.cnadn.net/" title="F5工程师">应用交付学习之路</a></li>
+            
+              <li><a href="http://scmbob.org/" title="杭州NSN工程师，shell高人~">扛一肩记忆</a></li>
+            
+              <li><a href="http://www.php-oa.com/" title="音悦台技术经理">扶凯</a></li>
+            
+              <li><a href="http://www.lark.net.cn/" title="王剑">lark's cloud</a></li>
+            
+              <li><a href="http://log.heartoutside.com/" title="HeartOutSide">HeartOutside</a></li>
+            
+              <li><a href="http://blog.liulantao.com/" title="刘兰涛">Lax</a></li>
+            
+              <li><a href="http://niubie.me/" title="莫言">莫言</a></li>
+            
+              <li><a href="http://noops.me/" title="小米运维部">NoOps</a></li>
+            
+              <li><a href="http://www.searchtech.pro/" title="">云端分布式搜索技术</a></li>
+            
+              <li><a href="http://www.usefulshare.com" title="当当网安全运维">UsefulShare</a></li>
+            
+              <li><a href="http://junqili.com/" title="深入研究puppet">纸飞机</a></li>
+            
+              <li><a href="http://www.chinaxing.org/" title="">ChinaXing</a></li>
+            
+              <li><a href="http://bubbyroom.com/" title="守住每一天">Liuyu's blog</a></li>
+            
+              <li><a href="http://blog.aka-cool.net/" title="">Aka.Why</a></li>
+            
+              <li><a href="http://blog.l8ii.com/" title="刘侨">LairdNote</a></li>
+            
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="booklists" class="nav nav-list">
+          <li class="nav-header">我写的第一本技术书籍</li>
+          <li><a href='http://product.china-pub.com/3769604'><img src='http://images.china-pub.com/ebook3765001-3770000/3769604/shupi.jpg' border='0' alt='网站运维技术与实践'/></a></li>
+        </div>
+      </div>
+    </div> <!-- row -->
+      <footer>
+        <p>&copy; 陈子 2012 
+          with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
+          and <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap</a>
+        </p>
+      </footer>
+    </div> <!-- /container -->
+    
+
+    <!-- JiaThis Button BEGIN -->
+    <script type="text/javascript">var jiathis_config = {data_track_clickback:true};</script>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jiathis_r.js?move=0&amp;uid=1589850" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    <!-- UJian Button BEGIN -->
+    <script type="text/javascript" src="http://v1.ujian.cc/code/ujian.js?type=slide&uid=1589850"></script>
+    <!-- UJian Button END -->
+  </body>
+</html>
+

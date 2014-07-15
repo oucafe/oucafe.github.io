@@ -1,0 +1,519 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>用 Redis 做分布式 DNS/HTTP 检测汇总系统</title>
+    
+    <meta name="author" content="陈子">
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!-- Le styles -->
+    <link href="/assets/themes/twitter/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/themes/twitter/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+    <link href="/assets/themes/twitter/css/pygments/default.css" rel="stylesheet" type="text/css">
+    <!-- Le fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+  </head>
+  <body>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="/">三斗室</a>
+          <ul class="nav">
+            
+            
+            
+
+
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/archive.html">归档</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">分类</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/errata.html">《网站运维技术与实践》勘误</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/pages.html">Pages</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/projects.html">学习记录</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">标签</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+
+
+
+
+            <li><a href="http://chenlinux.com/poetry/index.html" />诗文集</a></li>
+            <li><link title="RSS 2.0" type="application/rss+xml" href="http://chenlinux.com/feed.xml" rel="alternate" /><a href="http://chenlinux.com/feed.xml" target="_blank">RSS订阅</a></li>
+          </ul>
+          <ul class="nav pull-right"><li><a href="/about.html">有关我</a></li></ul>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+    <div class="row">
+      <div class="span7">
+        
+<div class="row">
+  <div class="page-header">
+    <h1>用 Redis 做分布式 DNS/HTTP 检测汇总系统 <small></small></h1>
+    <div class="date"><span>13 June 2014</span></div>
+  
+    <ul class="tag_box pull-right">
+    
+    
+
+
+  
+     
+    	<li><a href="/tags.html#monitor-ref">monitor <span>3</span></a></li>
+     
+    	<li><a href="/tags.html#redis-ref">redis <span>4</span></a></li>
+     
+    	<li><a href="/tags.html#anyevent-ref">anyevent <span>4</span></a></li>
+    
+  
+
+
+
+    </ul>
+    
+  </div>
+  <div style='background-color: #FFF;'>
+    <p>一年前搞的一套小脚本，今天翻博客发现没发过，现在发上来好了。主要背景是这样：考虑到有 DNS 和 HTTP 劫持需要监控，但是很多 DNS 服务器对非本区域本运营商的来源请求是拒绝做出响应的，所以得把监控点分散到各地去。其实做这个事情用 nagios 的分布式就足够了，不过如果想做即时触发的紧急任务，就算在 nagios 页面上点击立刻执行，到返回全部结果也得有一阵子。所以选择了自己写一套分布式的异步系统。</p>
+
+<p>中控端脚本如下：</p>
+
+<div class="highlight"><pre><code class="language-perl" data-lang="perl"><span class="c1">#!/usr/bin/perl</span>
+<span class="k">use</span> <span class="nn">Modern::</span><span class="n">Perl</span><span class="p">;</span>
+<span class="k">use</span> <span class="n">AnyEvent</span><span class="p">;</span>
+<span class="k">use</span> <span class="nn">AnyEvent::Redis::</span><span class="n">RipeRedis</span><span class="p">;</span>
+<span class="k">use</span> <span class="n">Storable</span> <span class="sx">qw/freeze thaw/</span><span class="p">;</span>
+<span class="k">use</span> <span class="nn">YAML::</span><span class="n">Syck</span><span class="p">;</span>
+<span class="k">use</span> <span class="n">utf8</span><span class="p">;</span>
+<span class="k">my</span> <span class="nv">$area</span> <span class="o">=</span> <span class="nv">$ARGV</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+<span class="k">my</span> <span class="nv">$domain</span> <span class="o">=</span> <span class="s">&#39;fmn.xnimg.cn&#39;</span><span class="p">;</span>
+<span class="k">my</span> <span class="nv">$master</span> <span class="o">=</span> <span class="s">&#39;10.4.1.21&#39;</span><span class="p">;</span>
+<span class="k">my</span> <span class="nv">$cv</span>     <span class="o">=</span> <span class="n">AnyEvent</span><span class="o">-&gt;</span><span class="n">condvar</span><span class="p">;</span>
+<span class="k">my</span> <span class="nv">$redis</span>  <span class="o">=</span> <span class="nn">AnyEvent::Redis::</span><span class="n">RipeRedis</span><span class="o">-&gt;</span><span class="k">new</span><span class="p">(</span>
+    <span class="n">host</span>     <span class="o">=&gt;</span> <span class="nv">$master</span><span class="p">,</span>
+    <span class="n">port</span>     <span class="o">=&gt;</span> <span class="mi">6379</span><span class="p">,</span>
+    <span class="n">encoding</span> <span class="o">=&gt;</span> <span class="s">&#39;utf8&#39;</span><span class="p">,</span>
+<span class="p">);</span>
+<span class="k">my</span> <span class="nv">$dnslist</span> <span class="o">=</span> <span class="n">LoadFile</span><span class="p">(</span><span class="s">&quot;DNS.yml&quot;</span><span class="p">);</span>
+<span class="k">for</span> <span class="k">my</span> <span class="nv">$isp</span> <span class="p">(</span> <span class="nb">sort</span> <span class="nb">keys</span> <span class="nv">%$dnslist</span> <span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span> <span class="nb">defined</span> <span class="nv">$area</span> <span class="p">)</span> <span class="p">{</span>
+        <span class="k">next</span> <span class="k">unless</span> <span class="nb">defined</span> <span class="nv">$dnslist</span><span class="o">-&gt;</span><span class="p">{</span><span class="nv">$isp</span><span class="p">}</span><span class="o">-&gt;</span><span class="p">{</span><span class="nv">$area</span><span class="p">};</span>
+        <span class="n">say</span> <span class="nv">$area</span><span class="p">,</span> <span class="nv">$isp</span><span class="p">,</span> <span class="nb">join</span> <span class="s">&quot;, &quot;</span><span class="p">,</span> <span class="nv">@</span><span class="p">{</span> <span class="nv">$dnslist</span><span class="o">-&gt;</span><span class="p">{</span><span class="nv">$isp</span><span class="p">}</span><span class="o">-&gt;</span><span class="p">{</span><span class="nv">$area</span><span class="p">}</span> <span class="p">};</span>
+        <span class="k">my</span> <span class="nv">$data</span> <span class="o">=</span> <span class="n">freeze</span><span class="p">({</span> <span class="n">domain</span> <span class="o">=&gt;</span> <span class="nv">$domain</span><span class="p">,</span> <span class="n">dnslist</span> <span class="o">=&gt;</span> <span class="nv">$dnslist</span><span class="o">-&gt;</span><span class="p">{</span><span class="nv">$isp</span><span class="p">}</span><span class="o">-&gt;</span><span class="p">{</span><span class="nv">$area</span><span class="p">}</span> <span class="p">});</span>
+        <span class="nv">$redis</span><span class="o">-&gt;</span><span class="n">publish</span><span class="p">(</span> <span class="s">&#39;task&#39;</span><span class="p">,</span> <span class="nv">$data</span> <span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="k">my</span> <span class="nv">$list</span> <span class="p">(</span> <span class="nb">sort</span> <span class="nb">keys</span> <span class="nv">%</span><span class="p">{</span> <span class="nv">$dnslist</span><span class="o">-&gt;</span><span class="p">{</span><span class="nv">$isp</span><span class="p">}</span> <span class="p">}</span> <span class="p">)</span> <span class="p">{</span>
+            <span class="k">my</span> <span class="nv">$data</span> <span class="o">=</span> <span class="n">freeze</span><span class="p">({</span> <span class="n">domain</span> <span class="o">=&gt;</span> <span class="nv">$domain</span><span class="p">,</span> <span class="n">dnslist</span> <span class="o">=&gt;</span> <span class="nv">$dnslist</span><span class="o">-&gt;</span><span class="p">{</span><span class="nv">$isp</span><span class="p">}</span><span class="o">-&gt;</span><span class="p">{</span><span class="nv">$list</span><span class="p">}</span> <span class="p">});</span>
+            <span class="nv">$cv</span><span class="o">-&gt;</span><span class="n">begin</span><span class="p">;</span>
+            <span class="nv">$redis</span><span class="o">-&gt;</span><span class="n">publish</span><span class="p">(</span> <span class="s">&#39;task&#39;</span><span class="p">,</span> <span class="nv">$data</span> <span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="nv">$redis</span><span class="o">-&gt;</span><span class="n">subscribe</span><span class="p">(</span>
+    <span class="sx">qw( report )</span><span class="p">,</span>
+    <span class="p">{</span>
+        <span class="n">on_done</span> <span class="o">=&gt;</span> <span class="k">sub </span><span class="p">{</span>
+            <span class="k">my</span> <span class="nv">$ch_name</span>  <span class="o">=</span> <span class="nb">shift</span><span class="p">;</span>
+            <span class="k">my</span> <span class="nv">$subs_num</span> <span class="o">=</span> <span class="nb">shift</span><span class="p">;</span>
+            <span class="k">print</span> <span class="s">&quot;Subscribed: $ch_name. Active: $subs_num\n&quot;</span><span class="p">;</span>
+        <span class="p">},</span>
+        <span class="n">on_message</span> <span class="o">=&gt;</span> <span class="k">sub </span><span class="p">{</span>
+            <span class="k">my</span> <span class="nv">$ch_name</span> <span class="o">=</span> <span class="nb">shift</span><span class="p">;</span>
+            <span class="k">my</span> <span class="nv">$msg</span>     <span class="o">=</span> <span class="n">thaw</span><span class="p">(</span> <span class="nb">shift</span> <span class="p">);</span>
+            <span class="nb">printf</span> <span class="s">&quot;%s A %s @%s in %s got %s length %s\n&quot;</span><span class="p">,</span> <span class="nv">$domain</span><span class="p">,</span> <span class="nv">$msg</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">ip</span><span class="p">},</span> <span class="nv">$msg</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">dns</span><span class="p">},</span> <span class="nv">$msg</span><span class="o">-&gt;</span><span class="p">{</span><span class="nb">local</span><span class="p">},</span> <span class="nv">$msg</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">status</span><span class="p">},</span> <span class="nv">$msg</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">len</span><span class="p">};</span>
+            <span class="nv">$cv</span><span class="o">-&gt;</span><span class="n">end</span><span class="p">;</span>
+        <span class="p">},</span>
+        <span class="n">on_error</span> <span class="o">=&gt;</span> <span class="k">sub </span><span class="p">{</span>
+            <span class="k">print</span> <span class="nv">@_</span><span class="p">;</span>
+        <span class="p">},</span>
+    <span class="p">}</span>
+<span class="p">);</span>
+<span class="nv">$cv</span><span class="o">-&gt;</span><span class="nb">recv</span><span class="p">;</span></code></pre></div>
+
+<p>分布在各地的客户端脚本如下：</p>
+
+<div class="highlight"><pre><code class="language-perl" data-lang="perl"><span class="c1">#!/usr/bin/perl</span>
+<span class="k">use</span> <span class="nn">Modern::</span><span class="n">Perl</span><span class="p">;</span>
+<span class="k">use</span> <span class="n">AnyEvent</span><span class="p">;</span>
+<span class="k">use</span> <span class="nn">AnyEvent::</span><span class="n">Socket</span><span class="p">;</span>
+<span class="k">use</span> <span class="nn">AnyEvent::</span><span class="n">DNS</span><span class="p">;</span>
+<span class="k">use</span> <span class="nn">AnyEvent::Redis::</span><span class="n">RipeRedis</span><span class="p">;</span>
+<span class="k">use</span> <span class="nn">AnyEvent::</span><span class="n">HTTP</span><span class="p">;</span>
+<span class="k">use</span> <span class="n">Storable</span> <span class="sx">qw/freeze thaw/</span><span class="p">;</span>
+<span class="k">use</span> <span class="nn">Digest::</span><span class="n">MD5</span> <span class="sx">qw/md5_hex/</span><span class="p">;</span>
+<span class="k">use</span> <span class="n">utf8</span><span class="p">;</span>
+<span class="k">my</span> <span class="nv">$master</span> <span class="o">=</span> <span class="s">&#39;10.4.1.21&#39;</span><span class="p">;</span>
+<span class="k">my</span> <span class="nv">$local</span>  <span class="o">=</span> <span class="s">&#39;192.168.0.2&#39;</span><span class="p">;</span>
+<span class="k">my</span> <span class="nv">$cv</span>     <span class="o">=</span> <span class="n">AnyEvent</span><span class="o">-&gt;</span><span class="n">condvar</span><span class="p">;</span>
+<span class="k">my</span> <span class="nv">$redisr</span> <span class="o">=</span> <span class="nn">AnyEvent::Redis::</span><span class="n">RipeRedis</span><span class="o">-&gt;</span><span class="k">new</span><span class="p">(</span>
+    <span class="n">host</span>          <span class="o">=&gt;</span> <span class="nv">$master</span><span class="p">,</span>
+    <span class="n">port</span>          <span class="o">=&gt;</span> <span class="mi">6379</span><span class="p">,</span>
+    <span class="n">encoding</span>      <span class="o">=&gt;</span> <span class="s">&#39;utf8&#39;</span><span class="p">,</span>
+<span class="p">);</span>
+<span class="k">my</span> <span class="nv">$redisp</span> <span class="o">=</span> <span class="nn">AnyEvent::Redis::</span><span class="n">RipeRedis</span><span class="o">-&gt;</span><span class="k">new</span><span class="p">(</span>
+    <span class="n">host</span>          <span class="o">=&gt;</span> <span class="nv">$master</span><span class="p">,</span>
+    <span class="n">port</span>          <span class="o">=&gt;</span> <span class="mi">6379</span><span class="p">,</span>
+    <span class="n">encoding</span>      <span class="o">=&gt;</span> <span class="s">&#39;utf8&#39;</span><span class="p">,</span>
+<span class="p">);</span>
+<span class="nv">$redisr</span><span class="o">-&gt;</span><span class="n">subscribe</span><span class="p">(</span>
+    <span class="s">&#39;task&#39;</span><span class="p">,</span>
+    <span class="p">{</span>
+        <span class="n">on_done</span> <span class="o">=&gt;</span> <span class="k">sub </span><span class="p">{</span>
+            <span class="k">my</span> <span class="nv">$ch_name</span>  <span class="o">=</span> <span class="nb">shift</span><span class="p">;</span>
+            <span class="k">my</span> <span class="nv">$subs_num</span> <span class="o">=</span> <span class="nb">shift</span><span class="p">;</span>
+            <span class="k">print</span> <span class="s">&quot;Subscribed: $ch_name. Active: $subs_num\n&quot;</span><span class="p">;</span>
+        <span class="p">},</span>
+        <span class="n">on_message</span> <span class="o">=&gt;</span> <span class="k">sub </span><span class="p">{</span>
+            <span class="k">my</span> <span class="nv">$ch_name</span> <span class="o">=</span> <span class="nb">shift</span><span class="p">;</span>
+            <span class="k">my</span> <span class="nv">$msg</span>     <span class="o">=</span> <span class="n">thaw</span><span class="p">(</span><span class="nb">shift</span><span class="p">);</span>
+            <span class="k">for</span> <span class="k">my</span> <span class="nv">$dns</span> <span class="p">(</span> <span class="nv">@</span><span class="p">{</span> <span class="nv">$msg</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">dnslist</span><span class="p">}</span> <span class="p">}</span> <span class="p">)</span> <span class="p">{</span>
+                <span class="n">resolv</span><span class="p">(</span> <span class="nv">$dns</span><span class="p">,</span> <span class="nv">$msg</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">domain</span><span class="p">}</span> <span class="p">);</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="n">on_error</span> <span class="o">=&gt;</span> <span class="k">sub </span><span class="p">{</span>
+            <span class="k">my</span> <span class="nv">$err_msg</span>  <span class="o">=</span> <span class="nb">shift</span><span class="p">;</span>
+            <span class="k">my</span> <span class="nv">$err_code</span> <span class="o">=</span> <span class="nb">shift</span><span class="p">;</span>
+            <span class="k">print</span> <span class="s">&quot;Error: ($err_code) $err_msg\n&quot;</span><span class="p">;</span>
+        <span class="p">},</span>
+    <span class="p">}</span>
+<span class="p">);</span>
+<span class="nv">$cv</span><span class="o">-&gt;</span><span class="nb">recv</span><span class="p">;</span>
+<span class="k">sub </span><span class="nf">resolv</span> <span class="p">{</span>
+    <span class="k">my</span> <span class="p">(</span> <span class="nv">$dns</span><span class="p">,</span> <span class="nv">$domain</span> <span class="p">)</span> <span class="o">=</span> <span class="nv">@_</span><span class="p">;</span>
+    <span class="k">return</span> <span class="k">unless</span> <span class="nv">$dns</span> <span class="o">=~</span> <span class="sr">m/^\d+/</span><span class="p">;</span>
+    <span class="k">my</span> <span class="nv">$resolver</span> <span class="o">=</span>
+      <span class="nn">AnyEvent::</span><span class="n">DNS</span><span class="o">-&gt;</span><span class="k">new</span><span class="p">(</span> <span class="n">server</span> <span class="o">=&gt;</span> <span class="p">[</span> <span class="nn">AnyEvent::Socket::</span><span class="n">parse_address</span> <span class="nv">$dns</span> <span class="p">],</span> <span class="p">);</span>
+    <span class="nv">$resolver</span><span class="o">-&gt;</span><span class="n">resolve</span><span class="p">(</span>
+        <span class="s">&quot;$domain&quot;</span> <span class="o">=&gt;</span> <span class="s">&#39;a&#39;</span><span class="p">,</span>
+        <span class="k">sub </span><span class="p">{</span>
+            <span class="n">httptest</span><span class="p">(</span><span class="nv">$dns</span><span class="p">,</span> <span class="nv">$domain</span><span class="p">,</span> <span class="nv">$_</span><span class="o">-&gt;</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="nv">@_</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">);</span>
+<span class="p">}</span>
+<span class="k">sub </span><span class="nf">httptest</span> <span class="p">{</span>
+    <span class="k">my</span> <span class="p">(</span><span class="nv">$dns</span><span class="p">,</span> <span class="nv">$domain</span><span class="p">,</span> <span class="nv">$ip</span><span class="p">)</span> <span class="o">=</span> <span class="nv">@_</span><span class="p">;</span>
+    <span class="k">my</span> <span class="nv">$url</span> <span class="o">=</span> <span class="s">&quot;http://$domain/10k.html&quot;</span><span class="p">;</span>
+    <span class="k">my</span> <span class="nv">$begin</span> <span class="o">=</span> <span class="nb">time</span><span class="p">;</span>
+    <span class="n">http_get</span> <span class="nv">$url</span><span class="p">,</span> <span class="n">proxy</span> <span class="o">=&gt;</span> <span class="p">[</span><span class="nv">$ip</span><span class="p">,</span> <span class="mi">80</span><span class="p">],</span> <span class="n">want_body_handle</span> <span class="o">=&gt;</span> <span class="mi">1</span><span class="p">,</span> <span class="k">sub </span><span class="p">{</span>
+        <span class="k">my</span> <span class="p">(</span><span class="nv">$hdl</span><span class="p">,</span> <span class="nv">$hdr</span><span class="p">)</span> <span class="o">=</span> <span class="nv">@_</span><span class="p">;</span>
+        <span class="k">my</span> <span class="p">(</span><span class="nv">$port</span><span class="p">,</span> <span class="nv">$peer</span><span class="p">)</span> <span class="o">=</span> <span class="nn">AnyEvent::Socket::</span><span class="n">unpack_sockaddr</span> <span class="nb">getpeername</span> <span class="nv">$hdl</span><span class="o">-&gt;</span><span class="p">{</span><span class="s">&#39;fh&#39;</span><span class="p">};</span>
+        <span class="k">my</span> <span class="nv">$data</span> <span class="o">=</span> <span class="n">freeze</span><span class="p">(</span> <span class="p">{</span> <span class="n">dns</span> <span class="o">=&gt;</span> <span class="nv">$dns</span><span class="p">,</span> <span class="n">status</span> <span class="o">=&gt;</span> <span class="nv">$hdr</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">Status</span><span class="p">},</span> <span class="nb">local</span> <span class="o">=&gt;</span> <span class="nv">$local</span><span class="p">,</span> <span class="n">ip</span> <span class="o">=&gt;</span> <span class="nv">$peer</span><span class="p">,</span> <span class="n">len</span> <span class="o">=&gt;</span> <span class="nv">$hdr</span><span class="o">-&gt;</span><span class="p">{</span><span class="s">&#39;content-length&#39;</span><span class="p">}</span> <span class="p">}</span> <span class="p">);</span>
+        <span class="nv">$redisp</span><span class="o">-&gt;</span><span class="n">publish</span><span class="p">(</span><span class="s">&#39;report&#39;</span><span class="p">,</span> <span class="nv">$data</span><span class="p">);</span>
+    <span class="p">};</span>
+<span class="p">}</span></code></pre></div>
+
+<p>这里需要单独建立两个 <code>$redisr</code> 和 <code>$redisp</code> ，因为前一个已经用来 subscribe 之后就不能同时用于 publish 了，会报错。从理解上这是个很扯淡的事情，不过实际运行结果就是如此。。。</p>
+
+    <hr>
+    <div class="pagination">
+      <ul>
+      
+        <li class="prev"><a href="/2014/06/12/rex-usage" title="Rex 简明手册">&larr; Previous</a></li>
+      
+        <li><a href="/archive.html">Archive</a></li>
+      
+        <li class="next"><a href="/2014/06/13/serverspec-intro" title="Serverspec 工具介绍">Next &rarr;</a></li>
+      
+      </ul>
+    </div>
+    <hr>
+    
+
+
+  <!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" id="UYScript" src="http://v1.uyan.cc/js/iframe.js?UYUserId=1589850" async=""></script>
+<!-- UY END -->
+
+
+
+
+
+
+  </div>
+</div>
+  
+
+
+      </div>
+      <div class="span4">
+          
+          <div class="well sidebar-nav">
+             <ul id="relate_blog" class="nav nav-list">
+               <li class="nav-header">最近文章</li>
+               
+                 <li><a href="/2014/07/08/rex-test-spec">Rex::Test::Spec 模块</a></li>
+               
+                 <li><a href="/2014/06/13/serverspec-intro">Serverspec 工具介绍</a></li>
+               
+                 <li><a href="/2014/06/12/rex-usage">Rex 简明手册</a></li>
+               
+                 <li><a href="/2014/06/12/perldancer-tips">PerlDancer 框架笔记</a></li>
+               
+                 <li><a href="/2014/06/12/perl-tips">Perl 编程的个人惯例</a></li>
+               
+                 <li><a href="/2014/06/11/nginx-access-log-to-elasticsearch">用 LEK 组合处理 Nginx 访问日志</a></li>
+               
+                 <li><a href="/2014/06/08/perl-script-for-avbot">配合 avbot 的 HTTP 接口做自动应答的 Perl 脚本</a></li>
+               
+                 <li><a href="/2014/06/04/skyline-port-to-perl">用 Perl5 改写 skyline 异常检测算法</a></li>
+               
+                 <li><a href="/2014/06/04/record-webqq-logs-by-avbot">用 avbot 机器人记录 QQ 群聊天记录</a></li>
+               
+            </ul>
+          </div>
+        
+        <div class="well sidebar-nav">
+          <iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=1&ptype=1&speed=0&skin=2&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=1035836154&verifier=a26926d5&dpc=1"></iframe>
+        </div>
+        <div class="well sidebar-nav">
+            <div id="uyan_list_time_frame"></div>
+            <script type="text/javascript" id="UYScriptTime" src="http://v1.uyan.cc/js/iframe_time_list.js?UYUserId=1589850&rankType=time" async=""></script>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(英文)</li>
+            
+              <li><a href="http://codeascraft.com/" title="Etsy 运维团队博客">Code as Craft</a></li>
+            
+              <li><a href="http://devopsanywhere.blogspot.jp/" title="">devopsanywhere</a></li>
+            
+              <li><a href="http://www.jedi.be/blog/" title="">Jong En Dynamische Informatica</a></li>
+            
+              <li><a href="http://www.planetdevops.net/" title="">planetdevops</a></li>
+            
+              <li><a href="http://www.kitchensoap.com/" title="《网站运维》作者，Etsy 运维">Kitchen Soap</a></li>
+            
+              <li><a href="http://blog.johngoulah.com" title="Musings of linux, open source, cloud computing and systems">John Goulah</a></li>
+            
+              <li><a href="http://serverfault.com/" title="stackexchange下属的系统工程师问答网站">serverfault</a></li>
+            
+              <li><a href="http://www.thegeekstuff.com/" title="各种超酷Linux命令用法">TheGeekStuff</a></li>
+            
+              <li><a href="http://neilb.org/" title="The good,the bad,and the beautiful">neilb</a></li>
+            
+              <li><a href="http://www.reddit.com/r/perl/" title="">reddit perl 频道</a></li>
+            
+              <li><a href="http://jpetazzo.github.io/" title="">~jpetazzo</a></li>
+            
+              <li><a href="http://www.perfplanet.com/" title="News and views from the web performance blogosphere">Performance Planet</a></li>
+            
+              <li><a href="http://cuddletech.com/blog/" title="Use UNIX or die">Cuddle Tech</a></li>
+            
+              <li><a href="http://showmetheco.de/" title="Viacheslav Tykhanovskyi(PocketIO/Text::Haml)">No time to wait</a></li>
+            
+              <li><a href="http://blog.dataloop.io/" title="A new SaaS monitoring tool for DevOps & Operations">Dataloop.IO</a></li>
+            
+              <li><a href="http://www.ducea.com/" title="">MDLog:/sysadmin</a></li>
+            
+              <li><a href="http://planeteria.org/perl6/" title="Perl6 文集">Planet Perl 6</a></li>
+            
+              <li><a href="http://www.metaforsoftware.com/blog/" title="">metafor</a></li>
+            
+              <li><a href="http://blog.kablamo.org/" title="Eric Johnson，一个游走在伦敦和北京的 Perler">kablamo</a></li>
+            
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(中文)</li>
+            
+              <li><a href="http://www.nginxs.com/" title="">eric</a></li>
+            
+              <li><a href="http://www.hellodb.net/" title="Ali DBA 张瑞">Hello DBA</a></li>
+            
+              <li><a href="http://blog.nosqlfan.com/" title="not only sql信息集散地">NoSQLfan</a></li>
+            
+              <li><a href="http://ourmysql.com/" title="">OurMySQL</a></li>
+            
+              <li><a href="http://zauc.wordpress.com/" title="">Timo</a></li>
+            
+              <li><a href="http://www.liurongxing.com/" title="">刘荣星</a></li>
+            
+              <li><a href="http://www.cnadn.net/" title="F5工程师">应用交付学习之路</a></li>
+            
+              <li><a href="http://scmbob.org/" title="杭州NSN工程师，shell高人~">扛一肩记忆</a></li>
+            
+              <li><a href="http://www.php-oa.com/" title="音悦台技术经理">扶凯</a></li>
+            
+              <li><a href="http://www.lark.net.cn/" title="王剑">lark's cloud</a></li>
+            
+              <li><a href="http://log.heartoutside.com/" title="HeartOutSide">HeartOutside</a></li>
+            
+              <li><a href="http://blog.liulantao.com/" title="刘兰涛">Lax</a></li>
+            
+              <li><a href="http://niubie.me/" title="莫言">莫言</a></li>
+            
+              <li><a href="http://noops.me/" title="小米运维部">NoOps</a></li>
+            
+              <li><a href="http://www.searchtech.pro/" title="">云端分布式搜索技术</a></li>
+            
+              <li><a href="http://www.usefulshare.com" title="当当网安全运维">UsefulShare</a></li>
+            
+              <li><a href="http://junqili.com/" title="深入研究puppet">纸飞机</a></li>
+            
+              <li><a href="http://www.chinaxing.org/" title="">ChinaXing</a></li>
+            
+              <li><a href="http://bubbyroom.com/" title="守住每一天">Liuyu's blog</a></li>
+            
+              <li><a href="http://blog.aka-cool.net/" title="">Aka.Why</a></li>
+            
+              <li><a href="http://blog.l8ii.com/" title="刘侨">LairdNote</a></li>
+            
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="booklists" class="nav nav-list">
+          <li class="nav-header">我写的第一本技术书籍</li>
+          <li><a href='http://product.china-pub.com/3769604'><img src='http://images.china-pub.com/ebook3765001-3770000/3769604/shupi.jpg' border='0' alt='网站运维技术与实践'/></a></li>
+        </div>
+      </div>
+    </div> <!-- row -->
+      <footer>
+        <p>&copy; 陈子 2012 
+          with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
+          and <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap</a>
+        </p>
+      </footer>
+    </div> <!-- /container -->
+    
+
+    <!-- JiaThis Button BEGIN -->
+    <script type="text/javascript">var jiathis_config = {data_track_clickback:true};</script>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jiathis_r.js?move=0&amp;uid=1589850" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    <!-- UJian Button BEGIN -->
+    <script type="text/javascript" src="http://v1.ujian.cc/code/ujian.js?type=slide&uid=1589850"></script>
+    <!-- UJian Button END -->
+  </body>
+</html>
+

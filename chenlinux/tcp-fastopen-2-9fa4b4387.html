@@ -1,0 +1,469 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>TCP Fast Open 测试(2)</title>
+    
+    <meta name="author" content="陈子">
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!-- Le styles -->
+    <link href="/assets/themes/twitter/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/themes/twitter/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+    <link href="/assets/themes/twitter/css/pygments/default.css" rel="stylesheet" type="text/css">
+    <!-- Le fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+  </head>
+  <body>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="/">三斗室</a>
+          <ul class="nav">
+            
+            
+            
+
+
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/archive.html">归档</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">分类</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/errata.html">《网站运维技术与实践》勘误</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/pages.html">Pages</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/projects.html">学习记录</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">标签</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+
+
+
+
+            <li><a href="http://chenlinux.com/poetry/index.html" />诗文集</a></li>
+            <li><link title="RSS 2.0" type="application/rss+xml" href="http://chenlinux.com/feed.xml" rel="alternate" /><a href="http://chenlinux.com/feed.xml" target="_blank">RSS订阅</a></li>
+          </ul>
+          <ul class="nav pull-right"><li><a href="/about.html">有关我</a></li></ul>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+    <div class="row">
+      <div class="span7">
+        
+<div class="row">
+  <div class="page-header">
+    <h1>TCP Fast Open 测试(2) <small></small></h1>
+    <div class="date"><span>21 April 2014</span></div>
+  
+    <ul class="tag_box pull-right">
+    
+    
+
+
+  
+     
+    	<li><a href="/tags.html#tcpdump-ref">tcpdump <span>1</span></a></li>
+     
+    	<li><a href="/tags.html#httping-ref">httping <span>1</span></a></li>
+     
+    	<li><a href="/tags.html#systemtap-ref">systemtap <span>5</span></a></li>
+    
+  
+
+
+
+    </ul>
+    
+  </div>
+  <div style='background-color: #FFF;'>
+    <p>接上篇。</p>
+
+<p>18 日提到采用 wireshark 而不是 tcpdump 来抓取数据。wireshark 会自动把一些数据解释成可读的内容，于是看到其实在每次 httping 发出请求的时候，第一个 SYN 包后面都有附加了 TCP FASTOPEN COOKIE 请求：</p>
+
+<p><img src="/images/uploads/foc-req.png" alt="" /></p>
+
+<p>于是回头重新好好读了一下 TFO 的原理，发现自己对 TFO 的理解是有问题的 - 原先我以为在 SYN 里是可以直接带上请求数据的 - 而这很容易被攻击。实际上的流程应该是：</p>
+
+<ol>
+  <li>客户端发送 SYN 包，包尾加的是一个 FOC 请求，只有 4 字节。</li>
+  <li>服务器端收到 FOC 请求，验证后根据来源 IP 地址生成 COOKIE(8 字节)，将这个 COOKIE 加载 SYN+ACK 包的末尾发送回去。</li>
+  <li>客户端缓存住获取到的 COOKIE 可以给下一次使用。</li>
+  <li>下一次请求开始，客户端发送 SYN 包，这时候包后面带上缓存的 COOKIE，然后就是要正式发送的数据。</li>
+  <li>服务器端验证 COOKIE 正确，将数据交给上层应用处理得到响应结果，然后在发送 SYN+ACK 时，不再等待客户端的 ACK 确认，即开始发送响应数据。</li>
+</ol>
+
+<p>示图如下：</p>
+
+<p><img src="/images/uploads/tfo.jpg" alt="" /></p>
+
+<p>所以可以总结两点：</p>
+
+<ol>
+  <li>第一次请求是不会有时间节约的效果的，测试至少要 <code>httping -F -c 2</code>。</li>
+  <li>从第二次开始节约的时间可以认为是第一个来回，httping 本身是个 HEAD 请求，可以认为是 50% 的节约。</li>
+</ol>
+
+<p>但是用 <code>-c 2</code> 运行依然没有看到 RTT 变化。这时候用<code>stap 'probe kernel.function("tcp_fastopen_cookie_gen") {printf("%d\n", $foc-&gt;len)}'</code> 命令发现这个最重要的生成 COOKIE 的函数(net/ipv4/tcp_fastopen.c里)居然一直没有被触发！</p>
+
+<p>认真阅读了一下调用这个函数的 <code>tcp_fastopen_check</code> 函数(net/ipv4/tcp_ipv4.c里)，原来前面首先有一步检查 sysctl 的逻辑：</p>
+
+<div class="highlight"><pre><code class="language-c" data-lang="c"><span class="k">if</span> <span class="p">((</span><span class="n">sysctl_tcp_fastopen</span> <span class="o">&amp;</span> <span class="n">TFO_SERVER_ENABLE</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">||</span>
+        <span class="n">fastopenq</span> <span class="o">==</span> <span class="nb">NULL</span> <span class="o">||</span> <span class="n">fastopenq</span><span class="o">-&gt;</span><span class="n">max_qlen</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">false</span><span class="p">;</span></code></pre></div>
+
+<p>这个 <code>TFO_SERVER_ENABLE</code> 常量是 2。而我电脑默认的 <code>net.ipv4.tcp_fastopen</code> 值是 1。1 只开启客户端支持 TFO，所以这里要改成 2(或者 3，如果你不打算把客户端搬到别的主机上测试的话)。</p>
+
+<p>重新开始 httping 测试，RTT 依然没有缩短。这时候的 stap 命令发现 <code>tcp_fastopen_cookie_gen</code> 函数虽然触发了，但是函数里真正干活的这段逻辑依然没有触发(即 <code>crypto_cipher_encrypt_one</code>)：</p>
+
+<div class="highlight"><pre><code class="language-c" data-lang="c"><span class="kt">void</span> <span class="nf">tcp_fastopen_cookie_gen</span><span class="p">(</span><span class="n">__be32</span> <span class="n">addr</span><span class="p">,</span> <span class="k">struct</span> <span class="n">tcp_fastopen_cookie</span> <span class="o">*</span><span class="n">foc</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">__be32</span> <span class="n">peer_addr</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span> <span class="n">addr</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span> <span class="p">};</span>
+    <span class="k">struct</span> <span class="n">tcp_fastopen_context</span> <span class="o">*</span><span class="n">ctx</span><span class="p">;</span>
+
+    <span class="n">rcu_read_lock</span><span class="p">();</span>
+    <span class="n">ctx</span> <span class="o">=</span> <span class="n">rcu_dereference</span><span class="p">(</span><span class="n">tcp_fastopen_ctx</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">ctx</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">crypto_cipher_encrypt_one</span><span class="p">(</span><span class="n">ctx</span><span class="o">-&gt;</span><span class="n">tfm</span><span class="p">,</span>
+                      <span class="n">foc</span><span class="o">-&gt;</span><span class="n">val</span><span class="p">,</span>
+                      <span class="p">(</span><span class="n">__u8</span> <span class="o">*</span><span class="p">)</span><span class="n">peer_addr</span><span class="p">);</span>
+        <span class="n">foc</span><span class="o">-&gt;</span><span class="n">len</span> <span class="o">=</span> <span class="n">TCP_FASTOPEN_COOKIE_SIZE</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">rcu_read_unlock</span><span class="p">();</span>
+<span class="p">}</span></code></pre></div>
+
+<p>我试图通过 <code>stap 'probe kernel.function("tcp_fastopen_cookie_gen"){printf("%s\n", $$locals$$)}'</code> 来查看这个 <code>ctx</code> 是什么内容。输出显示 ctx 结构里的元素值都是问号。</p>
+
+<p>目前就卡在这里。</p>
+
+<p>为了验证除了这步没有其他问题，我&rdquo;野蛮&rdquo;的通过 systemtap 修改了一下 <code>tcp_fastopen_cookie_gen</code> 里的变量。命令如下：</p>
+
+<p><code>
+stap 'probe kernel.function("tcp_fastopen_cookie_gen") { $foc-&gt;len = 8 }'
+</code></p>
+
+<p>赋值为 8，就是 <code>TCP_FASTOPEN_COOKIE_SIZE</code> 常量的值。</p>
+
+<p>然后再运行测试，就发现 httping 的第二次运行的 RTT 时间减半了(最后那个 F 应该就是标记为 Fastopen 的意思吧)！可见目前问题就出在这里。</p>
+
+<pre><code>$ httping -F -g http://192.168.0.100 -c 2
+PING 192.168.0.100:80 (/url):
+connected to 192.168.0.100:80 (154 bytes), seq=0 time= 45.60 ms 
+connected to 192.168.0.100:80 (154 bytes), seq=1 time= 23.43 ms  F
+--- http://192.168.0.100/url ping statistics ---
+2 connects, 2 ok, 0.00% failed, time 2069ms
+round-trip min/avg/max = 23.4/34.5/45.6 ms
+</code></pre>
+
+<p><strong>注：上面这个强制赋值 <code>foc-&gt;len</code> 没有改变其实 <code>foc-&gt;val</code> 是空的事实，所以只能是测试验证一下想法，真用的话多客户端之间会乱套的。</strong></p>
+
+    <hr>
+    <div class="pagination">
+      <ul>
+      
+        <li class="prev"><a href="/2014/04/16/tcp-fastopen-1" title="TCP Fast Open 测试(1)">&larr; Previous</a></li>
+      
+        <li><a href="/archive.html">Archive</a></li>
+      
+        <li class="next"><a href="/2014/04/24/yaml-dump-pm6" title="Perl6 的 YAML::Dumper 模块">Next &rarr;</a></li>
+      
+      </ul>
+    </div>
+    <hr>
+    
+
+
+  <!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" id="UYScript" src="http://v1.uyan.cc/js/iframe.js?UYUserId=1589850" async=""></script>
+<!-- UY END -->
+
+
+
+
+
+
+  </div>
+</div>
+  
+
+
+      </div>
+      <div class="span4">
+          
+          <div class="well sidebar-nav">
+             <ul id="relate_blog" class="nav nav-list">
+               <li class="nav-header">最近文章</li>
+               
+                 <li><a href="/2014/07/08/rex-test-spec">Rex::Test::Spec 模块</a></li>
+               
+                 <li><a href="/2014/06/13/serverspec-intro">Serverspec 工具介绍</a></li>
+               
+                 <li><a href="/2014/06/13/anyevent-redis-for-dns-check">用 Redis 做分布式 DNS/HTTP 检测汇总系统</a></li>
+               
+                 <li><a href="/2014/06/12/rex-usage">Rex 简明手册</a></li>
+               
+                 <li><a href="/2014/06/12/perldancer-tips">PerlDancer 框架笔记</a></li>
+               
+                 <li><a href="/2014/06/12/perl-tips">Perl 编程的个人惯例</a></li>
+               
+                 <li><a href="/2014/06/11/nginx-access-log-to-elasticsearch">用 LEK 组合处理 Nginx 访问日志</a></li>
+               
+                 <li><a href="/2014/06/08/perl-script-for-avbot">配合 avbot 的 HTTP 接口做自动应答的 Perl 脚本</a></li>
+               
+                 <li><a href="/2014/06/04/skyline-port-to-perl">用 Perl5 改写 skyline 异常检测算法</a></li>
+               
+            </ul>
+          </div>
+        
+        <div class="well sidebar-nav">
+          <iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=1&ptype=1&speed=0&skin=2&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=1035836154&verifier=a26926d5&dpc=1"></iframe>
+        </div>
+        <div class="well sidebar-nav">
+            <div id="uyan_list_time_frame"></div>
+            <script type="text/javascript" id="UYScriptTime" src="http://v1.uyan.cc/js/iframe_time_list.js?UYUserId=1589850&rankType=time" async=""></script>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(英文)</li>
+            
+              <li><a href="http://codeascraft.com/" title="Etsy 运维团队博客">Code as Craft</a></li>
+            
+              <li><a href="http://devopsanywhere.blogspot.jp/" title="">devopsanywhere</a></li>
+            
+              <li><a href="http://www.jedi.be/blog/" title="">Jong En Dynamische Informatica</a></li>
+            
+              <li><a href="http://www.planetdevops.net/" title="">planetdevops</a></li>
+            
+              <li><a href="http://www.kitchensoap.com/" title="《网站运维》作者，Etsy 运维">Kitchen Soap</a></li>
+            
+              <li><a href="http://blog.johngoulah.com" title="Musings of linux, open source, cloud computing and systems">John Goulah</a></li>
+            
+              <li><a href="http://serverfault.com/" title="stackexchange下属的系统工程师问答网站">serverfault</a></li>
+            
+              <li><a href="http://www.thegeekstuff.com/" title="各种超酷Linux命令用法">TheGeekStuff</a></li>
+            
+              <li><a href="http://neilb.org/" title="The good,the bad,and the beautiful">neilb</a></li>
+            
+              <li><a href="http://www.reddit.com/r/perl/" title="">reddit perl 频道</a></li>
+            
+              <li><a href="http://jpetazzo.github.io/" title="">~jpetazzo</a></li>
+            
+              <li><a href="http://www.perfplanet.com/" title="News and views from the web performance blogosphere">Performance Planet</a></li>
+            
+              <li><a href="http://cuddletech.com/blog/" title="Use UNIX or die">Cuddle Tech</a></li>
+            
+              <li><a href="http://showmetheco.de/" title="Viacheslav Tykhanovskyi(PocketIO/Text::Haml)">No time to wait</a></li>
+            
+              <li><a href="http://blog.dataloop.io/" title="A new SaaS monitoring tool for DevOps & Operations">Dataloop.IO</a></li>
+            
+              <li><a href="http://www.ducea.com/" title="">MDLog:/sysadmin</a></li>
+            
+              <li><a href="http://planeteria.org/perl6/" title="Perl6 文集">Planet Perl 6</a></li>
+            
+              <li><a href="http://www.metaforsoftware.com/blog/" title="">metafor</a></li>
+            
+              <li><a href="http://blog.kablamo.org/" title="Eric Johnson，一个游走在伦敦和北京的 Perler">kablamo</a></li>
+            
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(中文)</li>
+            
+              <li><a href="http://www.nginxs.com/" title="">eric</a></li>
+            
+              <li><a href="http://www.hellodb.net/" title="Ali DBA 张瑞">Hello DBA</a></li>
+            
+              <li><a href="http://blog.nosqlfan.com/" title="not only sql信息集散地">NoSQLfan</a></li>
+            
+              <li><a href="http://ourmysql.com/" title="">OurMySQL</a></li>
+            
+              <li><a href="http://zauc.wordpress.com/" title="">Timo</a></li>
+            
+              <li><a href="http://www.liurongxing.com/" title="">刘荣星</a></li>
+            
+              <li><a href="http://www.cnadn.net/" title="F5工程师">应用交付学习之路</a></li>
+            
+              <li><a href="http://scmbob.org/" title="杭州NSN工程师，shell高人~">扛一肩记忆</a></li>
+            
+              <li><a href="http://www.php-oa.com/" title="音悦台技术经理">扶凯</a></li>
+            
+              <li><a href="http://www.lark.net.cn/" title="王剑">lark's cloud</a></li>
+            
+              <li><a href="http://log.heartoutside.com/" title="HeartOutSide">HeartOutside</a></li>
+            
+              <li><a href="http://blog.liulantao.com/" title="刘兰涛">Lax</a></li>
+            
+              <li><a href="http://niubie.me/" title="莫言">莫言</a></li>
+            
+              <li><a href="http://noops.me/" title="小米运维部">NoOps</a></li>
+            
+              <li><a href="http://www.searchtech.pro/" title="">云端分布式搜索技术</a></li>
+            
+              <li><a href="http://www.usefulshare.com" title="当当网安全运维">UsefulShare</a></li>
+            
+              <li><a href="http://junqili.com/" title="深入研究puppet">纸飞机</a></li>
+            
+              <li><a href="http://www.chinaxing.org/" title="">ChinaXing</a></li>
+            
+              <li><a href="http://bubbyroom.com/" title="守住每一天">Liuyu's blog</a></li>
+            
+              <li><a href="http://blog.aka-cool.net/" title="">Aka.Why</a></li>
+            
+              <li><a href="http://blog.l8ii.com/" title="刘侨">LairdNote</a></li>
+            
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="booklists" class="nav nav-list">
+          <li class="nav-header">我写的第一本技术书籍</li>
+          <li><a href='http://product.china-pub.com/3769604'><img src='http://images.china-pub.com/ebook3765001-3770000/3769604/shupi.jpg' border='0' alt='网站运维技术与实践'/></a></li>
+        </div>
+      </div>
+    </div> <!-- row -->
+      <footer>
+        <p>&copy; 陈子 2012 
+          with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
+          and <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap</a>
+        </p>
+      </footer>
+    </div> <!-- /container -->
+    
+
+    <!-- JiaThis Button BEGIN -->
+    <script type="text/javascript">var jiathis_config = {data_track_clickback:true};</script>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jiathis_r.js?move=0&amp;uid=1589850" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    <!-- UJian Button BEGIN -->
+    <script type="text/javascript" src="http://v1.ujian.cc/code/ujian.js?type=slide&uid=1589850"></script>
+    <!-- UJian Button END -->
+  </body>
+</html>
+
