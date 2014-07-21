@@ -1,0 +1,400 @@
+
+<!DOCTYPE HTML>
+<html lang="zh-cn">
+<head>
+  <meta charset="UTF-8">
+  <title>ShareCore</title>
+
+  <meta name="author" content="Justin Huang">
+  
+  <meta name="description" content="过载保护算法浅析 Jun 21st, 2014 何为过载保护？所谓“过载”，即需求超过了负载能力;而“保护”则是指当“过载”发生了，采取必要的措施保护自己不受“伤害”。在计算机领域，尤其是分布式系统领域，“过载保护”是一个重要的概念。一个不具备“过载保护”功能的系统，是非常危险和脆弱的， &hellip;">
+  <meta name="keywords" content="过载保护 过载保护算法 漏桶算法 令牌桶算法">
+  
+
+  <link rel="canonical" href="http://sharecore.net/blog/2014/06/21/guo-zai-bao-hu-suan-fa-qian-xi">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/rss.xml" rel="alternate" title="ShareCore" type="application/atom+xml">
+</head>
+  
+<body class="default">
+  <div id="wrapper">
+    <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<!-- <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+ -->
+  
+<script type="text/javascript" src="http://tajs.qq.com/stats?sId=30017637" charset="UTF-8"></script>
+<script src="http://code.jquery.com/jquery-latest.min.js"  charset="UTF-8"></script>
+<script type="text/javascript" src="/javascripts/jquery.slides.min.js" charset="UTF-8"></script>
+<style>
+    #slides .slidesjs-navigation {
+      margin-top:3px;
+    }
+
+    #slides .slidesjs-previous {
+      margin-right: 5px;
+      float: left;
+    }
+
+    #slides .slidesjs-next {
+      margin-right: 5px;
+      float: left;
+    }
+
+    .slidesjs-pagination {
+      margin: 6px 0 0;
+      float: right;
+      list-style: none;
+    }
+
+    .slidesjs-pagination li {
+      float: left;
+      margin: 0 1px;
+    }
+
+    .slidesjs-pagination li a {
+      display: block;
+      width: 13px;
+      height: 0;
+      padding-top: 13px;
+      background-image: url(/img/pagination.png);
+      background-position: 0 0;
+      float: left;
+      overflow: hidden;
+    }
+
+    .slidesjs-pagination li a.active,
+    .slidesjs-pagination li a:hover.active {
+      background-position: 0 -13px
+    }
+
+    .slidesjs-pagination li a:hover {
+      background-position: 0 -26px
+    }
+
+    #slides a:link,
+    #slides a:visited {
+    }
+
+    #slides a:hover,
+    #slides a:active {
+    }
+
+    .navbar {
+      overflow: hidden
+    }
+  </style>
+<div id="header">
+  <h1><a href="/">ShareCore</a></h1>
+  
+    <p>Jutin Huang's Blog</p>
+  
+</div>
+<ul id="social-links">
+  
+    <li><a class="feed" href="/rss.xml" title="RSS">RSS</a></li>
+  
+  
+  
+    <li> <a class="github" href="https://github.com/justinhuang917" title="GitHub">GitHub</a> </li>
+  
+</ul>
+<div class="clear"></div>
+<ul id="nav">
+  
+    <li> <a href="/">blog</a> </li>
+  
+
+  
+    <li><a href="/blog/archives">archives</a></li>
+  
+   <li><a href="/md" target="_blank">Markdown编辑</a></li>
+
+  
+    <li><a href="/about.html">关于我</a></li>
+  
+  
+    <li><a href="/redwine.html">红酒推荐</a></li>
+  
+</ul>
+
+    <div id="main"> <div class="post-header">
+  
+    <h1 class="post-title">过载保护算法浅析</h1>
+  
+  
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-06-21T17:50:00+08:00" pubdate data-updated="true">Jun 21<span>st</span>, 2014</time>
+</div>
+
+<div class="post-content"><p>何为<strong>过载保护</strong>？所谓“过载”，即需求超过了负载能力;而“保护”则是指当“过载”发生了，采取必要的措施保护自己不受“伤害”。在计算机领域，尤其是分布式系统领域，“过载保护”是一个重要的概念。一个不具备“过载保护”功能的系统，是非常危险和脆弱的，很可能由于瞬间的压力激增，引起“<strong>雪崩效应</strong>”，导致系统的各个部分都同时崩溃，停止服务。这就好像在没有保险丝的保护下，电压突然变高，导致所有的电器都会被损坏一样，“过载保护”功能是系统的“保险丝”。</p>
+
+<p>去年开始，写了一个RPC服务框架，用以承接各个业务系统在其上进行各类业务服务接口的开发与部署，供远端调用。之于此类的框架，“过载保护”就是一个必须具备的功能特性，用以保护底层提供服务的业务系统不受“恶意”调用或突发性调用的破坏。而在整个实现整个功能的过程中，我发现实现“过载保护”算法是一个很有趣也比较有挑战的活。今天就稍微介绍一下这方面的算法吧。</p>
+
+<p>可能跟大多数人一样，拿到这个算法需求很容易想到一个简单而又有点粗暴的算法：设置一个单位时间（如10s）内的最大访问量，并维护一个单位时间里的计数器，当访问请求到达时，先判断单位控制时间是否已经超时，如果已经超时，重置计数器为0;否则，将计数器加1,并判断计数器的值是否超过最大访问量设置，如超过，则拒绝访问。</p>
+
+<p>具体的伪代码如下：（当然，具体的代码实现还有考虑并发的情况）</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kt">long</span> <span class="n">timeStamp</span><span class="o">=</span><span class="n">getNowTime</span><span class="o">();</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">reqCount</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span>
+</span><span class='line'><span class="kd">const</span> <span class="kt">int</span> <span class="n">maxReqCount</span><span class="o">=</span><span class="mi">10000</span><span class="o">;</span><span class="c1">//时间周期内最大请求数</span>
+</span><span class='line'><span class="kd">const</span> <span class="kt">long</span> <span class="n">effectiveDuration</span><span class="o">=</span><span class="mi">10</span><span class="o">;</span><span class="c1">//时间控制周期</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">bool</span> <span class="nf">grant</span><span class="o">(){</span>
+</span><span class='line'>    <span class="kt">long</span> <span class="n">now</span><span class="o">=</span><span class="n">getNowTime</span><span class="o">();</span>
+</span><span class='line'>    <span class="k">if</span> <span class="o">(</span><span class="n">now</span> <span class="o">&lt;</span><span class="n">timeStamp</span><span class="o">+</span><span class="n">effectiveDuration</span><span class="o">){</span><span class="c1">//在时间控制范围内</span>
+</span><span class='line'>        <span class="n">reqCount</span><span class="o">++;</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">reqCount</span><span class="o">&gt;</span><span class="n">maxReqCount</span><span class="o">;</span><span class="c1">//当前时间范围内超过最大请求控制数</span>
+</span><span class='line'>    <span class="o">}</span><span class="k">else</span><span class="o">{</span>
+</span><span class='line'>        <span class="n">timeStamp</span><span class="o">=</span><span class="n">now</span><span class="o">;</span><span class="c1">//超时后重置</span>
+</span><span class='line'>        <span class="n">reqCount</span><span class="o">=</span><span class="mi">0</span><span class="o">;</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>该算法实现确实是实现了“单位时间里最大访问量控制”这一需求，但是，仔细研究下，发现它在两个单位时间的临界值上的处理是有缺陷的。如：设需要控制的最大请求数为1w, 在第一个单位时间的最后一秒里达到的请求数为1w,接下来第二个单位时间内的第一秒里达到请求数也是1w,由于超时重置发生在两个单位时间之间，所以这2w个请求都将通过控制，也就是说在2s里处理2w个请求，与我们设置的10s里1w个请求的需求相违背。</p>
+
+<p>换句话说，这个算法，对请求的控制不够平滑。那是不是还有更平滑的算法呢？有，<strong>漏桶算法（Leaky Bucket）</strong>就是其一。</p>
+
+<p><img src="/images/Leaky_bucket.JPG"/></p>
+
+<p>（图来自wikipedia）</p>
+
+<p>如上图所示，我们假设系统是一个漏桶，当请求到达时，就是往漏桶里“加水”，而当请求被处理掉，就是水从漏桶的底部漏出。水漏出的速度是固定的，当“加水”太快，桶就会溢出，也就是“拒绝请求”。从而使得桶里的水的体积不可能超出桶的容量。</p>
+
+<p>上面的分析可以看出，该算法存在三个变量：桶的容量capacity，水漏出的速度rate，以及当前的水量water。</p>
+
+<p>算法伪代码如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kt">long</span> <span class="n">timeStamp</span><span class="o">=</span><span class="n">getNowTime</span><span class="o">();</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">capacity</span><span class="o">;</span>        <span class="c1">// 桶的容量</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">rate</span> <span class="o">;</span>          <span class="c1">//水漏出的速度</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">water</span><span class="o">;</span>          <span class="c1">//当前水量</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">bool</span> <span class="nf">grant</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>  <span class="c1">//先执行漏水，因为rate是固定的，所以可以认为“时间间隔*rate”即为漏出的水量</span>
+</span><span class='line'>  <span class="kt">long</span>  <span class="n">now</span> <span class="o">=</span> <span class="n">getNowTime</span><span class="o">();</span>
+</span><span class='line'>  <span class="n">water</span> <span class="o">=</span> <span class="n">max</span><span class="o">(</span><span class="mi">0</span><span class="o">,</span> <span class="n">water</span><span class="o">-</span> <span class="o">(</span><span class="n">now</span> <span class="o">-</span> <span class="n">timeStamp</span><span class="o">)*</span><span class="n">rate</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">timeStamp</span> <span class="o">=</span> <span class="n">now</span><span class="o">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span> <span class="o">(</span><span class="n">water</span> <span class="o">&lt;</span> <span class="n">capacity</span><span class="o">)</span> <span class="o">{</span> <span class="c1">// 水还未满，加水</span>
+</span><span class='line'>    <span class="n">water</span> <span class="o">++;</span>
+</span><span class='line'>    <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="kc">false</span><span class="o">;</span><span class="c1">//水满，拒绝加水</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以上算法，我们可以通过调整capacity的值，来控制系统处理的最大请求数。而上文我们提到的时间边界处理的不够平滑问题，也可以很好的解决了，因为在每次进桶前都将执行“漏水”的操作，时间的切片不再是一个固定的值。</p>
+
+<p>如果你现在正在维基百科上查看“漏桶算法”的篇章，你会发现有一个与“漏桶算法”相关联的算法叫<strong>令牌桶(Tocken Bucket)</strong>算法。令牌桶算法的原理是系统会以一个恒定的速度往桶里放入令牌，而如果请求需要被处理，则需要先从桶里获取一个令牌，当桶里没有令牌可取时，则拒绝服务。从原理上看，令牌桶算法和漏桶算法是相反的，一个“进水”，一个是“漏水”。</p>
+
+<p>令牌桶算法伪代码如下，跟漏桶算法很相似：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+</pre></td><td class='code'><pre><code class='java'><span class='line'><span class="kt">long</span> <span class="n">timeStamp</span><span class="o">=</span><span class="n">getNowTime</span><span class="o">();</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">capacity</span><span class="o">;</span>              <span class="c1">// 桶的容量</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">rate</span> <span class="o">;</span>              <span class="c1">//令牌放入速度</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">tokens</span><span class="o">;</span>            <span class="c1">//当前水量</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">bool</span> <span class="nf">grant</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>  <span class="c1">//先执行添加令牌的操作</span>
+</span><span class='line'>  <span class="kt">long</span>  <span class="n">now</span> <span class="o">=</span> <span class="n">getNowTime</span><span class="o">();</span>
+</span><span class='line'>  <span class="n">tokens</span> <span class="o">=</span> <span class="n">max</span><span class="o">(</span><span class="n">capacity</span><span class="o">,</span> <span class="n">tokens</span><span class="o">+</span> <span class="o">(</span><span class="n">now</span> <span class="o">-</span> <span class="n">timeStamp</span><span class="o">)*</span><span class="n">rate</span><span class="o">);</span>
+</span><span class='line'>  <span class="n">timeStamp</span> <span class="o">=</span> <span class="n">now</span><span class="o">;</span>
+</span><span class='line'>  <span class="c1">//令牌已用完，拒绝访问</span>
+</span><span class='line'>  <span class="k">if</span><span class="o">(</span><span class="n">tokens</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">){</span>
+</span><span class='line'>    <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span><span class="k">else</span><span class="o">{</span><span class="c1">//还有令牌，领取令牌</span>
+</span><span class='line'>    <span class="n">tokens</span><span class="o">--;</span>
+</span><span class='line'>    <span class="n">retun</span> <span class="kc">true</span><span class="o">;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>以上是关于漏桶算法和令牌桶算法的基本介绍，你趋向于用哪个呢？我现在用的是“漏桶”，没有什么原因，因为我首先看到的它，然后才看到“令牌桶”。但当然，实现这两个算法后，离真正的过载保护还有许多工程上的问题需要解决，比如当系统是多个节点组成的集群来提供服务时，我们需要统一的存储（一般用Redis之类的内存级存储较为合适）来维护当前桶的状态。</p>
+</div>
+
+
+<div class="post-single">
+  <div class="post-meta">
+    
+
+
+    
+      <div class="sharing">
+  
+  
+  
+</div>
+
+    
+  </div>
+  <div class="clear"></div>
+
+  
+    <div id="comments">
+      <h2>Comments</h1>
+      <div id="disqus_thread" aria-live="polite"></div>
+    </div>
+  
+</div>
+ </div>
+    <div id="footer">
+  <div class="panels">
+    <div class="license">
+      <h2>License</h2>
+      <p>如非特别声明，本 Blog 的文章由 Justin Huang 创作，采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/3.0/">知识共享署名-非商业性使用-相同方式共享 3.0 Unported 许可协议</a>进行许可。</p>
+    </div>
+
+    <div class="posts">
+      <h2>Recent Posts</h2>
+      <ul>
+        
+          <li>
+            <a href="/blog/2014/07/20/ji-zhu-de-jin-hua/">技术的进化</a>
+          </li>
+        
+          <li>
+            <a href="/blog/2014/07/13/bu-que-ding-xing-yu-ma-er-ke-fu-lian/">不确定性与马尔科夫链</a>
+          </li>
+        
+          <li>
+            <a href="/blog/2014/07/05/ke-kuo-zhan-jia-gou-de-san-ge-wei-du/">可扩展架构设计的三个维度</a>
+          </li>
+        
+          <li>
+            <a href="/blog/2014/06/29/zhi-de-jie-jian-de-googlece-shi-jing-yan/">值得借鉴的Google测试经验</a>
+          </li>
+        
+          <li>
+            <a href="/blog/2014/06/21/guo-zai-bao-hu-suan-fa-qian-xi/">过载保护算法浅析</a>
+          </li>
+        
+      </ul>
+    </div>
+
+    <div class="douban">
+      <h2>Reading</h2>
+      
+        <script type="text/javascript" src="http://www.douban.com/service/badge/76875311/?show=collection&amp;select=favorite&amp;n=8&amp;columns=4&amp;hidelogo=yes&amp;hideself=yes&amp;cat=book" ></script>
+        <a href="http://www.douban.com/people/76875311" class="view-douban">76875311 on douban.com&raquo;</a>
+      
+    </div>
+  </div>
+
+  <p class="powered">
+    Powered by <a href="http://octopress.org">Octopress</a> and <a href="https://github.com/iwinux/compbits">Compbits</a>
+  </p>
+</div>
+
+  </div> <!-- #wrapper end -->
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-37230829-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'sharecore';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://sharecore.net/blog/2014/06/21/guo-zai-bao-hu-suan-fa-qian-xi/';
+        var disqus_url = 'http://sharecore.net/blog/2014/06/21/guo-zai-bao-hu-suan-fa-qian-xi/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
