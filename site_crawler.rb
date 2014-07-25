@@ -26,7 +26,7 @@ config.each do |site|
   page = Nokogiri::HTML(open(list_url))
   rows = page.css(site['list_rows_sel'])
 
-  rows.each do |row|
+  rows[0..20].each do |row|
     hrefs = row.css("a").map{ |a| 
       a['href'] if a['href'] =~ /^\// or a['href'].start_with?(base_url)
     }.compact.uniq
