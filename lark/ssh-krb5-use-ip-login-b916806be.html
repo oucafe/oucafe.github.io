@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<!--[if IE 6]>
+<html id="ie6" lang="zh-CN">
+<![endif]-->
+<!--[if IE 7]>
+<html id="ie7" lang="zh-CN">
+<![endif]-->
+<!--[if IE 8]>
+<html id="ie8" lang="zh-CN">
+<![endif]-->
+<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<html lang="zh-CN">
+<!--<![endif]-->
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width" />
+<title>SSH+KRB5使用IP地址登录的问题 | lark&#039;s cloud</title>
+<link rel="profile" href="http://gmpg.org/xfn/11" />
+<link rel="stylesheet" type="text/css" media="all" href="http://www.lark.net.cn/wp-content/themes/twentyeleven/style.css" />
+<link rel="pingback" href="http://www.lark.net.cn/xmlrpc.php" />
+<!--[if lt IE 9]>
+<script src="http://www.lark.net.cn/wp-content/themes/twentyeleven/js/html5.js" type="text/javascript"></script>
+<![endif]-->
+<link rel="alternate" type="application/rss+xml" title="lark&#039;s cloud &raquo; Feed" href="http://www.lark.net.cn/feed/" />
+<link rel="alternate" type="application/rss+xml" title="lark&#039;s cloud &raquo; 评论Feed" href="http://www.lark.net.cn/comments/feed/" />
+<link rel="alternate" type="application/rss+xml" title="lark&#039;s cloud &raquo; SSH+KRB5使用IP地址登录的问题评论Feed" href="http://www.lark.net.cn/2013/04/ssh-krb5-use-ip-login/feed/" />
+<link rel='stylesheet' id='nextgen_gallery_related_images-css'  href='http://www.lark.net.cn/wp-content/plugins/nextgen-gallery/products/photocrati_nextgen/modules/nextgen_gallery_display/static/nextgen_gallery_related_images.css?ver=3.8' type='text/css' media='all' />
+<script type='text/javascript' src='http://www.lark.net.cn/wp-includes/js/jquery/jquery.js?ver=1.10.2'></script>
+<script type='text/javascript' src='http://www.lark.net.cn/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.2.1'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var photocrati_ajax = {"url":"http:\/\/www.lark.net.cn\/photocrati_ajax","wp_site_url":"http:\/\/www.lark.net.cn","wp_site_static_url":"http:\/\/www.lark.net.cn"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://www.lark.net.cn/wp-content/plugins/nextgen-gallery/products/photocrati_nextgen/modules/ajax/static/ajax.js?ver=3.8'></script>
+<script type='text/javascript' src='http://www.lark.net.cn/wp-includes/js/comment-reply.min.js?ver=3.8'></script>
+<script type='text/javascript' src='http://www.lark.net.cn/wp-content/plugins/nextgen-gallery/products/photocrati_nextgen/modules/lightbox/static/lightbox_context.js?ver=3.8'></script>
+<script type='text/javascript' src='http://www.lark.net.cn/wp-content/plugins/wp-google-analytics/wp-google-analytics.js?ver=0.0.3'></script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.lark.net.cn/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.lark.net.cn/wp-includes/wlwmanifest.xml" /> 
+<link rel='prev' title='Nexus 7 翘屏问题的简单解决方案' href='http://www.lark.net.cn/2012/09/fix-nexus-7-screen-lifting/' />
+<meta name="generator" content="WordPress 3.8" />
+<link rel='canonical' href='http://www.lark.net.cn/2013/04/ssh-krb5-use-ip-login/' />
+<link rel='shortlink' href='http://www.lark.net.cn/?p=159' />
+<!-- <meta name="NextGEN" version="2.0.40" /> -->
+<link id='MediaRSS' rel='alternate' type='application/rss+xml' title='NextGEN Gallery RSS Feed' href='http://www.lark.net.cn/wp-content/plugins/nextgen-gallery/products/photocrati_nextgen/modules/ngglegacy/xml/media-rss.php' />
+</head>
+
+<body class="single single-post postid-159 single-format-standard single-author singular two-column right-sidebar">
+<div id="page" class="hfeed">
+	<header id="branding" role="banner">
+			<hgroup>
+				<h1 id="site-title"><span><a href="http://www.lark.net.cn/" title="lark&#039;s cloud" rel="home">lark&#039;s cloud</a></span></h1>
+				<h2 id="site-description"></h2>
+			</hgroup>
+
+						<a href="http://www.lark.net.cn/">
+									<img src="http://www.lark.net.cn/wp-content/themes/twentyeleven/images/headers/lanterns.jpg" width="1000" height="288" alt="" />
+							</a>
+			
+								<form method="get" id="searchform" action="http://www.lark.net.cn/">
+		<label for="s" class="assistive-text">搜索</label>
+		<input type="text" class="field" name="s" id="s" placeholder="搜索" />
+		<input type="submit" class="submit" name="submit" id="searchsubmit" value="搜索" />
+	</form>
+			
+			<nav id="access" role="navigation">
+				<h3 class="assistive-text">主菜单</h3>
+								<div class="skip-link"><a class="assistive-text" href="#content" title="跳至主内容区域">跳至主内容区域</a></div>
+				<div class="skip-link"><a class="assistive-text" href="#secondary" title="跳至副内容区域">跳至副内容区域</a></div>
+								<div class="menu"><ul><li ><a href="http://www.lark.net.cn/">首页</a></li><li class="page_item page-item-2"><a href="http://www.lark.net.cn/about/">关于我</a></li></ul></div>
+			</nav><!-- #access -->
+	</header><!-- #branding -->
+
+
+	<div id="main">
+
+		<div id="primary">
+			<div id="content" role="main">
+
+				
+					<nav id="nav-single">
+						<h3 class="assistive-text">文章导航</h3>
+						<span class="nav-previous"><a href="http://www.lark.net.cn/2012/09/fix-nexus-7-screen-lifting/" rel="prev"><span class="meta-nav">&larr;</span> 上一篇</a></span>
+						<span class="nav-next"></span>
+					</nav><!-- #nav-single -->
+
+					
+<article id="post-159" class="post-159 post type-post status-publish format-standard hentry category-uncategorized">
+	<header class="entry-header">
+		<h1 class="entry-title">SSH+KRB5使用IP地址登录的问题</h1>
+
+				<div class="entry-meta">
+			<span class="sep">发表于 </span><a href="http://www.lark.net.cn/2013/04/ssh-krb5-use-ip-login/" title="21:02" rel="bookmark"><time class="entry-date" datetime="2013-04-06T21:02:36+00:00">2013年4月6日</time></a><span class="by-author"> <span class="sep"> 由 </span> <span class="author vcard"><a class="url fn n" href="http://www.lark.net.cn/author/lark/" title="查看所有由 lark 发布的文章" rel="author">lark</a></span></span>		</div><!-- .entry-meta -->
+			</header><!-- .entry-header -->
+
+	<div class="entry-content">
+		<p>Kerberos 是一个很方便的 SSO 方案，但比较恶心的是，如果不建立一套 DNS 域名系统来做主机的正向解析和反向解析，那么 Kerberos 是用不起来的。不光如此，使用中如果不注意，修改配置时会导致无法登录。这些问题有</p>
+<p>1. 修改 hostname 导致名字不匹配<br />
+2. 目标服务器的 /etc/hosts 里含有自己 IP 的记录的第一项和 DNS 正向解析结果不一致<br />
+3. 登录源主机或服务器的 /etc/hosts 里有目标服务器的 IP 的记录，且和 DNS 正向解析结果不一致</p>
+<p>如果有很大的服务器集群，且服务器分布在多个 IDC，则要维护一套 DNS 来进行解析，并保证内网失效时还能从外网访问，管理成本很高；此外，还要不断应付各种错误配置导致无法登录的事情。如果能直接用 IP 地址登录，即使集群的 DNS 解析有问题或主机配置有问题，但因为只需要正确正向解析 kdc 即可正常登录，kerberos 客户端本身支持多 kdc，管理成本很低。</p>
+<p>在互联网上，DNS PTR 记录并不总是能受使用者的控制，无法和 A 记录一致更为常见，MIT kerberos 依赖于 DNS PTR 记录的特性限制了它的使用场景。为了解决这一实际问题，MIT kerberos 加入了 rdns 配置项，可以关闭反向解析。但这个选项似乎并不能有效工作，至少在较新的 Linux 上是如此。如果在 /etc/krb5.conf 中使用“rnds = false”，在 kinit 已经获得 k5 tgt 的情况下，形如 ssh username@hostname 的登录能成功，但是 ssh username@host_ip_address 的登录访问还是会失败，-vvv 的相关错误信息为</p>
+<p>&#8220;debug1: Unspecified GSS failure.  Minor code may provide more information<br />
+Cannot determine realm for numeric host address&#8221;</p>
+<p>粗看起来，这是反解失败造成的。但是，Windows 下 putty + kfw-3-2-2 和 OS X 10.6 下 ssh + krb5 可以正常登录，所以这个 Linux 下的反解行为不是必须的，看起来很奇怪。</p>
+<p>为了解决这个问题，起先我测试了 GSSAPI 相关的 SSH patch，发现没解决问题，跟踪后发现是 krb5 运行库的问题。在 Linux 下，resolv 库的一个实现 bug 会引起 krb5 的 rdns 设置无效，编译了 glibc 发现没解决问题。随后检查 krb5 库本身，1.10.2 试图解决但没解决干净的问题有 patch，我测试了还是不行。</p>
+<p>最终，跟踪到 krb5_get_host_realm() ，它调用 krb5int_clean_hostname() 来，在 host 为 IP 地址且关闭反解（rdns = false）时，krb5int_clean_hostname() 返回 KRB5_ERR_NUMERIC_REALM （因为无法反解到域名然后通过域名映射到 REALM）。在 MIT kerberos 1.10.x 里 krb5int_clean_hostname() 返回错误会让 krb5_get_host_realm() 直接返回错误；较旧的版本如 kfw-3-2-2 里，krb5_get_host_realm() 并不理会 krb5int_clean_hostname() 的错误，而是继续后续的流程。在 GSSAPI 的验证环节，如果有正确的 principal 且被授权，host是 IP 地址也是能通过验证的。</p>
+<p>解决方案很简单，希望官方版本能很快并入这个改动： <a href="http://mailman.mit.edu/pipermail/kerberos/2013-April/018810.html">http://mailman.mit.edu/pipermail/kerberos/2013-April/018810.html</a></p>
+<p>MIT kerberos 只支持 domain 到 REALM 的映射，而不支持 IP prefix 到 REALM 的映射，是历史遗留下来的，引起这个问题的根源问题。虽然这个问题并不大，但对于登录到多个 kerberos REALM，这些 REALM 没有交叉信任，且无法在验证时交互选择 REALM 的应用场合（比如 Linux 下的 ssh 登录），IP prefix 到 REALM 的映射能解决使用上的不便。</p>
+			</div><!-- .entry-content -->
+
+	<footer class="entry-meta">
+		此条目是由 <a href="http://www.lark.net.cn/author/lark/">lark</a> 发表在 <a href="http://www.lark.net.cn/category/uncategorized/" title="查看未分类中的全部文章" rel="category tag">未分类</a> 分类目录的。将<a href="http://www.lark.net.cn/2013/04/ssh-krb5-use-ip-login/" title="链向 SSH+KRB5使用IP地址登录的问题 的固定链接" rel="bookmark">固定链接</a>加入收藏夹。		
+			</footer><!-- .entry-meta -->
+</article><!-- #post-159 -->
+
+						<div id="comments">
+	
+	
+	
+									<div id="respond" class="comment-respond">
+				<h3 id="reply-title" class="comment-reply-title">发表评论 <small><a rel="nofollow" id="cancel-comment-reply-link" href="/2013/04/ssh-krb5-use-ip-login/#respond" style="display:none;">取消回复</a></small></h3>
+									<form action="http://www.lark.net.cn/wp-comments-post.php" method="post" id="commentform" class="comment-form">
+																			<p class="comment-notes">电子邮件地址不会被公开。 必填项已用<span class="required">*</span>标注</p>							<p class="comment-form-author"><label for="author">姓名 <span class="required">*</span></label> <input id="author" name="author" type="text" value="" size="30" aria-required='true' /></p>
+<p class="comment-form-email"><label for="email">电子邮件 <span class="required">*</span></label> <input id="email" name="email" type="text" value="" size="30" aria-required='true' /></p>
+<p class="comment-form-url"><label for="url">站点</label> <input id="url" name="url" type="text" value="" size="30" /></p>
+												<p class="comment-form-comment"><label for="comment">评论</label> <textarea id="comment" name="comment" cols="45" rows="8" aria-required="true"></textarea></p>						<p class="form-allowed-tags">您可以使用这些<abbr title="HyperText Markup Language">HTML</abbr>标签和属性： <code>&lt;a href=&quot;&quot; title=&quot;&quot;&gt; &lt;abbr title=&quot;&quot;&gt; &lt;acronym title=&quot;&quot;&gt; &lt;b&gt; &lt;blockquote cite=&quot;&quot;&gt; &lt;cite&gt; &lt;code&gt; &lt;del datetime=&quot;&quot;&gt; &lt;em&gt; &lt;i&gt; &lt;q cite=&quot;&quot;&gt; &lt;strike&gt; &lt;strong&gt; </code></p>						<p class="form-submit">
+							<input name="submit" type="submit" id="submit" value="发表评论" />
+							<input type='hidden' name='comment_post_ID' value='159' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+						</p>
+						<p style="display:none;"><input type="text" name="nxts" value="1406272520" /><input type="text" name="nxts_signed" value="0c88277146307a934858dea5f87e9c91b111baca" /><input type="text" name="742e068e651889d0e4" value="" /><input type="text" name="e3e233e108cef2" value="3b6b4da7f8c8a713af63" /></p>					</form>
+							</div><!-- #respond -->
+			
+</div><!-- #comments -->
+
+				
+			</div><!-- #content -->
+		</div><!-- #primary -->
+
+<script type='text/javascript'>
+	var _gaq = _gaq || [];
+	_gaq.push(['_setAccount', 'UA-6507539-1']);
+_gaq.push(['_trackPageview']);
+
+	(function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	})();
+</script>
+
+	</div><!-- #main -->
+
+	<footer id="colophon" role="contentinfo">
+
+			
+
+			<div id="site-generator">
+								<a href="http://cn.wordpress.org/" title="优雅的个人发布平台">自豪地采用 WordPress</a>
+			</div>
+	</footer><!-- #colophon -->
+</div><!-- #page -->
+
+
+</body>
+</html>
