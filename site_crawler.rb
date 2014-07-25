@@ -33,7 +33,7 @@ config.each do |site|
     hrefs.each do |href|
       remote_url = href.start_with?(base_url) ? href : base_url + href
       puts remote_url
-      local_fname = "#{data_dir}/#{File.basename(href)}-#{Digest::MD5.hexdigest(href)[0..8]}.html"
+      local_fname = "#{data_dir}/#{File.basename(href).gsub('?', '__')}-#{Digest::MD5.hexdigest(href)[0..8]}.html"
 
       unless File.exists?(local_fname)
         puts "Fetching #{remote_url}..."
@@ -60,7 +60,8 @@ config.each do |site|
           puts post_time.text
 
           post_time = Time.parse(post_time.text)
-          meta_fname = "#{meta_dir}/#{post_time.strftime('%F')}-#{File.basename(href)}-#{Digest::MD5.hexdigest(href)[0..8]}.html"
+          meta_fname = "#{meta_dir}/#{post_time.strftime('%F')}-#{File.basename(href).gsub('?', '-')}-#{Digest::MD5.hexdigest(href)[0..8]}.html"
+          puts "\t...Success, saved to #{meta_fname}"
           File.open(meta_fname, 'w') {|file|
             file.puts("---")
             file.puts("layout: post")
