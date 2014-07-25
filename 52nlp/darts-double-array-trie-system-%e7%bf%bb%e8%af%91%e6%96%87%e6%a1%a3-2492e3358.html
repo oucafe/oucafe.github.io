@@ -1,0 +1,864 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<title>Darts: Double-ARray Trie System  翻译文档 | 我爱自然语言处理</title>
+<link rel="profile" href="http://gmpg.org/xfn/11" />
+<link rel="stylesheet" type="text/css" media="all" href="http://www.52nlp.cn/wp-content/themes/twentytenorg/style.css" />
+<link rel="pingback" href="http://www.52nlp.cn/xmlrpc.php" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; Feed" href="http://www.52nlp.cn/feed" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; 评论Feed" href="http://www.52nlp.cn/comments/feed" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; Darts: Double-ARray Trie System  翻译文档评论Feed" href="http://www.52nlp.cn/darts-double-array-trie-system-%e7%bf%bb%e8%af%91%e6%96%87%e6%a1%a3/feed" />
+<link rel='stylesheet' id='yarppWidgetCss-css'  href='http://www.52nlp.cn/wp-content/plugins/yet-another-related-posts-plugin/style/widget.css?ver=3.9.1' type='text/css' media='all' />
+<link rel='stylesheet' id='codecolorer-css'  href='http://www.52nlp.cn/wp-content/plugins/codecolorer/codecolorer.css?ver=0.9.9' type='text/css' media='screen' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.52nlp.cn/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.52nlp.cn/wp-includes/wlwmanifest.xml" /> 
+<link rel='prev' title='日文分词器 Mecab 文档' href='http://www.52nlp.cn/%e6%97%a5%e6%96%87%e5%88%86%e8%af%8d%e5%99%a8-mecab-%e6%96%87%e6%a1%a3' />
+<link rel='next' title='北京森林工作室汉语句义结构标注语料库（BFS-CTC）共享资源' href='http://www.52nlp.cn/%e5%8c%97%e4%ba%ac%e6%a3%ae%e6%9e%97%e5%b7%a5%e4%bd%9c%e5%ae%a4%e6%b1%89%e8%af%ad%e5%8f%a5%e4%b9%89%e7%bb%93%e6%9e%84%e6%a0%87%e6%b3%a8%e8%af%ad%e6%96%99%e5%ba%93%ef%bc%88bfs-ctc%ef%bc%89%e5%85%b1' />
+<meta name="generator" content="WordPress 3.9.1" />
+<link rel='canonical' href='http://www.52nlp.cn/darts-double-array-trie-system-%e7%bf%bb%e8%af%91%e6%96%87%e6%a1%a3' />
+<link rel='shortlink' href='http://www.52nlp.cn/?p=5385' />
+<!-- wp thread comment 1.4.9.4.002 -->
+<style type="text/css" media="screen">
+.editComment, .editableComment, .textComment{
+	display: inline;
+}
+.comment-childs{
+	border: 1px solid #999;
+	margin: 5px 2px 2px 4px;
+	padding: 4px 2px 2px 4px;
+	background-color: white;
+}
+.chalt{
+	background-color: #E2E2E2;
+}
+#newcomment{
+	border:1px dashed #777;width:90%;
+}
+#newcommentsubmit{
+	color:red;
+}
+.adminreplycomment{
+	border:1px dashed #777;
+	width:99%;
+	margin:4px;
+	padding:4px;
+}
+.mvccls{
+	color: #999;
+}
+			
+</style>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: { equationNumbers: { autoNumber: "AMS" } },
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+    inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+    displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+    processEscapes: true
+  },
+  "HTML-CSS": { availableFonts: ["TeX"] }
+});
+</script><script type="text/javascript" src="http://www.52nlp.cn/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</head>
+
+<body class="single single-post postid-5385 single-format-standard">
+<div id="wrapper" class="hfeed">
+	<div id="header">
+		<div id="masthead">
+			<div id="branding" role="banner">
+								<div id="site-title">
+					<span>
+						<a href="http://www.52nlp.cn/" title="我爱自然语言处理" rel="home">我爱自然语言处理</a>
+					</span>
+				</div>
+				<div id="site-description">I Love Natural Language Processing</div>
+
+										<img src="http://www.52nlp.cn/wp-content/themes/twentytenorg/images/headers/path.jpg" width="940" height="198" alt="" />
+								</div><!-- #branding -->
+
+			<div id="access" role="navigation">
+			  				<div class="skip-link screen-reader-text"><a href="#content" title="跳至正文">跳至正文</a></div>
+								<div class="menu"><ul><li ><a href="http://www.52nlp.cn/">首页</a></li><li class="page_item page-item-2"><a href="http://www.52nlp.cn/about">关于</a></li><li class="page_item page-item-2557 page_item_has_children"><a href="http://www.52nlp.cn/resources">资源</a><ul class='children'><li class="page_item page-item-1271"><a href="http://www.52nlp.cn/resources/wpmatheditor">WpMathEditor</a></li></ul></li></ul></div>
+ 
+				<div class="menu"><ul><li class="page_item page-item-2"></li><li class="page_item page-item-2"><a href="http://coursegraph.com" title="课程图谱" target="_blank">课程图谱</a></li><li class="page_item page-item-2"><a href="http://www.nlpjob.com" title="求职" target="_blank">求职招聘</a></li></ul></div>
+			</div><!-- #access -->
+		</div><!-- #masthead -->
+	</div><!-- #header -->
+
+	<div id="main">
+
+		<div id="container">
+			<div id="content" role="main">
+
+			
+
+				<div id="nav-above" class="navigation">
+					<div class="nav-previous"><a href="http://www.52nlp.cn/%e6%97%a5%e6%96%87%e5%88%86%e8%af%8d%e5%99%a8-mecab-%e6%96%87%e6%a1%a3" rel="prev"><span class="meta-nav">&larr;</span> 日文分词器 Mecab 文档</a></div>
+					<div class="nav-next"><a href="http://www.52nlp.cn/%e5%8c%97%e4%ba%ac%e6%a3%ae%e6%9e%97%e5%b7%a5%e4%bd%9c%e5%ae%a4%e6%b1%89%e8%af%ad%e5%8f%a5%e4%b9%89%e7%bb%93%e6%9e%84%e6%a0%87%e6%b3%a8%e8%af%ad%e6%96%99%e5%ba%93%ef%bc%88bfs-ctc%ef%bc%89%e5%85%b1" rel="next">北京森林工作室汉语句义结构标注语料库（BFS-CTC）共享资源 <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-above -->
+
+				<div id="post-5385" class="post-5385 post type-post status-publish format-standard hentry category-word-segmentation category-nlp tag-darts tag-82 tag-555">
+					<h1 class="entry-title">Darts: Double-ARray Trie System  翻译文档</h1>
+
+					<div class="entry-meta">
+						<span class="meta-prep meta-prep-author">发表于</span> <a href="http://www.52nlp.cn/darts-double-array-trie-system-%e7%bf%bb%e8%af%91%e6%96%87%e6%a1%a3" title="11:28" rel="bookmark"><span class="entry-date">2013年03月23号</span></a> <span class="meta-sep">由</span> <span class="author vcard"><a class="url fn n" href="http://www.52nlp.cn/author/rickjin" title="查看所有由 rickjin 发布的文章">rickjin</a></span>					</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+						<h1>Darts: Double-ARray Trie System</h1>
+<h2>开篇</h2>
+<p>Darts 是用于构建双数组 Double-Array <a href="http://zhjin.spaces.live.com/default.aspx?_c01_BlogPart=blogentry&amp;_c=BlogPart&amp;handle=cns!2FEA4AA78B600980!692#aoe">[Aoe 1989]</a> 的简单的 C++ Template Library . 双数组 (Double-Array) 是用于实现 Trie 的一种数据结构, 比其它的类 Trie 实现方式(Hash-Tree, Digital Trie, Patricia Tree, Suffix Array) 速度更快。 原始的 Double-Array 使能够支持动态添加删除 key, 但是 Darts 只支持把排好序的词典文件转换为静态的 Double-Array.</p>
+<p>Darts 既可以像 Hash 一样作为简单的词典使用，也能非常高效的执行分词词典中必须的 Common Prefix Search 操作。</p>
+<p>自2003年7月起， 两个开源的日语分词系统 <a href="http://mecab.sourceforge.jp/">MeCab</a>, <a href="http://chasen.org/">ChaSen</a> 都使用了 Darts .</p>
+<p><span id="more-5385"></span></p>
+<h2><a>下载</a></h2>
+<ul>
+<li><b>Darts</b> 是自由软件．遵循 <a>LGPL</a>(Lesser GNU General Public License) 和 BSD 协议, 可以修改后重新发布.</li>
+</ul>
+<h3><a>Source</a></h3>
+<ul>
+<li>darts-0.32.tar.gz: <a href="http://zhjin.spaces.live.com/src/darts-0.32.tar.gz">HTTP</a></li>
+</ul>
+<h2><a>安装</a></h2>
+<pre>% ./configure 
+% make
+% make check
+% make install
+然后在程序中  include /usr/local/include/darts.h</pre>
+<h2><a>使用方法</a></h2>
+<p>Darts 只提供了 darts.h 这个 C++ 模板文件。每次使用的时候 include 该文件即可.<br />
+使用这样的发布方式是希望通过内联函数实现高效率。</p>
+<h3>类接口</h3>
+<pre>namespace Darts {
+
+   template &lt;class NodeType, class NodeUType class ArrayType, 
+                class ArrayUType, class LengthFunc = Length&lt;NodeType&gt; &gt;
+
+   class DobuleArrayImpl
+   {
+    public:
+     typedef ArrayType   result_type;
+     typedef NodeType    key_type;
+
+     DoubleArrayImpl();
+     ~DoubleArrayImpl();
+
+     int    set_array(void *ptr, size_t = 0);
+     void   *array();
+     void   clear();
+     size_t size ();
+     size_t unit_size ();
+     size_t nonzero_size ();
+     size_t total_size ();
+
+     int build (size_t        key_size,
+                key_type      **key,
+                size_t        *len = 0,
+                result_type   *val = 0,
+                int (*pg)(size_t, size_t) = 0);
+
+     int open (const char *file,
+               const char *mode = "rb",
+               size_t offset = 0,
+               size_t _size = 0);
+
+     int save (const char *file,
+               const char *mode = "wb",
+               size_t offset = 0);
+
+     result_type exactMatchSearch (const key_type *key,
+                                   size_t len = 0,
+                                   size_t node_pos = 0)
+
+     size_t commonPrefixSearch  (const key_type *key,
+                                 result_type *result,
+                                 size_t result_size,
+                                 size_t len = 0,
+                                 size_t node_pos = 0)
+
+     result_type traverse (const key_type *key, 
+                           size_t &amp;node_pos, 
+                           size_t &amp;key_pos, 
+                           size_t len = 0)
+   };
+
+   typedef Darts::DoubleArrayImpl&lt;char, unsigned char,
+              int, unsigned int&gt; DoubleArray;
+};</pre>
+<h3>模板参数说明</h3>
+<table border="1">
+<tbody>
+<tr>
+<td>NodeType</td>
+<td>Trie 节点类型， 对普通的 C 字符串检索， 设置为 char 型即可.</td>
+</tr>
+<tr>
+<td>NodeUType</td>
+<td>Trie 节点转为无符号整数的类型, 对普通的 C 字符串检索， 设置为 unsigned char 型即可.</td>
+</tr>
+<tr>
+<td>ArrayType</td>
+<td>Double-Array 的 Base 元素使用的类型, 通常设置为有符号 32bit 整数</td>
+</tr>
+<tr>
+<td>ArrayUType</td>
+<td>Double-Array 的 Check 元素使用的类型, 通常设置为无符号 32bit 整数</td>
+</tr>
+<tr>
+<td>LengthFunc</td>
+<td>使用 NodeType 数组的时候，使用该函数对象获取数组的大小, 在该函数对象中对 operator() 进行重载.<br />
+NodeType 是 char 的时候， 缺省使用 strlen 函数， 否则以 0 作为数组结束标志计算数组的大小 .</td>
+</tr>
+</tbody>
+</table>
+<h3>typedef 说明</h3>
+<p>模板参数类型的别名. 在外部需要使用这些类型的时候使用 .</p>
+<table border="1">
+<tbody>
+<tr>
+<td>key_type</td>
+<td>待检索的 key 的单个元素的类型. 等同于 NodeType.</td>
+</tr>
+<tr>
+<td>result_type</td>
+<td>单个结果的类型. 等同于 ArrayType .</td>
+</tr>
+</tbody>
+</table>
+<h3>方法说明</h3>
+<dl>
+<dt><span style="color: #dc143c;">int Darts::DoubleArrayImpl</span>::<span style="color: #00008b;">build</span>(size_t size, const key_type **str, const size_t *len = 0, const result_type *val = 0, int (*progress_func)(size_t, size_t) = 0)</dt>
+<dd>构建 Double Array .</p>
+<p>size 词典大小 (记录的词条数目),<br />
+str 指向各词条的指针 (共 size个指针)<br />
+len 用于记录各个词条的长度的数组(数组大小为 size)<br />
+val 用于保存各词条对应的 value 的数组 (数组大小为 size)<br />
+progress_func 构建进度函数.</p>
+<p>str 的各个元素必须按照字典序排好序.<br />
+另外 val 数组中的元素不能有负值.<br />
+len, val, progress_func 可以省略,<br />
+省略的时候， len 使用 LengthFunc 计算,<br />
+val 的各元素的值为从 0 开始的计数值。</p>
+<p>构建成功，返回 0； 失败的时候返回值为负.<br />
+进度函数 progress_func 有两个参数.<br />
+第一个 size_t 型参数表示目前已经构建的词条数<br />
+第二个 size_t 型参数表示所有的词条数</p>
+</dd>
+<dt><span style="color: #dc143c;">result_type Darts::DoubleArrayImpl</span>::<span style="color: #00008b;">exactMatchSearch</span>(const key_type *key, size_t len = 0, size_t node_pos = 0)</dt>
+<dd>进行精确匹配(exact match) 检索, 判断给定字符串是否为词典中的词条.</p>
+<p>key 待检索字符串,<br />
+len 字符串长度,<br />
+node_pos 指定从 Double-Array 的哪个节点位置开始检索.</p>
+<p>len, 和 node_pos 都可以省略, 省略的时候， len 缺省使用 LengthFunc 计算,<br />
+node_pos 缺省为 root 节点.</p>
+<p>检索成功时， 返回 key 对应的 value 值, 失败则返回 -1.</p>
+</dd>
+<dt><span style="color: #dc143c;">size_t Darts::DoubleArrayImpl</span>::<span style="color: #00008b;">commonPrefixSearch</span> (const key_type *key, result_type *result, size_t result_size, size_t len = 0, size_t node_pos = 0)</dt>
+<dd>执行 common prefix search. 检索给定字符串的哪些的前缀是词典中的词条</p>
+<p>key 待检索字符串,<br />
+result 用于保存多个命中结果的数组,<br />
+result_size 数组 result 大小,<br />
+len 待检索字符串长度,<br />
+node_pos 指定从 Double-Array 的哪个节点位置开始检索.</p>
+<p>len, 和 node_pos 都可以省略, 省略的时候， len 缺省使用 LengthFunc 计算,<br />
+node_pos 缺省为 root 节点.</p>
+<p>函数返回命中的词条个数. 对于每个命中的词条， 词条对应的 value 值存依次放在 result 数组中. 如果命中的词条个数超过 result_size 的大小， 则 result 数组中只保存 result_size 个结果。函数的返回值为实际的命中词条个数， 可能超过 result_size 的大小。</p>
+</dd>
+<dt><span style="color: #dc143c;">result_t Darts::DoubleArrayImpl</span>::<span style="color: #00008b;">traverse</span> (const key_type *key, size_t &amp;node_pos, size_t &amp;key_pos, size_t len = 0)</dt>
+<dd>traverse Trie， 检索当前字符串并记录检索后到达的位置</p>
+<p>key 待检索字符串,<br />
+node_pos 指定从 Double-Array 的哪个节点位置开始检索.<br />
+key_pos 从待检索字符串的哪个位置开始检索<br />
+len 待检索字符串长度,</p>
+<p>该函数和 exactMatchSearch 很相似. traverse 过程是按照检索串 key 在 TRIE 的节点中进行转移.<br />
+但是函数执行后, 可以获取到最后到达的 Trie 节点位置，最后到达的字符串位置 . 这和 exactMatchSearch 是有区别的.</p>
+<p>node_pos 通常指定为 root 位置 (0) . 函数调用后， node_pos 的值记录最后到达的 DoubleArray 节点位置。<br />
+key_pos 通常指定为 0. 函数调用后， key_pos 保存最后到达的字符串 key 中的位置。</p>
+<p>检索失败的时候， 返回 -1 或者 -2 .<br />
+-1 表示再叶子节点失败, -2 表示在中间节点失败,.<br />
+检索成功的时候， 返回 key 对应的 value.</p>
+</dd>
+<dt><span style="color: #dc143c;">int Darts::DoubleArrayImpl</span>::<span style="color: #00008b;">save</span>(const char *file, const char *mode = &#8220;wb&#8221;, size_t offset = 0)</dt>
+<dd>把 Double-Array 保存为文件.</p>
+<p>file 保存文件名,<br />
+mode 文件打开模式<br />
+offset 保存的文件位置偏移量, 预留将来使用， 目前没有实现 .</p>
+<p>成功返回 0 ， 失败返回 -1</p>
+</dd>
+<dt><span style="color: #dc143c;">int Darts::DoubleArrayImpl</span>::<span style="color: #00008b;">open</span> (const char *file, const char *mode = &#8220;rb&#8221;, size_t offset = 0, size_t size = 0)</dt>
+<dd>读入 Double-Array 文件.</p>
+<p>file 读取文件名,<br />
+mode 文件打开模式<br />
+offset 读取的文件位置偏移量</p>
+<p>size 为 0 的时候, size 使用文件的大小 .</p>
+<p>成功返回 0 ， 失败返回 -1</p>
+</dd>
+<dt><span style="color: #dc143c;">size_t Darts::DoubleArrayImpl</span>::<span style="color: #00008b;">size</span>()</dt>
+<dd>返回 Double-Array 大小.</p>
+</dd>
+<dt><span style="color: #dc143c;">size_t Darts::DoubleArrayImpl</span>::<span style="color: #00008b;">unit_size</span>()</dt>
+<dd>Double-Array 一个元素的大小(byte).</p>
+<p>size() * unit_size() 是, 存放 Double-Array 所需要的内存(byte) 大小.</p>
+</dd>
+<dt><span style="color: #dc143c;">size_t Darts::DoubleArrayImpl</span>::<span style="color: #00008b;">nonzero_size</span>()</dt>
+<dd>Double-Array 的所有元素中， 被使用的元素的数目, .<br />
+nonezero_size()/size() 用于计算压缩率.</dd>
+</dl>
+<h2>例子程序</h2>
+<p>从静态词典构建双数组 Double-Array.</p>
+<pre>#include &lt;iostream&gt;
+#include &lt;darts.h&gt;
+
+int main (int argc, char **argv)
+{
+  using namespace std;
+
+  Darts::DoubleArray::key_type   *str[] = { "ALGOL", "ANSI", "ARCO",  "ARPA", "ARPANET", "ASCII" }; // same as char*
+  Darts::DobuleArray::result_type val[] = { 1, 2, 3, 4, 5, 6 }; // same as int 
+
+  Darts::DoubleArray da;
+  da.build (6, str, 0, val); 
+
+  cout &lt;&lt; da.exactMatchSearch("ALGOL") &lt;&lt; endl;
+  cout &lt;&lt; da.exactMatchSearch("ANSI") &lt;&lt; endl;
+  cout &lt;&lt; da.exactMatchSearch("ARCO") &lt;&lt; endl;;
+  cout &lt;&lt; da.exactMatchSearch("ARPA") &lt;&lt; endl;;
+  cout &lt;&lt; da.exactMatchSearch("ARPANET") &lt;&lt; endl;;
+  cout &lt;&lt; da.exactMatchSearch("ASCII") &lt;&lt; endl;;
+  cout &lt;&lt; da.exactMatchSearch("APPARE") &lt;&lt; endl;
+
+  da.save("some_file");
+}
+
+执行结果
+1
+2
+3
+4
+5
+6
+-1</pre>
+<p>从标准输入读取字符串, 对 Double-Array 执行 Common Prefix Search</p>
+<pre>#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;algorithm&gt;
+#include &lt;darts.h&gt;
+
+int main (int argc, char **argv)
+{
+  using namespace std;
+
+  Darts::DoubleArray da;
+  if (da.open("some_file") == -1) return -1;
+
+  Darts::DoubleArray::result_type  r [1024];
+  Darts::DoubleArray::key_type     buf [1024];
+
+  while (cin.getline (buf, 1024)) {
+    size_t result = da.commonPrefixSearch(buf, r, 1024);
+    if (result == 0) {
+       cout &lt;&lt; buf &lt;&lt; ": not found" &lt;&lt; endl;
+    } else {
+       cout &lt;&lt; buf &lt;&lt; ": found, num=" &lt;&lt; result &lt;&lt; " ";
+       copy (r, r + result, ostream_iterator&lt;Darts::DoubleArray::result_type&gt;(cout, " "));
+       cout &lt;&lt; endl;
+    }
+  }
+
+  return 0;
+}</pre>
+<p>&nbsp;</p>
+<h2>付属程序说明</h2>
+<h3>mkdarts</h3>
+<pre>% ./mkdarts DictionaryFile DoubleArrayFile</pre>
+<p>把排序好的词典 DictionaryFile 转换为 DoubleArrayFile</p>
+<h3>darts</h3>
+<pre>% ./darts DoubleArrayFile</pre>
+<p>使用 DoubleArrayFile 做 common prefix search .</p>
+<h3>使用例子</h3>
+<pre>% cd tests
+% head -10 linux.words
+ALGOL
+ANSI
+ARCO
+ARPA
+ARPANET
+ASCII
+ .. 
+
+% ../mkdarts linux.words dar
+Making Double Array: 100% |*******************************************|
+Done!, Compression Ratio: 94.6903 %
+
+% ../darts dar
+Linux
+Linux: found, num=2 3697 3713
+Windows
+Windows: not found
+LaTeX
+LaTeX: found, num=1 3529</pre>
+<h2>参考文献, 链接</h2>
+<ul>
+<li><a><strong>[Aoe1989]</strong> Aoe, J. <cite>An Efficient Digital Search Algorithm by Using a Double-Array Structure.</cite> <strong>IEEE Transactions on Software Engineering.</strong> Vol. 15, 9 (Sep 1989). pp. 1066-1077.</a></li>
+<li><strong>[Datrie]</strong> Theppitak Karoonboonyanan <cite>An Implementation of Double-Array Trie</cite><a href="http://www.links.nectec.or.th/~thep/datrie/">http://www.links.nectec.or.th/~thep/datrie/</a></li>
+<li><strong>[単語と辞書]</strong> 松本裕治 ほか. <cite>単語と辞書</cite> <strong>岩波講座言語の科学</strong> Vol.3 pp.79-81</li>
+</ul>
+<h2>翻译</h2>
+<p>Zhihui JIN (ZhihuiJin AT gmail.com)</p>
+<p>日语水平有限，翻译不准确之处请见谅</p>
+<hr />
+<div class='yarpp-related'>
+<p>相关文章:<ol>
+<li><a href="http://www.52nlp.cn/maximum-matching-method-of-chinese-word-segmentation" rel="bookmark" title="中文分词入门之最大匹配法">中文分词入门之最大匹配法 </a></li>
+<li><a href="http://www.52nlp.cn/%e6%97%a5%e6%96%87%e5%88%86%e8%af%8d%e5%99%a8-mecab-%e6%96%87%e6%a1%a3" rel="bookmark" title="日文分词器 Mecab 文档">日文分词器 Mecab 文档 </a></li>
+<li><a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e6%9c%80%e5%a4%a7%e5%8c%b9%e9%85%8d%e6%b3%95%e6%89%a9%e5%b1%952" rel="bookmark" title="中文分词入门之最大匹配法扩展2">中文分词入门之最大匹配法扩展2 </a></li>
+<li><a href="http://www.52nlp.cn/%e5%9f%ba%e4%ba%8e%e5%93%88%e5%b8%8c%e8%a1%a8%e5%92%8c%e4%ba%8c%e5%8f%89%e6%a0%91%e7%9a%84%e8%af%8d%e5%85%b8%e7%a0%94%e7%a9%b6%e4%b8%80" rel="bookmark" title="基于哈希表和二叉树的词典研究(一)">基于哈希表和二叉树的词典研究(一) </a></li>
+<li><a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%954" rel="bookmark" title="中文分词入门之字标注法4">中文分词入门之字标注法4 </a></li>
+<li><a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%953" rel="bookmark" title="中文分词入门之字标注法3">中文分词入门之字标注法3 </a></li>
+<li><a href="http://www.52nlp.cn/abcnlp-ab-natural-chinese-languange-processing" rel="bookmark" title="abcNLP: AB-Natural Chinese Languange Processing">abcNLP: AB-Natural Chinese Languange Processing </a></li>
+<li><a href="http://www.52nlp.cn/hmm-learn-best-practices-seven-forward-backward-algorithm-5" rel="bookmark" title="HMM学习最佳范例七：前向-后向算法5">HMM学习最佳范例七：前向-后向算法5 </a></li>
+<li><a href="http://www.52nlp.cn/%e6%ad%a3%e6%80%81%e5%88%86%e5%b8%83%e7%9a%84%e5%89%8d%e4%b8%96%e4%bb%8a%e7%94%9f%e4%ba%8c" rel="bookmark" title="正态分布的前世今生(二)">正态分布的前世今生(二) </a></li>
+<li><a href="http://www.52nlp.cn/hmm-learn-best-practices-five-forward-algorithm-4" rel="bookmark" title="HMM学习最佳范例五：前向算法4">HMM学习最佳范例五：前向算法4 </a></li>
+</ol></p>
+</div>
+											</div><!-- .entry-content -->
+
+
+					<div class="entry-utility">
+						此条目发表在 <a href="http://www.52nlp.cn/category/word-segmentation" title="查看中文分词中的全部文章" rel="category tag">中文分词</a>, <a href="http://www.52nlp.cn/category/nlp" title="查看自然语言处理中的全部文章" rel="category tag">自然语言处理</a> 分类目录，贴了 <a href="http://www.52nlp.cn/tag/darts" rel="tag">Darts</a>, <a href="http://www.52nlp.cn/tag/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d" rel="tag">中文分词</a>, <a href="http://www.52nlp.cn/tag/%e5%8f%8c%e6%95%b0%e7%bb%84" rel="tag">双数组</a> 标签。将<a href="http://www.52nlp.cn/darts-double-array-trie-system-%e7%bf%bb%e8%af%91%e6%96%87%e6%a1%a3" title="链向 Darts: Double-ARray Trie System  翻译文档 的固定链接" rel="bookmark">固定链接</a>加入收藏夹。											</div><!-- .entry-utility -->
+				</div><!-- #post-## -->
+
+				<div id="nav-below" class="navigation">
+					<div class="nav-previous"><a href="http://www.52nlp.cn/%e6%97%a5%e6%96%87%e5%88%86%e8%af%8d%e5%99%a8-mecab-%e6%96%87%e6%a1%a3" rel="prev"><span class="meta-nav">&larr;</span> 日文分词器 Mecab 文档</a></div>
+					<div class="nav-next"><a href="http://www.52nlp.cn/%e5%8c%97%e4%ba%ac%e6%a3%ae%e6%9e%97%e5%b7%a5%e4%bd%9c%e5%ae%a4%e6%b1%89%e8%af%ad%e5%8f%a5%e4%b9%89%e7%bb%93%e6%9e%84%e6%a0%87%e6%b3%a8%e8%af%ad%e6%96%99%e5%ba%93%ef%bc%88bfs-ctc%ef%bc%89%e5%85%b1" rel="next">北京森林工作室汉语句义结构标注语料库（BFS-CTC）共享资源 <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-below -->
+
+				
+			<div id="comments">
+
+
+			<h3 id="comments-title">《<em>Darts: Double-ARray Trie System  翻译文档</em>》有 3 条评论</h3>
+
+
+			<ol class="commentlist">
+					<li class="comment even thread-even depth-1" id="li-comment-7804">
+		<div id="comment-7804">
+		<div class="comment-author vcard">
+			<img alt='' src='http://1.gravatar.com/avatar/53bad55d100a470e20652bbec92d0a36?s=40&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn">blowyourheart</cite> <span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/darts-double-array-trie-system-%e7%bf%bb%e8%af%91%e6%96%87%e6%a1%a3/comment-page-1#comment-7804">
+			2013年03月26号23:36</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>基本上每个公司都把darts封装一下使用。</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,7804,1,'blowyourheart');">回复</a>]</p></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-8831">
+		<div id="comment-8831">
+		<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/c4dba17f4feda342ae2e98ce418c7ffb?s=40&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn">雷龙</cite> <span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/darts-double-array-trie-system-%e7%bf%bb%e8%af%91%e6%96%87%e6%a1%a3/comment-page-1#comment-8831">
+			2013年08月1号18:21</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>一种实现人工智能程序自进化的概念原理 <a href="http://blog.csdn.net/liron71/article/details/8242670" rel="nofollow">http://blog.csdn.net/liron71/article/details/8242670</a></p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,8831,1,'雷龙');">回复</a>]</p></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="li-comment-10151">
+		<div id="comment-10151">
+		<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/62bfefe1f6a2ac9826f17c2d1e8c71b8?s=40&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn">ggaaooppeenngg</cite> <span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/darts-double-array-trie-system-%e7%bf%bb%e8%af%91%e6%96%87%e6%a1%a3/comment-page-1#comment-10151">
+			2013年11月18号20:16</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>你好，我最近拜读了你的博客，感觉很有意思。我尝试着读Github上面一个用Go写的MMSEG算法的库，但是又要看一个双数组trie树，有些代码似乎是优化的代码，没有看明白。<br />
+在算法描述中要满足每个状态的下个状态c1,c2,c3,c4,cn都能在数组存下，所以需要找到一个合适的pos,使得<br />
+base[pos] check[pos] ……base[pos],check[pos]都为0<br />
+为了找到这个pos 用了一个循环遍历数组的下标<br />
+但是在遍历之前会有一个<br />
+var pos int = max(int(siblings[0].code)+1, d.nextCheckPos) &#8211; 1<br />
+nonZeroNum = 0<br />
+first :=false<br />
+把c0的序码和nextCheckPos中较大的一个赋值给base，我能理解将序码赋给pos，因为从下标为0的地方开始找，但是nextCheck这块就有点不明白、<br />
+接下来是一个 计数器用来记录没有找到合适位置的次数<br />
+………………………………<br />
+	if d.darts.Check[pos] &gt; 0 {<br />
+		nonZeroNum++<br />
+		continue<br />
+	} else if !first {<br />
+		//如果否first，那么下个要检查的地方就是pos，但是first改为true，不知道为什么<br />
+		d.nextCheckPos = pos<br />
+		first = true<br />
+	}<br />
+//最后会有一个这样的判断，完全不明白<br />
+if float32(nonZeroNum)/float32(pos-d.nextCheckPos+1) &gt;= 0.95 {<br />
+		d.nextCheckPos = pos<br />
+}<br />
+原github的地址是https://github.com/awsong/go-darts 好像是一个c++版本的迁移。<br />
+我猜是某种优化，但是我一直没有查到，希望仁兄能给一点启发。</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,10151,1,'ggaaooppeenngg');">回复</a>]</p></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+			</ol>
+
+
+
+								<div id="respond" class="comment-respond">
+				<h3 id="reply-title" class="comment-reply-title">发表评论 <small><a rel="nofollow" id="cancel-comment-reply-link" href="/darts-double-array-trie-system-%e7%bf%bb%e8%af%91%e6%96%87%e6%a1%a3#respond" style="display:none;">取消回复</a></small></h3>
+									<form action="http://www.52nlp.cn/wp-comments-post.php" method="post" id="commentform" class="comment-form">
+																			<p class="comment-notes">电子邮件地址不会被公开。 必填项已用<span class="required">*</span>标注</p>							<p class="comment-form-author"><label for="author">姓名 <span class="required">*</span></label> <input id="author" name="author" type="text" value="" size="30" aria-required='true' /></p>
+<p class="comment-form-email"><label for="email">电子邮件 <span class="required">*</span></label> <input id="email" name="email" type="text" value="" size="30" aria-required='true' /></p>
+<p class="comment-form-url"><label for="url">站点</label> <input id="url" name="url" type="text" value="" size="30" /></p>
+												<p class="comment-form-comment"><label for="comment">评论</label> <textarea id="comment" name="comment" cols="45" rows="8" aria-required="true"></textarea></p>						<p class="form-allowed-tags">您可以使用这些<abbr title="HyperText Markup Language">HTML</abbr>标签和属性： <code>&lt;a href=&quot;&quot; title=&quot;&quot;&gt; &lt;abbr title=&quot;&quot;&gt; &lt;acronym title=&quot;&quot;&gt; &lt;b&gt; &lt;blockquote cite=&quot;&quot;&gt; &lt;cite&gt; &lt;code&gt; &lt;del datetime=&quot;&quot;&gt; &lt;em&gt; &lt;i&gt; &lt;q cite=&quot;&quot;&gt; &lt;strike&gt; &lt;strong&gt; </code></p>						<p class="form-submit">
+							<input name="submit" type="submit" id="submit" value="发表评论" />
+							<input type='hidden' name='comment_post_ID' value='5385' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+						</p>
+						<p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="b4cce438ca" /></p><p style="display: none;"><input type="hidden" id="ak_js" name="ak_js" value="105"/></p><p><input type="hidden" id="comment_reply_ID" name="comment_reply_ID" value="0" /><input type="hidden" id="comment_reply_dp" name="comment_reply_dp" value="0" /></p><div id="cancel_reply" style="display:none;"><a href="javascript:void(0)" onclick="movecfm(null,0,1,null);" style="color:red;">点击取消回复</a></div><script type="text/javascript">
+/* <![CDATA[ */
+var commentformid = "commentform";
+var USERINFO = false;
+var atreply = "none";
+/* ]]> */
+</script>
+<script type="text/javascript" src="http://www.52nlp.cn/wp-content/plugins/wp-thread-comment/wp-thread-comment.js.php?jsver=common"></script>
+					</form>
+							</div><!-- #respond -->
+			
+</div><!-- #comments -->
+
+
+			</div><!-- #content -->
+		</div><!-- #container -->
+
+﻿
+		<div id="primary" class="widget-area" role="complementary">
+			<ul class="xoxo">
+<!-- begin l_sidebar -->
+	<div id="l_sidebar">
+<p>卓越网：<a href="http://www.amazon.cn/mn/searchApp?source=garypyang-23&searchType=1&keywords=自然语言处理" title="自然语言处理书籍"target=_blank>自然语言处理书籍</a><br>
+<li id="search-3" class="widget-container widget_search"><h3 class="widget-title">站内搜索</h3><form role="search" method="get" id="searchform" class="searchform" action="http://www.52nlp.cn/">
+				<div>
+					<label class="screen-reader-text" for="s">搜索：</label>
+					<input type="text" value="" name="s" id="s" />
+					<input type="submit" id="searchsubmit" value="搜索" />
+				</div>
+			</form></li><li id="text-4" class="widget-container widget_text"><h3 class="widget-title">NLPJob新鲜职位推荐:</h3>			<div class="textwidget"><p></p>
+<script src="http://www.nlpjob.com/api/api.php?action=getJobs
+&type=0&category=0&count=8&random=1&days_behind=7&response=js" type="text/javascript"></script>
+
+<script type="text/javascript">showJobs('jobber-container', 'jobber-list');</script></div>
+		</li><li id="text-3" class="widget-container widget_text"><h3 class="widget-title">52nlp新浪微博</h3>			<div class="textwidget"><p><iframe id="sina_widget_2104931705" style="width:100%; height:500px;" frameborder="0" scrolling="no" src="http://v.t.sina.com.cn/widget/widget_blog.php?uid=2104931705&height=500&skin=wd_01&showpic=1"></iframe></p>
+<p><!-- JiaThis Button BEGIN --><br />
+<script type="text/javascript" src="http://v3.jiathis.com/code/jiathis_r.js?uid=1340292124103344&move=0&amp;btn=r3.gif" charset="utf-8"></script><br />
+<!-- JiaThis Button END --></p>
+</div>
+		</li><li id="categories-309398091" class="widget-container widget_categories"><h3 class="widget-title">分类目录</h3>		<ul>
+	<li class="cat-item cat-item-72"><a href="http://www.52nlp.cn/category/mit-nlp" title="麻省理工学院开放式课程&quot;自然语言处理“的相关翻译文章">MIT自然语言处理</a> (23)
+</li>
+	<li class="cat-item cat-item-469"><a href="http://www.52nlp.cn/category/topic-model" title="查看Topic Model下的所有文章">Topic Model</a> (10)
+</li>
+	<li class="cat-item cat-item-87"><a href="http://www.52nlp.cn/category/wordpress" title="查看wordpress下的所有文章">wordpress</a> (6)
+</li>
+	<li class="cat-item cat-item-317"><a href="http://www.52nlp.cn/category/%e4%b8%93%e9%a2%98" title="查看专题下的所有文章">专题</a> (6)
+</li>
+	<li class="cat-item cat-item-263"><a href="http://www.52nlp.cn/category/chinese-information-processing" title="查看中文信息处理下的所有文章">中文信息处理</a> (17)
+</li>
+	<li class="cat-item cat-item-62"><a href="http://www.52nlp.cn/category/word-segmentation" title="查看中文分词下的所有文章">中文分词</a> (34)
+</li>
+	<li class="cat-item cat-item-420"><a href="http://www.52nlp.cn/category/%e5%b9%b6%e8%a1%8c%e7%ae%97%e6%b3%95" title="查看并行算法下的所有文章">并行算法</a> (1)
+</li>
+	<li class="cat-item cat-item-268"><a href="http://www.52nlp.cn/category/%e6%8b%9b%e8%81%98" title="查看招聘下的所有文章">招聘</a> (4)
+</li>
+	<li class="cat-item cat-item-560"><a href="http://www.52nlp.cn/category/%e6%8e%a8%e8%8d%90%e7%b3%bb%e7%bb%9f" title="查看推荐系统下的所有文章">推荐系统</a> (3)
+</li>
+	<li class="cat-item cat-item-354"><a href="http://www.52nlp.cn/category/%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98" title="查看数据挖掘下的所有文章">数据挖掘</a> (1)
+</li>
+	<li class="cat-item cat-item-241"><a href="http://www.52nlp.cn/category/text-classification" title="查看文本分类下的所有文章">文本分类</a> (2)
+</li>
+	<li class="cat-item cat-item-193"><a href="http://www.52nlp.cn/category/maximum-entropy-model" title="查看最大熵模型下的所有文章">最大熵模型</a> (7)
+</li>
+	<li class="cat-item cat-item-344"><a href="http://www.52nlp.cn/category/%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0" title="查看机器学习下的所有文章">机器学习</a> (13)
+</li>
+	<li class="cat-item cat-item-1"><a href="http://www.52nlp.cn/category/machine-translation" title="查看机器翻译下的所有文章">机器翻译</a> (54)
+</li>
+	<li class="cat-item cat-item-195"><a href="http://www.52nlp.cn/category/%e6%9d%a1%e4%bb%b6%e9%9a%8f%e6%9c%ba%e5%9c%ba" title="查看条件随机场下的所有文章">条件随机场</a> (3)
+</li>
+	<li class="cat-item cat-item-153"><a href="http://www.52nlp.cn/category/tagging" title="查看标注下的所有文章">标注</a> (13)
+</li>
+	<li class="cat-item cat-item-885"><a href="http://www.52nlp.cn/category/%e7%a7%91%e5%ad%a6%e8%ae%a1%e7%ae%97" title="查看科学计算下的所有文章">科学计算</a> (1)
+</li>
+	<li class="cat-item cat-item-538"><a href="http://www.52nlp.cn/category/%e7%bb%9f%e8%ae%a1%e5%ad%a6" title="查看统计学下的所有文章">统计学</a> (10)
+</li>
+	<li class="cat-item cat-item-126"><a href="http://www.52nlp.cn/category/translation-model" title="查看翻译模型下的所有文章">翻译模型</a> (2)
+</li>
+	<li class="cat-item cat-item-51"><a href="http://www.52nlp.cn/category/nlp" title="查看自然语言处理下的所有文章">自然语言处理</a> (223)
+</li>
+	<li class="cat-item cat-item-106"><a href="http://www.52nlp.cn/category/computational-linguistics" title="查看计算语言学下的所有文章">计算语言学</a> (38)
+</li>
+	<li class="cat-item cat-item-22"><a href="http://www.52nlp.cn/category/dictionary" title="查看词典下的所有文章">词典</a> (8)
+</li>
+	<li class="cat-item cat-item-221"><a href="http://www.52nlp.cn/category/semantics" title="查看语义学下的所有文章">语义学</a> (1)
+</li>
+	<li class="cat-item cat-item-161"><a href="http://www.52nlp.cn/category/semantic-web" title="查看语义网下的所有文章">语义网</a> (3)
+</li>
+	<li class="cat-item cat-item-37"><a href="http://www.52nlp.cn/category/corpus" title="查看语料库下的所有文章">语料库</a> (12)
+</li>
+	<li class="cat-item cat-item-86"><a href="http://www.52nlp.cn/category/language-model" title="查看语言模型下的所有文章">语言模型</a> (23)
+</li>
+	<li class="cat-item cat-item-156"><a href="http://www.52nlp.cn/category/speech-recognition" title="查看语音识别下的所有文章">语音识别</a> (4)
+</li>
+	<li class="cat-item cat-item-314"><a href="http://www.52nlp.cn/category/%e8%b4%9d%e5%8f%b6%e6%96%af%e6%a8%a1%e5%9e%8b" title="查看贝叶斯模型下的所有文章">贝叶斯模型</a> (1)
+</li>
+	<li class="cat-item cat-item-110"><a href="http://www.52nlp.cn/category/reprint" title="查看转载下的所有文章">转载</a> (28)
+</li>
+	<li class="cat-item cat-item-451"><a href="http://www.52nlp.cn/category/%e9%97%ae%e7%ad%94%e7%b3%bb%e7%bb%9f" title="查看问答系统下的所有文章">问答系统</a> (1)
+</li>
+	<li class="cat-item cat-item-3"><a href="http://www.52nlp.cn/category/informal-essay" title="查看随笔下的所有文章">随笔</a> (61)
+</li>
+	<li class="cat-item cat-item-60"><a href="http://www.52nlp.cn/category/hidden-markov-model" title="查看隐马尔科夫模型下的所有文章">隐马尔科夫模型</a> (36)
+</li>
+		</ul>
+</li><li id="archives-2" class="widget-container widget_archive"><h3 class="widget-title">文章归档</h3>		<ul>
+	<li><a href='http://www.52nlp.cn/2014/07'>2014年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/06'>2014年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/05'>2014年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/04'>2014年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/01'>2014年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/12'>2013年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/06'>2013年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/05'>2013年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/04'>2013年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/03'>2013年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/02'>2013年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/01'>2013年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/12'>2012年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/11'>2012年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/10'>2012年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/09'>2012年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/08'>2012年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/07'>2012年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/06'>2012年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/05'>2012年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/04'>2012年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/03'>2012年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/01'>2012年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/12'>2011年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/11'>2011年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/10'>2011年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/09'>2011年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/08'>2011年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/07'>2011年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/06'>2011年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/05'>2011年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/04'>2011年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/03'>2011年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/02'>2011年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/01'>2011年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/12'>2010年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/11'>2010年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/10'>2010年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/09'>2010年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/08'>2010年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/07'>2010年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/06'>2010年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/05'>2010年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/04'>2010年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/03'>2010年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/02'>2010年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/01'>2010年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/12'>2009年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/11'>2009年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/10'>2009年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/09'>2009年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/08'>2009年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/07'>2009年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/06'>2009年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/05'>2009年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/04'>2009年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/03'>2009年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/02'>2009年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/01'>2009年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2008/12'>2008年十二月</a></li>
+		</ul>
+</li>		<li id="recent-posts-2" class="widget-container widget_recent_entries">		<h3 class="widget-title">最新文章</h3>		<ul>
+					<li>
+				<a href="http://www.52nlp.cn/python-%e7%bd%91%e9%a1%b5%e7%88%ac%e8%99%ab-%e6%96%87%e6%9c%ac%e5%a4%84%e7%90%86-%e7%a7%91%e5%ad%a6%e8%ae%a1%e7%ae%97-%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0-%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98">Python 网页爬虫 &#038; 文本处理 &#038; 科学计算 &#038; 机器学习 &#038; 数据挖掘兵器谱</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e7%bf%bb%e8%af%91%e6%8a%80%e6%9c%af%e6%b2%99%e9%be%99%e7%ac%ac%e5%8d%81%e5%85%ad%e6%ac%a1%e6%b4%bb%e5%8a%a8-%e4%ba%92%e8%81%94%e7%bd%91%e6%8a%80%e6%9c%af%e9%a9%b1%e5%8a%a8">翻译技术沙龙第十六次活动——“互联网技术驱动下的语言服务众包模式” 通知</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e7%81%ab%e5%85%89%e6%91%87%e6%9b%b3%e7%a5%9e%e5%a5%87%e7%9a%84%e4%bc%bd%e7%8e%9b%e5%87%bd%e6%95%b0%e4%b8%8b">[火光摇曳]神奇的伽玛函数(下)</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e7%a5%9e%e5%a5%87%e7%9a%84%e4%bc%bd%e7%8e%9b%e5%87%bd%e6%95%b0%e4%b8%8a">[火光摇曳]神奇的伽玛函数(上)</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/nlpjob-%e4%b8%bb%e7%ab%99%e4%b8%8a%e7%ba%bf">NLPJob 主站上线</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e9%a1%ba%e4%b8%b0%e6%b5%b7%e6%b7%98sfbuy%e9%a6%96%e6%ac%a1%e4%bd%93%e9%aa%8c-%e7%be%8e%e5%9b%bd%e4%ba%9a%e9%a9%ac%e9%80%8a%e6%b5%b7%e6%b7%98kindle-dx%e8%bd%ac%e8%bf%90%e5%85%a8%e6%94%bb%e7%95%a5">顺丰海淘SFBuy首次体验-美国亚马逊海淘Kindle DX转运全攻略</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/digitalocean%e4%bd%bf%e7%94%a8%e5%b0%8f%e8%ae%b0">DigitalOcean使用小记</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%95%e5%85%a8%e6%96%87%e6%96%87%e6%a1%a3">中文分词入门之字标注法全文文档</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%954">中文分词入门之字标注法4</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%953">中文分词入门之字标注法3</a>
+						</li>
+				</ul>
+		</li><li id="recentcomments" class="widget-container widget_recentcomments"><h3 class="widget-title">最近评论</h3><ul><li class="rc-navi rc-clearfix"><span class="rc-loading">正在加载...</span></li><li id="rc-comment-temp" class="rc-item rc-comment rc-clearfix"><div class="rc-info"></div><div class="rc-timestamp"></div><div class="rc-excerpt"></div></li><li id="rc-ping-temp" class="rc-item rc-ping rc-clearfix"><span class="rc-label"></span></li></ul></li>			</ul>
+		</div><!-- #primary .widget-area -->
+
+
+		<div id="secondary" class="widget-area" role="complementary">
+			<ul class="xoxo">
+				<li id="linkcat-103" class="widget-container widget_links"><h3 class="widget-title">NLP相关网站</h3>
+	<ul class='xoxo blogroll'>
+<li><a href="http://www.aclweb.org/" rel="co-worker" title="The Association for Computational Linguistics" target="_blank">ACL</a></li>
+<li><a href="http://aclweb.org/anthology-new/" rel="co-worker" title="A Digital Archive of Research Papers in Computational Linguistics" target="_blank">ACL Anthology</a></li>
+<li><a href="http://belobog.si.umich.edu/clair/anthology/index.cgi" rel="colleague" target="_blank">ACL Anthology Network</a></li>
+<li><a href="http://aclweb.org/aclwiki/index.php?title=Main_Page" rel="colleague" title="the Wiki of the Association for Computational Linguistics" target="_blank">ACL Wiki</a></li>
+<li><a href="http://www.clsp.jhu.edu/" rel="colleague" target="_blank">CLSP</a></li>
+<li><a href="http://www.cwbbase.com/" rel="colleague" title="这是一个略具规模的中文语义词库, 也是稍有特色的汉语语义词典" target="_blank">CWB中文词库</a></li>
+<li><a href="http://www.euromatrix.net/" rel="colleague" target="_blank">EuroMatrix</a></li>
+<li><a href="http://www.freebase.com" rel="colleague" target="_blank">Freebase</a></li>
+<li><a href="http://www.clsp.jhu.edu/workshops/" rel="colleague" target="_blank">JHU Workshop</a></li>
+<li><a href="http://www.ldc.upenn.edu/" rel="colleague" title="Linguistic Data Consortium" target="_blank">LDC</a></li>
+<li><a href="http://www.statmt.org/moses/" rel="colleague" title="A factored phrase-based beam-search decoder for machine translation" target="_blank">Moses</a></li>
+<li><a href="http://nlpers.blogspot.com/" rel="colleague" title="国外一个非常不错的自然语言处理博客" target="_blank">nlper</a></li>
+<li><a href="http://www.powerset.com/" rel="colleague" target="_blank">Powerset</a></li>
+<li><a href="http://www.speech.sri.com/projects/srilm/" rel="colleague" title="- The SRI Language Modeling Toolkit" target="_blank">SRILM</a></li>
+<li><a href="http://www.statmt.org/" rel="colleague" title="This website is dedicated to research in statistical machine translation" target="_blank">Statistical Machine Translation</a></li>
+<li><a href="http://textanalysisonline.com/" target="_blank">Text Analysis</a></li>
+<li><a href="http://textminingonline.com/" target="_blank">Text Mining</a></li>
+<li><a href="http://textsummarization.net/" target="_blank">Text Summarization</a></li>
+<li><a href="http://w3china.org/index.htm" rel="friend" title="致力于促进W3C技术的广泛应用, 传播关于未来Web的知识与技术" target="_blank">中国万维网联盟</a></li>
+<li><a href="http://www.cipsc.org.cn/" rel="co-worker" title="Chinese Information Processing Society of China" target="_blank">中国中文信息学会</a></li>
+<li><a href="http://www.nlp.org.cn/" rel="colleague" title="中文自然语言处理开放平台" target="_blank">中文自然语言处理开放平台</a></li>
+<li><a href="http://www.mt-archive.info/" rel="colleague" title="Repository and bibliography of articles, books and papers on topics" target="_blank">机器翻译档案计划</a></li>
+<li><a href="http://www.statmt.org/europarl/" rel="colleague" target="_blank">欧洲议会平行语料库</a></li>
+<li><a href="http://www.keenage.com/" title="HowNet" target="_blank">知网</a></li>
+<li><a href="http://www.nlpir.org/" rel="friend" title="由张华平博士发起，由北京理工大学网络搜索与挖掘实验室运营，旨在推动NLP(自然语言处理)与IR(信息检索)领域的共享与共赢" target="_blank">自然语言处理与信息检索共享平台</a></li>
+<li><a href="http://mitel.ict.ac.cn/" rel="co-worker" title="中科院计算所多语言交互技术实验室" target="_blank">计算所多语言交互技术实验室</a></li>
+
+	</ul>
+</li>
+<li id="linkcat-2" class="widget-container widget_links"><h3 class="widget-title">友情链接</h3>
+	<ul class='xoxo blogroll'>
+<li><a href="http://blog.youxu.info/" title="一个计算机专业的 Ph.D. 学生徐宥的个人博客" target="_blank">4G spaces</a></li>
+<li><a href="http://blog.52nlp.org" rel="me" title="我爱自然语言处理完全镜像" target="_blank">52nlpblog</a></li>
+<li><a href="http://www.52nlp.com" rel="me" title="52nlp的英文站" target="_blank">52nlpcom</a></li>
+<li><a href="http://hi.baidu.com/drkevinzhang" rel="friend" title="ICTCLAS 张华平博士的空间" target="_blank">ICTCLAS 张华平博士的空间</a></li>
+<li><a href="http://blog.so8848.com/" rel="friend" title="信息检索博客" target="_blank">Information Retrieval Blog</a></li>
+<li><a href="http://interop123.com/default.aspx" rel="friend" title="崔晓源师兄关于NET技术的站点" target="_blank">NET互操作技术社区</a></li>
+<li><a href="http://bbs.w3china.org/" rel="friend" title="中国万维网联盟讨论区" target="_blank">W3CHINA讨论区</a></li>
+<li><a href="http://www.ailab.cn/" rel="friend" target="_blank">人工智能网</a></li>
+<li><a href="http://mindhacks.cn/" rel="friend" title="一个很有思想的价值博客!" target="_blank">刘未鹏之Mind Hacks</a></li>
+<li><a href="http://www.cnblogs.com/finallyliuyu/" rel="friend" target="_blank">原地转圈的驴子</a></li>
+<li><a href="http://xunren.thuir.org/" target="_blank">微博寻人（梁博）</a></li>
+<li><a href="http://52opencourse.com" rel="friend" title="我爱公开课，高质量公开课交流平台" target="_blank">我爱公开课</a></li>
+<li><a href="http://iregex.org/" rel="friend" target="_blank">我爱正则表达式</a></li>
+<li><a href="http://courseminer.com" target="_blank">挖课</a></li>
+<li><a href="http://www.sciencenet.cn/u/timy/" rel="friend" title="章成志老师的博客" target="_blank">章成志的博客</a></li>
+<li><a href="http://blog.csdn.net/v_JULY_v/" target="_blank">结构之法 算法之道</a></li>
+<li><a href="http://www.lingcc.com/" rel="friend" title="关注编译器,虚拟机,编程语言及技术,IT职业和程序员生活" target="_blank">编译点滴</a></li>
+<li><a href="http://www.52nlp.org" rel="me" title="52nlp的官方网站" target="_blank">自然语言处理</a></li>
+<li><a href="http://www.ieee.org.cn/" rel="friend" title="计算机科学论坛" target="_blank">计算机科学论坛</a></li>
+<li><a href="http://coursegraph.com/">课程图谱</a></li>
+<li><a href="http://blog.coursegraph.com" rel="friend">课程图谱博客</a></li>
+
+	</ul>
+</li>
+<li id="meta-4" class="widget-container widget_meta"><h3 class="widget-title">功能</h3>			<ul>
+			<li><a href="http://www.52nlp.cn/wp-login.php?action=register">注册</a></li>			<li><a href="http://www.52nlp.cn/wp-login.php">登录</a></li>
+			<li><a href="http://www.52nlp.cn/feed" title="使用RSS 2.0订阅本站点内容">文章<abbr title="Really Simple Syndication">RSS</abbr></a></li>
+			<li><a href="http://www.52nlp.cn/comments/feed" title="使用RSS订阅本站点的所有文章的近期评论">评论<abbr title="Really Simple Syndication">RSS</abbr></a></li>
+<li><a href="https://cn.wordpress.org/" title="基于WordPress，一个优美、先进的个人信息发布平台。">WordPress.org</a></li>			</ul>
+</li>			</ul>
+		</div><!-- #secondary .widget-area -->
+
+	</div><!-- #main -->
+
+	<div id="footer" role="contentinfo">
+		<div id="colophon">
+
+
+
+			<div id="site-info">
+				<a href="http://www.52nlp.cn/" title="我爱自然语言处理" rel="home">
+					我爱自然语言处理				</a>
+			</div><!-- #site-info -->
+
+			<div id="site-generator">
+								<a href="http://cn.wordpress.org/"
+						title="优雅的个人发布平台" rel="generator">
+					自豪地采用 WordPress。				</a>
+			</div><!-- #site-generator -->
+
+		</div><!-- #colophon -->
+	</div><!-- #footer -->
+
+</div><!-- #wrapper -->
+
+<script>
+/* <![CDATA[ */
+var rcGlobal = {
+	serverUrl		:'http://www.52nlp.cn',
+	infoTemp		:'%REVIEWER% 在 %POST%',
+	loadingText		:'正在加载',
+	noCommentsText	:'没有任何评论',
+	newestText		:'&laquo; 最新的',
+	newerText		:'&laquo; 上一页',
+	olderText		:'下一页 &raquo;',
+	showContent		:'',
+	external		:'',
+	avatarSize		:'0',
+	avatarPosition	:'left',
+	anonymous		:'匿名'
+};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://www.52nlp.cn/wp-content/plugins/akismet/_inc/form.js?ver=3.0.1'></script>
+<link rel='stylesheet' id='yarppRelatedCss-css'  href='http://www.52nlp.cn/wp-content/plugins/yet-another-related-posts-plugin/style/related.css?ver=3.9.1' type='text/css' media='all' />
+<script type='text/javascript' src='http://www.52nlp.cn/wp-content/plugins/wp-recentcomments/js/wp-recentcomments.js?ver=2.2.7'></script>
+	<p align="center"> 本站架设在 <a href="http://www.52nlp.cn/digitalocean%E4%BD%BF%E7%94%A8%E5%B0%8F%E8%AE%B0">DigitalOcean</a> 上, 采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本站内容必须也遵循“署名-非商业用途-保持一致”的创作共用协议.</p>
+<!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(["trackPageView"]);
+  _paq.push(["enableLinkTracking"]);
+
+  (function() {
+    var u=(("https:" == document.location.protocol) ? "https" : "http") + "://162.243.252.121/piwik/";
+    _paq.push(["setTrackerUrl", u+"piwik.php"]);
+    _paq.push(["setSiteId", "5"]);
+    var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0]; g.type="text/javascript";
+    g.defer=true; g.async=true; g.src=u+"piwik.js"; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Piwik Code -->
+</body>
+</html>

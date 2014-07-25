@@ -1,0 +1,706 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<title>如何计算两个文档的相似度（二） | 我爱自然语言处理</title>
+<link rel="profile" href="http://gmpg.org/xfn/11" />
+<link rel="stylesheet" type="text/css" media="all" href="http://www.52nlp.cn/wp-content/themes/twentytenorg/style.css" />
+<link rel="pingback" href="http://www.52nlp.cn/xmlrpc.php" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; Feed" href="http://www.52nlp.cn/feed" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; 评论Feed" href="http://www.52nlp.cn/comments/feed" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; 如何计算两个文档的相似度（二）评论Feed" href="http://www.52nlp.cn/%e5%a6%82%e4%bd%95%e8%ae%a1%e7%ae%97%e4%b8%a4%e4%b8%aa%e6%96%87%e6%a1%a3%e7%9a%84%e7%9b%b8%e4%bc%bc%e5%ba%a6%e4%ba%8c/feed" />
+<link rel='stylesheet' id='yarppWidgetCss-css'  href='http://www.52nlp.cn/wp-content/plugins/yet-another-related-posts-plugin/style/widget.css?ver=3.9.1' type='text/css' media='all' />
+<link rel='stylesheet' id='codecolorer-css'  href='http://www.52nlp.cn/wp-content/plugins/codecolorer/codecolorer.css?ver=0.9.9' type='text/css' media='screen' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.52nlp.cn/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.52nlp.cn/wp-includes/wlwmanifest.xml" /> 
+<link rel='prev' title='2013年第五届中国翻译职业交流大会—会议通知及报名须知' href='http://www.52nlp.cn/2013%e5%b9%b4%e7%ac%ac%e4%ba%94%e5%b1%8a%e4%b8%ad%e5%9b%bd%e7%bf%bb%e8%af%91%e8%81%8c%e4%b8%9a%e4%ba%a4%e6%b5%81%e5%a4%a7%e4%bc%9a-%e4%bc%9a%e8%ae%ae%e9%80%9a%e7%9f%a5%e5%8f%8a%e6%8a%a5' />
+<link rel='next' title='人工智能与机器翻译研讨会' href='http://www.52nlp.cn/%e4%ba%ba%e5%b7%a5%e6%99%ba%e8%83%bd%e4%b8%8e%e6%9c%ba%e5%99%a8%e7%bf%bb%e8%af%91%e7%a0%94%e8%ae%a8%e4%bc%9a' />
+<meta name="generator" content="WordPress 3.9.1" />
+<link rel='canonical' href='http://www.52nlp.cn/%e5%a6%82%e4%bd%95%e8%ae%a1%e7%ae%97%e4%b8%a4%e4%b8%aa%e6%96%87%e6%a1%a3%e7%9a%84%e7%9b%b8%e4%bc%bc%e5%ba%a6%e4%ba%8c' />
+<link rel='shortlink' href='http://www.52nlp.cn/?p=5517' />
+<!-- wp thread comment 1.4.9.4.002 -->
+<style type="text/css" media="screen">
+.editComment, .editableComment, .textComment{
+	display: inline;
+}
+.comment-childs{
+	border: 1px solid #999;
+	margin: 5px 2px 2px 4px;
+	padding: 4px 2px 2px 4px;
+	background-color: white;
+}
+.chalt{
+	background-color: #E2E2E2;
+}
+#newcomment{
+	border:1px dashed #777;width:90%;
+}
+#newcommentsubmit{
+	color:red;
+}
+.adminreplycomment{
+	border:1px dashed #777;
+	width:99%;
+	margin:4px;
+	padding:4px;
+}
+.mvccls{
+	color: #999;
+}
+			
+</style>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: { equationNumbers: { autoNumber: "AMS" } },
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+    inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+    displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+    processEscapes: true
+  },
+  "HTML-CSS": { availableFonts: ["TeX"] }
+});
+</script><script type="text/javascript" src="http://www.52nlp.cn/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</head>
+
+<body class="single single-post postid-5517 single-format-standard">
+<div id="wrapper" class="hfeed">
+	<div id="header">
+		<div id="masthead">
+			<div id="branding" role="banner">
+								<div id="site-title">
+					<span>
+						<a href="http://www.52nlp.cn/" title="我爱自然语言处理" rel="home">我爱自然语言处理</a>
+					</span>
+				</div>
+				<div id="site-description">I Love Natural Language Processing</div>
+
+										<img src="http://www.52nlp.cn/wp-content/themes/twentytenorg/images/headers/path.jpg" width="940" height="198" alt="" />
+								</div><!-- #branding -->
+
+			<div id="access" role="navigation">
+			  				<div class="skip-link screen-reader-text"><a href="#content" title="跳至正文">跳至正文</a></div>
+								<div class="menu"><ul><li ><a href="http://www.52nlp.cn/">首页</a></li><li class="page_item page-item-2"><a href="http://www.52nlp.cn/about">关于</a></li><li class="page_item page-item-2557 page_item_has_children"><a href="http://www.52nlp.cn/resources">资源</a><ul class='children'><li class="page_item page-item-1271"><a href="http://www.52nlp.cn/resources/wpmatheditor">WpMathEditor</a></li></ul></li></ul></div>
+ 
+				<div class="menu"><ul><li class="page_item page-item-2"></li><li class="page_item page-item-2"><a href="http://coursegraph.com" title="课程图谱" target="_blank">课程图谱</a></li><li class="page_item page-item-2"><a href="http://www.nlpjob.com" title="求职" target="_blank">求职招聘</a></li></ul></div>
+			</div><!-- #access -->
+		</div><!-- #masthead -->
+	</div><!-- #header -->
+
+	<div id="main">
+
+		<div id="container">
+			<div id="content" role="main">
+
+			
+
+				<div id="nav-above" class="navigation">
+					<div class="nav-previous"><a href="http://www.52nlp.cn/2013%e5%b9%b4%e7%ac%ac%e4%ba%94%e5%b1%8a%e4%b8%ad%e5%9b%bd%e7%bf%bb%e8%af%91%e8%81%8c%e4%b8%9a%e4%ba%a4%e6%b5%81%e5%a4%a7%e4%bc%9a-%e4%bc%9a%e8%ae%ae%e9%80%9a%e7%9f%a5%e5%8f%8a%e6%8a%a5" rel="prev"><span class="meta-nav">&larr;</span> 2013年第五届中国翻译职业交流大会—会议通知及报名须知</a></div>
+					<div class="nav-next"><a href="http://www.52nlp.cn/%e4%ba%ba%e5%b7%a5%e6%99%ba%e8%83%bd%e4%b8%8e%e6%9c%ba%e5%99%a8%e7%bf%bb%e8%af%91%e7%a0%94%e8%ae%a8%e4%bc%9a" rel="next">人工智能与机器翻译研讨会 <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-above -->
+
+				<div id="post-5517" class="post-5517 post type-post status-publish format-standard hentry category-topic-model category-560 category-nlp tag-gensim tag-lda tag-lsa tag-lsi tag-nltk tag-nltk tag-numpy tag-scipy tag-tf-idf tag-topic-model tag-563 tag-572 tag-573 tag-560 tag-569 tag-561 tag-562 tag-568 tag-567 tag-575 tag-564">
+					<h1 class="entry-title">如何计算两个文档的相似度（二）</h1>
+
+					<div class="entry-meta">
+						<span class="meta-prep meta-prep-author">发表于</span> <a href="http://www.52nlp.cn/%e5%a6%82%e4%bd%95%e8%ae%a1%e7%ae%97%e4%b8%a4%e4%b8%aa%e6%96%87%e6%a1%a3%e7%9a%84%e7%9b%b8%e4%bc%bc%e5%ba%a6%e4%ba%8c" title="20:23" rel="bookmark"><span class="entry-date">2013年05月27号</span></a> <span class="meta-sep">由</span> <span class="author vcard"><a class="url fn n" href="http://www.52nlp.cn/author/admin" title="查看所有由 52nlp 发布的文章">52nlp</a></span>					</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+						<p><a href="http://www.52nlp.cn/%E5%A6%82%E4%BD%95%E8%AE%A1%E7%AE%97%E4%B8%A4%E4%B8%AA%E6%96%87%E6%A1%A3%E7%9A%84%E7%9B%B8%E4%BC%BC%E5%BA%A6%E4%B8%80">上一节</a>我们介绍了一些背景知识以及<a href="http://radimrehurek.com/gensim/">gensim</a> , 相信很多同学已经尝试过了。这一节将从gensim最基本的安装讲起，然后举一个非常简单的例子用以说明如何使用gensim，下一节再介绍其在<a href="http://coursegraph.com">课程图谱</a>上的应用。</p>
+<p>二、gensim的安装和使用</p>
+<p>1、安装<br />
+gensim依赖<a href="http://www.numpy.org/">NumPy</a>和<a href="http://scipy.org/">SciPy</a>这两大Python科学计算工具包，一种简单的安装方法是pip install，但是国内因为网络的缘故常常失败。所以我是下载了gensim的源代码包安装的。gensim的这个<a href="http://radimrehurek.com/gensim/install.html">官方安装页面</a>很详细的列举了兼容的Python和NumPy, SciPy的版本号以及安装步骤，感兴趣的同学可以直接参考。下面我仅仅说明在Ubuntu和Mac OS下的安装：</p>
+<p>1）我的VPS是64位的Ubuntu 12.04，所以安装numpy和scipy比较简单&#8221;sudo apt-get install python-numpy python-scipy&#8221;, 之后解压gensim的安装包，直接“sudo python setup.py install&#8221;即可；</p>
+<p>2）我的本是macbook pro，在mac os上安装numpy和scipy的源码包废了一下周折，特别是后者，一直提示fortran相关的东西没有，google了一下，发现很多人在mac上安装scipy的时候都遇到了这个问题，最后通过homebrew安装了gfortran才搞定：“brew install gfortran”,之后仍然是“sudo python setpy.py install&#8221; numpy 和 scipy即可；</p>
+<p>2、使用<br />
+gensim的官方<a href="http://radimrehurek.com/gensim/tutorial.html">tutorial</a>非常详细，英文ok的同学可以直接参考。以下我会按自己的理解举一个例子说明如何使用gensim，这个例子不同于gensim官方的例子，可以作为一个补充。上一节提到了一个文档：<a href="http://vdisk.weibo.com/s/Da06d">Latent Semantic Indexing (LSI) A Fast Track Tutorial</a> , 这个例子的来源就是这个文档所举的3个一句话doc。首先让我们在命令行中打开python，做一些准备工作:</p>
+<p>>>> from gensim import corpora, models, similarities<br />
+>>> import logging<br />
+>>> logging.basicConfig(format=&#8217;%(asctime)s : %(levelname)s : %(message)s&#8217;, level=logging.INFO)</p>
+<p>然后将上面那个文档中的例子作为文档输入，在Python中用document list表示：</p>
+<p>>>> documents = ["Shipment of gold damaged in a fire",<br />
+... "Delivery of silver arrived in a silver truck",<br />
+... "Shipment of gold arrived in a truck"]</p>
+<p>正常情况下，需要对英文文本做一些预处理工作，譬如去停用词，对文本进行tokenize，stemming以及过滤掉低频的词，但是为了说明问题，也是为了和这篇&#8221;LSI Fast Track Tutorial&#8221;保持一致，以下的预处理仅仅是将英文单词小写化：</p>
+<p>>>> texts = [[word for word in document.lower().split()] for document in documents]<br />
+>>> print texts<br />
+[['shipment', 'of', 'gold', 'damaged', 'in', 'a', 'fire'], ['delivery', 'of', 'silver', 'arrived', 'in', 'a', 'silver', 'truck'], ['shipment', 'of', 'gold', 'arrived', 'in', 'a', 'truck']]</p>
+<p>我们可以通过这些文档抽取一个“<a href="http://en.wikipedia.org/wiki/Bag_of_words">词袋（bag-of-words)</a>&#8220;，将文档的token映射为id：</p>
+<p>>>> dictionary = corpora.Dictionary(texts)<br />
+>>> print dictionary<br />
+Dictionary(11 unique tokens)<br />
+>>> print dictionary.token2id<br />
+{&#8216;a&#8217;: 0, &#8216;damaged&#8217;: 1, &#8216;gold&#8217;: 3, &#8216;fire&#8217;: 2, &#8216;of&#8217;: 5, &#8216;delivery&#8217;: 8, &#8216;arrived&#8217;: 7, &#8216;shipment&#8217;: 6, &#8216;in&#8217;: 4, &#8216;truck&#8217;: 10, &#8216;silver&#8217;: 9}</p>
+<p>然后就可以将用字符串表示的文档转换为用id表示的文档向量：</p>
+<p>>>> corpus = [dictionary.doc2bow(text) for text in texts]<br />
+>>> print corpus<br />
+[[(0, 1), (1, 1), (2, 1), (3, 1), (4, 1), (5, 1), (6, 1)], [(0, 1), (4, 1), (5, 1), (7, 1), (8, 1), (9, 2), (10, 1)], [(0, 1), (3, 1), (4, 1), (5, 1), (6, 1), (7, 1), (10, 1)]]</p>
+<p>例如（9，2）这个元素代表第二篇文档中id为9的单词“silver”出现了2次。</p>
+<p>有了这些信息，我们就可以基于这些“训练文档”计算一个TF-IDF“模型”：</p>
+<p>>>> tfidf = models.TfidfModel(corpus)<br />
+2013-05-27 18:58:15,831 : INFO : collecting document frequencies<br />
+2013-05-27 18:58:15,881 : INFO : PROGRESS: processing document #0<br />
+2013-05-27 18:58:15,881 : INFO : calculating IDF weights for 3 documents and 11 features (21 matrix non-zeros)</p>
+<p>基于这个TF-IDF模型，我们可以将上述用词频表示文档向量表示为一个用tf-idf值表示的文档向量：</p>
+<p>>>> corpus_tfidf = tfidf[corpus]<br />
+>>> for doc in corpus_tfidf:<br />
+&#8230;     print doc<br />
+&#8230;<br />
+[(1, 0.6633689723434505), (2, 0.6633689723434505), (3, 0.2448297500958463), (6, 0.2448297500958463)]<br />
+[(7, 0.16073253746956623), (8, 0.4355066251613605), (9, 0.871013250322721), (10, 0.16073253746956623)]<br />
+[(3, 0.5), (6, 0.5), (7, 0.5), (10, 0.5)]</p>
+<p>发现一些token貌似丢失了，我们打印一下tfidf模型中的信息：</p>
+<p>>>> print tfidf.dfs<br />
+{0: 3, 1: 1, 2: 1, 3: 2, 4: 3, 5: 3, 6: 2, 7: 2, 8: 1, 9: 1, 10: 2}<br />
+>>> print tfidf.idfs<br />
+{0: 0.0, 1: 1.5849625007211563, 2: 1.5849625007211563, 3: 0.5849625007211562, 4: 0.0, 5: 0.0, 6: 0.5849625007211562, 7: 0.5849625007211562, 8: 1.5849625007211563, 9: 1.5849625007211563, 10: 0.5849625007211562}</p>
+<p>我们发现由于包含id为0， 4， 5这3个单词的文档数（df)为3，而文档总数也为3，所以idf被计算为0了，看来gensim没有对分子加1，做一个平滑。不过我们同时也发现这3个单词分别为a, in, of这样的介词，完全可以在预处理时作为停用词干掉，这也从另一个方面说明TF-IDF的有效性。</p>
+<p>有了tf-idf值表示的文档向量，我们就可以训练一个LSI模型，和<a href="http://vdisk.weibo.com/s/Da06d">Latent Semantic Indexing (LSI) A Fast Track Tutorial</a>中的例子相似，我们设置topic数为2：</p>
+<p>>>> lsi = models.LsiModel(corpus_tfidf, id2word=dictionary, num_topics=2)<br />
+>>> lsi.print_topics(2)<br />
+2013-05-27 19:15:26,467 : INFO : topic #0(1.137): 0.438*&#8221;gold&#8221; + 0.438*&#8221;shipment&#8221; + 0.366*&#8221;truck&#8221; + 0.366*&#8221;arrived&#8221; + 0.345*&#8221;damaged&#8221; + 0.345*&#8221;fire&#8221; + 0.297*&#8221;silver&#8221; + 0.149*&#8221;delivery&#8221; + 0.000*&#8221;in&#8221; + 0.000*&#8221;a&#8221;<br />
+2013-05-27 19:15:26,468 : INFO : topic #1(1.000): 0.728*&#8221;silver&#8221; + 0.364*&#8221;delivery&#8221; + -0.364*&#8221;fire&#8221; + -0.364*&#8221;damaged&#8221; + 0.134*&#8221;truck&#8221; + 0.134*&#8221;arrived&#8221; + -0.134*&#8221;shipment&#8221; + -0.134*&#8221;gold&#8221; + -0.000*&#8221;a&#8221; + -0.000*&#8221;in&#8221;</p>
+<p>lsi的物理意义不太好解释，不过最核心的意义是将训练文档向量组成的矩阵SVD分解，并做了一个秩为2的近似SVD分解，可以参考那篇英文tutorail。有了这个lsi模型，我们就可以将文档映射到一个二维的topic空间中：</p>
+<p>>>> corpus_lsi = lsi[corpus_tfidf]<br />
+>>> for doc in corpus_lsi:<br />
+&#8230;     print doc<br />
+&#8230;<br />
+[(0, 0.67211468809878649), (1, -0.54880682119355917)]<br />
+[(0, 0.44124825208697727), (1, 0.83594920480339041)]<br />
+[(0, 0.80401378963792647)]</p>
+<p>可以看出，文档1，3和topic1更相关，文档2和topic2更相关；</p>
+<p>我们也可以顺手跑一个LDA模型：</p>
+<p>>>> lda = models.LdaModel(copurs_tfidf, id2word=dictionary, num_topics=2)<br />
+>>> lda.print_topics(2)<br />
+2013-05-27 19:44:40,026 : INFO : topic #0: 0.119*silver + 0.107*shipment + 0.104*truck + 0.103*gold + 0.102*fire + 0.101*arrived + 0.097*damaged + 0.085*delivery + 0.061*of + 0.061*in<br />
+2013-05-27 19:44:40,026 : INFO : topic #1: 0.110*gold + 0.109*silver + 0.105*shipment + 0.105*damaged + 0.101*arrived + 0.101*fire + 0.098*truck + 0.090*delivery + 0.061*of + 0.061*in</p>
+<p>lda模型中的每个主题单词都有概率意义，其加和为1，值越大权重越大，物理意义比较明确，不过反过来再看这三篇文档训练的2个主题的LDA模型太平均了，没有说服力。</p>
+<p>好了，我们回到LSI模型，有了LSI模型，我们如何来计算文档直接的相思度，或者换个角度，给定一个查询Query，如何找到最相关的文档？当然首先是建索引了：</p>
+<p>>>> index = similarities.MatrixSimilarity(lsi[corpus])<br />
+2013-05-27 19:50:30,282 : INFO : scanning corpus to determine the number of features<br />
+2013-05-27 19:50:30,282 : INFO : creating matrix for 3 documents and 2 features</p>
+<p>还是以这篇英文tutorial中的查询Query为例：gold silver truck。首先将其向量化：</p>
+<p>>>> query = &#8220;gold silver truck&#8221;<br />
+>>> query_bow = dictionary.doc2bow(query.lower().split())<br />
+>>> print query_bow<br />
+[(3, 1), (9, 1), (10, 1)]</p>
+<p>再用之前训练好的LSI模型将其映射到二维的topic空间：</p>
+<p>>>> query_lsi = lsi[query_bow]<br />
+>>> print query_lsi<br />
+[(0, 1.1012835748628467), (1, 0.72812283398049593)]</p>
+<p>最后就是计算其和index中doc的余弦相似度了：</p>
+<p>>>> sims = index[query_lsi]<br />
+>>> print list(enumerate(sims))<br />
+[(0, 0.40757114), (1, 0.93163693), (2, 0.83416492)]</p>
+<p>当然，我们也可以按相似度进行排序：</p>
+<p>>>> sort_sims = sorted(enumerate(sims), key=lambda item: -item[1])<br />
+>>> print sort_sims<br />
+[(1, 0.93163693), (2, 0.83416492), (0, 0.40757114)]</p>
+<p>可以看出，这个查询的结果是doc2 > doc3 > doc1，和fast tutorial是一致的，虽然数值上有一些差别：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2013/05/2dlsi.png"><img src="http://www.52nlp.cn/wp-content/uploads/2013/05/2dlsi.png" alt="2dlsi" width="554" height="272" class="alignnone size-full wp-image-5562" /></a></p>
+<p>好了，这个例子就到此为止，下一节我们将主要说明如何基于gensim计算<a href="http://coursegraph.com">课程图谱</a>上课程之间的主题相似度，同时考虑一些改进方法，包括借助英文的自然语言处理工具包<a href="http://nltk.org/">NLTK</a>以及用更大的维基百科的语料来看看效果。</p>
+<p>未完待续&#8230;</p>
+<p>注：原创文章，转载请注明出处“<a href="http://www.52nlp.cn">我爱自然语言处理</a>”：<a href="http://www.52nlp.cn">www.52nlp.cn</a></p>
+<p>本文链接地址：<a href="http://www.52nlp.cn/如何计算两个文档的相似度二">http://www.52nlp.cn/如何计算两个文档的相似度二</a></p>
+<div class='yarpp-related'>
+<p>相关文章:<ol>
+<li><a href="http://www.52nlp.cn/%e5%a6%82%e4%bd%95%e8%ae%a1%e7%ae%97%e4%b8%a4%e4%b8%aa%e6%96%87%e6%a1%a3%e7%9a%84%e7%9b%b8%e4%bc%bc%e5%ba%a6%e4%b8%80" rel="bookmark" title="如何计算两个文档的相似度（一）">如何计算两个文档的相似度（一） </a></li>
+<li><a href="http://www.52nlp.cn/%e5%a6%82%e4%bd%95%e8%ae%a1%e7%ae%97%e4%b8%a4%e4%b8%aa%e6%96%87%e6%a1%a3%e7%9a%84%e7%9b%b8%e4%bc%bc%e5%ba%a6%e4%b8%89" rel="bookmark" title="如何计算两个文档的相似度（三）">如何计算两个文档的相似度（三） </a></li>
+<li><a href="http://www.52nlp.cn/%e5%88%9d%e5%ad%a6%e8%80%85%e6%8a%a5%e9%81%93%ef%bc%882%ef%bc%89%ef%bc%9a%e5%ae%9e%e7%8e%b0-1-gram%e5%88%86%e8%af%8d%e7%ae%97%e6%b3%95" rel="bookmark" title="初学者报道（2）：实现 1-gram分词算法">初学者报道（2）：实现 1-gram分词算法 </a></li>
+<li><a href="http://www.52nlp.cn/%e5%88%9d%e5%ad%a6%e8%80%85%e6%8a%a5%e5%88%b0-%e5%ae%9e%e7%8e%b0%e4%ba%86%e4%b8%80%e4%b8%aa%e6%9c%80%e5%a4%a7%e5%8c%b9%e9%85%8d%e7%9a%84%e5%88%86%e8%af%8d%e7%ae%97%e6%b3%95" rel="bookmark" title="初学者报到: 实现了一个最大匹配的分词算法">初学者报到: 实现了一个最大匹配的分词算法 </a></li>
+<li><a href="http://www.52nlp.cn/%e4%b8%80%e4%b8%aa%e4%b8%8d%e9%94%99%e7%9a%84%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86%e8%af%8d%e5%85%b8" rel="bookmark" title="一个不错的自然语言处理词典">一个不错的自然语言处理词典 </a></li>
+<li><a href="http://www.52nlp.cn/%e5%8c%97%e4%ba%ac%e6%a3%ae%e6%9e%97%e5%b7%a5%e4%bd%9c%e5%ae%a4%e6%b1%89%e8%af%ad%e5%8f%a5%e4%b9%89%e7%bb%93%e6%9e%84%e6%a0%87%e6%b3%a8%e8%af%ad%e6%96%99%e5%ba%93%ef%bc%88bfs-ctc%ef%bc%89%e5%85%b1" rel="bookmark" title="北京森林工作室汉语句义结构标注语料库（BFS-CTC）共享资源">北京森林工作室汉语句义结构标注语料库（BFS-CTC）共享资源 </a></li>
+<li><a href="http://www.52nlp.cn/%e8%bd%ac%e8%bd%bd-topic-modeling-made-just-simple-enough" rel="bookmark" title="转载:　Topic modeling made just simple enough">转载:　Topic modeling made just simple enough </a></li>
+<li><a href="http://www.52nlp.cn/%e5%a6%82%e4%bd%95%e8%ae%a1%e7%ae%97%e4%b8%a4%e4%b8%aa%e6%96%87%e6%a1%a3%e7%9a%84%e7%9b%b8%e4%bc%bc%e5%ba%a6%e5%85%a8%e6%96%87%e6%96%87%e6%a1%a3" rel="bookmark" title="如何计算两个文档的相似度全文文档">如何计算两个文档的相似度全文文档 </a></li>
+<li><a href="http://www.52nlp.cn/lda-math-%e6%96%87%e6%9c%ac%e5%bb%ba%e6%a8%a1" rel="bookmark" title="LDA-math-文本建模">LDA-math-文本建模 </a></li>
+<li><a href="http://www.52nlp.cn/abcnlp-ab-natural-chinese-languange-processing" rel="bookmark" title="abcNLP: AB-Natural Chinese Languange Processing">abcNLP: AB-Natural Chinese Languange Processing </a></li>
+</ol></p>
+</div>
+											</div><!-- .entry-content -->
+
+
+					<div class="entry-utility">
+						此条目发表在 <a href="http://www.52nlp.cn/category/topic-model" title="查看Topic Model中的全部文章" rel="category tag">Topic Model</a>, <a href="http://www.52nlp.cn/category/%e6%8e%a8%e8%8d%90%e7%b3%bb%e7%bb%9f" title="查看推荐系统中的全部文章" rel="category tag">推荐系统</a>, <a href="http://www.52nlp.cn/category/nlp" title="查看自然语言处理中的全部文章" rel="category tag">自然语言处理</a> 分类目录，贴了 <a href="http://www.52nlp.cn/tag/gensim" rel="tag">gensim</a>, <a href="http://www.52nlp.cn/tag/lda" rel="tag">LDA</a>, <a href="http://www.52nlp.cn/tag/lsa" rel="tag">LSA</a>, <a href="http://www.52nlp.cn/tag/lsi" rel="tag">LSI</a>, <a href="http://www.52nlp.cn/tag/nltk" rel="tag">nltk</a>, <a href="http://www.52nlp.cn/tag/nltk%e5%ba%94%e7%94%a8" rel="tag">NLTK应用</a>, <a href="http://www.52nlp.cn/tag/numpy" rel="tag">numpy</a>, <a href="http://www.52nlp.cn/tag/scipy" rel="tag">scipy</a>, <a href="http://www.52nlp.cn/tag/tf-idf" rel="tag">TF-IDF</a>, <a href="http://www.52nlp.cn/tag/topic-model" rel="tag">Topic Model</a>, <a href="http://www.52nlp.cn/tag/%e4%b8%bb%e9%a2%98%e6%a8%a1%e5%9e%8b" rel="tag">主题模型</a>, <a href="http://www.52nlp.cn/tag/%e4%bd%99%e5%bc%a6%e7%9b%b8%e4%bc%bc%e5%ba%a6" rel="tag">余弦相似度</a>, <a href="http://www.52nlp.cn/tag/%e5%90%91%e9%87%8f%e7%a9%ba%e9%97%b4%e6%a8%a1%e5%9e%8b" rel="tag">向量空间模型</a>, <a href="http://www.52nlp.cn/tag/%e6%8e%a8%e8%8d%90%e7%b3%bb%e7%bb%9f" rel="tag">推荐系统</a>, <a href="http://www.52nlp.cn/tag/%e6%96%87%e6%9c%ac%e5%88%86%e6%9e%90" rel="tag">文本分析</a>, <a href="http://www.52nlp.cn/tag/%e6%96%87%e6%9c%ac%e7%9b%b8%e4%bc%bc%e5%ba%a6" rel="tag">文本相似度</a>, <a href="http://www.52nlp.cn/tag/%e6%96%87%e6%a1%a3%e7%9b%b8%e4%bc%bc%e5%ba%a6" rel="tag">文档相似度</a>, <a href="http://www.52nlp.cn/tag/%e6%b5%85%e5%b1%82%e8%af%ad%e4%b9%89%e5%88%86%e6%9e%90" rel="tag">浅层语义分析</a>, <a href="http://www.52nlp.cn/tag/%e6%b5%85%e5%b1%82%e8%af%ad%e4%b9%89%e7%b4%a2%e5%bc%95" rel="tag">浅层语义索引</a>, <a href="http://www.52nlp.cn/tag/%e7%bb%b4%e5%9f%ba%e7%99%be%e7%a7%91%e8%af%ad%e6%96%99" rel="tag">维基百科语料</a>, <a href="http://www.52nlp.cn/tag/%e8%af%be%e7%a8%8b%e5%9b%be%e8%b0%b1" rel="tag">课程图谱</a> 标签。将<a href="http://www.52nlp.cn/%e5%a6%82%e4%bd%95%e8%ae%a1%e7%ae%97%e4%b8%a4%e4%b8%aa%e6%96%87%e6%a1%a3%e7%9a%84%e7%9b%b8%e4%bc%bc%e5%ba%a6%e4%ba%8c" title="链向 如何计算两个文档的相似度（二） 的固定链接" rel="bookmark">固定链接</a>加入收藏夹。											</div><!-- .entry-utility -->
+				</div><!-- #post-## -->
+
+				<div id="nav-below" class="navigation">
+					<div class="nav-previous"><a href="http://www.52nlp.cn/2013%e5%b9%b4%e7%ac%ac%e4%ba%94%e5%b1%8a%e4%b8%ad%e5%9b%bd%e7%bf%bb%e8%af%91%e8%81%8c%e4%b8%9a%e4%ba%a4%e6%b5%81%e5%a4%a7%e4%bc%9a-%e4%bc%9a%e8%ae%ae%e9%80%9a%e7%9f%a5%e5%8f%8a%e6%8a%a5" rel="prev"><span class="meta-nav">&larr;</span> 2013年第五届中国翻译职业交流大会—会议通知及报名须知</a></div>
+					<div class="nav-next"><a href="http://www.52nlp.cn/%e4%ba%ba%e5%b7%a5%e6%99%ba%e8%83%bd%e4%b8%8e%e6%9c%ba%e5%99%a8%e7%bf%bb%e8%af%91%e7%a0%94%e8%ae%a8%e4%bc%9a" rel="next">人工智能与机器翻译研讨会 <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-below -->
+
+				
+			<div id="comments">
+
+
+			<h3 id="comments-title">《<em>如何计算两个文档的相似度（二）</em>》有 11 条评论</h3>
+
+
+			<ol class="commentlist">
+					<li class="comment even thread-even depth-1" id="li-comment-8209">
+		<div id="comment-8209">
+		<div class="comment-author vcard">
+			<img alt='' src='http://1.gravatar.com/avatar/53bad55d100a470e20652bbec92d0a36?s=40&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn">blowyourheart</cite> <span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e5%a6%82%e4%bd%95%e8%ae%a1%e7%ae%97%e4%b8%a4%e4%b8%aa%e6%96%87%e6%a1%a3%e7%9a%84%e7%9b%b8%e4%bc%bc%e5%ba%a6%e4%ba%8c/comment-page-1#comment-8209">
+			2013年06月2号23:27</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>居然有这么详细的python自然语言处理工具包，用起来好爽呀。</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,8209,1,'blowyourheart');">回复</a>]</p></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="post pingback">
+		<p>Pingback 引用通告： <a href='http://www.52nlp.cn/%e5%a6%82%e4%bd%95%e8%ae%a1%e7%ae%97%e4%b8%a4%e4%b8%aa%e6%96%87%e6%a1%a3%e7%9a%84%e7%9b%b8%e4%bc%bc%e5%ba%a6%e4%b8%89' rel='external nofollow' class='url'>如何计算两个文档的相似度（三） | 我爱自然语言处理</a></p>
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-8343">
+		<div id="comment-8343">
+		<div class="comment-author vcard">
+			<img alt='' src='http://1.gravatar.com/avatar/d95db4157c3fcd71fcd23f367c28bd9c?s=40&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn"><a href='http://zwsun.com' rel='external nofollow' class='url'>pensz</a></cite> <span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e5%a6%82%e4%bd%95%e8%ae%a1%e7%ae%97%e4%b8%a4%e4%b8%aa%e6%96%87%e6%a1%a3%e7%9a%84%e7%9b%b8%e4%bc%bc%e5%ba%a6%e4%ba%8c/comment-page-1#comment-8343">
+			2013年06月17号00:24</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>请教一下，为什么建立index的时候是</p>
+<p>index = similarities.MatrixSimilarity(lsi[corpus])</p>
+<p>而不是</p>
+<p>index = similarities.MatrixSimilarity(lsi[corpus_tfidf])</p>
+<p>呢？</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,8343,1,'pensz');">回复</a>]</p><div class="comment-childs chalt" id="comment-8386"><img alt='' src='http://1.gravatar.com/avatar/94f3d2b2abd2f88443eee0eeeb7792fc?s=32&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">六月 19th, 2013 at 15:41</small></p><p>这个问题没怎么思考过，不过可以认为lsi model中已经含了tfidf的信息，具体可以看看代码中是如何操作的。</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,8386,2,'52nlp');">回复</a>]</p><div class="comment-childs" id="comment-28398"><img alt='' src='http://1.gravatar.com/avatar/71048980681d9f961eb1d8790f461164?s=32&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /><p><cite>maomao</cite> 回复:<br /><small class="commentmetadata">六月 20th, 2014 at 15:15</small></p><p>因为对新的文档无法计算idf吧应该是，</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,28398,3,'maomao');">回复</a>]</p></div></div></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="li-comment-8406">
+		<div id="comment-8406">
+		<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/278e03eb87bbd4b5fd931e4d4be244fa?s=40&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn">陈亮</cite> <span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e5%a6%82%e4%bd%95%e8%ae%a1%e7%ae%97%e4%b8%a4%e4%b8%aa%e6%96%87%e6%a1%a3%e7%9a%84%e7%9b%b8%e4%bc%bc%e5%ba%a6%e4%ba%8c/comment-page-1#comment-8406">
+			2013年06月20号15:55</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>您好，我在win7上装上了gensim,按照您的例子输入语句：<br />
+from gensim import corpora, models, similarities的时候报错：<br />
+Traceback (most recent call last):<br />
+  File &#8220;&#8221;, line 1, in<br />
+    from gensim import corpora, models, similarities<br />
+ImportError: No module named gensim<br />
+请问这是什么原因导致的呢？我之前没有接触过python.</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,8406,1,'陈亮');">回复</a>]</p><div class="comment-childs chalt" id="comment-8410"><img alt='' src='http://1.gravatar.com/avatar/94f3d2b2abd2f88443eee0eeeb7792fc?s=32&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">六月 21st, 2013 at 07:42</small></p><p>这是显示的是gensim美元安装成功：ImportError: No module named gensim</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,8410,2,'52nlp');">回复</a>]</p><div class="comment-childs" id="comment-8411"><img alt='' src='http://0.gravatar.com/avatar/278e03eb87bbd4b5fd931e4d4be244fa?s=32&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /><p><cite>陈亮</cite> 回复:<br /><small class="commentmetadata">六月 21st, 2013 at 07:54</small></p><p>谢谢您的回复，是不是说这个导入错误信息不影响使用呢？另外“gensim美元”是什么意思？我问这些可能是些很菜的问题，见笑了。</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,8411,3,'陈亮');">回复</a>]</p></div><div class="comment-childs" id="comment-8412"><img alt='' src='http://0.gravatar.com/avatar/278e03eb87bbd4b5fd931e4d4be244fa?s=32&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /><p><cite><a href='http://deleted' rel='external nofollow' class='url'>陈亮</a></cite> 回复:<br /><small class="commentmetadata">六月 21st, 2013 at 07:59</small></p><p>额，应该是您把“没有”打成美元了，多谢你的回答。</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,8412,3,'陈亮');">回复</a>]</p></div></div></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-8774">
+		<div id="comment-8774">
+		<div class="comment-author vcard">
+			<img alt='' src='http://1.gravatar.com/avatar/d9aa6159bd8933b40ed2c4052d282362?s=40&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn">jeankeim</cite> <span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e5%a6%82%e4%bd%95%e8%ae%a1%e7%ae%97%e4%b8%a4%e4%b8%aa%e6%96%87%e6%a1%a3%e7%9a%84%e7%9b%b8%e4%bc%bc%e5%ba%a6%e4%ba%8c/comment-page-1#comment-8774">
+			2013年07月28号16:53</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>corpus_lsi = lsi[corpus_tfidf]<br />
+&gt;&gt;&gt; for doc in corpus_lsi:<br />
+… print doc<br />
+以上这段程序和上下文没有任何关联，去掉感觉阅读全文更加流畅。</p>
+<p>通过用lda求相似<br />
+lda = models.LdaModel(corpus_tfidf, id2word=dictionary, num_topics=2)<br />
+lda.print_topics(2)<br />
+for doc in lda[corpus]:<br />
+    print doc<br />
+query_lda = lda[query_bow]<br />
+index = similarities.MatrixSimilarity(lda[corpus])<br />
+sims = index[query_lda]<br />
+print list(enumerate(sims)) #[(0, 0.37399071), (1, 0.9899627), (2, 0.9950707)]<br />
+##可以看出来用lsi 和lda模型 运算出来的结果是一致的</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,8774,1,'jeankeim');">回复</a>]</p></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="li-comment-9934">
+		<div id="comment-9934">
+		<div class="comment-author vcard">
+			<img alt='' src='http://1.gravatar.com/avatar/b4d794fbfd7d8d9eb20ac662c860bc69?s=40&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn">俞语鱼</cite> <span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e5%a6%82%e4%bd%95%e8%ae%a1%e7%ae%97%e4%b8%a4%e4%b8%aa%e6%96%87%e6%a1%a3%e7%9a%84%e7%9b%b8%e4%bc%bc%e5%ba%a6%e4%ba%8c/comment-page-1#comment-9934">
+			2013年11月2号15:20</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>我其实不是很明白LSI模型 设置topic2<br />
+&gt;&gt;&gt; corpus_lsi = lsi[corpus_tfidf]<br />
+&gt;&gt;&gt; for doc in corpus_lsi:<br />
+… print doc<br />
+…<br />
+[(0, 0.67211468809878649), (1, -0.54880682119355917)]<br />
+[(0, 0.44124825208697727), (1, 0.83594920480339041)]<br />
+[(0, 0.80401378963792647)]</p>
+<p>可以看出，文档1，3和topic1更相关，文档2和topic2更相关；</p>
+<p>这一段不是很了解</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,9934,1,'俞语鱼');">回复</a>]</p></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+			</ol>
+
+
+
+								<div id="respond" class="comment-respond">
+				<h3 id="reply-title" class="comment-reply-title">发表评论 <small><a rel="nofollow" id="cancel-comment-reply-link" href="/%e5%a6%82%e4%bd%95%e8%ae%a1%e7%ae%97%e4%b8%a4%e4%b8%aa%e6%96%87%e6%a1%a3%e7%9a%84%e7%9b%b8%e4%bc%bc%e5%ba%a6%e4%ba%8c#respond" style="display:none;">取消回复</a></small></h3>
+									<form action="http://www.52nlp.cn/wp-comments-post.php" method="post" id="commentform" class="comment-form">
+																			<p class="comment-notes">电子邮件地址不会被公开。 必填项已用<span class="required">*</span>标注</p>							<p class="comment-form-author"><label for="author">姓名 <span class="required">*</span></label> <input id="author" name="author" type="text" value="" size="30" aria-required='true' /></p>
+<p class="comment-form-email"><label for="email">电子邮件 <span class="required">*</span></label> <input id="email" name="email" type="text" value="" size="30" aria-required='true' /></p>
+<p class="comment-form-url"><label for="url">站点</label> <input id="url" name="url" type="text" value="" size="30" /></p>
+												<p class="comment-form-comment"><label for="comment">评论</label> <textarea id="comment" name="comment" cols="45" rows="8" aria-required="true"></textarea></p>						<p class="form-allowed-tags">您可以使用这些<abbr title="HyperText Markup Language">HTML</abbr>标签和属性： <code>&lt;a href=&quot;&quot; title=&quot;&quot;&gt; &lt;abbr title=&quot;&quot;&gt; &lt;acronym title=&quot;&quot;&gt; &lt;b&gt; &lt;blockquote cite=&quot;&quot;&gt; &lt;cite&gt; &lt;code&gt; &lt;del datetime=&quot;&quot;&gt; &lt;em&gt; &lt;i&gt; &lt;q cite=&quot;&quot;&gt; &lt;strike&gt; &lt;strong&gt; </code></p>						<p class="form-submit">
+							<input name="submit" type="submit" id="submit" value="发表评论" />
+							<input type='hidden' name='comment_post_ID' value='5517' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+						</p>
+						<p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="f0222c7c3f" /></p><p style="display: none;"><input type="hidden" id="ak_js" name="ak_js" value="12"/></p><p><input type="hidden" id="comment_reply_ID" name="comment_reply_ID" value="0" /><input type="hidden" id="comment_reply_dp" name="comment_reply_dp" value="0" /></p><div id="cancel_reply" style="display:none;"><a href="javascript:void(0)" onclick="movecfm(null,0,1,null);" style="color:red;">点击取消回复</a></div><script type="text/javascript">
+/* <![CDATA[ */
+var commentformid = "commentform";
+var USERINFO = false;
+var atreply = "none";
+/* ]]> */
+</script>
+<script type="text/javascript" src="http://www.52nlp.cn/wp-content/plugins/wp-thread-comment/wp-thread-comment.js.php?jsver=common"></script>
+					</form>
+							</div><!-- #respond -->
+			
+</div><!-- #comments -->
+
+
+			</div><!-- #content -->
+		</div><!-- #container -->
+
+﻿
+		<div id="primary" class="widget-area" role="complementary">
+			<ul class="xoxo">
+<!-- begin l_sidebar -->
+	<div id="l_sidebar">
+<p>卓越网：<a href="http://www.amazon.cn/mn/searchApp?source=garypyang-23&searchType=1&keywords=自然语言处理" title="自然语言处理书籍"target=_blank>自然语言处理书籍</a><br>
+<li id="search-3" class="widget-container widget_search"><h3 class="widget-title">站内搜索</h3><form role="search" method="get" id="searchform" class="searchform" action="http://www.52nlp.cn/">
+				<div>
+					<label class="screen-reader-text" for="s">搜索：</label>
+					<input type="text" value="" name="s" id="s" />
+					<input type="submit" id="searchsubmit" value="搜索" />
+				</div>
+			</form></li><li id="text-4" class="widget-container widget_text"><h3 class="widget-title">NLPJob新鲜职位推荐:</h3>			<div class="textwidget"><p></p>
+<script src="http://www.nlpjob.com/api/api.php?action=getJobs
+&type=0&category=0&count=8&random=1&days_behind=7&response=js" type="text/javascript"></script>
+
+<script type="text/javascript">showJobs('jobber-container', 'jobber-list');</script></div>
+		</li><li id="text-3" class="widget-container widget_text"><h3 class="widget-title">52nlp新浪微博</h3>			<div class="textwidget"><p><iframe id="sina_widget_2104931705" style="width:100%; height:500px;" frameborder="0" scrolling="no" src="http://v.t.sina.com.cn/widget/widget_blog.php?uid=2104931705&height=500&skin=wd_01&showpic=1"></iframe></p>
+<p><!-- JiaThis Button BEGIN --><br />
+<script type="text/javascript" src="http://v3.jiathis.com/code/jiathis_r.js?uid=1340292124103344&move=0&amp;btn=r3.gif" charset="utf-8"></script><br />
+<!-- JiaThis Button END --></p>
+</div>
+		</li><li id="categories-309398091" class="widget-container widget_categories"><h3 class="widget-title">分类目录</h3>		<ul>
+	<li class="cat-item cat-item-72"><a href="http://www.52nlp.cn/category/mit-nlp" title="麻省理工学院开放式课程&quot;自然语言处理“的相关翻译文章">MIT自然语言处理</a> (23)
+</li>
+	<li class="cat-item cat-item-469"><a href="http://www.52nlp.cn/category/topic-model" title="查看Topic Model下的所有文章">Topic Model</a> (10)
+</li>
+	<li class="cat-item cat-item-87"><a href="http://www.52nlp.cn/category/wordpress" title="查看wordpress下的所有文章">wordpress</a> (6)
+</li>
+	<li class="cat-item cat-item-317"><a href="http://www.52nlp.cn/category/%e4%b8%93%e9%a2%98" title="查看专题下的所有文章">专题</a> (6)
+</li>
+	<li class="cat-item cat-item-263"><a href="http://www.52nlp.cn/category/chinese-information-processing" title="查看中文信息处理下的所有文章">中文信息处理</a> (17)
+</li>
+	<li class="cat-item cat-item-62"><a href="http://www.52nlp.cn/category/word-segmentation" title="查看中文分词下的所有文章">中文分词</a> (34)
+</li>
+	<li class="cat-item cat-item-420"><a href="http://www.52nlp.cn/category/%e5%b9%b6%e8%a1%8c%e7%ae%97%e6%b3%95" title="查看并行算法下的所有文章">并行算法</a> (1)
+</li>
+	<li class="cat-item cat-item-268"><a href="http://www.52nlp.cn/category/%e6%8b%9b%e8%81%98" title="查看招聘下的所有文章">招聘</a> (4)
+</li>
+	<li class="cat-item cat-item-560"><a href="http://www.52nlp.cn/category/%e6%8e%a8%e8%8d%90%e7%b3%bb%e7%bb%9f" title="查看推荐系统下的所有文章">推荐系统</a> (3)
+</li>
+	<li class="cat-item cat-item-354"><a href="http://www.52nlp.cn/category/%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98" title="查看数据挖掘下的所有文章">数据挖掘</a> (1)
+</li>
+	<li class="cat-item cat-item-241"><a href="http://www.52nlp.cn/category/text-classification" title="查看文本分类下的所有文章">文本分类</a> (2)
+</li>
+	<li class="cat-item cat-item-193"><a href="http://www.52nlp.cn/category/maximum-entropy-model" title="查看最大熵模型下的所有文章">最大熵模型</a> (7)
+</li>
+	<li class="cat-item cat-item-344"><a href="http://www.52nlp.cn/category/%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0" title="查看机器学习下的所有文章">机器学习</a> (13)
+</li>
+	<li class="cat-item cat-item-1"><a href="http://www.52nlp.cn/category/machine-translation" title="查看机器翻译下的所有文章">机器翻译</a> (54)
+</li>
+	<li class="cat-item cat-item-195"><a href="http://www.52nlp.cn/category/%e6%9d%a1%e4%bb%b6%e9%9a%8f%e6%9c%ba%e5%9c%ba" title="查看条件随机场下的所有文章">条件随机场</a> (3)
+</li>
+	<li class="cat-item cat-item-153"><a href="http://www.52nlp.cn/category/tagging" title="查看标注下的所有文章">标注</a> (13)
+</li>
+	<li class="cat-item cat-item-885"><a href="http://www.52nlp.cn/category/%e7%a7%91%e5%ad%a6%e8%ae%a1%e7%ae%97" title="查看科学计算下的所有文章">科学计算</a> (1)
+</li>
+	<li class="cat-item cat-item-538"><a href="http://www.52nlp.cn/category/%e7%bb%9f%e8%ae%a1%e5%ad%a6" title="查看统计学下的所有文章">统计学</a> (10)
+</li>
+	<li class="cat-item cat-item-126"><a href="http://www.52nlp.cn/category/translation-model" title="查看翻译模型下的所有文章">翻译模型</a> (2)
+</li>
+	<li class="cat-item cat-item-51"><a href="http://www.52nlp.cn/category/nlp" title="查看自然语言处理下的所有文章">自然语言处理</a> (223)
+</li>
+	<li class="cat-item cat-item-106"><a href="http://www.52nlp.cn/category/computational-linguistics" title="查看计算语言学下的所有文章">计算语言学</a> (38)
+</li>
+	<li class="cat-item cat-item-22"><a href="http://www.52nlp.cn/category/dictionary" title="查看词典下的所有文章">词典</a> (8)
+</li>
+	<li class="cat-item cat-item-221"><a href="http://www.52nlp.cn/category/semantics" title="查看语义学下的所有文章">语义学</a> (1)
+</li>
+	<li class="cat-item cat-item-161"><a href="http://www.52nlp.cn/category/semantic-web" title="查看语义网下的所有文章">语义网</a> (3)
+</li>
+	<li class="cat-item cat-item-37"><a href="http://www.52nlp.cn/category/corpus" title="查看语料库下的所有文章">语料库</a> (12)
+</li>
+	<li class="cat-item cat-item-86"><a href="http://www.52nlp.cn/category/language-model" title="查看语言模型下的所有文章">语言模型</a> (23)
+</li>
+	<li class="cat-item cat-item-156"><a href="http://www.52nlp.cn/category/speech-recognition" title="查看语音识别下的所有文章">语音识别</a> (4)
+</li>
+	<li class="cat-item cat-item-314"><a href="http://www.52nlp.cn/category/%e8%b4%9d%e5%8f%b6%e6%96%af%e6%a8%a1%e5%9e%8b" title="查看贝叶斯模型下的所有文章">贝叶斯模型</a> (1)
+</li>
+	<li class="cat-item cat-item-110"><a href="http://www.52nlp.cn/category/reprint" title="查看转载下的所有文章">转载</a> (28)
+</li>
+	<li class="cat-item cat-item-451"><a href="http://www.52nlp.cn/category/%e9%97%ae%e7%ad%94%e7%b3%bb%e7%bb%9f" title="查看问答系统下的所有文章">问答系统</a> (1)
+</li>
+	<li class="cat-item cat-item-3"><a href="http://www.52nlp.cn/category/informal-essay" title="查看随笔下的所有文章">随笔</a> (61)
+</li>
+	<li class="cat-item cat-item-60"><a href="http://www.52nlp.cn/category/hidden-markov-model" title="查看隐马尔科夫模型下的所有文章">隐马尔科夫模型</a> (36)
+</li>
+		</ul>
+</li><li id="archives-2" class="widget-container widget_archive"><h3 class="widget-title">文章归档</h3>		<ul>
+	<li><a href='http://www.52nlp.cn/2014/07'>2014年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/06'>2014年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/05'>2014年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/04'>2014年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/01'>2014年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/12'>2013年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/06'>2013年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/05'>2013年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/04'>2013年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/03'>2013年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/02'>2013年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/01'>2013年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/12'>2012年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/11'>2012年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/10'>2012年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/09'>2012年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/08'>2012年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/07'>2012年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/06'>2012年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/05'>2012年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/04'>2012年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/03'>2012年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/01'>2012年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/12'>2011年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/11'>2011年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/10'>2011年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/09'>2011年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/08'>2011年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/07'>2011年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/06'>2011年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/05'>2011年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/04'>2011年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/03'>2011年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/02'>2011年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/01'>2011年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/12'>2010年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/11'>2010年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/10'>2010年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/09'>2010年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/08'>2010年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/07'>2010年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/06'>2010年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/05'>2010年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/04'>2010年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/03'>2010年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/02'>2010年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/01'>2010年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/12'>2009年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/11'>2009年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/10'>2009年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/09'>2009年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/08'>2009年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/07'>2009年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/06'>2009年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/05'>2009年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/04'>2009年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/03'>2009年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/02'>2009年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/01'>2009年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2008/12'>2008年十二月</a></li>
+		</ul>
+</li>		<li id="recent-posts-2" class="widget-container widget_recent_entries">		<h3 class="widget-title">最新文章</h3>		<ul>
+					<li>
+				<a href="http://www.52nlp.cn/python-%e7%bd%91%e9%a1%b5%e7%88%ac%e8%99%ab-%e6%96%87%e6%9c%ac%e5%a4%84%e7%90%86-%e7%a7%91%e5%ad%a6%e8%ae%a1%e7%ae%97-%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0-%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98">Python 网页爬虫 &#038; 文本处理 &#038; 科学计算 &#038; 机器学习 &#038; 数据挖掘兵器谱</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e7%bf%bb%e8%af%91%e6%8a%80%e6%9c%af%e6%b2%99%e9%be%99%e7%ac%ac%e5%8d%81%e5%85%ad%e6%ac%a1%e6%b4%bb%e5%8a%a8-%e4%ba%92%e8%81%94%e7%bd%91%e6%8a%80%e6%9c%af%e9%a9%b1%e5%8a%a8">翻译技术沙龙第十六次活动——“互联网技术驱动下的语言服务众包模式” 通知</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e7%81%ab%e5%85%89%e6%91%87%e6%9b%b3%e7%a5%9e%e5%a5%87%e7%9a%84%e4%bc%bd%e7%8e%9b%e5%87%bd%e6%95%b0%e4%b8%8b">[火光摇曳]神奇的伽玛函数(下)</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e7%a5%9e%e5%a5%87%e7%9a%84%e4%bc%bd%e7%8e%9b%e5%87%bd%e6%95%b0%e4%b8%8a">[火光摇曳]神奇的伽玛函数(上)</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/nlpjob-%e4%b8%bb%e7%ab%99%e4%b8%8a%e7%ba%bf">NLPJob 主站上线</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e9%a1%ba%e4%b8%b0%e6%b5%b7%e6%b7%98sfbuy%e9%a6%96%e6%ac%a1%e4%bd%93%e9%aa%8c-%e7%be%8e%e5%9b%bd%e4%ba%9a%e9%a9%ac%e9%80%8a%e6%b5%b7%e6%b7%98kindle-dx%e8%bd%ac%e8%bf%90%e5%85%a8%e6%94%bb%e7%95%a5">顺丰海淘SFBuy首次体验-美国亚马逊海淘Kindle DX转运全攻略</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/digitalocean%e4%bd%bf%e7%94%a8%e5%b0%8f%e8%ae%b0">DigitalOcean使用小记</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%95%e5%85%a8%e6%96%87%e6%96%87%e6%a1%a3">中文分词入门之字标注法全文文档</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%954">中文分词入门之字标注法4</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%953">中文分词入门之字标注法3</a>
+						</li>
+				</ul>
+		</li><li id="recentcomments" class="widget-container widget_recentcomments"><h3 class="widget-title">最近评论</h3><ul><li class="rc-navi rc-clearfix"><span class="rc-loading">正在加载...</span></li><li id="rc-comment-temp" class="rc-item rc-comment rc-clearfix"><div class="rc-info"></div><div class="rc-timestamp"></div><div class="rc-excerpt"></div></li><li id="rc-ping-temp" class="rc-item rc-ping rc-clearfix"><span class="rc-label"></span></li></ul></li>			</ul>
+		</div><!-- #primary .widget-area -->
+
+
+		<div id="secondary" class="widget-area" role="complementary">
+			<ul class="xoxo">
+				<li id="linkcat-103" class="widget-container widget_links"><h3 class="widget-title">NLP相关网站</h3>
+	<ul class='xoxo blogroll'>
+<li><a href="http://www.aclweb.org/" rel="co-worker" title="The Association for Computational Linguistics" target="_blank">ACL</a></li>
+<li><a href="http://aclweb.org/anthology-new/" rel="co-worker" title="A Digital Archive of Research Papers in Computational Linguistics" target="_blank">ACL Anthology</a></li>
+<li><a href="http://belobog.si.umich.edu/clair/anthology/index.cgi" rel="colleague" target="_blank">ACL Anthology Network</a></li>
+<li><a href="http://aclweb.org/aclwiki/index.php?title=Main_Page" rel="colleague" title="the Wiki of the Association for Computational Linguistics" target="_blank">ACL Wiki</a></li>
+<li><a href="http://www.clsp.jhu.edu/" rel="colleague" target="_blank">CLSP</a></li>
+<li><a href="http://www.cwbbase.com/" rel="colleague" title="这是一个略具规模的中文语义词库, 也是稍有特色的汉语语义词典" target="_blank">CWB中文词库</a></li>
+<li><a href="http://www.euromatrix.net/" rel="colleague" target="_blank">EuroMatrix</a></li>
+<li><a href="http://www.freebase.com" rel="colleague" target="_blank">Freebase</a></li>
+<li><a href="http://www.clsp.jhu.edu/workshops/" rel="colleague" target="_blank">JHU Workshop</a></li>
+<li><a href="http://www.ldc.upenn.edu/" rel="colleague" title="Linguistic Data Consortium" target="_blank">LDC</a></li>
+<li><a href="http://www.statmt.org/moses/" rel="colleague" title="A factored phrase-based beam-search decoder for machine translation" target="_blank">Moses</a></li>
+<li><a href="http://nlpers.blogspot.com/" rel="colleague" title="国外一个非常不错的自然语言处理博客" target="_blank">nlper</a></li>
+<li><a href="http://www.powerset.com/" rel="colleague" target="_blank">Powerset</a></li>
+<li><a href="http://www.speech.sri.com/projects/srilm/" rel="colleague" title="- The SRI Language Modeling Toolkit" target="_blank">SRILM</a></li>
+<li><a href="http://www.statmt.org/" rel="colleague" title="This website is dedicated to research in statistical machine translation" target="_blank">Statistical Machine Translation</a></li>
+<li><a href="http://textanalysisonline.com/" target="_blank">Text Analysis</a></li>
+<li><a href="http://textminingonline.com/" target="_blank">Text Mining</a></li>
+<li><a href="http://textsummarization.net/" target="_blank">Text Summarization</a></li>
+<li><a href="http://w3china.org/index.htm" rel="friend" title="致力于促进W3C技术的广泛应用, 传播关于未来Web的知识与技术" target="_blank">中国万维网联盟</a></li>
+<li><a href="http://www.cipsc.org.cn/" rel="co-worker" title="Chinese Information Processing Society of China" target="_blank">中国中文信息学会</a></li>
+<li><a href="http://www.nlp.org.cn/" rel="colleague" title="中文自然语言处理开放平台" target="_blank">中文自然语言处理开放平台</a></li>
+<li><a href="http://www.mt-archive.info/" rel="colleague" title="Repository and bibliography of articles, books and papers on topics" target="_blank">机器翻译档案计划</a></li>
+<li><a href="http://www.statmt.org/europarl/" rel="colleague" target="_blank">欧洲议会平行语料库</a></li>
+<li><a href="http://www.keenage.com/" title="HowNet" target="_blank">知网</a></li>
+<li><a href="http://www.nlpir.org/" rel="friend" title="由张华平博士发起，由北京理工大学网络搜索与挖掘实验室运营，旨在推动NLP(自然语言处理)与IR(信息检索)领域的共享与共赢" target="_blank">自然语言处理与信息检索共享平台</a></li>
+<li><a href="http://mitel.ict.ac.cn/" rel="co-worker" title="中科院计算所多语言交互技术实验室" target="_blank">计算所多语言交互技术实验室</a></li>
+
+	</ul>
+</li>
+<li id="linkcat-2" class="widget-container widget_links"><h3 class="widget-title">友情链接</h3>
+	<ul class='xoxo blogroll'>
+<li><a href="http://blog.youxu.info/" title="一个计算机专业的 Ph.D. 学生徐宥的个人博客" target="_blank">4G spaces</a></li>
+<li><a href="http://blog.52nlp.org" rel="me" title="我爱自然语言处理完全镜像" target="_blank">52nlpblog</a></li>
+<li><a href="http://www.52nlp.com" rel="me" title="52nlp的英文站" target="_blank">52nlpcom</a></li>
+<li><a href="http://hi.baidu.com/drkevinzhang" rel="friend" title="ICTCLAS 张华平博士的空间" target="_blank">ICTCLAS 张华平博士的空间</a></li>
+<li><a href="http://blog.so8848.com/" rel="friend" title="信息检索博客" target="_blank">Information Retrieval Blog</a></li>
+<li><a href="http://interop123.com/default.aspx" rel="friend" title="崔晓源师兄关于NET技术的站点" target="_blank">NET互操作技术社区</a></li>
+<li><a href="http://bbs.w3china.org/" rel="friend" title="中国万维网联盟讨论区" target="_blank">W3CHINA讨论区</a></li>
+<li><a href="http://www.ailab.cn/" rel="friend" target="_blank">人工智能网</a></li>
+<li><a href="http://mindhacks.cn/" rel="friend" title="一个很有思想的价值博客!" target="_blank">刘未鹏之Mind Hacks</a></li>
+<li><a href="http://www.cnblogs.com/finallyliuyu/" rel="friend" target="_blank">原地转圈的驴子</a></li>
+<li><a href="http://xunren.thuir.org/" target="_blank">微博寻人（梁博）</a></li>
+<li><a href="http://52opencourse.com" rel="friend" title="我爱公开课，高质量公开课交流平台" target="_blank">我爱公开课</a></li>
+<li><a href="http://iregex.org/" rel="friend" target="_blank">我爱正则表达式</a></li>
+<li><a href="http://courseminer.com" target="_blank">挖课</a></li>
+<li><a href="http://www.sciencenet.cn/u/timy/" rel="friend" title="章成志老师的博客" target="_blank">章成志的博客</a></li>
+<li><a href="http://blog.csdn.net/v_JULY_v/" target="_blank">结构之法 算法之道</a></li>
+<li><a href="http://www.lingcc.com/" rel="friend" title="关注编译器,虚拟机,编程语言及技术,IT职业和程序员生活" target="_blank">编译点滴</a></li>
+<li><a href="http://www.52nlp.org" rel="me" title="52nlp的官方网站" target="_blank">自然语言处理</a></li>
+<li><a href="http://www.ieee.org.cn/" rel="friend" title="计算机科学论坛" target="_blank">计算机科学论坛</a></li>
+<li><a href="http://coursegraph.com/">课程图谱</a></li>
+<li><a href="http://blog.coursegraph.com" rel="friend">课程图谱博客</a></li>
+
+	</ul>
+</li>
+<li id="meta-4" class="widget-container widget_meta"><h3 class="widget-title">功能</h3>			<ul>
+			<li><a href="http://www.52nlp.cn/wp-login.php?action=register">注册</a></li>			<li><a href="http://www.52nlp.cn/wp-login.php">登录</a></li>
+			<li><a href="http://www.52nlp.cn/feed" title="使用RSS 2.0订阅本站点内容">文章<abbr title="Really Simple Syndication">RSS</abbr></a></li>
+			<li><a href="http://www.52nlp.cn/comments/feed" title="使用RSS订阅本站点的所有文章的近期评论">评论<abbr title="Really Simple Syndication">RSS</abbr></a></li>
+<li><a href="https://cn.wordpress.org/" title="基于WordPress，一个优美、先进的个人信息发布平台。">WordPress.org</a></li>			</ul>
+</li>			</ul>
+		</div><!-- #secondary .widget-area -->
+
+	</div><!-- #main -->
+
+	<div id="footer" role="contentinfo">
+		<div id="colophon">
+
+
+
+			<div id="site-info">
+				<a href="http://www.52nlp.cn/" title="我爱自然语言处理" rel="home">
+					我爱自然语言处理				</a>
+			</div><!-- #site-info -->
+
+			<div id="site-generator">
+								<a href="http://cn.wordpress.org/"
+						title="优雅的个人发布平台" rel="generator">
+					自豪地采用 WordPress。				</a>
+			</div><!-- #site-generator -->
+
+		</div><!-- #colophon -->
+	</div><!-- #footer -->
+
+</div><!-- #wrapper -->
+
+<script>
+/* <![CDATA[ */
+var rcGlobal = {
+	serverUrl		:'http://www.52nlp.cn',
+	infoTemp		:'%REVIEWER% 在 %POST%',
+	loadingText		:'正在加载',
+	noCommentsText	:'没有任何评论',
+	newestText		:'&laquo; 最新的',
+	newerText		:'&laquo; 上一页',
+	olderText		:'下一页 &raquo;',
+	showContent		:'',
+	external		:'',
+	avatarSize		:'0',
+	avatarPosition	:'left',
+	anonymous		:'匿名'
+};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://www.52nlp.cn/wp-content/plugins/akismet/_inc/form.js?ver=3.0.1'></script>
+<link rel='stylesheet' id='yarppRelatedCss-css'  href='http://www.52nlp.cn/wp-content/plugins/yet-another-related-posts-plugin/style/related.css?ver=3.9.1' type='text/css' media='all' />
+<script type='text/javascript' src='http://www.52nlp.cn/wp-content/plugins/wp-recentcomments/js/wp-recentcomments.js?ver=2.2.7'></script>
+	<p align="center"> 本站架设在 <a href="http://www.52nlp.cn/digitalocean%E4%BD%BF%E7%94%A8%E5%B0%8F%E8%AE%B0">DigitalOcean</a> 上, 采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本站内容必须也遵循“署名-非商业用途-保持一致”的创作共用协议.</p>
+<!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(["trackPageView"]);
+  _paq.push(["enableLinkTracking"]);
+
+  (function() {
+    var u=(("https:" == document.location.protocol) ? "https" : "http") + "://162.243.252.121/piwik/";
+    _paq.push(["setTrackerUrl", u+"piwik.php"]);
+    _paq.push(["setSiteId", "5"]);
+    var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0]; g.type="text/javascript";
+    g.defer=true; g.async=true; g.src=u+"piwik.js"; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Piwik Code -->
+</body>
+</html>

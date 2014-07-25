@@ -1,0 +1,533 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<title>【NLP主流最大的偏见，规则系统的手工性】 | 我爱自然语言处理</title>
+<link rel="profile" href="http://gmpg.org/xfn/11" />
+<link rel="stylesheet" type="text/css" media="all" href="http://www.52nlp.cn/wp-content/themes/twentytenorg/style.css" />
+<link rel="pingback" href="http://www.52nlp.cn/xmlrpc.php" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; Feed" href="http://www.52nlp.cn/feed" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; 评论Feed" href="http://www.52nlp.cn/comments/feed" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; 【NLP主流最大的偏见，规则系统的手工性】评论Feed" href="http://www.52nlp.cn/%e3%80%90nlp%e4%b8%bb%e6%b5%81%e6%9c%80%e5%a4%a7%e7%9a%84%e5%81%8f%e8%a7%81%ef%bc%8c%e8%a7%84%e5%88%99%e7%b3%bb%e7%bb%9f%e7%9a%84%e6%89%8b%e5%b7%a5%e6%80%a7%e3%80%91/feed" />
+<link rel='stylesheet' id='yarppWidgetCss-css'  href='http://www.52nlp.cn/wp-content/plugins/yet-another-related-posts-plugin/style/widget.css?ver=3.9.1' type='text/css' media='all' />
+<link rel='stylesheet' id='codecolorer-css'  href='http://www.52nlp.cn/wp-content/plugins/codecolorer/codecolorer.css?ver=0.9.9' type='text/css' media='screen' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.52nlp.cn/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.52nlp.cn/wp-includes/wlwmanifest.xml" /> 
+<link rel='prev' title='如何计算两个文档的相似度全文文档' href='http://www.52nlp.cn/%e5%a6%82%e4%bd%95%e8%ae%a1%e7%ae%97%e4%b8%a4%e4%b8%aa%e6%96%87%e6%a1%a3%e7%9a%84%e7%9b%b8%e4%bc%bc%e5%ba%a6%e5%85%a8%e6%96%87%e6%96%87%e6%a1%a3' />
+<link rel='next' title='【科普随笔：NLP主流的傲慢与偏见】' href='http://www.52nlp.cn/%e3%80%90%e7%a7%91%e6%99%ae%e9%9a%8f%e7%ac%94%ef%bc%9anlp%e4%b8%bb%e6%b5%81%e7%9a%84%e5%82%b2%e6%85%a2%e4%b8%8e%e5%81%8f%e8%a7%81%e3%80%91' />
+<meta name="generator" content="WordPress 3.9.1" />
+<link rel='canonical' href='http://www.52nlp.cn/%e3%80%90nlp%e4%b8%bb%e6%b5%81%e6%9c%80%e5%a4%a7%e7%9a%84%e5%81%8f%e8%a7%81%ef%bc%8c%e8%a7%84%e5%88%99%e7%b3%bb%e7%bb%9f%e7%9a%84%e6%89%8b%e5%b7%a5%e6%80%a7%e3%80%91' />
+<link rel='shortlink' href='http://www.52nlp.cn/?p=5665' />
+<!-- wp thread comment 1.4.9.4.002 -->
+<style type="text/css" media="screen">
+.editComment, .editableComment, .textComment{
+	display: inline;
+}
+.comment-childs{
+	border: 1px solid #999;
+	margin: 5px 2px 2px 4px;
+	padding: 4px 2px 2px 4px;
+	background-color: white;
+}
+.chalt{
+	background-color: #E2E2E2;
+}
+#newcomment{
+	border:1px dashed #777;width:90%;
+}
+#newcommentsubmit{
+	color:red;
+}
+.adminreplycomment{
+	border:1px dashed #777;
+	width:99%;
+	margin:4px;
+	padding:4px;
+}
+.mvccls{
+	color: #999;
+}
+			
+</style>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: { equationNumbers: { autoNumber: "AMS" } },
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+    inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+    displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+    processEscapes: true
+  },
+  "HTML-CSS": { availableFonts: ["TeX"] }
+});
+</script><script type="text/javascript" src="http://www.52nlp.cn/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</head>
+
+<body class="single single-post postid-5665 single-format-standard">
+<div id="wrapper" class="hfeed">
+	<div id="header">
+		<div id="masthead">
+			<div id="branding" role="banner">
+								<div id="site-title">
+					<span>
+						<a href="http://www.52nlp.cn/" title="我爱自然语言处理" rel="home">我爱自然语言处理</a>
+					</span>
+				</div>
+				<div id="site-description">I Love Natural Language Processing</div>
+
+										<img src="http://www.52nlp.cn/wp-content/themes/twentytenorg/images/headers/path.jpg" width="940" height="198" alt="" />
+								</div><!-- #branding -->
+
+			<div id="access" role="navigation">
+			  				<div class="skip-link screen-reader-text"><a href="#content" title="跳至正文">跳至正文</a></div>
+								<div class="menu"><ul><li ><a href="http://www.52nlp.cn/">首页</a></li><li class="page_item page-item-2"><a href="http://www.52nlp.cn/about">关于</a></li><li class="page_item page-item-2557 page_item_has_children"><a href="http://www.52nlp.cn/resources">资源</a><ul class='children'><li class="page_item page-item-1271"><a href="http://www.52nlp.cn/resources/wpmatheditor">WpMathEditor</a></li></ul></li></ul></div>
+ 
+				<div class="menu"><ul><li class="page_item page-item-2"></li><li class="page_item page-item-2"><a href="http://coursegraph.com" title="课程图谱" target="_blank">课程图谱</a></li><li class="page_item page-item-2"><a href="http://www.nlpjob.com" title="求职" target="_blank">求职招聘</a></li></ul></div>
+			</div><!-- #access -->
+		</div><!-- #masthead -->
+	</div><!-- #header -->
+
+	<div id="main">
+
+		<div id="container">
+			<div id="content" role="main">
+
+			
+
+				<div id="nav-above" class="navigation">
+					<div class="nav-previous"><a href="http://www.52nlp.cn/%e5%a6%82%e4%bd%95%e8%ae%a1%e7%ae%97%e4%b8%a4%e4%b8%aa%e6%96%87%e6%a1%a3%e7%9a%84%e7%9b%b8%e4%bc%bc%e5%ba%a6%e5%85%a8%e6%96%87%e6%96%87%e6%a1%a3" rel="prev"><span class="meta-nav">&larr;</span> 如何计算两个文档的相似度全文文档</a></div>
+					<div class="nav-next"><a href="http://www.52nlp.cn/%e3%80%90%e7%a7%91%e6%99%ae%e9%9a%8f%e7%ac%94%ef%bc%9anlp%e4%b8%bb%e6%b5%81%e7%9a%84%e5%82%b2%e6%85%a2%e4%b8%8e%e5%81%8f%e8%a7%81%e3%80%91" rel="next">【科普随笔：NLP主流的傲慢与偏见】 <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-above -->
+
+				<div id="post-5665" class="post-5665 post type-post status-publish format-standard hentry category-nlp">
+					<h1 class="entry-title">【NLP主流最大的偏见，规则系统的手工性】</h1>
+
+					<div class="entry-meta">
+						<span class="meta-prep meta-prep-author">发表于</span> <a href="http://www.52nlp.cn/%e3%80%90nlp%e4%b8%bb%e6%b5%81%e6%9c%80%e5%a4%a7%e7%9a%84%e5%81%8f%e8%a7%81%ef%bc%8c%e8%a7%84%e5%88%99%e7%b3%bb%e7%bb%9f%e7%9a%84%e6%89%8b%e5%b7%a5%e6%80%a7%e3%80%91" title="22:33" rel="bookmark"><span class="entry-date">2013年06月24号</span></a> <span class="meta-sep">由</span> <span class="author vcard"><a class="url fn n" href="http://www.52nlp.cn/author/liwei999" title="查看所有由 liwei999 发布的文章">liwei999</a></span>					</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+						<p> 【科普随笔：NLP主流的傲慢与偏见】中的第一条是 ：</p>
+<p>【偏见一】规则系统的手工编制（hand-crafted）是其知识瓶颈，而机器学习是自动训练的（言下之意：因此没有知识瓶颈）。</p>
+<p>NLP（Natural Language Processing）主流对规则系统和语言学家大小偏见积久成堆，这一条可以算是万偏之源。随便翻开计算语言学顶级会议的论文，无论讨论什么语言现象，为了论证机器学习某算法的优越，在对比批评其他学习算法的同时，规则系统大多是随时抓上来陪斗的攻击对象，而攻击的理由往往只有这么一句话，规则系统的手工性决定了 blah blah（“其不能 scale up”，“其效率低下”，“其不鲁棒”，等等），或者干脆不给具体理由，直接说“文献【1】【2】【3】尝试了这个问题的不同方面，但这些系统都是手工编制的”，一句话判处死刑，甚至不用讨论它们的效果和质量。手工性几乎成了规则系统的“原罪”，编制这些系统的人因此成为学术共同体背负原罪的二等公民。</p>
+<p>手工编制（hand-crafted）怎么了？在日常消费品领域，这是道地的褒义词，是特别的嘉奖，是批量机械化生产和千篇一律的反动，是独特和匠心的代表，是高价格理直气壮的理由。怎么到了NLP领域，突然就成了带有原罪的贬义词了呢。这是因为在NLP领域，代表主流的精算师们由于他们在NLP某些任务上的非凡成功，使得他们居功自傲，把成功无限推广和夸大，给这个community 施行了集体催眠术，让人相信机器学习是万能的。换句话说，批判手工编制的劣根性，其隐含的前提是机器学习是万能的，有效的，首选的。而实际情况是，面对自然语言的复杂性，机器学习只是划过了语言学的冰山一角，远远没有到主流们自觉和不自觉吹嘘的如入无人之地的万能境界。催眠的结果是不独不少语言学家以及NLP相关利益方（stake holders，如投资人和用户）被他们洗脑了，连他们自己也逐渐相信了自己编制的神话。</p>
+<p>真实世界中，NLP 是应用学科，最终结果体现在应用软件（applications）上，属于语言软件工程。作为一个产业，软件工程领域吸引了无数软件工程师，虽然他们自嘲为“码工”，社会共同体给予他们的尊重和待遇是很高的（Bill Gates 自封了一个 Chief Engineer，说明了这位软件大王对工匠大师的高度重视）。古有鲁班，现有码师（coding master）。这些码工谁不靠手工编制代码作为立足之本呢？没听说一位明星工程师因为编制代码的手工性质而被贬损。同是软件工程，为什么计算语言学家手工编制NLP代码与其他工程师手工编制软件代码遭遇如此不同的对待。难道NLP应用比其他应用简单？恰恰相反，自然语言的很多应用比起大多数应用（譬如图形软件、字处理软件等等）更加复杂和艰难。解释这种不同遭遇的唯一理由就是，作为大环境的软件领域没有NLP主流的小环境里面那么多的傲慢和偏见。软件领域的大牛们还没有狂妄到以为可以靠自动编程取代手工编程。他们在手工编程的基础建设（编程架构和开发环境）上下功夫，而不是把希望寄托在自动编程的万能上。也许在未来的某一天，一些简单的应用可以用代码自动化来实现，但是复杂任务的全自动化从目前来看是遥遥无期的。不管从什么标准来看，非浅层的自然语言分析和理解都是复杂任务的一种。因此，机器学习作为自动编程的一个体现是几乎不可能取代手工代码的。规则系统的NLP应用价值会长期存在。</p>
+<p>自动是一个动听的词汇。如果一切人工智能都是自动学习的，前景该有多么美妙。机器学习因为与自动连接在一起，显得那么高高在上，让人仰视。它承载着人类对未来世界的幻想。这一切理应激励自动学习专家不断创新，而绝不该成为其傲慢和偏见的理由。</p>
+<p>在下面具体论述所谓规则系统的知识瓶颈软肋之前，值得一提的是，所谓自动是指系统的开发，不要混淆为系统的应用。在应用层面，无论是机器学习出来的系统，还是手工编制的系统，都是全自动地服务用户的，这是软件应用的性质决定的。这虽然是显而易见的事实，可确实有人被误导，一听说手工编制，就引申为基于规则系统的应用也是手工的，或者半自动的。</p>
+<p>手工编制NLP系统是不是规则系统的知识瓶颈？毋庸讳言，确实如此。这个瓶颈体现在系统开发的周期上。但是，这个瓶颈是几乎所有大型软件工程项目所共有的，是理所当然的资源costs，不独为 NLP “专美”。从这个意义上看，以知识瓶颈诟病规则系统是可笑的，除非可以证明对所有NLP项目，用机器学习开发系统比编制规则系统，周期短而且质量高（个别的项目可能是这样，但一般而言绝非如此，下面还要详谈）。大体说来，对于NLP的浅层应用（譬如中文切词，专名识别，等等），没有三个月到半年的开发，没有至少一位计算语言学家手工编制和调试规则和至少半个工程师的平台层面的支持，是出不来系统的。对于NLP的深层应用（如句法分析，舆情抽取等），没有至少一年的开发，涉及至少一位计算语言学家的手工编制规则，至少半个质量检测员的协助和半个工程师的平台支持，外加软件工程项目普遍具有的应用层面的用户接口开发以及把开发出来的NLP引擎deploy到大数据上去的 operations 的投入，也是出不来 real life 的软件产品的。当然需要多少开发资源在很大程度上决定于开发人员（包括作为知识工程师的计算语言学家）的经验和质量。譬如让立委来开发中文系统（或英文、法文系统），就比找年轻语言学家快得多，以一当十绝不是自夸。其实，即便是10个新手，也未见得能做出立委的系统来，因为自然语言里面所牵涉到问题的复杂度不是拼时间就可以完成的。</p>
+<p>计算语言学家编制规则系统与软件工程师编写程序没有本质不同。不过是所用的语言、形式框架和开发平台（language，formalism &amp; development platform）不同而已，系统设计和开发的测重点不同而已。这就好比现代的工程师用所谓高级语言 Java 或者 C，与30年前的工程师使用汇编语言的对比一样，本质是一样的编程，只是层次不同罢了。在为NLP特制的“高级”语言和平台上，计算语言学家可以不用为 memory allocation 等非语言学的工程细节所羁绊，一般也不用为代码的优化和效率而烦扰，他们的注意力更多地放在面对自然语言的种种复杂现象，怎样设计语言处理的架构和流程，怎样突破规则系统的框架与其他语言处理包括机器学习进行协调，怎样平衡语言条件的宽窄，怎样与QA（质量检测）协调确保系统开发的健康，怎样保证语言学家团队编制规则的操作规范以确保系统的可持续性（data driven，unit testing，regression testing，code review，maintenability，baselines，等等等等），怎样根据语言开发需求对于现有形式框架的限制提出扩展要求，以及怎样保证复杂系统的鲁棒性等等。一个领头的计算语言学家就是一个系统的架构师，系统的成败绝不仅仅在于语言规则的编制及其堆积，更多的决定于系统架构的合理性。不要把村干部不当干部，也不要把知识工程师（计算语言学家）不当工程师。很多人由于根深蒂固的偏见，把计算语言学家一律当作资料员，殊不知能够在NLP规则系统中统领项目的计算语言学家，绝不是只要知道某个语言的syntax这些皮毛就可以胜任的。明星工程师是软件企业的灵魂，NLP 规则系统的大规模成功也一样召唤语言工程大师。</p>
+<p>关于知识瓶颈的偏见，必须在对比中评估。规则系统需要语言学家手工开发的资源投入，机器学习也同样需要资源的投入，不过是资源方式不同而已。真实的情况是这样的：自然语言处理需要语言学知识，把这些知识形式化是每个NLP系统的题中应有之义，机器学习绝不会自动免疫，无需知识的形式化。具体说，机器学习的知识瓶颈在于data，大量的大量的data。排除研究性强实用性弱的无监督学习（unsupervised learning），机器学习中可资开发系统的方法是有监督的学习（supervised learning）。有监督的学习能开发知识系统成为应用的前提是必须有大量的手工标注的数据，作为学习的源泉。机器学习的算法是自动的（算法的创新、调试和实现当然还是手工的，可这种手工被认为是最高级劳动，=），而语言学家的手工规则甚至系统架构则被认为是资料员的低端工作，损人与自夸，无出其右），但是大量的数据标注则是手工的（本来就有现成标注的不算，那是例外）。因此，机器学习同样面临知识瓶颈，不过是知识瓶颈的表现从需要少量的知识工程师变成需要大量的低端劳动者（懂得语言及其任务的大学生或中学生即可胜任）。马克思说金钱是一般等价物，知识瓶颈的问题于是转化为高级劳动低级劳动的开销和转换问题：雇佣一个知识工程师的代价大，还是雇佣10个大学生的代价大？虽然这个问题根据不同项目不同地区等因素答案会有不同，但所谓机器学习没有知识瓶颈的神话可以休矣。</p>
+<p>另外，知识瓶颈的对比问题不仅仅是针对一个应用而言，而应该放在多应用的可移植性上来考察。我们知道绝大多数NLP应用的技术支持都源于从自然语言做特定的信息抽取。由于机器学习把信息抽取看成一个直接对应输入和输出的黑匣子，所以一旦改变信息抽取目标和应用方向，以前的人工标注就废弃了，作为知识瓶颈的标注工作必须完全重来。可是规则系统不同，它可以设计成一个规则层级体系，独立于领域和应用方向的语言学规则组件（parsers）以及在语言学之上的针对领域和应用的信息抽取规则子系统。结果是，在转移应用目标时候，底层的语言学组件基本保持不变，而只需要重新编写不同的信息抽取规则而已。实践证明，对于规则系统，真正的知识瓶颈在语言学组件的构建上，而信息抽取本身花费不多。这是因为前者需要应对自然语言变化多端的表达方式，把它逻辑化，而后者是建立在逻辑形式（logical form）上的规则，一条等价于底层规则的几百上千条。因此，从多应用的角度看，机器学习的知识成本最终会远远大于规则系统。</p>
+<p>本文引用地址：http://blog.sciencenet.cn/blog-362400-701815.html</p>
+<p>[5]王伟  2013-6-24 20:23<br />
+期待李老师的下一讲-驳偏之二。至于“计算语言学的领域一直在排挤语言学”，的确，不是有“统计自然语言处理的某几个百分点提高，是通过解雇了几个语言学家而提高的”吗 ，呵呵。我认为，机器处理自然语言并不是仅一个统计就能简单搞定的。语言学家和计算机专家配合不好，是有很多方面原因。举个我听到的例子，语言学工作者对计算机专家说：“这个情况机器怎么就不能学习了，机器应该可学习到的呀！”，计算机专家回答说:&#8217;机器现在还没这么智能，这么抽象的东西暂时还学不了”&#8211;计算机学家认为语言学家不懂计算机。 计算机专家对语言学家说：“不能给个好用的归纳全的知识库吗，为什么总是打补丁，没完没了，还总出笑话”，语言学家回答说：语言学还真不这么简单，这个还就真拿不出！&#8221; &#8211;语言学家认为计算机学家不懂语言学。<br />
+尽管如此，我认为，随着研究的深入，相互了解的加深，二者只有自然融合才能渐入佳境，而不可强求。只有到了对语言处理层次的高要求时，比如文本理解阶段，才会使语言学的比重逐渐加大，而对语言处理层次需求是人类发展的必然，谁也无法阻挡，所以语言学家不必为此时情景暗伤。就像早期的关键词检索，根本还用不上句法知识。而现在都在奔语义理解和自动问答，句法知识想回避都难。</p>
+<p>删除 回复 [4]李斌  2013-6-23 20:08<br />
+晕了，我是说您的观点正确<br />
+博主回复(2013-6-23 20:33)：晕了，我没看出来，：）</p>
+<p>删除 回复 [3]王伟  2013-6-23 15:44<br />
+我同意AIMan 的“规则系统和机器学习的本质区别在于‘规则的生成机制’”，其实“规则系统”和“机器学习”这种分类也不是很合理，因为它们本质上都某种规则下运行的，只是当初学科起名的时候，没考虑到现今这样情景，就像计算机千年问题一样，只不过AI领域的人心中都能够清楚是怎么一回事，我也不知怎样能在分类上显式表明区别，暂且如是用吧。</p>
+<p>AIMan抛出的三个问题，我觉得很值得引发讨论。<br />
+1.“我们是否需要知道规则？知道规则对系统效率有提升吗？”<br />
+对于规则系统，必须是显式表示，因为人类专家看不见，自然就不能去对那些规则们进行“拿捏”了。而对于机器学习而言，显不显式表示无所谓，只要能用起来就行。显式的那些东西，若是给人类参考，供修改的话那还是有必要；若是只是为了直接使用，就没必要显式。一般来说，机器学习出来的那些规则，与人类专家总结的规则的格式内容，差别很大。人类专家的结果尽量是高概括的，高覆盖率的。机器学习的那些则一般都是比较细碎的，具体性的，覆盖度是通过泛化实现的，这泛化的前提是数据足够可用的情况下适度泛化，在问题隐含的规律特别复杂而数据又偏少的情况下，泛化太强也加大了错误率，也没什么意义。<br />
+规则系统中规则是必须人类知道，不知道也无法进行下去。而机器学习中的规则，人类知道与不知道那些规则无所谓，甚至人也知道不起，可能量大又琐碎。<br />
+因此，我认为知不知道规则与系统效率是无关的。系统效率只与规则质量有关，一般来说，规则系统由于高概括，单从运行效率来讲，效率是高的，但是建造规则系统效率是低的。这也只是一般来说，因其也与运行算法有关，比如像专家系统那样的，不采用RETE算法的话，运行效率也并不高。</p>
+<p>2.“case by case的专家模式和一招鲜吃遍天的数学家模式，那种应用效果更好？”<br />
+这个应该是取决于要解决问题的类型。如果有的问题，规则总是那么少量，或很少变化。专家能够全部总结出来。同时，机器也能从给定的数据集中全部学习到所有的规则，那么两个效果应该是一样的。如果规则还是那么少量，专家能总结很好，但是机器学习所需要的现有数据集很难覆盖全面，那么规则系统胜出。如果规则复杂，不断变化，数据量极其庞大，人类总结很难做到高屋建瓴，常感“数据海量”之叹，而此问题的机器学习的数据轻易获取，高性能机器又可以很快抽取规则的话，且要比人类已有总结的那些规则覆盖量大的话，机器学习自然胜出。<br />
+但是，落到自然语言处理这样的问题上，规则系统坦诚来，说不能说总结得很好，不然就没有机器学习什么事了。而机器学习，在现有大规模高质量的标注集上是否能有效覆盖也难说，因此也就有了挡箭牌，一旦机器学习的结果不理想，都可以赖到标注数据集不充分上来。其实，二者都逃脱不了手工的问题（非监督学习的水平现还差太多，手工是必然的）。这也成了“语言专家总结语言规律 VS 标注人标注语料”问题中在工作量、工作难度、最终效果、后期维护、领域适应等多维变量中求最优的问题。当然，不可回避的是，机器学习算法和模型质量是否有效也是一个制约因素。<br />
+就目前看来，哪种模式更好，还难有确定结论，同时也分是在NLP的什么分支上。本质上彼此都有各自的软肋。若二者抱团发展也许更好，不过首先要解决好性格不合的问题。<br />
+另外，说一点，像李老师这样的既能建高楼（架构），又能给空房引来住户（语言知识），同时又有协调住户矛盾（知识冲突）的经验的“资深建筑师”确实不多，也确有独门绝技。<br />
+但这不具备大规模生产性，能否发展成容易传授性的，好继承下来的，更多些“自动”，是个值得探讨的问题。</p>
+<p>3.机器学习也许不完美，但是足够实用，可以让我们一劳永逸，既然人类可以有这样一套智能系统，机器为什么不能有？<br />
+若能达到真正实用的地步，甚至比人类规则系统还好的话，人类自然不傻，怎能不去用。关键是，机器学习的这种不完美一定是在某些方面逊于人类规则系统，所以规则系统才有了存在的价值。<br />
+至少目前看来还没有到达谁取代谁，也没看出谁依靠谁来，局部战役有些战绩并不说明整个战事的最终结果。彼此都需要改进，都需要进步，相融合发展又有何不可。<br />
+规则系统，面对问题当语言资源超过专门的语言学家总结的规模的上限时，下一步怎么走？ 机器学习，面对的问题，对于复杂推理性问题的求解，比如文本的篇章理解，应该怎么下手？而不能总停留在识别处理这个水平上。<br />
+博主回复(2013-6-23 20:50)：谢谢，您说的三点都很深入到位，我有同感。</p>
+<p>至于语言学人才断层问题，我以前提过，这是NLP大环境造成的。<br />
+教授要吃饭，要养学生，学生将来也要有立足的饭碗，就必须要发论文，拿经费，就非走主流路线不可，哪怕是跟着别人后面赶。其结果就是语言学和语言学人才荒芜了。世界上还很少有这样的怪现象：号称计算语言学的领域一直在排挤语言学。</p>
+<p>删除 回复 [2]李斌  2013-6-23 13:04<br />
+太对了，没有宾州树库，句法分析怎么能上90%<br />
+博主回复(2013-6-23 19:38)：这是从何谈起？我们没用宾州树库，也做出了英语和汉语的高精度而且鲁棒的 parsers，不比任何宾州树库训练出来的差。</p>
+<p>在句法分析这一块，机器学习吃亏太多了，因为他们除了只此一家的宾州森林，连个其他选项都没有。</p>
+<p>删除 回复 [1]AIMan  2013-6-22 22:39<br />
+规则系统和机器学习的本质区别在于“规则的生成机制”，而不是“是否hand-crafted”，其实两者都需要hand-crafted的，不少机器学习算法还存在经验参数，且应用范围有限制。</p>
+<p>不同点是，前者的规则是人工方式确定，对于不同的case可能需要不同的实现算法或规则，修改一个规则不影响其它规则的运行；后者以算法自动生成（识别）“规则”（分类器），也就是说后者是工作在规则的规则上，比前者多了一层抽象，大大减少了工作量，改一下算法，所有的规则都变了。也就是说规则方式的&#8221;switch&#8230;case&#8221;是“显式”的，而机器学习的&#8221;switch&#8230;case&#8230;&#8221;是“隐式”的黑盒。那么，我们是否需要知道规则？知道规则对系统效率有提升吗？</p>
+<p>同理，在应用层面。规则系统强调的case by case。那么用规则系统做NLP就需要语言学家，做大数据就需要相关领域的销售专家，这增加了系统实施的难度。而机器学习，对于NLP也好，大数据也好，图像识别也好，需要的都是数学家，理想状态下是一个模型打天下，当然这是理想，现在远远做不到。那么，case by case的专家模式和一招鲜吃遍天的数学家模式，那种应用效果更好？</p>
+<p>根本上讲，两者的差异源于他们的基本假设不同，规则系统假设我们人类可以穷尽世界的规则，将世界用一个符号系统完整的重构。而机器学习假设我们无法穷尽规则，但是我们可以做一套智能系统，它可以识别规则，而且具有一定的泛化能力，它也许不完美，但是足够实用，可以让我们一劳永逸，既然人类可以有这样一套智能系统，机器为什么不能有？<br />
+博主回复(2013-6-23 19:52)：总体说的不错。不过，生成机制也算是老生常谈了。机器学习把语义抽取过程当作黑匣子，规则系统试图走进去一步一步推理。可以溯源到经验主义和理性主义的世界观上去。</p>
+<p>最后一段疑似隐含了偏见。规则系统从来没有假设人类可以穷尽世界。最多是可以穷尽或者逼近一个子领域。根本不需要一个符号系统完整地重构世界才可以构建有用的规则系统。最后说到“一劳永逸”的理想，已经进入AI科幻世界了，不足论也。</p>
+<div class='yarpp-related'>
+<p>相关文章:<ol>
+<li><a href="http://www.52nlp.cn/mit-nlp-fourth-lesson-tagging-fourth-part" rel="bookmark" title="MIT自然语言处理第四讲：标注（第四部分）">MIT自然语言处理第四讲：标注（第四部分） </a></li>
+<li><a href="http://www.52nlp.cn/%e5%8c%97%e4%ba%ac%e6%a3%ae%e6%9e%97%e5%b7%a5%e4%bd%9c%e5%ae%a4%e6%b1%89%e8%af%ad%e5%8f%a5%e4%b9%89%e7%bb%93%e6%9e%84%e6%a0%87%e6%b3%a8%e8%af%ad%e6%96%99%e5%ba%93%ef%bc%88bfs-ctc%ef%bc%89%e5%85%b1" rel="bookmark" title="北京森林工作室汉语句义结构标注语料库（BFS-CTC）共享资源">北京森林工作室汉语句义结构标注语料库（BFS-CTC）共享资源 </a></li>
+<li><a href="http://www.52nlp.cn/%e5%a6%82%e4%bd%95%e8%ae%a1%e7%ae%97%e4%b8%a4%e4%b8%aa%e6%96%87%e6%a1%a3%e7%9a%84%e7%9b%b8%e4%bc%bc%e5%ba%a6%e4%b8%80" rel="bookmark" title="如何计算两个文档的相似度（一）">如何计算两个文档的相似度（一） </a></li>
+<li><a href="http://www.52nlp.cn/%e8%af%b4%e8%af%b4%e7%a7%91%e7%a0%94%e7%ab%8b%e9%a1%b9%e4%b8%ad%e7%9a%84%e5%a4%a7%e8%b7%83%e8%bf%9b" rel="bookmark" title="说说科研立项中的大跃进">说说科研立项中的大跃进 </a></li>
+<li><a href="http://www.52nlp.cn/%e3%80%8a%e7%ab%8b%e5%a7%94%e9%9a%8f%e7%ac%94%ef%bc%9a-%e8%af%ad%e8%a8%80%e5%ad%a6%e5%ae%b6%e6%98%af%e6%80%8e%e6%a0%b7%e7%82%bc%e6%88%90%e7%9a%84%e3%80%8b" rel="bookmark" title="《立委随笔： 语言学家是怎样炼成的》">《立委随笔： 语言学家是怎样炼成的》 </a></li>
+<li><a href="http://www.52nlp.cn/%e5%9d%9a%e6%8c%81%e5%9b%9b%e9%a1%b9%e5%9f%ba%e6%9c%ac%e5%8e%9f%e5%88%99%ef%bc%8c%e5%bc%80%e5%8f%91%e9%b2%81%e6%a3%92%e6%80%a7nlp%e7%b3%bb%e7%bb%9f" rel="bookmark" title="坚持四项基本原则，开发鲁棒性NLP系统">坚持四项基本原则，开发鲁棒性NLP系统 </a></li>
+<li><a href="http://www.52nlp.cn/nlp-job-%e7%bc%98%e8%b5%b7" rel="bookmark" title="NLP Job-缘起">NLP Job-缘起 </a></li>
+<li><a href="http://www.52nlp.cn/%e5%a6%82%e4%bd%95%e8%ae%a1%e7%ae%97%e4%b8%a4%e4%b8%aa%e6%96%87%e6%a1%a3%e7%9a%84%e7%9b%b8%e4%bc%bc%e5%ba%a6%e4%ba%8c" rel="bookmark" title="如何计算两个文档的相似度（二）">如何计算两个文档的相似度（二） </a></li>
+<li><a href="http://www.52nlp.cn/lda-math-mcmc-%e5%92%8c-gibbs-sampling1" rel="bookmark" title="LDA-math-MCMC 和 Gibbs Sampling(1)">LDA-math-MCMC 和 Gibbs Sampling(1) </a></li>
+<li><a href="http://www.52nlp.cn/nlp-%e6%98%af%e4%b8%80%e4%b8%aa%e5%8a%9b%e6%b0%94%e6%b4%bb%ef%bc%9a%e5%86%8d%e8%ae%ba%e6%88%90%e8%af%ad%e4%b8%8d%e6%98%af%e9%97%ae%e9%a2%98" rel="bookmark" title="NLP 是一个力气活：再论成语不是问题">NLP 是一个力气活：再论成语不是问题 </a></li>
+</ol></p>
+</div>
+											</div><!-- .entry-content -->
+
+
+					<div class="entry-utility">
+						此条目发表在 <a href="http://www.52nlp.cn/category/nlp" title="查看自然语言处理中的全部文章" rel="category tag">自然语言处理</a> 分类目录。将<a href="http://www.52nlp.cn/%e3%80%90nlp%e4%b8%bb%e6%b5%81%e6%9c%80%e5%a4%a7%e7%9a%84%e5%81%8f%e8%a7%81%ef%bc%8c%e8%a7%84%e5%88%99%e7%b3%bb%e7%bb%9f%e7%9a%84%e6%89%8b%e5%b7%a5%e6%80%a7%e3%80%91" title="链向 【NLP主流最大的偏见，规则系统的手工性】 的固定链接" rel="bookmark">固定链接</a>加入收藏夹。 											</div><!-- .entry-utility -->
+				</div><!-- #post-## -->
+
+				<div id="nav-below" class="navigation">
+					<div class="nav-previous"><a href="http://www.52nlp.cn/%e5%a6%82%e4%bd%95%e8%ae%a1%e7%ae%97%e4%b8%a4%e4%b8%aa%e6%96%87%e6%a1%a3%e7%9a%84%e7%9b%b8%e4%bc%bc%e5%ba%a6%e5%85%a8%e6%96%87%e6%96%87%e6%a1%a3" rel="prev"><span class="meta-nav">&larr;</span> 如何计算两个文档的相似度全文文档</a></div>
+					<div class="nav-next"><a href="http://www.52nlp.cn/%e3%80%90%e7%a7%91%e6%99%ae%e9%9a%8f%e7%ac%94%ef%bc%9anlp%e4%b8%bb%e6%b5%81%e7%9a%84%e5%82%b2%e6%85%a2%e4%b8%8e%e5%81%8f%e8%a7%81%e3%80%91" rel="next">【科普随笔：NLP主流的傲慢与偏见】 <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-below -->
+
+				
+			<div id="comments">
+
+
+
+
+								<div id="respond" class="comment-respond">
+				<h3 id="reply-title" class="comment-reply-title">发表评论 <small><a rel="nofollow" id="cancel-comment-reply-link" href="/%e3%80%90nlp%e4%b8%bb%e6%b5%81%e6%9c%80%e5%a4%a7%e7%9a%84%e5%81%8f%e8%a7%81%ef%bc%8c%e8%a7%84%e5%88%99%e7%b3%bb%e7%bb%9f%e7%9a%84%e6%89%8b%e5%b7%a5%e6%80%a7%e3%80%91#respond" style="display:none;">取消回复</a></small></h3>
+									<form action="http://www.52nlp.cn/wp-comments-post.php" method="post" id="commentform" class="comment-form">
+																			<p class="comment-notes">电子邮件地址不会被公开。 必填项已用<span class="required">*</span>标注</p>							<p class="comment-form-author"><label for="author">姓名 <span class="required">*</span></label> <input id="author" name="author" type="text" value="" size="30" aria-required='true' /></p>
+<p class="comment-form-email"><label for="email">电子邮件 <span class="required">*</span></label> <input id="email" name="email" type="text" value="" size="30" aria-required='true' /></p>
+<p class="comment-form-url"><label for="url">站点</label> <input id="url" name="url" type="text" value="" size="30" /></p>
+												<p class="comment-form-comment"><label for="comment">评论</label> <textarea id="comment" name="comment" cols="45" rows="8" aria-required="true"></textarea></p>						<p class="form-allowed-tags">您可以使用这些<abbr title="HyperText Markup Language">HTML</abbr>标签和属性： <code>&lt;a href=&quot;&quot; title=&quot;&quot;&gt; &lt;abbr title=&quot;&quot;&gt; &lt;acronym title=&quot;&quot;&gt; &lt;b&gt; &lt;blockquote cite=&quot;&quot;&gt; &lt;cite&gt; &lt;code&gt; &lt;del datetime=&quot;&quot;&gt; &lt;em&gt; &lt;i&gt; &lt;q cite=&quot;&quot;&gt; &lt;strike&gt; &lt;strong&gt; </code></p>						<p class="form-submit">
+							<input name="submit" type="submit" id="submit" value="发表评论" />
+							<input type='hidden' name='comment_post_ID' value='5665' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+						</p>
+						<p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="46bf7e5425" /></p><p style="display: none;"><input type="hidden" id="ak_js" name="ak_js" value="176"/></p><p><input type="hidden" id="comment_reply_ID" name="comment_reply_ID" value="0" /><input type="hidden" id="comment_reply_dp" name="comment_reply_dp" value="0" /></p><div id="cancel_reply" style="display:none;"><a href="javascript:void(0)" onclick="movecfm(null,0,1,null);" style="color:red;">点击取消回复</a></div><script type="text/javascript">
+/* <![CDATA[ */
+var commentformid = "commentform";
+var USERINFO = false;
+var atreply = "none";
+/* ]]> */
+</script>
+<script type="text/javascript" src="http://www.52nlp.cn/wp-content/plugins/wp-thread-comment/wp-thread-comment.js.php?jsver=common"></script>
+					</form>
+							</div><!-- #respond -->
+			
+</div><!-- #comments -->
+
+
+			</div><!-- #content -->
+		</div><!-- #container -->
+
+﻿
+		<div id="primary" class="widget-area" role="complementary">
+			<ul class="xoxo">
+<!-- begin l_sidebar -->
+	<div id="l_sidebar">
+<p>卓越网：<a href="http://www.amazon.cn/mn/searchApp?source=garypyang-23&searchType=1&keywords=自然语言处理" title="自然语言处理书籍"target=_blank>自然语言处理书籍</a><br>
+<li id="search-3" class="widget-container widget_search"><h3 class="widget-title">站内搜索</h3><form role="search" method="get" id="searchform" class="searchform" action="http://www.52nlp.cn/">
+				<div>
+					<label class="screen-reader-text" for="s">搜索：</label>
+					<input type="text" value="" name="s" id="s" />
+					<input type="submit" id="searchsubmit" value="搜索" />
+				</div>
+			</form></li><li id="text-4" class="widget-container widget_text"><h3 class="widget-title">NLPJob新鲜职位推荐:</h3>			<div class="textwidget"><p></p>
+<script src="http://www.nlpjob.com/api/api.php?action=getJobs
+&type=0&category=0&count=8&random=1&days_behind=7&response=js" type="text/javascript"></script>
+
+<script type="text/javascript">showJobs('jobber-container', 'jobber-list');</script></div>
+		</li><li id="text-3" class="widget-container widget_text"><h3 class="widget-title">52nlp新浪微博</h3>			<div class="textwidget"><p><iframe id="sina_widget_2104931705" style="width:100%; height:500px;" frameborder="0" scrolling="no" src="http://v.t.sina.com.cn/widget/widget_blog.php?uid=2104931705&height=500&skin=wd_01&showpic=1"></iframe></p>
+<p><!-- JiaThis Button BEGIN --><br />
+<script type="text/javascript" src="http://v3.jiathis.com/code/jiathis_r.js?uid=1340292124103344&move=0&amp;btn=r3.gif" charset="utf-8"></script><br />
+<!-- JiaThis Button END --></p>
+</div>
+		</li><li id="categories-309398091" class="widget-container widget_categories"><h3 class="widget-title">分类目录</h3>		<ul>
+	<li class="cat-item cat-item-72"><a href="http://www.52nlp.cn/category/mit-nlp" title="麻省理工学院开放式课程&quot;自然语言处理“的相关翻译文章">MIT自然语言处理</a> (23)
+</li>
+	<li class="cat-item cat-item-469"><a href="http://www.52nlp.cn/category/topic-model" title="查看Topic Model下的所有文章">Topic Model</a> (10)
+</li>
+	<li class="cat-item cat-item-87"><a href="http://www.52nlp.cn/category/wordpress" title="查看wordpress下的所有文章">wordpress</a> (6)
+</li>
+	<li class="cat-item cat-item-317"><a href="http://www.52nlp.cn/category/%e4%b8%93%e9%a2%98" title="查看专题下的所有文章">专题</a> (6)
+</li>
+	<li class="cat-item cat-item-263"><a href="http://www.52nlp.cn/category/chinese-information-processing" title="查看中文信息处理下的所有文章">中文信息处理</a> (17)
+</li>
+	<li class="cat-item cat-item-62"><a href="http://www.52nlp.cn/category/word-segmentation" title="查看中文分词下的所有文章">中文分词</a> (34)
+</li>
+	<li class="cat-item cat-item-420"><a href="http://www.52nlp.cn/category/%e5%b9%b6%e8%a1%8c%e7%ae%97%e6%b3%95" title="查看并行算法下的所有文章">并行算法</a> (1)
+</li>
+	<li class="cat-item cat-item-268"><a href="http://www.52nlp.cn/category/%e6%8b%9b%e8%81%98" title="查看招聘下的所有文章">招聘</a> (4)
+</li>
+	<li class="cat-item cat-item-560"><a href="http://www.52nlp.cn/category/%e6%8e%a8%e8%8d%90%e7%b3%bb%e7%bb%9f" title="查看推荐系统下的所有文章">推荐系统</a> (3)
+</li>
+	<li class="cat-item cat-item-354"><a href="http://www.52nlp.cn/category/%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98" title="查看数据挖掘下的所有文章">数据挖掘</a> (1)
+</li>
+	<li class="cat-item cat-item-241"><a href="http://www.52nlp.cn/category/text-classification" title="查看文本分类下的所有文章">文本分类</a> (2)
+</li>
+	<li class="cat-item cat-item-193"><a href="http://www.52nlp.cn/category/maximum-entropy-model" title="查看最大熵模型下的所有文章">最大熵模型</a> (7)
+</li>
+	<li class="cat-item cat-item-344"><a href="http://www.52nlp.cn/category/%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0" title="查看机器学习下的所有文章">机器学习</a> (13)
+</li>
+	<li class="cat-item cat-item-1"><a href="http://www.52nlp.cn/category/machine-translation" title="查看机器翻译下的所有文章">机器翻译</a> (54)
+</li>
+	<li class="cat-item cat-item-195"><a href="http://www.52nlp.cn/category/%e6%9d%a1%e4%bb%b6%e9%9a%8f%e6%9c%ba%e5%9c%ba" title="查看条件随机场下的所有文章">条件随机场</a> (3)
+</li>
+	<li class="cat-item cat-item-153"><a href="http://www.52nlp.cn/category/tagging" title="查看标注下的所有文章">标注</a> (13)
+</li>
+	<li class="cat-item cat-item-885"><a href="http://www.52nlp.cn/category/%e7%a7%91%e5%ad%a6%e8%ae%a1%e7%ae%97" title="查看科学计算下的所有文章">科学计算</a> (1)
+</li>
+	<li class="cat-item cat-item-538"><a href="http://www.52nlp.cn/category/%e7%bb%9f%e8%ae%a1%e5%ad%a6" title="查看统计学下的所有文章">统计学</a> (10)
+</li>
+	<li class="cat-item cat-item-126"><a href="http://www.52nlp.cn/category/translation-model" title="查看翻译模型下的所有文章">翻译模型</a> (2)
+</li>
+	<li class="cat-item cat-item-51"><a href="http://www.52nlp.cn/category/nlp" title="查看自然语言处理下的所有文章">自然语言处理</a> (223)
+</li>
+	<li class="cat-item cat-item-106"><a href="http://www.52nlp.cn/category/computational-linguistics" title="查看计算语言学下的所有文章">计算语言学</a> (38)
+</li>
+	<li class="cat-item cat-item-22"><a href="http://www.52nlp.cn/category/dictionary" title="查看词典下的所有文章">词典</a> (8)
+</li>
+	<li class="cat-item cat-item-221"><a href="http://www.52nlp.cn/category/semantics" title="查看语义学下的所有文章">语义学</a> (1)
+</li>
+	<li class="cat-item cat-item-161"><a href="http://www.52nlp.cn/category/semantic-web" title="查看语义网下的所有文章">语义网</a> (3)
+</li>
+	<li class="cat-item cat-item-37"><a href="http://www.52nlp.cn/category/corpus" title="查看语料库下的所有文章">语料库</a> (12)
+</li>
+	<li class="cat-item cat-item-86"><a href="http://www.52nlp.cn/category/language-model" title="查看语言模型下的所有文章">语言模型</a> (23)
+</li>
+	<li class="cat-item cat-item-156"><a href="http://www.52nlp.cn/category/speech-recognition" title="查看语音识别下的所有文章">语音识别</a> (4)
+</li>
+	<li class="cat-item cat-item-314"><a href="http://www.52nlp.cn/category/%e8%b4%9d%e5%8f%b6%e6%96%af%e6%a8%a1%e5%9e%8b" title="查看贝叶斯模型下的所有文章">贝叶斯模型</a> (1)
+</li>
+	<li class="cat-item cat-item-110"><a href="http://www.52nlp.cn/category/reprint" title="查看转载下的所有文章">转载</a> (28)
+</li>
+	<li class="cat-item cat-item-451"><a href="http://www.52nlp.cn/category/%e9%97%ae%e7%ad%94%e7%b3%bb%e7%bb%9f" title="查看问答系统下的所有文章">问答系统</a> (1)
+</li>
+	<li class="cat-item cat-item-3"><a href="http://www.52nlp.cn/category/informal-essay" title="查看随笔下的所有文章">随笔</a> (61)
+</li>
+	<li class="cat-item cat-item-60"><a href="http://www.52nlp.cn/category/hidden-markov-model" title="查看隐马尔科夫模型下的所有文章">隐马尔科夫模型</a> (36)
+</li>
+		</ul>
+</li><li id="archives-2" class="widget-container widget_archive"><h3 class="widget-title">文章归档</h3>		<ul>
+	<li><a href='http://www.52nlp.cn/2014/07'>2014年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/06'>2014年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/05'>2014年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/04'>2014年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/01'>2014年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/12'>2013年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/06'>2013年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/05'>2013年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/04'>2013年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/03'>2013年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/02'>2013年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/01'>2013年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/12'>2012年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/11'>2012年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/10'>2012年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/09'>2012年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/08'>2012年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/07'>2012年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/06'>2012年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/05'>2012年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/04'>2012年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/03'>2012年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/01'>2012年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/12'>2011年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/11'>2011年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/10'>2011年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/09'>2011年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/08'>2011年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/07'>2011年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/06'>2011年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/05'>2011年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/04'>2011年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/03'>2011年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/02'>2011年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/01'>2011年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/12'>2010年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/11'>2010年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/10'>2010年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/09'>2010年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/08'>2010年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/07'>2010年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/06'>2010年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/05'>2010年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/04'>2010年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/03'>2010年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/02'>2010年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/01'>2010年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/12'>2009年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/11'>2009年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/10'>2009年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/09'>2009年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/08'>2009年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/07'>2009年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/06'>2009年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/05'>2009年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/04'>2009年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/03'>2009年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/02'>2009年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/01'>2009年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2008/12'>2008年十二月</a></li>
+		</ul>
+</li>		<li id="recent-posts-2" class="widget-container widget_recent_entries">		<h3 class="widget-title">最新文章</h3>		<ul>
+					<li>
+				<a href="http://www.52nlp.cn/python-%e7%bd%91%e9%a1%b5%e7%88%ac%e8%99%ab-%e6%96%87%e6%9c%ac%e5%a4%84%e7%90%86-%e7%a7%91%e5%ad%a6%e8%ae%a1%e7%ae%97-%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0-%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98">Python 网页爬虫 &#038; 文本处理 &#038; 科学计算 &#038; 机器学习 &#038; 数据挖掘兵器谱</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e7%bf%bb%e8%af%91%e6%8a%80%e6%9c%af%e6%b2%99%e9%be%99%e7%ac%ac%e5%8d%81%e5%85%ad%e6%ac%a1%e6%b4%bb%e5%8a%a8-%e4%ba%92%e8%81%94%e7%bd%91%e6%8a%80%e6%9c%af%e9%a9%b1%e5%8a%a8">翻译技术沙龙第十六次活动——“互联网技术驱动下的语言服务众包模式” 通知</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e7%81%ab%e5%85%89%e6%91%87%e6%9b%b3%e7%a5%9e%e5%a5%87%e7%9a%84%e4%bc%bd%e7%8e%9b%e5%87%bd%e6%95%b0%e4%b8%8b">[火光摇曳]神奇的伽玛函数(下)</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e7%a5%9e%e5%a5%87%e7%9a%84%e4%bc%bd%e7%8e%9b%e5%87%bd%e6%95%b0%e4%b8%8a">[火光摇曳]神奇的伽玛函数(上)</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/nlpjob-%e4%b8%bb%e7%ab%99%e4%b8%8a%e7%ba%bf">NLPJob 主站上线</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e9%a1%ba%e4%b8%b0%e6%b5%b7%e6%b7%98sfbuy%e9%a6%96%e6%ac%a1%e4%bd%93%e9%aa%8c-%e7%be%8e%e5%9b%bd%e4%ba%9a%e9%a9%ac%e9%80%8a%e6%b5%b7%e6%b7%98kindle-dx%e8%bd%ac%e8%bf%90%e5%85%a8%e6%94%bb%e7%95%a5">顺丰海淘SFBuy首次体验-美国亚马逊海淘Kindle DX转运全攻略</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/digitalocean%e4%bd%bf%e7%94%a8%e5%b0%8f%e8%ae%b0">DigitalOcean使用小记</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%95%e5%85%a8%e6%96%87%e6%96%87%e6%a1%a3">中文分词入门之字标注法全文文档</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%954">中文分词入门之字标注法4</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%953">中文分词入门之字标注法3</a>
+						</li>
+				</ul>
+		</li><li id="recentcomments" class="widget-container widget_recentcomments"><h3 class="widget-title">最近评论</h3><ul><li class="rc-navi rc-clearfix"><span class="rc-loading">正在加载...</span></li><li id="rc-comment-temp" class="rc-item rc-comment rc-clearfix"><div class="rc-info"></div><div class="rc-timestamp"></div><div class="rc-excerpt"></div></li><li id="rc-ping-temp" class="rc-item rc-ping rc-clearfix"><span class="rc-label"></span></li></ul></li>			</ul>
+		</div><!-- #primary .widget-area -->
+
+
+		<div id="secondary" class="widget-area" role="complementary">
+			<ul class="xoxo">
+				<li id="linkcat-103" class="widget-container widget_links"><h3 class="widget-title">NLP相关网站</h3>
+	<ul class='xoxo blogroll'>
+<li><a href="http://www.aclweb.org/" rel="co-worker" title="The Association for Computational Linguistics" target="_blank">ACL</a></li>
+<li><a href="http://aclweb.org/anthology-new/" rel="co-worker" title="A Digital Archive of Research Papers in Computational Linguistics" target="_blank">ACL Anthology</a></li>
+<li><a href="http://belobog.si.umich.edu/clair/anthology/index.cgi" rel="colleague" target="_blank">ACL Anthology Network</a></li>
+<li><a href="http://aclweb.org/aclwiki/index.php?title=Main_Page" rel="colleague" title="the Wiki of the Association for Computational Linguistics" target="_blank">ACL Wiki</a></li>
+<li><a href="http://www.clsp.jhu.edu/" rel="colleague" target="_blank">CLSP</a></li>
+<li><a href="http://www.cwbbase.com/" rel="colleague" title="这是一个略具规模的中文语义词库, 也是稍有特色的汉语语义词典" target="_blank">CWB中文词库</a></li>
+<li><a href="http://www.euromatrix.net/" rel="colleague" target="_blank">EuroMatrix</a></li>
+<li><a href="http://www.freebase.com" rel="colleague" target="_blank">Freebase</a></li>
+<li><a href="http://www.clsp.jhu.edu/workshops/" rel="colleague" target="_blank">JHU Workshop</a></li>
+<li><a href="http://www.ldc.upenn.edu/" rel="colleague" title="Linguistic Data Consortium" target="_blank">LDC</a></li>
+<li><a href="http://www.statmt.org/moses/" rel="colleague" title="A factored phrase-based beam-search decoder for machine translation" target="_blank">Moses</a></li>
+<li><a href="http://nlpers.blogspot.com/" rel="colleague" title="国外一个非常不错的自然语言处理博客" target="_blank">nlper</a></li>
+<li><a href="http://www.powerset.com/" rel="colleague" target="_blank">Powerset</a></li>
+<li><a href="http://www.speech.sri.com/projects/srilm/" rel="colleague" title="- The SRI Language Modeling Toolkit" target="_blank">SRILM</a></li>
+<li><a href="http://www.statmt.org/" rel="colleague" title="This website is dedicated to research in statistical machine translation" target="_blank">Statistical Machine Translation</a></li>
+<li><a href="http://textanalysisonline.com/" target="_blank">Text Analysis</a></li>
+<li><a href="http://textminingonline.com/" target="_blank">Text Mining</a></li>
+<li><a href="http://textsummarization.net/" target="_blank">Text Summarization</a></li>
+<li><a href="http://w3china.org/index.htm" rel="friend" title="致力于促进W3C技术的广泛应用, 传播关于未来Web的知识与技术" target="_blank">中国万维网联盟</a></li>
+<li><a href="http://www.cipsc.org.cn/" rel="co-worker" title="Chinese Information Processing Society of China" target="_blank">中国中文信息学会</a></li>
+<li><a href="http://www.nlp.org.cn/" rel="colleague" title="中文自然语言处理开放平台" target="_blank">中文自然语言处理开放平台</a></li>
+<li><a href="http://www.mt-archive.info/" rel="colleague" title="Repository and bibliography of articles, books and papers on topics" target="_blank">机器翻译档案计划</a></li>
+<li><a href="http://www.statmt.org/europarl/" rel="colleague" target="_blank">欧洲议会平行语料库</a></li>
+<li><a href="http://www.keenage.com/" title="HowNet" target="_blank">知网</a></li>
+<li><a href="http://www.nlpir.org/" rel="friend" title="由张华平博士发起，由北京理工大学网络搜索与挖掘实验室运营，旨在推动NLP(自然语言处理)与IR(信息检索)领域的共享与共赢" target="_blank">自然语言处理与信息检索共享平台</a></li>
+<li><a href="http://mitel.ict.ac.cn/" rel="co-worker" title="中科院计算所多语言交互技术实验室" target="_blank">计算所多语言交互技术实验室</a></li>
+
+	</ul>
+</li>
+<li id="linkcat-2" class="widget-container widget_links"><h3 class="widget-title">友情链接</h3>
+	<ul class='xoxo blogroll'>
+<li><a href="http://blog.youxu.info/" title="一个计算机专业的 Ph.D. 学生徐宥的个人博客" target="_blank">4G spaces</a></li>
+<li><a href="http://blog.52nlp.org" rel="me" title="我爱自然语言处理完全镜像" target="_blank">52nlpblog</a></li>
+<li><a href="http://www.52nlp.com" rel="me" title="52nlp的英文站" target="_blank">52nlpcom</a></li>
+<li><a href="http://hi.baidu.com/drkevinzhang" rel="friend" title="ICTCLAS 张华平博士的空间" target="_blank">ICTCLAS 张华平博士的空间</a></li>
+<li><a href="http://blog.so8848.com/" rel="friend" title="信息检索博客" target="_blank">Information Retrieval Blog</a></li>
+<li><a href="http://interop123.com/default.aspx" rel="friend" title="崔晓源师兄关于NET技术的站点" target="_blank">NET互操作技术社区</a></li>
+<li><a href="http://bbs.w3china.org/" rel="friend" title="中国万维网联盟讨论区" target="_blank">W3CHINA讨论区</a></li>
+<li><a href="http://www.ailab.cn/" rel="friend" target="_blank">人工智能网</a></li>
+<li><a href="http://mindhacks.cn/" rel="friend" title="一个很有思想的价值博客!" target="_blank">刘未鹏之Mind Hacks</a></li>
+<li><a href="http://www.cnblogs.com/finallyliuyu/" rel="friend" target="_blank">原地转圈的驴子</a></li>
+<li><a href="http://xunren.thuir.org/" target="_blank">微博寻人（梁博）</a></li>
+<li><a href="http://52opencourse.com" rel="friend" title="我爱公开课，高质量公开课交流平台" target="_blank">我爱公开课</a></li>
+<li><a href="http://iregex.org/" rel="friend" target="_blank">我爱正则表达式</a></li>
+<li><a href="http://courseminer.com" target="_blank">挖课</a></li>
+<li><a href="http://www.sciencenet.cn/u/timy/" rel="friend" title="章成志老师的博客" target="_blank">章成志的博客</a></li>
+<li><a href="http://blog.csdn.net/v_JULY_v/" target="_blank">结构之法 算法之道</a></li>
+<li><a href="http://www.lingcc.com/" rel="friend" title="关注编译器,虚拟机,编程语言及技术,IT职业和程序员生活" target="_blank">编译点滴</a></li>
+<li><a href="http://www.52nlp.org" rel="me" title="52nlp的官方网站" target="_blank">自然语言处理</a></li>
+<li><a href="http://www.ieee.org.cn/" rel="friend" title="计算机科学论坛" target="_blank">计算机科学论坛</a></li>
+<li><a href="http://coursegraph.com/">课程图谱</a></li>
+<li><a href="http://blog.coursegraph.com" rel="friend">课程图谱博客</a></li>
+
+	</ul>
+</li>
+<li id="meta-4" class="widget-container widget_meta"><h3 class="widget-title">功能</h3>			<ul>
+			<li><a href="http://www.52nlp.cn/wp-login.php?action=register">注册</a></li>			<li><a href="http://www.52nlp.cn/wp-login.php">登录</a></li>
+			<li><a href="http://www.52nlp.cn/feed" title="使用RSS 2.0订阅本站点内容">文章<abbr title="Really Simple Syndication">RSS</abbr></a></li>
+			<li><a href="http://www.52nlp.cn/comments/feed" title="使用RSS订阅本站点的所有文章的近期评论">评论<abbr title="Really Simple Syndication">RSS</abbr></a></li>
+<li><a href="https://cn.wordpress.org/" title="基于WordPress，一个优美、先进的个人信息发布平台。">WordPress.org</a></li>			</ul>
+</li>			</ul>
+		</div><!-- #secondary .widget-area -->
+
+	</div><!-- #main -->
+
+	<div id="footer" role="contentinfo">
+		<div id="colophon">
+
+
+
+			<div id="site-info">
+				<a href="http://www.52nlp.cn/" title="我爱自然语言处理" rel="home">
+					我爱自然语言处理				</a>
+			</div><!-- #site-info -->
+
+			<div id="site-generator">
+								<a href="http://cn.wordpress.org/"
+						title="优雅的个人发布平台" rel="generator">
+					自豪地采用 WordPress。				</a>
+			</div><!-- #site-generator -->
+
+		</div><!-- #colophon -->
+	</div><!-- #footer -->
+
+</div><!-- #wrapper -->
+
+<script>
+/* <![CDATA[ */
+var rcGlobal = {
+	serverUrl		:'http://www.52nlp.cn',
+	infoTemp		:'%REVIEWER% 在 %POST%',
+	loadingText		:'正在加载',
+	noCommentsText	:'没有任何评论',
+	newestText		:'&laquo; 最新的',
+	newerText		:'&laquo; 上一页',
+	olderText		:'下一页 &raquo;',
+	showContent		:'',
+	external		:'',
+	avatarSize		:'0',
+	avatarPosition	:'left',
+	anonymous		:'匿名'
+};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://www.52nlp.cn/wp-content/plugins/akismet/_inc/form.js?ver=3.0.1'></script>
+<link rel='stylesheet' id='yarppRelatedCss-css'  href='http://www.52nlp.cn/wp-content/plugins/yet-another-related-posts-plugin/style/related.css?ver=3.9.1' type='text/css' media='all' />
+<script type='text/javascript' src='http://www.52nlp.cn/wp-content/plugins/wp-recentcomments/js/wp-recentcomments.js?ver=2.2.7'></script>
+	<p align="center"> 本站架设在 <a href="http://www.52nlp.cn/digitalocean%E4%BD%BF%E7%94%A8%E5%B0%8F%E8%AE%B0">DigitalOcean</a> 上, 采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本站内容必须也遵循“署名-非商业用途-保持一致”的创作共用协议.</p>
+<!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(["trackPageView"]);
+  _paq.push(["enableLinkTracking"]);
+
+  (function() {
+    var u=(("https:" == document.location.protocol) ? "https" : "http") + "://162.243.252.121/piwik/";
+    _paq.push(["setTrackerUrl", u+"piwik.php"]);
+    _paq.push(["setSiteId", "5"]);
+    var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0]; g.type="text/javascript";
+    g.defer=true; g.async=true; g.src=u+"piwik.js"; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Piwik Code -->
+</body>
+</html>
