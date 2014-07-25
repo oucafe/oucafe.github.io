@@ -71,12 +71,14 @@ config.each do |site|
           File.open(meta_fname, 'w') {|file|
             file.puts("---")
             file.puts("layout: post")
-            file.puts("title: #{post_title.text}")
+            file.puts("title: '#{post_title.text}'")
             file.puts("time: #{post_time}")
             file.puts("site_name: #{site_name}")
             file.puts("source_url: #{post_href}")
             file.puts("---")
+            file.puts("{% raw %}")
             file.puts(post_content.inner_html)
+            file.puts("{% endraw %}")
           }
         ensure
           sleep 1.0 + rand
