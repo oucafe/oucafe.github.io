@@ -1,0 +1,864 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<title>中文分词入门之字标注法4 | 我爱自然语言处理</title>
+<link rel="profile" href="http://gmpg.org/xfn/11" />
+<link rel="stylesheet" type="text/css" media="all" href="http://www.52nlp.cn/wp-content/themes/twentytenorg/style.css" />
+<link rel="pingback" href="http://www.52nlp.cn/xmlrpc.php" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; Feed" href="http://www.52nlp.cn/feed" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; 评论Feed" href="http://www.52nlp.cn/comments/feed" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; 中文分词入门之字标注法4评论Feed" href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%954/feed" />
+<link rel='stylesheet' id='yarppWidgetCss-css'  href='http://www.52nlp.cn/wp-content/plugins/yet-another-related-posts-plugin/style/widget.css?ver=3.9.1' type='text/css' media='all' />
+<link rel='stylesheet' id='codecolorer-css'  href='http://www.52nlp.cn/wp-content/plugins/codecolorer/codecolorer.css?ver=0.9.9' type='text/css' media='screen' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.52nlp.cn/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.52nlp.cn/wp-includes/wlwmanifest.xml" /> 
+<link rel='prev' title='中文分词入门之字标注法3' href='http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%953' />
+<link rel='next' title='中文分词入门之字标注法全文文档' href='http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%95%e5%85%a8%e6%96%87%e6%96%87%e6%a1%a3' />
+<meta name="generator" content="WordPress 3.9.1" />
+<link rel='canonical' href='http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%954' />
+<link rel='shortlink' href='http://www.52nlp.cn/?p=6339' />
+<!-- wp thread comment 1.4.9.4.002 -->
+<style type="text/css" media="screen">
+.editComment, .editableComment, .textComment{
+	display: inline;
+}
+.comment-childs{
+	border: 1px solid #999;
+	margin: 5px 2px 2px 4px;
+	padding: 4px 2px 2px 4px;
+	background-color: white;
+}
+.chalt{
+	background-color: #E2E2E2;
+}
+#newcomment{
+	border:1px dashed #777;width:90%;
+}
+#newcommentsubmit{
+	color:red;
+}
+.adminreplycomment{
+	border:1px dashed #777;
+	width:99%;
+	margin:4px;
+	padding:4px;
+}
+.mvccls{
+	color: #999;
+}
+			
+</style>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: { equationNumbers: { autoNumber: "AMS" } },
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+    inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+    displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+    processEscapes: true
+  },
+  "HTML-CSS": { availableFonts: ["TeX"] }
+});
+</script><script type="text/javascript" src="http://www.52nlp.cn/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</head>
+
+<body class="single single-post postid-6339 single-format-standard">
+<div id="wrapper" class="hfeed">
+	<div id="header">
+		<div id="masthead">
+			<div id="branding" role="banner">
+								<div id="site-title">
+					<span>
+						<a href="http://www.52nlp.cn/" title="我爱自然语言处理" rel="home">我爱自然语言处理</a>
+					</span>
+				</div>
+				<div id="site-description">I Love Natural Language Processing</div>
+
+										<img src="http://www.52nlp.cn/wp-content/themes/twentytenorg/images/headers/path.jpg" width="940" height="198" alt="" />
+								</div><!-- #branding -->
+
+			<div id="access" role="navigation">
+			  				<div class="skip-link screen-reader-text"><a href="#content" title="跳至正文">跳至正文</a></div>
+								<div class="menu"><ul><li ><a href="http://www.52nlp.cn/">首页</a></li><li class="page_item page-item-2"><a href="http://www.52nlp.cn/about">关于</a></li><li class="page_item page-item-2557 page_item_has_children"><a href="http://www.52nlp.cn/resources">资源</a><ul class='children'><li class="page_item page-item-1271"><a href="http://www.52nlp.cn/resources/wpmatheditor">WpMathEditor</a></li></ul></li></ul></div>
+ 
+				<div class="menu"><ul><li class="page_item page-item-2"></li><li class="page_item page-item-2"><a href="http://coursegraph.com" title="课程图谱" target="_blank">课程图谱</a></li><li class="page_item page-item-2"><a href="http://www.nlpjob.com" title="求职" target="_blank">求职招聘</a></li></ul></div>
+			</div><!-- #access -->
+		</div><!-- #masthead -->
+	</div><!-- #header -->
+
+	<div id="main">
+
+		<div id="container">
+			<div id="content" role="main">
+
+			
+
+				<div id="nav-above" class="navigation">
+					<div class="nav-previous"><a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%953" rel="prev"><span class="meta-nav">&larr;</span> 中文分词入门之字标注法3</a></div>
+					<div class="nav-next"><a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%95%e5%85%a8%e6%96%87%e6%96%87%e6%a1%a3" rel="next">中文分词入门之字标注法全文文档 <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-above -->
+
+				<div id="post-6339" class="post-6339 post type-post status-publish format-standard hentry category-word-segmentation category-195 tag-crf tag-crf tag-crf tag-pgm tag-82 tag-340 tag-761 tag-795 tag-361 tag-792 tag-794 tag-251 tag-759 tag-556 tag-195 tag-583 tag-797 tag-798 tag-564">
+					<h1 class="entry-title">中文分词入门之字标注法4</h1>
+
+					<div class="entry-meta">
+						<span class="meta-prep meta-prep-author">发表于</span> <a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%954" title="12:45" rel="bookmark"><span class="entry-date">2013年12月31号</span></a> <span class="meta-sep">由</span> <span class="author vcard"><a class="url fn n" href="http://www.52nlp.cn/author/admin" title="查看所有由 52nlp 发布的文章">52nlp</a></span>					</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+						<p><a href="http://www.52nlp.cn/%E4%B8%AD%E6%96%87%E5%88%86%E8%AF%8D%E5%85%A5%E9%97%A8%E4%B9%8B%E5%AD%97%E6%A0%87%E6%B3%A8%E6%B3%953">上一节</a>主要介绍的是利用最大熵工具包来做字标注<a href="http://www.52nlp.cn/category/word-segmentation">中文分词</a>，这一节我们直奔主题，借用条件随机场工具“<a href="http://crfpp.googlecode.com/svn/trunk/doc/index.html">CRF++: Yet Another CRF toolkit</a>”来完成字标注中文分词的全过程。</p>
+<p>关于条件随机场（CRF）的背景知识，推荐参考阅读一些经典的文献：《<a href="http://www.52nlp.cn/%E6%9D%A1%E4%BB%B6%E9%9A%8F%E6%9C%BA%E5%9C%BA%E6%96%87%E7%8C%AE%E9%98%85%E8%AF%BB%E6%8C%87%E5%8D%97">条件随机场文献阅读指南</a>》，另外再额外推荐一个tutorial:《<a href="http://www.scai.fraunhofer.de/fileadmin/images/bio/data_mining/paper/crf_klinger_tomanek.pdf">Classical Probabilistic Models and Conditional Random Fields</a>》, 这份关于CRF的文档分别从概率模型（NB，HMM，ME， CRF)之间的关系以及概率图模型背景来介绍条件随机场，比较清晰：</p>
+<blockquote><p>While a Hidden Markov Model is a sequential extension to the Nave Bayes Model, Conditional Random Fields can be understood as a sequential extension to the Maximum Entropy Model.</p></blockquote>
+<p>如果这些还不够过瘾，推荐<a href="http://coursegraph.com/">课程图谱</a>上收录的Coursera创始人之一Daphne Koller的“<a href="http://coursegraph.com/probabilistic-graphical-models-coursera-pgm-stanford-university">概率图模型公开课</a>”，相信拿下这门课之后，对于上述概率模型，会有一种“一览众山小”的感觉。<br />
+<span id="more-6339"></span><br />
+不过我们还是要从安装CRF++工具包说起，在Linux或者Mac OS系统下，下载C++源代码安装包(这里用的是 <a href="https://crfpp.googlecode.com/files/CRF%2B%2B-0.58.tar.gz">CRF++-0.58.tar.gz</a> ）之后，依然是 “configure &#038; make &#038; (sudo) make install&#8221;，安装完毕之后，可以cd python进入到其同样用SWIG生成的Python工具包下，安装python包：python setup.py build &#038; (sudo) python setup.py install。安装完毕之后，可以在python解释器下测试，是否能成功import CRFPP，如果ok，则准备工作就绪。</p>
+<p>上一节我们利用最大熵模型工具包里自带的词性标注工具进行的中文分词，稍微有些曲折，这一节我们依然利用CRF++ example里的样例进行测试，不过好处是，CRF++ example里有个seg目录，这个seg目录对应的是一个日文分词的样例，正好可以套用到我们的中文分词中来。在安装包目录下，cd example, cd seg目录后，有4个文件：</p>
+<blockquote><p>    exec.sh（执行脚本）<br />
+    template（特征模板）<br />
+    test.data（测试集）<br />
+    train.data（训练集)</p></blockquote>
+<p>有了这4个文件，我们可以做得事情就比较简单，只要按测试集，训练集的格式准备数据就可以了，特征模板和执行脚本可以套用，不过这里简单解读一下这几个CRF++文件。首先来看训练集：</p>
+<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:620px;"><table cellspacing="0" cellpadding="0"><tbody><tr><td class="line-numbers"><div>1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br />9<br />10<br /></div></td><td><div class="text codecolorer">毎 k &nbsp; B<br />
+日 k &nbsp; I<br />
+新 k &nbsp; I<br />
+聞 k &nbsp; I<br />
+社 k &nbsp; I<br />
+特 k &nbsp; B<br />
+別 k &nbsp; I<br />
+顧 k &nbsp; B<br />
+問 k &nbsp; I &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <br />
+４ n &nbsp; B</div></td></tr></tbody></table></div>
+<p>这里第一列是待分词的日文字，第二列暂且认为其是词性标记，第三列是字标注中的2-tag(B, I)标记，这个很重要，对于我们需要准备的训练集，主要是把这一列的标记做好，不过需要注意的是，其断句是靠空行来完成的。</p>
+<p>再来看测试集的格式：</p>
+<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:620px;"><table cellspacing="0" cellpadding="0"><tbody><tr><td class="line-numbers"><div>1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br />9<br />10<br /></div></td><td><div class="text codecolorer">よ h &nbsp; I<br />
+っ h &nbsp; I<br />
+て h &nbsp; I<br />
+私 k &nbsp; B<br />
+た h &nbsp; B<br />
+ち h &nbsp; I<br />
+の h &nbsp; B &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <br />
+世 k &nbsp; B<br />
+代 k &nbsp; I<br />
+が h &nbsp; B</div></td></tr></tbody></table></div>
+<p>同样也有3列，第一列是日文字，第二列第三列与上面是相似的，不过在测试集里第三列主要是占位作用。事实上，CRF++对于训练集和测试集文件格式的要求是比较灵活的，首先需要多列，但不能不一致，既在一个文件里有的行是两列，有的行是三列；其次第一列代表的是需要标注的“字或词”，最后一列是输出位&#8221;标记tag&#8221;，如果有额外的特征，例如词性什么的，可以加到中间列里，所以训练集或者测试集的文件最少要有两列。</p>
+<p>接下里我们再来详细的分析一下特征模板文件：</p>
+<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:620px;"><table cellspacing="0" cellpadding="0"><tbody><tr><td class="line-numbers"><div>1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br />9<br />10<br />11<br />12<br />13<br />14<br /></div></td><td><div class="text codecolorer"># Unigram<br />
+U00:%x[-2,0]<br />
+U01:%x[-1,0]<br />
+U02:%x[0,0]<br />
+U03:%x[1,0]<br />
+U04:%x[2,0]<br />
+U05:%x[-2,0]/%x[-1,0]/%x[0,0]<br />
+U06:%x[-1,0]/%x[0,0]/%x[1,0]<br />
+U07:%x[0,0]/%x[1,0]/%x[2,0]<br />
+U08:%x[-1,0]/%x[0,0] &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<br />
+U09:%x[0,0]/%x[1,0]<br />
+<br />
+# Bigram<br />
+B</div></td></tr></tbody></table></div>
+<p>关于CRF++中特征模板的说明和举例，请大家参考官方文档上的“<a href="http://crfpp.googlecode.com/svn/trunk/doc/index.html#templ">Preparing feature templates</a>”这一节，而以下部分的说明拿上述日文分词数据举例。在特征模板文件中，每一行(如U00:%x[-2,0]）代表一个特征，而宏“%x[行位置,列位置]”则代表了相对于当前指向的token的行偏移和列的绝对位置，以上述训练集为例，如果当前扫描到“新	k	I”这一行，</p>
+<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:620px;"><table cellspacing="0" cellpadding="0"><tbody><tr><td class="line-numbers"><div>1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br />9<br />10<br /></div></td><td><div class="text codecolorer">毎 k &nbsp; B<br />
+日 k &nbsp; I<br />
+新 k &nbsp; I &nbsp; &lt;== 扫描到这一行，代表当前位置<br />
+聞 k &nbsp; I<br />
+社 k &nbsp; I<br />
+特 k &nbsp; B<br />
+別 k &nbsp; I<br />
+顧 k &nbsp; B<br />
+問 k &nbsp; I<br />
+４ n &nbsp; B</div></td></tr></tbody></table></div>
+<p>那么依据特征模板文件抽取的特征如下：</p>
+<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:620px;"><table cellspacing="0" cellpadding="0"><tbody><tr><td class="line-numbers"><div>1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br />9<br />10<br />11<br />12<br />13<br />14<br /></div></td><td><div class="text codecolorer"># Unigram<br />
+U00:%x[-2,0] ==&gt; 毎<br />
+U01:%x[-1,0] ==&gt; 日<br />
+U02:%x[0,0] &nbsp;==&gt; 新<br />
+U03:%x[1,0] &nbsp;==&gt; 聞<br />
+U04:%x[2,0] &nbsp;==&gt; 社<br />
+U05:%x[-2,0]/%x[-1,0]/%x[0,0] ==&gt; 每/日/新<br />
+U06:%x[-1,0]/%x[0,0]/%x[1,0] &nbsp;==&gt; 日/新/聞<br />
+U07:%x[0,0]/%x[1,0]/%x[2,0] &nbsp; ==&gt; 新/聞/社<br />
+U08:%x[-1,0]/%x[0,0] &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;==&gt; 日/新<br />
+U09:%x[0,0]/%x[1,0] &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; ==&gt; 新/聞<br />
+<br />
+# Bigram<br />
+B</div></td></tr></tbody></table></div>
+<p>CRF++里将特征分成两种类型，一种是Unigram的，“U”起头，另外一种是Bigram的，“B”起头。对于Unigram的特征，假如一个特征模板是&#8221;U01:%x[-1,0]&#8220;, CRF++会自动的生成一组特征函数(func1 &#8230; funcN) 集合:</p>
+<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:620px;"><table cellspacing="0" cellpadding="0"><tbody><tr><td class="line-numbers"><div>1<br />2<br />3<br />4<br />5<br /></div></td><td><div class="text codecolorer">func1 = if (output = B and feature=&quot;U01:日&quot;) return 1 else return 0<br />
+func2 = if (output = I and feature=&quot;U01:日&quot;) return 1 else return 0<br />
+....<br />
+funcXX = if (output = B and feature=&quot;U01:問&quot;) return 1 &nbsp;else return 0<br />
+funcXY = if (output = I and feature=&quot;U01:問&quot;) return 1 &nbsp;else return 0</div></td></tr></tbody></table></div>
+<p>生成的特征函数的数目 = (L * N)，其中L是输出的类型的个数，这里是B，I这两个tag，N是通过模板扩展出来的所有单个字符串(特征）的个数，这里指的是在扫描所有训练集的过程中找到的日文字（特征）。</p>
+<p>而Bigram特征主要是当前的token和前面一个位置token的自动组合生成的bigram特征集合。最后需要注意的是U01和U02这些标志位，与特征token组合到一起主要是区分“U01:問”和“U02:問”这类特征，虽然抽取的日文&#8221;字&#8221;特征是一样的，但是在CRF++中这是有区别的特征。</p>
+<p>最后我们再来看一下执行脚本：</p>
+<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:620px;"><table cellspacing="0" cellpadding="0"><tbody><tr><td class="line-numbers"><div>1<br />2<br />3<br />4<br />5<br />6<br />7<br /></div></td><td><div class="text codecolorer">#!/bin/sh<br />
+../../crf_learn -f 3 -c 4.0 template train.data model<br />
+../../crf_test -m model test.data<br />
+<br />
+../../crf_learn -a MIRA -f 3 template train.data model<br />
+../../crf_test -m model test.data<br />
+rm -f model</div></td></tr></tbody></table></div>
+<p>执行脚本告诉了我们如何训练一个CRF模型，以及如何利用这个模型来进行测试，执行这个脚本之后，对于输入的测试集，输出结果多了一列：</p>
+<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:620px;"><table cellspacing="0" cellpadding="0"><tbody><tr><td class="line-numbers"><div>1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br />9<br />10<br /></div></td><td><div class="text codecolorer">よ h &nbsp; I &nbsp; B<br />
+っ h &nbsp; I &nbsp; I<br />
+て h &nbsp; I &nbsp; B<br />
+私 k &nbsp; B &nbsp; B<br />
+た h &nbsp; B &nbsp; B<br />
+ち h &nbsp; I &nbsp; I<br />
+の h &nbsp; B &nbsp; B &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<br />
+世 k &nbsp; B &nbsp; B<br />
+代 k &nbsp; I &nbsp; I<br />
+が h &nbsp; B &nbsp; B</div></td></tr></tbody></table></div>
+<p>而这一列才是模型预测的改字的标记tag，也正是我们所需要的结果。到此为止，关于日文分词样例的介绍已经完毕，读者应该可以猜测到接下来我们会如何做中文分词吧？</p>
+<p>和上一节利用<a href="http://www.52nlp.cn/%E4%B8%AD%E6%96%87%E5%88%86%E8%AF%8D%E5%85%A5%E9%97%A8%E4%B9%8B%E5%AD%97%E6%A0%87%E6%B3%A8%E6%B3%953">最大熵模型进行中文分词</a>相似，第一步仍然是将backoff2005里的训练数据转化为CRF++所需的训练数据格式，还是以微软亚洲研究院提供的中文分词语料为例，依然采用4-tag(B(Begin，词首), E(End，词尾), M(Middle，词中), S(Single,单字词))标记集，只处理utf-8编码文本。原始训练集./icwb2-data/training/msr_training.utf8的形式是人工分好词的中文句子形式，如：</p>
+<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:620px;"><table cellspacing="0" cellpadding="0"><tbody><tr><td class="line-numbers"><div>1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br />9<br />10<br /></div></td><td><div class="text codecolorer">“ &nbsp;人们 &nbsp;常 &nbsp;说 &nbsp;生活 &nbsp;是 &nbsp;一 &nbsp;部 &nbsp;教科书 &nbsp;， &nbsp;而 &nbsp;血 &nbsp;与 &nbsp;火 &nbsp;的 &nbsp;战争 &nbsp;&gt; &nbsp; &nbsp; &nbsp;更 &nbsp;是 &nbsp;不可多得 &nbsp;的 &nbsp;教科书 &nbsp;， &nbsp;她 &nbsp;确实 &nbsp;是 &nbsp;名副其实 &nbsp;的 &nbsp;‘ &nbsp;我 &nbsp;的 &nbsp;&gt; &nbsp; &nbsp; &nbsp;大学 &nbsp;’ &nbsp;。<br />
+“ &nbsp;心 &nbsp;静 &nbsp;渐 &nbsp;知 &nbsp;春 &nbsp;似 &nbsp;海 &nbsp;， &nbsp;花 &nbsp;深 &nbsp;每 &nbsp;觉 &nbsp;影 &nbsp;生 &nbsp;香 &nbsp;。<br />
+“ &nbsp;吃 &nbsp;屎 &nbsp;的 &nbsp;东西 &nbsp;， &nbsp;连 &nbsp;一 &nbsp;捆 &nbsp;麦 &nbsp;也 &nbsp;铡 &nbsp;不 &nbsp;动 &nbsp;呀 &nbsp;？<br />
+他 &nbsp;“ &nbsp;严格要求 &nbsp;自己 &nbsp;， &nbsp;从 &nbsp;一个 &nbsp;科举 &nbsp;出身 &nbsp;的 &nbsp;进士 &nbsp;成为 &nbsp;一个 &nbsp;伟&gt; &nbsp; &nbsp; &nbsp;大 &nbsp;的 &nbsp;民主主义 &nbsp;者 &nbsp;， &nbsp;进而 &nbsp;成为 &nbsp;一 &nbsp;位 &nbsp;杰出 &nbsp;的 &nbsp;党外 &nbsp;共产主义 &nbsp;战 士 &nbsp;， &nbsp;献身 &nbsp;于 &nbsp;崇高 &nbsp;的 &nbsp;共产主义 &nbsp;事业 &nbsp;。<br />
+“ &nbsp;征 &nbsp;而 &nbsp;未 &nbsp;用 &nbsp;的 &nbsp;耕地 &nbsp;和 &nbsp;有 &nbsp;收益 &nbsp;的 &nbsp;土地 &nbsp;， &nbsp;不准 &nbsp;荒芜 &nbsp;。<br />
+“ &nbsp;这 &nbsp;首先 &nbsp;是 &nbsp;个 &nbsp;民族 &nbsp;问题 &nbsp;， &nbsp;民族 &nbsp;的 &nbsp;感情 &nbsp;问题 &nbsp;。<br />
+’ &nbsp;我 &nbsp;扔 &nbsp;了 &nbsp;两颗 &nbsp;手榴弹 &nbsp;， &nbsp;他 &nbsp;一下子 &nbsp;出 &nbsp;溜 &nbsp;下去 &nbsp;。<br />
+“ &nbsp;废除 &nbsp;先前 &nbsp;存在 &nbsp;的 &nbsp;所有制 &nbsp;关系 &nbsp;， &nbsp;并不是 &nbsp;共产主义 &nbsp;所 &nbsp;独具 &nbsp;的 &nbsp; &nbsp; &nbsp; &nbsp;特征 &nbsp;。<br />
+“ &nbsp;这个 &nbsp;案子 &nbsp;从 &nbsp;始 &nbsp;至今 &nbsp;我们 &nbsp;都 &nbsp;没有 &nbsp;跟 &nbsp;法官 &nbsp;接触 &nbsp;过 &nbsp;， &nbsp;也 &nbsp;&gt; &nbsp; &nbsp; &nbsp;没有 &nbsp;跟 &nbsp;原告 &nbsp;、 &nbsp;被告 &nbsp;接触 &nbsp;过 &nbsp;。<br />
+“ &nbsp;你 &nbsp;只有 &nbsp;把 &nbsp;事情 &nbsp;做好 &nbsp;， &nbsp;大伙 &nbsp;才 &nbsp;服 &nbsp;你 &nbsp;。</div></td></tr></tbody></table></div>
+<p>这里同样提供一个脚本 <a href="https://github.com/panyang/yuzhen_nlp_edu_tools/blob/master/CLPT/WordSegmentation/CRFSegment/make_crf_train_data.py">make_crf_train_data.py</a>，将这个训练语料转换为CRF++训练用的语料格式(2列，4-tag)：</p>
+<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:620px;height:450px;"><table cellspacing="0" cellpadding="0"><tbody><tr><td class="line-numbers"><div>1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br />9<br />10<br />11<br />12<br />13<br />14<br />15<br />16<br />17<br />18<br />19<br />20<br />21<br />22<br />23<br />24<br />25<br />26<br />27<br />28<br />29<br />30<br />31<br />32<br />33<br />34<br /></div></td><td><div class="text codecolorer">#!/usr/bin/env python<br />
+# -*- coding: utf-8 -*-<br />
+# Author: 52nlpcn@gmail.com<br />
+# Copyright 2014 @ YuZhen Technology<br />
+#<br />
+# 4 tags for character tagging: B(Begin), E(End), M(Middle), S(Single)<br />
+<br />
+import codecs<br />
+import sys<br />
+<br />
+def character_tagging(input_file, output_file):<br />
+&nbsp; &nbsp; input_data = codecs.open(input_file, 'r', 'utf-8')<br />
+&nbsp; &nbsp; output_data = codecs.open(output_file, 'w', 'utf-8')<br />
+&nbsp; &nbsp; for line in input_data.readlines():<br />
+&nbsp; &nbsp; &nbsp; &nbsp; word_list = line.strip().split()<br />
+&nbsp; &nbsp; &nbsp; &nbsp; for word in word_list:<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if len(word) == 1:<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; output_data.write(word + &quot;\tS\n&quot;)<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; else:<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; output_data.write(word[0] + &quot;\tB\n&quot;)<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; for w in word[1:len(word)-1]:<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; output_data.write(w + &quot;\tM\n&quot;)<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; output_data.write(word[len(word)-1] + &quot;\tE\n&quot;)<br />
+&nbsp; &nbsp; &nbsp; &nbsp; output_data.write(&quot;\n&quot;)<br />
+&nbsp; &nbsp; input_data.close()<br />
+&nbsp; &nbsp; output_data.close()<br />
+<br />
+if __name__ == '__main__':<br />
+&nbsp; &nbsp; if len(sys.argv) != 3:<br />
+&nbsp; &nbsp; &nbsp; &nbsp; print &quot;pls use: python make_crf_train_data.py input output&quot;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; sys.exit()<br />
+&nbsp; &nbsp; input_file = sys.argv[1]<br />
+&nbsp; &nbsp; output_file = sys.argv[2]<br />
+&nbsp; &nbsp; character_tagging(input_file, output_file)</div></td></tr></tbody></table></div>
+<p>只需要执行“python make_crf_train_data.py ./icwb2-data/training/msr_training.utf8 msr_training.tagging4crf.utf8” 即可得到CRF++要求的格式的训练文件msr_training.tagging4crf.utf8，样例如下：</p>
+<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:620px;"><table cellspacing="0" cellpadding="0"><tbody><tr><td class="line-numbers"><div>1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br />9<br />10<br />11<br /></div></td><td><div class="text codecolorer">“ S<br />
+人 B<br />
+们 E<br />
+常 S<br />
+说 S<br />
+生 B<br />
+活 E<br />
+是 S &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<br />
+一 S<br />
+部 S<br />
+...</div></td></tr></tbody></table></div>
+<p>有了这份训练语料，就可以利用crf的训练工具crf_learn来训练模型了，执行如下命令即可：</p>
+<p>crf_learn -f 3 -c 4.0 template msr_training.tagging4crf.utf8 crf_model</p>
+<p>这次训练的时间稍微有些长，在我的4G内存的mac pro上跑了将近700轮，大约2个小时，最终训练的crf_model约51M。有了模型，现在我们需要做得还是准备一份CRF++用的测试语料，然后利用CRF++的测试工具crf_test进行字标注。原始的测试语料是icwb2-data/testing/msr_test.utf8 ，样例如下：</p>
+<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:620px;"><table cellspacing="0" cellpadding="0"><tbody><tr><td class="line-numbers"><div>1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br />9<br />10<br /></div></td><td><div class="text codecolorer">扬帆远东做与中国合作的先行<br />
+希腊的经济结构较特殊。<br />
+海运业雄踞全球之首，按吨位计占世界总数的１７％。<br />
+另外旅游、侨汇也是经济收入的重要组成部分，制造业规模相对较小。<br />
+多年来，中希贸易始终处于较低的水平，希腊几乎没有在中国投资。<br />
+十几年来，改革开放的中国经济高速发展，远东在崛起。<br />
+瓦西里斯的船只中有４０％驶向远东，每个月几乎都有两三条船停靠中国港口。<br />
+他感受到了中国经济发展的大潮。<br />
+他要与中国人合作。<br />
+他来到中国，成为第一个访华的大船主。</div></td></tr></tbody></table></div>
+<p>这里我们同样提供一个python脚本 <a href="https://github.com/panyang/yuzhen_nlp_edu_tools/blob/master/CLPT/WordSegmentation/CRFSegment/make_crf_test_data.py">make_crf_test_data.py</a> 对测试语料进行处理，将其转换为CRF++要求的格式（2列，B作为最后一列的占位符)</p>
+<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:620px;height:450px;"><table cellspacing="0" cellpadding="0"><tbody><tr><td class="line-numbers"><div>1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br />9<br />10<br />11<br />12<br />13<br />14<br />15<br />16<br />17<br />18<br />19<br />20<br />21<br />22<br />23<br />24<br />25<br />26<br />27<br />28<br />29<br /></div></td><td><div class="text codecolorer">#!/usr/bin/env python<br />
+# -*- coding: utf-8 -*-<br />
+# Author: 52nlpcn@gmail.com<br />
+# Copyright 2014 @ YuZhen Technology<br />
+#<br />
+# 4 tags for character tagging: B(Begin), E(End), M(Middle), S(Single)<br />
+<br />
+import codecs<br />
+import sys<br />
+<br />
+def character_split(input_file, output_file):<br />
+&nbsp; &nbsp; input_data = codecs.open(input_file, 'r', 'utf-8')<br />
+&nbsp; &nbsp; output_data = codecs.open(output_file, 'w', 'utf-8')<br />
+&nbsp; &nbsp; for line in input_data.readlines():<br />
+&nbsp; &nbsp; &nbsp; &nbsp; for word in line.strip():<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; word = word.strip()<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if word:<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; output_data.write(word + &quot;\tB\n&quot;)<br />
+&nbsp; &nbsp; &nbsp; &nbsp; output_data.write(&quot;\n&quot;)<br />
+&nbsp; &nbsp; input_data.close()<br />
+&nbsp; &nbsp; output_data.close()<br />
+<br />
+if __name__ == '__main__':<br />
+&nbsp; &nbsp; if len(sys.argv) != 3:<br />
+&nbsp; &nbsp; &nbsp; &nbsp; print &quot;pls use: python make_crf_test_data.py input output&quot;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; sys.exit()<br />
+&nbsp; &nbsp; input_file = sys.argv[1]<br />
+&nbsp; &nbsp; output_file = sys.argv[2]<br />
+&nbsp; &nbsp; character_split(input_file, output_file)</div></td></tr></tbody></table></div>
+<p>执行“python make_crf_test_data.py ./icwb2-data/testing/msr_test.utf8 msr_test4crf.utf8”即可得到可用于CRF++测试的测试语料msr_test4crf.utf8，样例如下：</p>
+<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:620px;"><table cellspacing="0" cellpadding="0"><tbody><tr><td class="line-numbers"><div>1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br />9<br />10<br />11<br /></div></td><td><div class="text codecolorer">扬 B<br />
+帆 B<br />
+远 B<br />
+东 B<br />
+做 B<br />
+与 B<br />
+中 B<br />
+国 B<br />
+合 B<br />
+作 B &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;<br />
+...</div></td></tr></tbody></table></div>
+<p>现在执行crf_test即可得到字标注结果：</p>
+<p>crf_test -m crf_model msr_test4crf.utf8 > msr_test4crf.tag.utf8</p>
+<p>msr_test4crf.tag.utf8即是标注结果，样例如下：</p>
+<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:620px;"><table cellspacing="0" cellpadding="0"><tbody><tr><td class="line-numbers"><div>1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br />9<br />10<br />11<br /></div></td><td><div class="text codecolorer">扬 B &nbsp; B<br />
+帆 B &nbsp; E<br />
+远 B &nbsp; B<br />
+东 B &nbsp; E<br />
+做 B &nbsp; S<br />
+与 B &nbsp; S<br />
+中 B &nbsp; B<br />
+国 B &nbsp; E<br />
+合 B &nbsp; B<br />
+作 B &nbsp; E &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; <br />
+...</div></td></tr></tbody></table></div>
+<p>最后我们还需要一个脚本，按标注的词位信息讲这份结果再转化为分词结果，这里我们仍然提供一个转换脚本 <a href="https://github.com/panyang/yuzhen_nlp_edu_tools/blob/master/CLPT/WordSegmentation/CRFSegment/crf_data_2_word.py">crf_data_2_word.py</a> :</p>
+<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:620px;height:450px;"><table cellspacing="0" cellpadding="0"><tbody><tr><td class="line-numbers"><div>1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br />9<br />10<br />11<br />12<br />13<br />14<br />15<br />16<br />17<br />18<br />19<br />20<br />21<br />22<br />23<br />24<br />25<br />26<br />27<br />28<br />29<br />30<br />31<br />32<br />33<br />34<br />35<br />36<br />37<br />38<br /></div></td><td><div class="text codecolorer">#!/usr/bin/env python<br />
+# -*- coding: utf-8 -*-<br />
+# Author: 52nlpcn@gmail.com<br />
+# Copyright 2014 @ YuZhen Technology<br />
+#<br />
+# 4 tags for character tagging: B(Begin), E(End), M(Middle), S(Single)<br />
+<br />
+import codecs<br />
+import sys<br />
+<br />
+def character_2_word(input_file, output_file):<br />
+&nbsp; &nbsp; input_data = codecs.open(input_file, 'r', 'utf-8')<br />
+&nbsp; &nbsp; output_data = codecs.open(output_file, 'w', 'utf-8')<br />
+&nbsp; &nbsp; for line in input_data.readlines():<br />
+&nbsp; &nbsp; &nbsp; &nbsp; if line == &quot;\n&quot;:<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; output_data.write(&quot;\n&quot;)<br />
+&nbsp; &nbsp; &nbsp; &nbsp; else:<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; char_tag_pair = line.strip().split('\t')<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; char = char_tag_pair[0]<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; tag = char_tag_pair[2]<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if tag == 'B':<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; output_data.write(' ' + char)<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; elif tag == 'M':<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; output_data.write(char)<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; elif tag == 'E':<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; output_data.write(char + ' ')<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; else: # tag == 'S'<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; output_data.write(' ' + char + ' ')<br />
+&nbsp; &nbsp; input_data.close()<br />
+&nbsp; &nbsp; output_data.close()<br />
+<br />
+if __name__ == '__main__':<br />
+&nbsp; &nbsp; if len(sys.argv) != 3:<br />
+&nbsp; &nbsp; &nbsp; &nbsp; print &quot;pls use: python crf_data_2_word.py input output&quot;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; sys.exit()<br />
+&nbsp; &nbsp; input_file = sys.argv[1]<br />
+&nbsp; &nbsp; output_file = sys.argv[2]<br />
+&nbsp; &nbsp; character_2_word(input_file, output_file)</div></td></tr></tbody></table></div>
+<p>只需执行“python crf_data_2_word.py msr_test4crf.tag.utf8 msr_test4crf.tag2word.utf8” 即可得到合并后的分词结果文件 msr_test4crf.tag2word.utf8，样例如下：</p>
+<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:620px;"><table cellspacing="0" cellpadding="0"><tbody><tr><td class="line-numbers"><div>1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br />9<br />10<br />11<br /></div></td><td><div class="text codecolorer">&nbsp;扬帆 &nbsp;远东 &nbsp;做 &nbsp;与 &nbsp;中国 &nbsp;合作 &nbsp;的 &nbsp;先行 <br />
+&nbsp;希腊 &nbsp;的 &nbsp;经济 &nbsp;结构 &nbsp;较 &nbsp;特殊 &nbsp;。 <br />
+&nbsp;海运 &nbsp;业 &nbsp;雄踞 &nbsp;全球 &nbsp;之 &nbsp;首 &nbsp;， &nbsp;按 &nbsp;吨 &nbsp;位 &nbsp;计 &nbsp;占 &nbsp;世界 &nbsp;总数 &nbsp;的 &nbsp;１７％ &nbsp;。 <br />
+&nbsp;另外 &nbsp;旅游 &nbsp;、 &nbsp;侨汇 &nbsp;也是 &nbsp;经济 &nbsp;收入 &nbsp;的 &nbsp;重要 &nbsp;组成部分 &nbsp;， &nbsp;制造业 &nbsp;规模 &nbsp;相对 &nbsp;较小 &nbsp;。 <br />
+&nbsp;多年来 &nbsp;， &nbsp;中 &nbsp;希 &nbsp;贸易 &nbsp;始终 &nbsp;处于 &nbsp;较低 &nbsp;的 &nbsp;水平 &nbsp;， &nbsp;希腊 &nbsp;几乎 &nbsp;没有 &nbsp;在 &nbsp;中国 &nbsp;投资 &nbsp;。 <br />
+&nbsp;十几年 &nbsp;来 &nbsp;， &nbsp;改革开放 &nbsp;的 &nbsp;中国 &nbsp;经济 &nbsp;高速 &nbsp;发展 &nbsp;， &nbsp;远东 &nbsp;在 &nbsp;崛起 &nbsp;。 <br />
+&nbsp;瓦西里斯 &nbsp;的 &nbsp;船只 &nbsp;中 &nbsp;有 &nbsp;４０％ &nbsp;驶 &nbsp;向 &nbsp;远东 &nbsp;， &nbsp;每个 &nbsp;月 &nbsp;几乎 &nbsp;都 &nbsp;有 &nbsp;两三条 &nbsp;船 &nbsp;停靠 &nbsp;中国 &nbsp;港口 &nbsp;。 <br />
+&nbsp;他 &nbsp;感受 &nbsp;到 &nbsp;了 &nbsp;中国 &nbsp;经济 &nbsp;发展 &nbsp;的 &nbsp;大潮 &nbsp;。 <br />
+&nbsp;他 &nbsp;要 &nbsp;与 &nbsp;中国人 &nbsp;合作 &nbsp;。 <br />
+&nbsp;他 &nbsp;来到 &nbsp;中国 &nbsp;， &nbsp;成为 &nbsp;第一个 &nbsp;访 &nbsp;华 &nbsp;的 &nbsp;大船 &nbsp;主 &nbsp;。<br />
+&nbsp;...</div></td></tr></tbody></table></div>
+<p>有了这个CRF字标注分词结果，我们就可以利用backoff2005的测试脚本来测一下这次分词的效果了：</p>
+<p>./icwb2-data/scripts/score ./icwb2-data/gold/msr_training_words.utf8 ./icwb2-data/gold/msr_test_gold.utf8 msr_test4crf.tag2word.utf8 > msr_crf_segment.score</p>
+<p>结果如下：</p>
+<p>=== SUMMARY:<br />
+=== TOTAL INSERTIONS:	1412<br />
+=== TOTAL DELETIONS:	1305<br />
+=== TOTAL SUBSTITUTIONS:	2449<br />
+=== TOTAL NCHANGE:	5166<br />
+=== TOTAL TRUE WORD COUNT:	106873<br />
+=== TOTAL TEST WORD COUNT:	106980<br />
+=== TOTAL TRUE WORDS RECALL:	0.965<br />
+=== TOTAL TEST WORDS PRECISION:	0.964<br />
+=== F MEASURE:	0.964<br />
+=== OOV Rate:	0.026<br />
+=== OOV Recall Rate:	0.647<br />
+=== IV Recall Rate:	0.974<br />
+###	msr_test4crf.tag2word.utf8	1412	1305	2449	5166	106873	106980	0.965	0.964	0.964	0.026	0.647	0.974</p>
+<p>这次我们获得了一个准确率，召回率以及F值都在96%以上的结果，相对于前面几节的测试结果，这个CRF字标注分词结果还相对不错。不过是不是感觉上面的步骤有些繁琐，有没有一次到位的CRF分词器，这里我们同样提供一个CRF分词脚本 <a href="https://github.com/panyang/yuzhen_nlp_edu_tools/blob/master/CLPT/WordSegmentation/CRFSegment/crf_segmenter.py">crf_segmenter.py</a> ，利用CRF++的python工具包，做到一次输入，一次输出：</p>
+<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:620px;height:450px;"><table cellspacing="0" cellpadding="0"><tbody><tr><td class="line-numbers"><div>1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br />9<br />10<br />11<br />12<br />13<br />14<br />15<br />16<br />17<br />18<br />19<br />20<br />21<br />22<br />23<br />24<br />25<br />26<br />27<br />28<br />29<br />30<br />31<br />32<br />33<br />34<br />35<br />36<br />37<br />38<br />39<br />40<br />41<br />42<br />43<br />44<br />45<br />46<br />47<br />48<br />49<br />50<br /></div></td><td><div class="text codecolorer">#!/usr/bin/env python<br />
+# -*- coding: utf-8 -*-<br />
+# Author: 52nlpcn@gmail.com<br />
+# Copyright 2014 @ YuZhen Technology<br />
+#<br />
+# CRF Segmenter based character tagging:<br />
+# &nbsp; &nbsp; 4 tags for character tagging: B(Begin), E(End), M(Middle), S(Single)<br />
+<br />
+import codecs<br />
+import sys<br />
+<br />
+import CRFPP<br />
+<br />
+def crf_segmenter(input_file, output_file, tagger):<br />
+&nbsp; &nbsp; input_data = codecs.open(input_file, 'r', 'utf-8')<br />
+&nbsp; &nbsp; output_data = codecs.open(output_file, 'w', 'utf-8')<br />
+&nbsp; &nbsp; for line in input_data.readlines():<br />
+&nbsp; &nbsp; &nbsp; &nbsp; tagger.clear()<br />
+&nbsp; &nbsp; &nbsp; &nbsp; for word in line.strip():<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; word = word.strip()<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if word:<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; tagger.add((word + &quot;\to\tB&quot;).encode('utf-8'))<br />
+&nbsp; &nbsp; &nbsp; &nbsp; tagger.parse()<br />
+&nbsp; &nbsp; &nbsp; &nbsp; size = tagger.size()<br />
+&nbsp; &nbsp; &nbsp; &nbsp; xsize = tagger.xsize()<br />
+&nbsp; &nbsp; &nbsp; &nbsp; for i in range(0, size):<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; for j in range(0, xsize):<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; char = tagger.x(i, j).decode('utf-8')<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; tag = tagger.y2(i)<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; if tag == 'B':<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; output_data.write(' ' + char)<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; elif tag == 'M':<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; output_data.write(char)<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; elif tag == 'E':<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; output_data.write(char + ' ')<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; else: # tag == 'S'<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; output_data.write(' ' + char + ' ')<br />
+&nbsp; &nbsp; &nbsp; &nbsp; output_data.write('\n')<br />
+&nbsp; &nbsp; input_data.close()<br />
+&nbsp; &nbsp; output_data.close()<br />
+<br />
+if __name__ == '__main__':<br />
+&nbsp; &nbsp; if len(sys.argv) != 4:<br />
+&nbsp; &nbsp; &nbsp; &nbsp; print &quot;pls use: python crf_segmenter.py model input output&quot;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; sys.exit()<br />
+&nbsp; &nbsp; crf_model = sys.argv[1]<br />
+&nbsp; &nbsp; input_file = sys.argv[2]<br />
+&nbsp; &nbsp; output_file = sys.argv[3]<br />
+&nbsp; &nbsp; tagger = CRFPP.Tagger(&quot;-m &quot; + crf_model)<br />
+&nbsp; &nbsp; crf_segmenter(input_file, output_file, tagger)</div></td></tr></tbody></table></div>
+<p>只需执行“python crf_segmenter.py crf_model ./icwb2-data/testing/msr_test.utf8 msr_test.seg.utf8”即可得到与前面几步得到的分词结果完全一致的CRF分词结果：msr_test.seg.utf8 。</p>
+<p>好了，到此为止，关于字标注中文分词的系列终于可以画上句号了，这个系列中所举的例子以及所提供的脚本都是toy级别的中文分词工具，距离一个真正实用的中文分词器还有很多路要走，不过既然路已经打开，欢迎大家和我们一起继续探索中文分词的奥秘。</p>
+<p>最后再打个广告：今天是2013年的最后一天，这一年，我们创业了，成立了一家公司“<a href="http://www.yuzhenkeji.com/">语真科技</a>”，2014年，我们除了关注在线教育外，也致力于<a href="http://www.yuzhenkeji.com/nlpservice">NLP技术的普及，推广和应用</a>，如果您有相关的需求，欢迎和我们联系，微博 @52nlp 或者邮件联系 support@yuzhenkeji.com 都可以，最后祝大家新年顺心如意！</p>
+<p>注：原创文章，转载请注明出处“<a href="http://www.52nlp.cn">我爱自然语言处理</a>”：<a href="http://www.52nlp.cn">www.52nlp.cn</a></p>
+<p>本文链接地址：<a href="http://www.52nlp.cn/中文分词入门之字标注法4">http://www.52nlp.cn/中文分词入门之字标注法4</a></p>
+<div class='yarpp-related'>
+<p>相关文章:<ol>
+<li><a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%953" rel="bookmark" title="中文分词入门之字标注法3">中文分词入门之字标注法3 </a></li>
+<li><a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%952" rel="bookmark" title="中文分词入门之字标注法2">中文分词入门之字标注法2 </a></li>
+<li><a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%95%e5%85%a8%e6%96%87%e6%96%87%e6%a1%a3" rel="bookmark" title="中文分词入门之字标注法全文文档">中文分词入门之字标注法全文文档 </a></li>
+<li><a href="http://www.52nlp.cn/maximum-matching-method-of-chinese-word-segmentation" rel="bookmark" title="中文分词入门之最大匹配法">中文分词入门之最大匹配法 </a></li>
+<li><a href="http://www.52nlp.cn/beautiful-data-%e7%bb%9f%e8%ae%a1%e8%af%ad%e8%a8%80%e6%a8%a1%e5%9e%8b%e7%9a%84%e5%ba%94%e7%94%a8%e4%b8%89%e5%88%86%e8%af%8d3" rel="bookmark" title="Beautiful Data-统计语言模型的应用三：分词3">Beautiful Data-统计语言模型的应用三：分词3 </a></li>
+<li><a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%951" rel="bookmark" title="中文分词入门之字标注法1">中文分词入门之字标注法1 </a></li>
+<li><a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e8%b5%84%e6%ba%90" rel="bookmark" title="中文分词入门之资源">中文分词入门之资源 </a></li>
+<li><a href="http://www.52nlp.cn/beautiful-data-%e7%bb%9f%e8%ae%a1%e8%af%ad%e8%a8%80%e6%a8%a1%e5%9e%8b%e7%9a%84%e5%ba%94%e7%94%a8%e4%b8%89%e5%88%86%e8%af%8d7" rel="bookmark" title="Beautiful Data-统计语言模型的应用三：分词7">Beautiful Data-统计语言模型的应用三：分词7 </a></li>
+<li><a href="http://www.52nlp.cn/beautiful-data-%e7%bb%9f%e8%ae%a1%e8%af%ad%e8%a8%80%e6%a8%a1%e5%9e%8b%e7%9a%84%e5%ba%94%e7%94%a8%e4%b8%89%e5%88%86%e8%af%8d6" rel="bookmark" title="Beautiful Data-统计语言模型的应用三：分词6">Beautiful Data-统计语言模型的应用三：分词6 </a></li>
+<li><a href="http://www.52nlp.cn/%e6%97%a5%e6%96%87%e5%88%86%e8%af%8d%e5%99%a8-mecab-%e6%96%87%e6%a1%a3" rel="bookmark" title="日文分词器 Mecab 文档">日文分词器 Mecab 文档 </a></li>
+</ol></p>
+</div>
+											</div><!-- .entry-content -->
+
+
+					<div class="entry-utility">
+						此条目发表在 <a href="http://www.52nlp.cn/category/word-segmentation" title="查看中文分词中的全部文章" rel="category tag">中文分词</a>, <a href="http://www.52nlp.cn/category/%e6%9d%a1%e4%bb%b6%e9%9a%8f%e6%9c%ba%e5%9c%ba" title="查看条件随机场中的全部文章" rel="category tag">条件随机场</a> 分类目录，贴了 <a href="http://www.52nlp.cn/tag/crf" rel="tag">CRF</a>, <a href="http://www.52nlp.cn/tag/crf%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d" rel="tag">CRF中文分词</a>, <a href="http://www.52nlp.cn/tag/crf%e5%88%86%e8%af%8d%e5%99%a8" rel="tag">CRF分词器</a>, <a href="http://www.52nlp.cn/tag/pgm" rel="tag">PGM</a>, <a href="http://www.52nlp.cn/tag/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d" rel="tag">中文分词</a>, <a href="http://www.52nlp.cn/tag/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8" rel="tag">中文分词入门</a>, <a href="http://www.52nlp.cn/tag/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%99%a8" rel="tag">中文分词器</a>, <a href="http://www.52nlp.cn/tag/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e6%9c%8d%e5%8a%a1" rel="tag">中文分词服务</a>, <a href="http://www.52nlp.cn/tag/%e5%88%86%e8%af%8d" rel="tag">分词</a>, <a href="http://www.52nlp.cn/tag/%e5%88%86%e8%af%8d%e5%99%a8" rel="tag">分词器</a>, <a href="http://www.52nlp.cn/tag/%e5%88%86%e8%af%8d%e6%9c%8d%e5%8a%a1" rel="tag">分词服务</a>, <a href="http://www.52nlp.cn/tag/%e5%ad%97%e6%a0%87%e6%b3%a8" rel="tag">字标注</a>, <a href="http://www.52nlp.cn/tag/%e5%ad%97%e6%a0%87%e6%b3%a8%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d" rel="tag">字标注中文分词</a>, <a href="http://www.52nlp.cn/tag/%e6%97%a5%e6%96%87%e5%88%86%e8%af%8d" rel="tag">日文分词</a>, <a href="http://www.52nlp.cn/tag/%e6%9d%a1%e4%bb%b6%e9%9a%8f%e6%9c%ba%e5%9c%ba" rel="tag">条件随机场</a>, <a href="http://www.52nlp.cn/tag/%e6%a6%82%e7%8e%87%e5%9b%be%e6%a8%a1%e5%9e%8b" rel="tag">概率图模型</a>, <a href="http://www.52nlp.cn/tag/%e8%af%ad%e7%9c%9f" rel="tag">语真</a>, <a href="http://www.52nlp.cn/tag/%e8%af%ad%e7%9c%9f%e7%a7%91%e6%8a%80" rel="tag">语真科技</a>, <a href="http://www.52nlp.cn/tag/%e8%af%be%e7%a8%8b%e5%9b%be%e8%b0%b1" rel="tag">课程图谱</a> 标签。将<a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%954" title="链向 中文分词入门之字标注法4 的固定链接" rel="bookmark">固定链接</a>加入收藏夹。											</div><!-- .entry-utility -->
+				</div><!-- #post-## -->
+
+				<div id="nav-below" class="navigation">
+					<div class="nav-previous"><a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%953" rel="prev"><span class="meta-nav">&larr;</span> 中文分词入门之字标注法3</a></div>
+					<div class="nav-next"><a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%95%e5%85%a8%e6%96%87%e6%96%87%e6%a1%a3" rel="next">中文分词入门之字标注法全文文档 <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-below -->
+
+				
+			<div id="comments">
+
+
+			<h3 id="comments-title">《<em>中文分词入门之字标注法4</em>》有 2 条评论</h3>
+
+
+			<ol class="commentlist">
+					<li class="comment even thread-even depth-1" id="li-comment-10901">
+		<div id="comment-10901">
+		<div class="comment-author vcard">
+			<img alt='' src='http://1.gravatar.com/avatar/9ecdc03ebe3fa5bb5ba418d23fe9be9c?s=40&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn"><a href='http://crfsharp.codeplex.com/' rel='external nofollow' class='url'>Zhongkai Fu</a></cite> <span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%954/comment-page-1#comment-10901">
+			2013年12月31号17:19</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>借宝地做个广告，试试CRFSharp（http://crfsharp.codeplex.com/），CRF++在.net平台上的开源移植，同时对训练时的CPU和内存使用做了很多优化，在多核CPU上能够显著缩短训练时间，同样的内存能够支持更多的特征。</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,10901,1,'Zhongkai Fu');">回复</a>]</p></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="post pingback">
+		<p>Pingback 引用通告： <a href='http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%95%e5%85%a8%e6%96%87%e6%96%87%e6%a1%a3' rel='external nofollow' class='url'>中文分词入门之字标注法全文文档 | 我爱自然语言处理</a></p>
+	</li><!-- #comment-## -->
+			</ol>
+
+
+
+								<div id="respond" class="comment-respond">
+				<h3 id="reply-title" class="comment-reply-title">发表评论 <small><a rel="nofollow" id="cancel-comment-reply-link" href="/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%954#respond" style="display:none;">取消回复</a></small></h3>
+									<form action="http://www.52nlp.cn/wp-comments-post.php" method="post" id="commentform" class="comment-form">
+																			<p class="comment-notes">电子邮件地址不会被公开。 必填项已用<span class="required">*</span>标注</p>							<p class="comment-form-author"><label for="author">姓名 <span class="required">*</span></label> <input id="author" name="author" type="text" value="" size="30" aria-required='true' /></p>
+<p class="comment-form-email"><label for="email">电子邮件 <span class="required">*</span></label> <input id="email" name="email" type="text" value="" size="30" aria-required='true' /></p>
+<p class="comment-form-url"><label for="url">站点</label> <input id="url" name="url" type="text" value="" size="30" /></p>
+												<p class="comment-form-comment"><label for="comment">评论</label> <textarea id="comment" name="comment" cols="45" rows="8" aria-required="true"></textarea></p>						<p class="form-allowed-tags">您可以使用这些<abbr title="HyperText Markup Language">HTML</abbr>标签和属性： <code>&lt;a href=&quot;&quot; title=&quot;&quot;&gt; &lt;abbr title=&quot;&quot;&gt; &lt;acronym title=&quot;&quot;&gt; &lt;b&gt; &lt;blockquote cite=&quot;&quot;&gt; &lt;cite&gt; &lt;code&gt; &lt;del datetime=&quot;&quot;&gt; &lt;em&gt; &lt;i&gt; &lt;q cite=&quot;&quot;&gt; &lt;strike&gt; &lt;strong&gt; </code></p>						<p class="form-submit">
+							<input name="submit" type="submit" id="submit" value="发表评论" />
+							<input type='hidden' name='comment_post_ID' value='6339' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+						</p>
+						<p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="c78ee48e27" /></p><p style="display: none;"><input type="hidden" id="ak_js" name="ak_js" value="236"/></p><p><input type="hidden" id="comment_reply_ID" name="comment_reply_ID" value="0" /><input type="hidden" id="comment_reply_dp" name="comment_reply_dp" value="0" /></p><div id="cancel_reply" style="display:none;"><a href="javascript:void(0)" onclick="movecfm(null,0,1,null);" style="color:red;">点击取消回复</a></div><script type="text/javascript">
+/* <![CDATA[ */
+var commentformid = "commentform";
+var USERINFO = false;
+var atreply = "none";
+/* ]]> */
+</script>
+<script type="text/javascript" src="http://www.52nlp.cn/wp-content/plugins/wp-thread-comment/wp-thread-comment.js.php?jsver=common"></script>
+					</form>
+							</div><!-- #respond -->
+			
+</div><!-- #comments -->
+
+
+			</div><!-- #content -->
+		</div><!-- #container -->
+
+﻿
+		<div id="primary" class="widget-area" role="complementary">
+			<ul class="xoxo">
+<!-- begin l_sidebar -->
+	<div id="l_sidebar">
+<p>卓越网：<a href="http://www.amazon.cn/mn/searchApp?source=garypyang-23&searchType=1&keywords=自然语言处理" title="自然语言处理书籍"target=_blank>自然语言处理书籍</a><br>
+<li id="search-3" class="widget-container widget_search"><h3 class="widget-title">站内搜索</h3><form role="search" method="get" id="searchform" class="searchform" action="http://www.52nlp.cn/">
+				<div>
+					<label class="screen-reader-text" for="s">搜索：</label>
+					<input type="text" value="" name="s" id="s" />
+					<input type="submit" id="searchsubmit" value="搜索" />
+				</div>
+			</form></li><li id="text-4" class="widget-container widget_text"><h3 class="widget-title">NLPJob新鲜职位推荐:</h3>			<div class="textwidget"><p></p>
+<script src="http://www.nlpjob.com/api/api.php?action=getJobs
+&type=0&category=0&count=8&random=1&days_behind=7&response=js" type="text/javascript"></script>
+
+<script type="text/javascript">showJobs('jobber-container', 'jobber-list');</script></div>
+		</li><li id="text-3" class="widget-container widget_text"><h3 class="widget-title">52nlp新浪微博</h3>			<div class="textwidget"><p><iframe id="sina_widget_2104931705" style="width:100%; height:500px;" frameborder="0" scrolling="no" src="http://v.t.sina.com.cn/widget/widget_blog.php?uid=2104931705&height=500&skin=wd_01&showpic=1"></iframe></p>
+<p><!-- JiaThis Button BEGIN --><br />
+<script type="text/javascript" src="http://v3.jiathis.com/code/jiathis_r.js?uid=1340292124103344&move=0&amp;btn=r3.gif" charset="utf-8"></script><br />
+<!-- JiaThis Button END --></p>
+</div>
+		</li><li id="categories-309398091" class="widget-container widget_categories"><h3 class="widget-title">分类目录</h3>		<ul>
+	<li class="cat-item cat-item-72"><a href="http://www.52nlp.cn/category/mit-nlp" title="麻省理工学院开放式课程&quot;自然语言处理“的相关翻译文章">MIT自然语言处理</a> (23)
+</li>
+	<li class="cat-item cat-item-469"><a href="http://www.52nlp.cn/category/topic-model" title="查看Topic Model下的所有文章">Topic Model</a> (10)
+</li>
+	<li class="cat-item cat-item-87"><a href="http://www.52nlp.cn/category/wordpress" title="查看wordpress下的所有文章">wordpress</a> (6)
+</li>
+	<li class="cat-item cat-item-317"><a href="http://www.52nlp.cn/category/%e4%b8%93%e9%a2%98" title="查看专题下的所有文章">专题</a> (6)
+</li>
+	<li class="cat-item cat-item-263"><a href="http://www.52nlp.cn/category/chinese-information-processing" title="查看中文信息处理下的所有文章">中文信息处理</a> (17)
+</li>
+	<li class="cat-item cat-item-62"><a href="http://www.52nlp.cn/category/word-segmentation" title="查看中文分词下的所有文章">中文分词</a> (34)
+</li>
+	<li class="cat-item cat-item-420"><a href="http://www.52nlp.cn/category/%e5%b9%b6%e8%a1%8c%e7%ae%97%e6%b3%95" title="查看并行算法下的所有文章">并行算法</a> (1)
+</li>
+	<li class="cat-item cat-item-268"><a href="http://www.52nlp.cn/category/%e6%8b%9b%e8%81%98" title="查看招聘下的所有文章">招聘</a> (4)
+</li>
+	<li class="cat-item cat-item-560"><a href="http://www.52nlp.cn/category/%e6%8e%a8%e8%8d%90%e7%b3%bb%e7%bb%9f" title="查看推荐系统下的所有文章">推荐系统</a> (3)
+</li>
+	<li class="cat-item cat-item-354"><a href="http://www.52nlp.cn/category/%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98" title="查看数据挖掘下的所有文章">数据挖掘</a> (1)
+</li>
+	<li class="cat-item cat-item-241"><a href="http://www.52nlp.cn/category/text-classification" title="查看文本分类下的所有文章">文本分类</a> (2)
+</li>
+	<li class="cat-item cat-item-193"><a href="http://www.52nlp.cn/category/maximum-entropy-model" title="查看最大熵模型下的所有文章">最大熵模型</a> (7)
+</li>
+	<li class="cat-item cat-item-344"><a href="http://www.52nlp.cn/category/%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0" title="查看机器学习下的所有文章">机器学习</a> (13)
+</li>
+	<li class="cat-item cat-item-1"><a href="http://www.52nlp.cn/category/machine-translation" title="查看机器翻译下的所有文章">机器翻译</a> (54)
+</li>
+	<li class="cat-item cat-item-195"><a href="http://www.52nlp.cn/category/%e6%9d%a1%e4%bb%b6%e9%9a%8f%e6%9c%ba%e5%9c%ba" title="查看条件随机场下的所有文章">条件随机场</a> (3)
+</li>
+	<li class="cat-item cat-item-153"><a href="http://www.52nlp.cn/category/tagging" title="查看标注下的所有文章">标注</a> (13)
+</li>
+	<li class="cat-item cat-item-885"><a href="http://www.52nlp.cn/category/%e7%a7%91%e5%ad%a6%e8%ae%a1%e7%ae%97" title="查看科学计算下的所有文章">科学计算</a> (1)
+</li>
+	<li class="cat-item cat-item-538"><a href="http://www.52nlp.cn/category/%e7%bb%9f%e8%ae%a1%e5%ad%a6" title="查看统计学下的所有文章">统计学</a> (10)
+</li>
+	<li class="cat-item cat-item-126"><a href="http://www.52nlp.cn/category/translation-model" title="查看翻译模型下的所有文章">翻译模型</a> (2)
+</li>
+	<li class="cat-item cat-item-51"><a href="http://www.52nlp.cn/category/nlp" title="查看自然语言处理下的所有文章">自然语言处理</a> (223)
+</li>
+	<li class="cat-item cat-item-106"><a href="http://www.52nlp.cn/category/computational-linguistics" title="查看计算语言学下的所有文章">计算语言学</a> (38)
+</li>
+	<li class="cat-item cat-item-22"><a href="http://www.52nlp.cn/category/dictionary" title="查看词典下的所有文章">词典</a> (8)
+</li>
+	<li class="cat-item cat-item-221"><a href="http://www.52nlp.cn/category/semantics" title="查看语义学下的所有文章">语义学</a> (1)
+</li>
+	<li class="cat-item cat-item-161"><a href="http://www.52nlp.cn/category/semantic-web" title="查看语义网下的所有文章">语义网</a> (3)
+</li>
+	<li class="cat-item cat-item-37"><a href="http://www.52nlp.cn/category/corpus" title="查看语料库下的所有文章">语料库</a> (12)
+</li>
+	<li class="cat-item cat-item-86"><a href="http://www.52nlp.cn/category/language-model" title="查看语言模型下的所有文章">语言模型</a> (23)
+</li>
+	<li class="cat-item cat-item-156"><a href="http://www.52nlp.cn/category/speech-recognition" title="查看语音识别下的所有文章">语音识别</a> (4)
+</li>
+	<li class="cat-item cat-item-314"><a href="http://www.52nlp.cn/category/%e8%b4%9d%e5%8f%b6%e6%96%af%e6%a8%a1%e5%9e%8b" title="查看贝叶斯模型下的所有文章">贝叶斯模型</a> (1)
+</li>
+	<li class="cat-item cat-item-110"><a href="http://www.52nlp.cn/category/reprint" title="查看转载下的所有文章">转载</a> (28)
+</li>
+	<li class="cat-item cat-item-451"><a href="http://www.52nlp.cn/category/%e9%97%ae%e7%ad%94%e7%b3%bb%e7%bb%9f" title="查看问答系统下的所有文章">问答系统</a> (1)
+</li>
+	<li class="cat-item cat-item-3"><a href="http://www.52nlp.cn/category/informal-essay" title="查看随笔下的所有文章">随笔</a> (61)
+</li>
+	<li class="cat-item cat-item-60"><a href="http://www.52nlp.cn/category/hidden-markov-model" title="查看隐马尔科夫模型下的所有文章">隐马尔科夫模型</a> (36)
+</li>
+		</ul>
+</li><li id="archives-2" class="widget-container widget_archive"><h3 class="widget-title">文章归档</h3>		<ul>
+	<li><a href='http://www.52nlp.cn/2014/07'>2014年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/06'>2014年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/05'>2014年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/04'>2014年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/01'>2014年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/12'>2013年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/06'>2013年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/05'>2013年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/04'>2013年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/03'>2013年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/02'>2013年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/01'>2013年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/12'>2012年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/11'>2012年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/10'>2012年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/09'>2012年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/08'>2012年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/07'>2012年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/06'>2012年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/05'>2012年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/04'>2012年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/03'>2012年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/01'>2012年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/12'>2011年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/11'>2011年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/10'>2011年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/09'>2011年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/08'>2011年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/07'>2011年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/06'>2011年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/05'>2011年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/04'>2011年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/03'>2011年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/02'>2011年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/01'>2011年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/12'>2010年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/11'>2010年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/10'>2010年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/09'>2010年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/08'>2010年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/07'>2010年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/06'>2010年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/05'>2010年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/04'>2010年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/03'>2010年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/02'>2010年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/01'>2010年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/12'>2009年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/11'>2009年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/10'>2009年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/09'>2009年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/08'>2009年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/07'>2009年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/06'>2009年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/05'>2009年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/04'>2009年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/03'>2009年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/02'>2009年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/01'>2009年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2008/12'>2008年十二月</a></li>
+		</ul>
+</li>		<li id="recent-posts-2" class="widget-container widget_recent_entries">		<h3 class="widget-title">最新文章</h3>		<ul>
+					<li>
+				<a href="http://www.52nlp.cn/python-%e7%bd%91%e9%a1%b5%e7%88%ac%e8%99%ab-%e6%96%87%e6%9c%ac%e5%a4%84%e7%90%86-%e7%a7%91%e5%ad%a6%e8%ae%a1%e7%ae%97-%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0-%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98">Python 网页爬虫 &#038; 文本处理 &#038; 科学计算 &#038; 机器学习 &#038; 数据挖掘兵器谱</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e7%bf%bb%e8%af%91%e6%8a%80%e6%9c%af%e6%b2%99%e9%be%99%e7%ac%ac%e5%8d%81%e5%85%ad%e6%ac%a1%e6%b4%bb%e5%8a%a8-%e4%ba%92%e8%81%94%e7%bd%91%e6%8a%80%e6%9c%af%e9%a9%b1%e5%8a%a8">翻译技术沙龙第十六次活动——“互联网技术驱动下的语言服务众包模式” 通知</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e7%81%ab%e5%85%89%e6%91%87%e6%9b%b3%e7%a5%9e%e5%a5%87%e7%9a%84%e4%bc%bd%e7%8e%9b%e5%87%bd%e6%95%b0%e4%b8%8b">[火光摇曳]神奇的伽玛函数(下)</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e7%a5%9e%e5%a5%87%e7%9a%84%e4%bc%bd%e7%8e%9b%e5%87%bd%e6%95%b0%e4%b8%8a">[火光摇曳]神奇的伽玛函数(上)</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/nlpjob-%e4%b8%bb%e7%ab%99%e4%b8%8a%e7%ba%bf">NLPJob 主站上线</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e9%a1%ba%e4%b8%b0%e6%b5%b7%e6%b7%98sfbuy%e9%a6%96%e6%ac%a1%e4%bd%93%e9%aa%8c-%e7%be%8e%e5%9b%bd%e4%ba%9a%e9%a9%ac%e9%80%8a%e6%b5%b7%e6%b7%98kindle-dx%e8%bd%ac%e8%bf%90%e5%85%a8%e6%94%bb%e7%95%a5">顺丰海淘SFBuy首次体验-美国亚马逊海淘Kindle DX转运全攻略</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/digitalocean%e4%bd%bf%e7%94%a8%e5%b0%8f%e8%ae%b0">DigitalOcean使用小记</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%95%e5%85%a8%e6%96%87%e6%96%87%e6%a1%a3">中文分词入门之字标注法全文文档</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%954">中文分词入门之字标注法4</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%953">中文分词入门之字标注法3</a>
+						</li>
+				</ul>
+		</li><li id="recentcomments" class="widget-container widget_recentcomments"><h3 class="widget-title">最近评论</h3><ul><li class="rc-navi rc-clearfix"><span class="rc-loading">正在加载...</span></li><li id="rc-comment-temp" class="rc-item rc-comment rc-clearfix"><div class="rc-info"></div><div class="rc-timestamp"></div><div class="rc-excerpt"></div></li><li id="rc-ping-temp" class="rc-item rc-ping rc-clearfix"><span class="rc-label"></span></li></ul></li>			</ul>
+		</div><!-- #primary .widget-area -->
+
+
+		<div id="secondary" class="widget-area" role="complementary">
+			<ul class="xoxo">
+				<li id="linkcat-103" class="widget-container widget_links"><h3 class="widget-title">NLP相关网站</h3>
+	<ul class='xoxo blogroll'>
+<li><a href="http://www.aclweb.org/" rel="co-worker" title="The Association for Computational Linguistics" target="_blank">ACL</a></li>
+<li><a href="http://aclweb.org/anthology-new/" rel="co-worker" title="A Digital Archive of Research Papers in Computational Linguistics" target="_blank">ACL Anthology</a></li>
+<li><a href="http://belobog.si.umich.edu/clair/anthology/index.cgi" rel="colleague" target="_blank">ACL Anthology Network</a></li>
+<li><a href="http://aclweb.org/aclwiki/index.php?title=Main_Page" rel="colleague" title="the Wiki of the Association for Computational Linguistics" target="_blank">ACL Wiki</a></li>
+<li><a href="http://www.clsp.jhu.edu/" rel="colleague" target="_blank">CLSP</a></li>
+<li><a href="http://www.cwbbase.com/" rel="colleague" title="这是一个略具规模的中文语义词库, 也是稍有特色的汉语语义词典" target="_blank">CWB中文词库</a></li>
+<li><a href="http://www.euromatrix.net/" rel="colleague" target="_blank">EuroMatrix</a></li>
+<li><a href="http://www.freebase.com" rel="colleague" target="_blank">Freebase</a></li>
+<li><a href="http://www.clsp.jhu.edu/workshops/" rel="colleague" target="_blank">JHU Workshop</a></li>
+<li><a href="http://www.ldc.upenn.edu/" rel="colleague" title="Linguistic Data Consortium" target="_blank">LDC</a></li>
+<li><a href="http://www.statmt.org/moses/" rel="colleague" title="A factored phrase-based beam-search decoder for machine translation" target="_blank">Moses</a></li>
+<li><a href="http://nlpers.blogspot.com/" rel="colleague" title="国外一个非常不错的自然语言处理博客" target="_blank">nlper</a></li>
+<li><a href="http://www.powerset.com/" rel="colleague" target="_blank">Powerset</a></li>
+<li><a href="http://www.speech.sri.com/projects/srilm/" rel="colleague" title="- The SRI Language Modeling Toolkit" target="_blank">SRILM</a></li>
+<li><a href="http://www.statmt.org/" rel="colleague" title="This website is dedicated to research in statistical machine translation" target="_blank">Statistical Machine Translation</a></li>
+<li><a href="http://textanalysisonline.com/" target="_blank">Text Analysis</a></li>
+<li><a href="http://textminingonline.com/" target="_blank">Text Mining</a></li>
+<li><a href="http://textsummarization.net/" target="_blank">Text Summarization</a></li>
+<li><a href="http://w3china.org/index.htm" rel="friend" title="致力于促进W3C技术的广泛应用, 传播关于未来Web的知识与技术" target="_blank">中国万维网联盟</a></li>
+<li><a href="http://www.cipsc.org.cn/" rel="co-worker" title="Chinese Information Processing Society of China" target="_blank">中国中文信息学会</a></li>
+<li><a href="http://www.nlp.org.cn/" rel="colleague" title="中文自然语言处理开放平台" target="_blank">中文自然语言处理开放平台</a></li>
+<li><a href="http://www.mt-archive.info/" rel="colleague" title="Repository and bibliography of articles, books and papers on topics" target="_blank">机器翻译档案计划</a></li>
+<li><a href="http://www.statmt.org/europarl/" rel="colleague" target="_blank">欧洲议会平行语料库</a></li>
+<li><a href="http://www.keenage.com/" title="HowNet" target="_blank">知网</a></li>
+<li><a href="http://www.nlpir.org/" rel="friend" title="由张华平博士发起，由北京理工大学网络搜索与挖掘实验室运营，旨在推动NLP(自然语言处理)与IR(信息检索)领域的共享与共赢" target="_blank">自然语言处理与信息检索共享平台</a></li>
+<li><a href="http://mitel.ict.ac.cn/" rel="co-worker" title="中科院计算所多语言交互技术实验室" target="_blank">计算所多语言交互技术实验室</a></li>
+
+	</ul>
+</li>
+<li id="linkcat-2" class="widget-container widget_links"><h3 class="widget-title">友情链接</h3>
+	<ul class='xoxo blogroll'>
+<li><a href="http://blog.youxu.info/" title="一个计算机专业的 Ph.D. 学生徐宥的个人博客" target="_blank">4G spaces</a></li>
+<li><a href="http://blog.52nlp.org" rel="me" title="我爱自然语言处理完全镜像" target="_blank">52nlpblog</a></li>
+<li><a href="http://www.52nlp.com" rel="me" title="52nlp的英文站" target="_blank">52nlpcom</a></li>
+<li><a href="http://hi.baidu.com/drkevinzhang" rel="friend" title="ICTCLAS 张华平博士的空间" target="_blank">ICTCLAS 张华平博士的空间</a></li>
+<li><a href="http://blog.so8848.com/" rel="friend" title="信息检索博客" target="_blank">Information Retrieval Blog</a></li>
+<li><a href="http://interop123.com/default.aspx" rel="friend" title="崔晓源师兄关于NET技术的站点" target="_blank">NET互操作技术社区</a></li>
+<li><a href="http://bbs.w3china.org/" rel="friend" title="中国万维网联盟讨论区" target="_blank">W3CHINA讨论区</a></li>
+<li><a href="http://www.ailab.cn/" rel="friend" target="_blank">人工智能网</a></li>
+<li><a href="http://mindhacks.cn/" rel="friend" title="一个很有思想的价值博客!" target="_blank">刘未鹏之Mind Hacks</a></li>
+<li><a href="http://www.cnblogs.com/finallyliuyu/" rel="friend" target="_blank">原地转圈的驴子</a></li>
+<li><a href="http://xunren.thuir.org/" target="_blank">微博寻人（梁博）</a></li>
+<li><a href="http://52opencourse.com" rel="friend" title="我爱公开课，高质量公开课交流平台" target="_blank">我爱公开课</a></li>
+<li><a href="http://iregex.org/" rel="friend" target="_blank">我爱正则表达式</a></li>
+<li><a href="http://courseminer.com" target="_blank">挖课</a></li>
+<li><a href="http://www.sciencenet.cn/u/timy/" rel="friend" title="章成志老师的博客" target="_blank">章成志的博客</a></li>
+<li><a href="http://blog.csdn.net/v_JULY_v/" target="_blank">结构之法 算法之道</a></li>
+<li><a href="http://www.lingcc.com/" rel="friend" title="关注编译器,虚拟机,编程语言及技术,IT职业和程序员生活" target="_blank">编译点滴</a></li>
+<li><a href="http://www.52nlp.org" rel="me" title="52nlp的官方网站" target="_blank">自然语言处理</a></li>
+<li><a href="http://www.ieee.org.cn/" rel="friend" title="计算机科学论坛" target="_blank">计算机科学论坛</a></li>
+<li><a href="http://coursegraph.com/">课程图谱</a></li>
+<li><a href="http://blog.coursegraph.com" rel="friend">课程图谱博客</a></li>
+
+	</ul>
+</li>
+<li id="meta-4" class="widget-container widget_meta"><h3 class="widget-title">功能</h3>			<ul>
+			<li><a href="http://www.52nlp.cn/wp-login.php?action=register">注册</a></li>			<li><a href="http://www.52nlp.cn/wp-login.php">登录</a></li>
+			<li><a href="http://www.52nlp.cn/feed" title="使用RSS 2.0订阅本站点内容">文章<abbr title="Really Simple Syndication">RSS</abbr></a></li>
+			<li><a href="http://www.52nlp.cn/comments/feed" title="使用RSS订阅本站点的所有文章的近期评论">评论<abbr title="Really Simple Syndication">RSS</abbr></a></li>
+<li><a href="https://cn.wordpress.org/" title="基于WordPress，一个优美、先进的个人信息发布平台。">WordPress.org</a></li>			</ul>
+</li>			</ul>
+		</div><!-- #secondary .widget-area -->
+
+	</div><!-- #main -->
+
+	<div id="footer" role="contentinfo">
+		<div id="colophon">
+
+
+
+			<div id="site-info">
+				<a href="http://www.52nlp.cn/" title="我爱自然语言处理" rel="home">
+					我爱自然语言处理				</a>
+			</div><!-- #site-info -->
+
+			<div id="site-generator">
+								<a href="http://cn.wordpress.org/"
+						title="优雅的个人发布平台" rel="generator">
+					自豪地采用 WordPress。				</a>
+			</div><!-- #site-generator -->
+
+		</div><!-- #colophon -->
+	</div><!-- #footer -->
+
+</div><!-- #wrapper -->
+
+<script>
+/* <![CDATA[ */
+var rcGlobal = {
+	serverUrl		:'http://www.52nlp.cn',
+	infoTemp		:'%REVIEWER% 在 %POST%',
+	loadingText		:'正在加载',
+	noCommentsText	:'没有任何评论',
+	newestText		:'&laquo; 最新的',
+	newerText		:'&laquo; 上一页',
+	olderText		:'下一页 &raquo;',
+	showContent		:'',
+	external		:'',
+	avatarSize		:'0',
+	avatarPosition	:'left',
+	anonymous		:'匿名'
+};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://www.52nlp.cn/wp-content/plugins/akismet/_inc/form.js?ver=3.0.1'></script>
+<link rel='stylesheet' id='yarppRelatedCss-css'  href='http://www.52nlp.cn/wp-content/plugins/yet-another-related-posts-plugin/style/related.css?ver=3.9.1' type='text/css' media='all' />
+<script type='text/javascript' src='http://www.52nlp.cn/wp-content/plugins/wp-recentcomments/js/wp-recentcomments.js?ver=2.2.7'></script>
+	<p align="center"> 本站架设在 <a href="http://www.52nlp.cn/digitalocean%E4%BD%BF%E7%94%A8%E5%B0%8F%E8%AE%B0">DigitalOcean</a> 上, 采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本站内容必须也遵循“署名-非商业用途-保持一致”的创作共用协议.</p>
+<!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(["trackPageView"]);
+  _paq.push(["enableLinkTracking"]);
+
+  (function() {
+    var u=(("https:" == document.location.protocol) ? "https" : "http") + "://162.243.252.121/piwik/";
+    _paq.push(["setTrackerUrl", u+"piwik.php"]);
+    _paq.push(["setSiteId", "5"]);
+    var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0]; g.type="text/javascript";
+    g.defer=true; g.async=true; g.src=u+"piwik.js"; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Piwik Code -->
+</body>
+</html>

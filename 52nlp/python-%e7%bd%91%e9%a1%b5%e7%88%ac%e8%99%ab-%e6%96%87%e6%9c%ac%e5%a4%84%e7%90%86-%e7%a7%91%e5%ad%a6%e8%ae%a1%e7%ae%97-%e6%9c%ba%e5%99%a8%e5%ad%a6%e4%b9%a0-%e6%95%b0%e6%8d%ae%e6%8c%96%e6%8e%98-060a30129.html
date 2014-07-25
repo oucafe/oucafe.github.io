@@ -1,0 +1,681 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<title>Python 网页爬虫 &amp; 文本处理 &amp; 科学计算 &amp; 机器学习 &amp; 数据挖掘兵器谱 | 我爱自然语言处理</title>
+<link rel="profile" href="http://gmpg.org/xfn/11" />
+<link rel="stylesheet" type="text/css" media="all" href="http://www.52nlp.cn/wp-content/themes/twentytenorg/style.css" />
+<link rel="pingback" href="http://www.52nlp.cn/xmlrpc.php" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; Feed" href="http://www.52nlp.cn/feed" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; 评论Feed" href="http://www.52nlp.cn/comments/feed" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; Python 网页爬虫 &amp; 文本处理 &amp; 科学计算 &amp; 机器学习 &amp; 数据挖掘兵器谱评论Feed" href="http://www.52nlp.cn/python-%e7%bd%91%e9%a1%b5%e7%88%ac%e8%99%ab-%e6%96%87%e6%9c%ac%e5%a4%84%e7%90%86-%e7%a7%91%e5%ad%a6%e8%ae%a1%e7%ae%97-%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0-%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98/feed" />
+<link rel='stylesheet' id='yarppWidgetCss-css'  href='http://www.52nlp.cn/wp-content/plugins/yet-another-related-posts-plugin/style/widget.css?ver=3.9.1' type='text/css' media='all' />
+<link rel='stylesheet' id='codecolorer-css'  href='http://www.52nlp.cn/wp-content/plugins/codecolorer/codecolorer.css?ver=0.9.9' type='text/css' media='screen' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.52nlp.cn/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.52nlp.cn/wp-includes/wlwmanifest.xml" /> 
+<link rel='prev' title='翻译技术沙龙第十六次活动——“互联网技术驱动下的语言服务众包模式” 通知' href='http://www.52nlp.cn/%e7%bf%bb%e8%af%91%e6%8a%80%e6%9c%af%e6%b2%99%e9%be%99%e7%ac%ac%e5%8d%81%e5%85%ad%e6%ac%a1%e6%b4%bb%e5%8a%a8-%e4%ba%92%e8%81%94%e7%bd%91%e6%8a%80%e6%9c%af%e9%a9%b1%e5%8a%a8' />
+<meta name="generator" content="WordPress 3.9.1" />
+<link rel='canonical' href='http://www.52nlp.cn/python-%e7%bd%91%e9%a1%b5%e7%88%ac%e8%99%ab-%e6%96%87%e6%9c%ac%e5%a4%84%e7%90%86-%e7%a7%91%e5%ad%a6%e8%ae%a1%e7%ae%97-%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0-%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98' />
+<link rel='shortlink' href='http://www.52nlp.cn/?p=6666' />
+<!-- wp thread comment 1.4.9.4.002 -->
+<style type="text/css" media="screen">
+.editComment, .editableComment, .textComment{
+	display: inline;
+}
+.comment-childs{
+	border: 1px solid #999;
+	margin: 5px 2px 2px 4px;
+	padding: 4px 2px 2px 4px;
+	background-color: white;
+}
+.chalt{
+	background-color: #E2E2E2;
+}
+#newcomment{
+	border:1px dashed #777;width:90%;
+}
+#newcommentsubmit{
+	color:red;
+}
+.adminreplycomment{
+	border:1px dashed #777;
+	width:99%;
+	margin:4px;
+	padding:4px;
+}
+.mvccls{
+	color: #999;
+}
+			
+</style>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: { equationNumbers: { autoNumber: "AMS" } },
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+    inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+    displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+    processEscapes: true
+  },
+  "HTML-CSS": { availableFonts: ["TeX"] }
+});
+</script><script type="text/javascript" src="http://www.52nlp.cn/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</head>
+
+<body class="single single-post postid-6666 single-format-standard">
+<div id="wrapper" class="hfeed">
+	<div id="header">
+		<div id="masthead">
+			<div id="branding" role="banner">
+								<div id="site-title">
+					<span>
+						<a href="http://www.52nlp.cn/" title="我爱自然语言处理" rel="home">我爱自然语言处理</a>
+					</span>
+				</div>
+				<div id="site-description">I Love Natural Language Processing</div>
+
+										<img src="http://www.52nlp.cn/wp-content/themes/twentytenorg/images/headers/path.jpg" width="940" height="198" alt="" />
+								</div><!-- #branding -->
+
+			<div id="access" role="navigation">
+			  				<div class="skip-link screen-reader-text"><a href="#content" title="跳至正文">跳至正文</a></div>
+								<div class="menu"><ul><li ><a href="http://www.52nlp.cn/">首页</a></li><li class="page_item page-item-2"><a href="http://www.52nlp.cn/about">关于</a></li><li class="page_item page-item-2557 page_item_has_children"><a href="http://www.52nlp.cn/resources">资源</a><ul class='children'><li class="page_item page-item-1271"><a href="http://www.52nlp.cn/resources/wpmatheditor">WpMathEditor</a></li></ul></li></ul></div>
+ 
+				<div class="menu"><ul><li class="page_item page-item-2"></li><li class="page_item page-item-2"><a href="http://coursegraph.com" title="课程图谱" target="_blank">课程图谱</a></li><li class="page_item page-item-2"><a href="http://www.nlpjob.com" title="求职" target="_blank">求职招聘</a></li></ul></div>
+			</div><!-- #access -->
+		</div><!-- #masthead -->
+	</div><!-- #header -->
+
+	<div id="main">
+
+		<div id="container">
+			<div id="content" role="main">
+
+			
+
+				<div id="nav-above" class="navigation">
+					<div class="nav-previous"><a href="http://www.52nlp.cn/%e7%bf%bb%e8%af%91%e6%8a%80%e6%9c%af%e6%b2%99%e9%be%99%e7%ac%ac%e5%8d%81%e5%85%ad%e6%ac%a1%e6%b4%bb%e5%8a%a8-%e4%ba%92%e8%81%94%e7%bd%91%e6%8a%80%e6%9c%af%e9%a9%b1%e5%8a%a8" rel="prev"><span class="meta-nav">&larr;</span> 翻译技术沙龙第十六次活动——“互联网技术驱动下的语言服务众包模式” 通知</a></div>
+					<div class="nav-next"></div>
+				</div><!-- #nav-above -->
+
+				<div id="post-6666" class="post-6666 post type-post status-publish format-standard hentry category-354 category-344 category-885 category-nlp tag-gensim tag-jieba tag-jieba tag-langid tag-mbsp tag-nltk tag-pattern tag-python tag-python tag-python tag-python tag-python tag-python tag-python tag-python tag-python tag-scrapy tag-textblob tag-82 tag-354 tag-906 tag-887 tag-908 tag-895 tag-344 tag-907 tag-888 tag-885 tag-886 tag-904">
+					<h1 class="entry-title">Python 网页爬虫 &#038; 文本处理 &#038; 科学计算 &#038; 机器学习 &#038; 数据挖掘兵器谱</h1>
+
+					<div class="entry-meta">
+						<span class="meta-prep meta-prep-author">发表于</span> <a href="http://www.52nlp.cn/python-%e7%bd%91%e9%a1%b5%e7%88%ac%e8%99%ab-%e6%96%87%e6%9c%ac%e5%a4%84%e7%90%86-%e7%a7%91%e5%ad%a6%e8%ae%a1%e7%ae%97-%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0-%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98" title="21:26" rel="bookmark"><span class="entry-date">2014年07月24号</span></a> <span class="meta-sep">由</span> <span class="author vcard"><a class="url fn n" href="http://www.52nlp.cn/author/admin" title="查看所有由 52nlp 发布的文章">52nlp</a></span>					</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+						<p>曾经因为<a href="http://www.52nlp.cn/%E6%8E%A8%E8%8D%90%EF%BC%8D%E7%94%A8python%E8%BF%9B%E8%A1%8C%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86%EF%BC%8D%E4%B8%AD%E6%96%87%E7%BF%BB%E8%AF%91-nltk%E9%85%8D%E5%A5%97%E4%B9%A6">NLTK</a>的缘故开始学习Python，之后渐渐成为我工作中的第一辅助脚本语言，虽然开发语言是C/C++，但平时的很多文本数据处理任务都交给了Python。离开腾讯创业后，第一个作品<a href="http://coursegraph.com/">课程图谱</a>也是选择了Python系的Flask框架，渐渐的将自己的绝大部分工作交给了Python。这些年来，接触和使用了很多Python工具包，特别是在文本处理，科学计算，机器学习和数据挖掘领域，有很多很多优秀的Python工具包可供使用，所以作为Pythoner，也是相当幸福的。其实如果仔细留意微博，你会发现很多这方面的分享，自己也Google了一下，发现也有同学总结了“<a href="http://qxde01.blog.163.com/blog/static/67335744201368101922991/">Python机器学习库</a>”，不过总感觉缺少点什么。最近流行一个词，全栈工程师（full stack engineer），作为一个苦逼的创业者，天然的要把自己打造成一个full stack engineer，而这个过程中，这些Python工具包给自己提供了足够的火力，所以想起了这个系列。当然，这也仅仅是抛砖引玉，希望大家能提供更多的线索，来汇总整理一套Python网页爬虫，文本处理，科学计算，机器学习和数据挖掘的兵器谱。</p>
+<p>一、Python网页爬虫工具集</p>
+<p>一个真实的项目，一定是从获取数据开始的。无论文本处理，机器学习和数据挖掘，都需要数据，除了通过一些渠道购买或者下载的专业数据外，常常需要大家自己动手爬数据，这个时候，爬虫就显得格外重要了，幸好，Python提供了一批很不错的网页爬虫工具框架，既能爬取数据，也能获取和清洗数据，我们也就从这里开始了：</p>
+<p>1. <a href="http://scrapy.org/">Scrapy</a></p>
+<blockquote><p>Scrapy, a fast high-level screen scraping and web crawling framework for Python.</p></blockquote>
+<p>鼎鼎大名的Scrapy，相信不少同学都有耳闻，<a href="http://coursegraph.com">课程图谱</a>中的很多课程都是依靠Scrapy抓去的，这方面的介绍文章有很多，推荐大牛pluskid早年的一篇文章：《<a href="http://blog.pluskid.org/?p=366">Scrapy 轻松定制网络爬虫</a>》，历久弥新。</p>
+<p>官方主页：<a href="http://scrapy.org/">http://scrapy.org/</a><br />
+Github代码页: <a href="https://github.com/scrapy/scrapy">https://github.com/scrapy/scrapy</a></p>
+<p>2. <a href="http://www.crummy.com/software/BeautifulSoup/">Beautiful Soup</a></p>
+<blockquote><p>You didn&#8217;t write that awful page. You&#8217;re just trying to get some data out of it. Beautiful Soup is here to help. Since 2004, it&#8217;s been saving programmers hours or days of work on quick-turnaround screen scraping projects.</p></blockquote>
+<p>读书的时候通过《集体智慧编程》这本书知道Beautiful Soup的，后来也偶尔会用用，非常棒的一套工具。客观的说，Beautifu Soup不完全是一套爬虫工具，需要配合urllib使用，而是一套HTML/XML数据分析，清洗和获取工具。</p>
+<p>官方主页：<a href="http://www.crummy.com/software/BeautifulSoup/">http://www.crummy.com/software/BeautifulSoup/</a></p>
+<p>3. <a href="https://github.com/grangier/python-goose">Python-Goose</a></p>
+<blockquote><p>Html Content / Article Extractor, web scrapping lib in Python</p></blockquote>
+<p><a href="https://github.com/GravityLabs/goose">Goose</a>最早是用Java写得，后来用Scala重写，是一个Scala项目。Python-Goose用Python重写，依赖了Beautiful Soup。前段时间用过，感觉很不错，给定一个文章的URL, 获取文章的标题和内容很方便。</p>
+<p>Github主页：<a href="https://github.com/grangier/python-goose">https://github.com/grangier/python-goose</a></p>
+<p>二、Python文本处理工具集</p>
+<p>从网页上获取文本数据之后，依据任务的不同，就需要进行基本的文本处理了，譬如对于英文来说，需要基本的tokenize，对于中文，则需要常见的中文分词，进一步的话，无论英文中文，还可以词性标注，句法分析，关键词提取，文本分类，情感分析等等。这个方面，特别是面向英文领域，有很多优秀的工具包，我们一一道来。<br />
+<span id="more-6666"></span></p>
+<p>1. <a href="http://www.nltk.org/">NLTK</a> &#8212; Natural Language Toolkit</p>
+<blockquote><p>NLTK is a leading platform for building Python programs to work with human language data. It provides easy-to-use interfaces to over 50 corpora and lexical resources such as WordNet, along with a suite of text processing libraries for classification, tokenization, stemming, tagging, parsing, and semantic reasoning, and an active discussion forum.</p></blockquote>
+<p>搞自然语言处理的同学应该没有人不知道NLTK吧，这里也就不多说了。不过推荐两本书籍给刚刚接触NLTK或者需要详细了解NLTK的同学: 一个是官方的《Natural Language Processing with Python》，以介绍NLTK里的功能用法为主，同时附带一些Python知识，同时国内陈涛同学友情翻译了一个中文版，这里可以看到：<a href="http://www.52nlp.cn/%E6%8E%A8%E8%8D%90%EF%BC%8D%E7%94%A8python%E8%BF%9B%E8%A1%8C%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86%EF%BC%8D%E4%B8%AD%E6%96%87%E7%BF%BB%E8%AF%91-nltk%E9%85%8D%E5%A5%97%E4%B9%A6">推荐《用Python进行自然语言处理》中文翻译-NLTK配套书</a>；另外一本是《Python Text Processing with NLTK 2.0 Cookbook》，这本书要深入一些，会涉及到NLTK的代码结构，同时会介绍如何定制自己的语料和模型等，相当不错。</p>
+<p>官方主页：<a href="http://www.nltk.org/">http://www.nltk.org/</a><br />
+Github代码页：<a href="https://github.com/nltk/nltk">https://github.com/nltk/nltk</a></p>
+<p>2. <a href="http://www.clips.ua.ac.be/pattern">Pattern</a></p>
+<blockquote><p>Pattern is a web mining module for the Python programming language.</p>
+<p>It has tools for data mining (Google, Twitter and Wikipedia API, a web crawler, a HTML DOM parser), natural language processing (part-of-speech taggers, n-gram search, sentiment analysis, WordNet), machine learning (vector space model, clustering, SVM), network analysis and canvas visualization.</p></blockquote>
+<p>Pattern由比利时安特卫普大学CLiPS实验室出品，客观的说，Pattern不仅仅是一套文本处理工具，它更是一套web数据挖掘工具，囊括了数据抓取模块（包括Google, Twitter, 维基百科的API，以及爬虫和HTML分析器），文本处理模块（词性标注，情感分析等），机器学习模块(VSM, 聚类，SVM）以及可视化模块等，可以说，Pattern的这一整套逻辑也是这篇文章的组织逻辑，不过这里我们暂且把Pattern放到文本处理部分。我个人主要使用的是它的英文处理模块<a href="http://www.clips.ua.ac.be/pages/pattern-en">Pattern.en</a>, 有很多很不错的文本处理功能，包括基础的tokenize, 词性标注，句子切分，语法检查，拼写纠错，情感分析，句法分析等，相当不错。</p>
+<p>官方主页：<a href="http://www.clips.ua.ac.be/pattern">http://www.clips.ua.ac.be/pattern</a></p>
+<p>3. <a href="http://textblob.readthedocs.org/en/dev/">TextBlob</a>: Simplified Text Processing</p>
+<blockquote><p>TextBlob is a Python (2 and 3) library for processing textual data. It provides a simple API for diving into common natural language processing (NLP) tasks such as part-of-speech tagging, noun phrase extraction, sentiment analysis, classification, translation, and more.</p></blockquote>
+<p>TextBlob是一个很有意思的Python文本处理工具包，它其实是基于上面两个Python工具包NLKT和Pattern做了封装（TextBlob stands on the giant shoulders of NLTK and pattern, and plays nicely with both），同时提供了很多文本处理功能的接口，包括词性标注，名词短语提取，情感分析，文本分类，拼写检查等，甚至包括翻译和语言检测，不过这个是基于Google的API的，有调用次数限制。TextBlob相对比较年轻，有兴趣的同学可以关注。</p>
+<p>官方主页：<a href="http://textblob.readthedocs.org/en/dev/">http://textblob.readthedocs.org/en/dev/</a><br />
+Github代码页：<a href="https://github.com/sloria/textblob">https://github.com/sloria/textblob</a></p>
+<p>4. <a href="http://www.clips.ua.ac.be/pages/MBSP">MBSP</a> for Python</p>
+<blockquote><p>MBSP is a text analysis system based on the TiMBL and MBT memory based learning applications developed at CLiPS and ILK. It provides tools for Tokenization and Sentence Splitting, Part of Speech Tagging, Chunking, Lemmatization, Relation Finding and Prepositional Phrase Attachment.</p></blockquote>
+<p>MBSP与Pattern同源，同出自比利时安特卫普大学CLiPS实验室，提供了Word Tokenization, 句子切分，词性标注，Chunking, Lemmatization，句法分析等基本的文本处理功能，感兴趣的同学可以关注。</p>
+<p>官方主页：<a href="http://www.clips.ua.ac.be/pages/MBSP">http://www.clips.ua.ac.be/pages/MBSP</a></p>
+<p>5. <a href="http://radimrehurek.com/gensim/index.html">Gensim</a>: Topic modeling for humans</p>
+<p>Gensim是一个相当专业的主题模型Python工具包，无论是代码还是文档，我们曾经用《<a href="http://www.52nlp.cn/%E5%A6%82%E4%BD%95%E8%AE%A1%E7%AE%97%E4%B8%A4%E4%B8%AA%E6%96%87%E6%A1%A3%E7%9A%84%E7%9B%B8%E4%BC%BC%E5%BA%A6%E4%B8%80">如何计算两个文档的相似度</a>》介绍过Gensim的安装和使用过程，这里就不多说了。</p>
+<p>官方主页：<a href="http://radimrehurek.com/gensim/index.html">http://radimrehurek.com/gensim/index.html</a><br />
+github代码页：<a href="https://github.com/piskvorky/gensim">https://github.com/piskvorky/gensim</a></p>
+<p>6. <a href="https://github.com/saffsd/langid.py">langid.py</a>: Stand-alone language identification system</p>
+<p>语言检测是一个很有意思的话题，不过相对比较成熟，这方面的解决方案很多，也有很多不错的开源工具包，不过对于Python来说，我使用过langid这个工具包，也非常愿意推荐它。langid目前支持97种语言的检测，提供了很多易用的功能，包括可以启动一个建议的server，通过json调用其API，可定制训练自己的语言检测模型等，可以说是“麻雀虽小，五脏俱全”。</p>
+<p>Github主页：<a href="https://github.com/saffsd/langid.py">https://github.com/saffsd/langid.py</a></p>
+<p>7. <a href="https://github.com/fxsjy/jieba">Jieba</a>: 结巴中文分词</p>
+<blockquote><p>&#8220;结巴&#8221;中文分词：做最好的Python中文分词组件 &#8220;Jieba&#8221; (Chinese for &#8220;to stutter&#8221;) Chinese text segmentation: built to be the best Python Chinese word segmentation module.</p></blockquote>
+<p>好了，终于可以说一个国内的Python文本处理工具包了：结巴分词，其功能包括支持三种分词模式（精确模式、全模式、搜索引擎模式），支持繁体分词，支持自定义词典等，是目前一个非常不错的Python中文分词解决方案。</p>
+<p>Github主页：<a href="https://github.com/fxsjy/jieba">https://github.com/fxsjy/jieba</a></p>
+<p>8. <a href="https://github.com/NLeSC/xtas">xTAS</a></p>
+<blockquote><p>xtas, the eXtensible Text Analysis Suite, a distributed text analysis package based on Celery and Elasticsearch.</p></blockquote>
+<p>感谢微博朋友 <a href="http://weibo.com/sinorichard">@大山坡的春</a> 提供的线索：我们组同事之前发布了xTAS，也是基于python的text mining工具包，欢迎使用，链接：http://t.cn/RPbEZOW。看起来很不错的样子，回头试用一下。</p>
+<p>Github代码页：<a href="https://github.com/NLeSC/xtas">https://github.com/NLeSC/xtas</a></p>
+<p>三、Python科学计算工具包</p>
+<p>说起科学计算，大家首先想起的是Matlab，集数值计算，可视化工具及交互于一身，不过可惜是一个商业产品。开源方面除了<a href="http://www.gnu.org/software/octave/">GNU Octave</a>在尝试做一个类似Matlab的工具包外，Python的这几个工具包集合到一起也可以替代Matlab的相应功能：NumPy+SciPy+Matplotlib+iPython。同时，这几个工具包，特别是NumPy和SciPy，也是很多Python文本处理 &#038; 机器学习 &#038; 数据挖掘工具包的基础，非常重要。最后再推荐一个系列《<a href="http://sebug.net/paper/books/scipydoc/index.html">用Python做科学计算</a>》，将会涉及到NumPy, SciPy, Matplotlib，可以做参考。</p>
+<p>1. <a href="http://www.numpy.org/">NumPy</a></p>
+<blockquote><p>NumPy is the fundamental package for scientific computing with Python. It contains among other things:<br />
+1）a powerful N-dimensional array object<br />
+2）sophisticated (broadcasting) functions<br />
+3）tools for integrating C/C++ and Fortran code<br />
+4） useful linear algebra, Fourier transform, and random number capabilities</p>
+<p>Besides its obvious scientific uses, NumPy can also be used as an efficient multi-dimensional container of generic data. Arbitrary data-types can be defined. This allows NumPy to seamlessly and speedily integrate with a wide variety of databases.</p></blockquote>
+<p>NumPy几乎是一个无法回避的科学计算工具包，最常用的也许是它的N维数组对象，其他还包括一些成熟的函数库，用于整合C/C++和Fortran代码的工具包，线性代数、傅里叶变换和随机数生成函数等。NumPy提供了两种基本的对象：ndarray（N-dimensional array object）和 ufunc（universal function object）。ndarray是存储单一数据类型的多维数组，而ufunc则是能够对数组进行处理的函数。</p>
+<p>官方主页：<a href="http://www.numpy.org/">http://www.numpy.org/</a></p>
+<p>2. <a href="http://www.scipy.org/">SciPy</a>：Scientific Computing Tools for Python</p>
+<blockquote><p>SciPy refers to several related but distinct entities:</p>
+<p>1）The SciPy Stack, a collection of open source software for scientific computing in Python, and particularly a specified set of core packages.<br />
+2）The community of people who use and develop this stack.<br />
+3）Several conferences dedicated to scientific computing in Python &#8211; SciPy, EuroSciPy and SciPy.in.<br />
+4）The SciPy library, one component of the SciPy stack, providing many numerical routines.
+</p></blockquote>
+<p>“SciPy是一个开源的Python算法库和数学工具包，SciPy包含的模块有最优化、线性代数、积分、插值、特殊函数、快速傅里叶变换、信号处理和图像处理、常微分方程求解和其他科学与工程中常用的计算。其功能与软件MATLAB、Scilab和GNU Octave类似。 Numpy和Scipy常常结合着使用，Python大多数机器学习库都依赖于这两个模块。”&#8212;-引用自“<a href="http://qxde01.blog.163.com/blog/static/67335744201368101922991/">Python机器学习库</a>”</p>
+<p>官方主页：<a href="http://www.scipy.org/">http://www.scipy.org/</a></p>
+<p>3. <a href="http://matplotlib.org/">Matplotlib</a></p>
+<blockquote><p>matplotlib is a python 2D plotting library which produces publication quality figures in a variety of hardcopy formats and interactive environments across platforms. matplotlib can be used in python scripts, the python and ipython shell (ala MATLAB®* or Mathematica®†), web application servers, and six graphical user interface toolkits.</p></blockquote>
+<p>matplotlib 是python最著名的绘图库，它提供了一整套和matlab相似的命令API，十分适合交互式地进行制图。而且也可以方便地将它作为绘图控件，嵌入GUI应用程序中。Matplotlib可以配合ipython shell使用，提供不亚于Matlab的绘图体验，总之用过了都说好。</p>
+<p>官方主页：<a href="http://matplotlib.org/">http://matplotlib.org/</a></p>
+<p>4. <a href="http://ipython.org/">iPython</a></p>
+<blockquote><p>IPython provides a rich architecture for interactive computing with:</p>
+<p>1）Powerful interactive shells (terminal and Qt-based).<br />
+2）A browser-based notebook with support for code, text, mathematical expressions, inline plots and other rich media.<br />
+3）Support for interactive data visualization and use of GUI toolkits.<br />
+4）Flexible, embeddable interpreters to load into your own projects.<br />
+5）Easy to use, high performance tools for parallel computing.</p></blockquote>
+<p>“iPython 是一个Python 的交互式Shell，比默认的Python Shell 好用得多，功能也更强大。 她支持语法高亮、自动完成、代码调试、对象自省，支持 Bash Shell 命令，内置了许多很有用的功能和函式等，非常容易使用。 ” 启动iPython的时候用这个命令“ipython &#8211;pylab”，默认开启了matploblib的绘图交互，用起来很方便。</p>
+<p>官方主页：<a href="http://ipython.org/">http://ipython.org/</a></p>
+<p>四、Python 机器学习 &#038; 数据挖掘 工具包</p>
+<p>机器学习和数据挖掘这两个概念不太好区分，这里就放到一起了。这方面的开源Python工具包有很多，这里先从熟悉的讲起，再补充其他来源的资料，也欢迎大家补充。</p>
+<p>1. <a href="http://scikit-learn.org/">scikit-learn</a>: Machine Learning in Python</p>
+<blockquote><p>scikit-learn (formerly scikits.learn) is an open source machine learning library for the Python programming language. It features various classification, regression and clustering algorithms including support vector machines, logistic regression, naive Bayes, random forests, gradient boosting, k-means and DBSCAN, and is designed to interoperate with the Python numerical and scientific libraries NumPy and SciPy.</p></blockquote>
+<p>首先推荐大名鼎鼎的scikit-learn，scikit-learn是一个基于NumPy, SciPy, Matplotlib的开源机器学习工具包，主要涵盖分类，回归和聚类算法，例如SVM， 逻辑回归，朴素贝叶斯，随机森林，k-means等算法，代码和文档都非常不错，在许多Python项目中都有应用。例如在我们熟悉的NLTK中，分类器方面就有专门针对scikit-learn的接口，可以调用scikit-learn的分类算法以及训练数据来训练分类器模型。这里推荐一个视频，也是我早期遇到scikit-learn的时候推荐过的：<a href="http://52opencourse.com/552/%E6%8E%A8%E8%8D%90%E4%B8%80%E4%B8%AApython%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%B7%A5%E5%85%B7%E5%8C%85scikit-learn%E4%BB%A5%E5%8F%8A%E7%9B%B8%E5%85%B3%E8%A7%86%E9%A2%91-tutorial-scikit-learn-machine-learning-in-python">推荐一个Python机器学习工具包Scikit-learn以及相关视频&#8211;Tutorial: scikit-learn &#8211; Machine Learning in Python</a></p>
+<p>官方主页：<a href="http://scikit-learn.org/">http://scikit-learn.org/</a></p>
+<p>2. <a href="http://pandas.pydata.org/">Pandas</a>: Python Data Analysis Library</p>
+<blockquote><p>Pandas is a software library written for the Python programming language for data manipulation and analysis. In particular, it offers data structures and operations for manipulating numerical tables and time series.</p></blockquote>
+<p>第一次接触Pandas是由于Udacity上的一门数据分析课程“<a href="http://coursegraph.com/introduction-to-data-science-udacity-ud359-%E5%85%B6%E4%BB%96%E5%A4%A7%E5%AD%A6%E6%88%96%E6%9C%BA%E6%9E%84">Introduction to Data Science</a>” 的Project需要用Pandas库，所以学习了一下Pandas。Pandas也是基于NumPy和Matplotlib开发的，主要用于数据分析和数据可视化，它的数据结构DataFrame和R语言里的data.frame很像，特别是对于时间序列数据有自己的一套分析机制，非常不错。这里推荐一本书《<a href="http://bin.sc/Readings/Programming/Python/Python%20for%20Data%20Analysis/Python_for_Data_Analysis.pdf">Python for Data Analysis</a>》，作者是Pandas的主力开发，依次介绍了iPython, NumPy, Pandas里的相关功能，数据可视化，数据清洗和加工，时间数据处理等，案例包括金融股票数据挖掘等，相当不错。</p>
+<p>官方主页：<a href="http://pandas.pydata.org/">http://pandas.pydata.org/</a></p>
+<p>=====================================================================<br />
+分割线，以上工具包基本上都是自己用过的，以下来源于其他同学的线索，特别是《<a href="http://qxde01.blog.163.com/blog/static/67335744201368101922991/">Python机器学习库</a>》，《<a href="http://52opencourse.com/1125/23%E4%B8%AApython%E7%9A%84%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E5%8C%85">23个python的机器学习包</a>》，做了一点增删修改，欢迎大家补充<br />
+=====================================================================</p>
+<p>3. <a href="http://mlpy.sourceforge.net/">mlpy &#8211; Machine Learning Python</a></p>
+<blockquote><p>mlpy is a Python module for Machine Learning built on top of NumPy/SciPy and the GNU Scientific Libraries.</p>
+<p>mlpy provides a wide range of state-of-the-art machine learning methods for supervised and unsupervised problems and it is aimed at finding a reasonable compromise among modularity, maintainability, reproducibility, usability and efficiency. mlpy is multiplatform, it works with Python 2 and 3 and it is Open Source, distributed under the GNU General Public License version 3.</p></blockquote>
+<p>官方主页：<a href="http://mlpy.sourceforge.net/">http://mlpy.sourceforge.net/</a></p>
+<p>4. <a href="http://mdp-toolkit.sourceforge.net/">MDP</a>：The Modular toolkit for Data Processing</p>
+<blockquote><p>Modular toolkit for Data Processing (MDP) is a Python data processing framework.<br />
+From the user’s perspective, MDP is a collection of supervised and unsupervised learning algorithms and other data processing units that can be combined into data processing sequences and more complex feed-forward network architectures.<br />
+From the scientific developer’s perspective, MDP is a modular framework, which can easily be expanded. The implementation of new algorithms is easy and intuitive. The new implemented units are then automatically integrated with the rest of the library.<br />
+The base of available algorithms is steadily increasing and includes signal processing methods (Principal Component Analysis, Independent Component Analysis, Slow Feature Analysis), manifold learning methods ([Hessian] Locally Linear Embedding), several classifiers, probabilistic methods (Factor Analysis, RBM), data pre-processing methods, and many others.</p></blockquote>
+<p>“MDP用于数据处理的模块化工具包，一个Python数据处理框架。 从用户的观点，MDP是能够被整合到数据处理序列和更复杂的前馈网络结构的一批监督学习和非监督学习算法和其他数据处理单元。计算依照速度和内存需求而高效的执行。从科学开发者的观点，MDP是一个模块框架，它能够被容易地扩展。新算法的实现是容易且直观的。新实现的单元然后被自动地与程序库的其余部件进行整合。MDP在神经科学的理论研究背景下被编写，但是它已经被设计为在使用可训练数据处理算法的任何情况中都是有用的。其站在用户一边的简单性，各种不同的随时可用的算法，及应用单元的可重用性，使得它也是一个有用的教学工具。”</p>
+<p>官方主页：<a href="http://mdp-toolkit.sourceforge.net/">http://mdp-toolkit.sourceforge.net/</a></p>
+<p>5. <a href="http://www.pybrain.org/">PyBrain</a></p>
+<blockquote><p>PyBrain is a modular Machine Learning Library for Python. Its goal is to offer flexible, easy-to-use yet still powerful algorithms for Machine Learning Tasks and a variety of predefined environments to test and compare your algorithms.</p>
+<p>PyBrain is short for Python-Based Reinforcement Learning, Artificial Intelligence and Neural Network Library. In fact, we came up with the name first and later reverse-engineered this quite descriptive &#8220;Backronym&#8221;.</p></blockquote>
+<p>“PyBrain(Python-Based Reinforcement Learning, Artificial Intelligence and Neural Network)是Python的一个机器学习模块，它的目标是为机器学习任务提供灵活、易应、强大的机器学习算法。（这名字很霸气）</p>
+<p>PyBrain正如其名，包括神经网络、强化学习(及二者结合)、无监督学习、进化算法。因为目前的许多问题需要处理连续态和行为空间，必须使用函数逼近(如神经网络)以应对高维数据。PyBrain以神经网络为核心，所有的训练方法都以神经网络为一个实例。”</p>
+<p>官方主页：<a href="http://www.pybrain.org/">http://www.pybrain.org/</a></p>
+<p>6. <a href="http://pyml.sourceforge.net/">PyML</a> &#8211; machine learning in Python</p>
+<blockquote><p>PyML is an interactive object oriented framework for machine learning written in Python. PyML focuses on SVMs and other kernel methods. It is supported on Linux and Mac OS X.</p></blockquote>
+<p>“PyML是一个Python机器学习工具包，为各分类和回归方法提供灵活的架构。它主要提供特征选择、模型选择、组合分类器、分类评估等功能。”</p>
+<p>项目主页：<a href="http://pyml.sourceforge.net/">http://pyml.sourceforge.net/</a></p>
+<p>7. <a href="https://pypi.python.org/pypi/milk/">Milk</a>：Machine learning toolkit in Python.</p>
+<blockquote><p>Its focus is on supervised classification with several classifiers available:<br />
+SVMs (based on libsvm), k-NN, random forests, decision trees. It also performs<br />
+feature selection. These classifiers can be combined in many ways to form<br />
+different classification systems.</p></blockquote>
+<p>“Milk是Python的一个机器学习工具箱，其重点是提供监督分类法与几种有效的分类分析：SVMs(基于libsvm)，K-NN，随机森林经济和决策树。它还可以进行特征选择。这些分类可以在许多方面相结合，形成不同的分类系统。对于无监督学习，它提供K-means和affinity propagation聚类算法。”</p>
+<p>官方主页：<a href="http://luispedro.org/software/milk">http://luispedro.org/software/milk</a></p>
+<p>http://luispedro.org/software/milk</p>
+<p>8. <a href="http://www.pymvpa.org/">PyMVPA</a>: MultiVariate Pattern Analysis (MVPA) in Python</p>
+<blockquote><p>PyMVPA is a Python package intended to ease statistical learning analyses of large datasets. It offers an extensible framework with a high-level interface to a broad range of algorithms for classification, regression, feature selection, data import and export. It is designed to integrate well with related software packages, such as scikit-learn, and MDP. While it is not limited to the neuroimaging domain, it is eminently suited for such datasets. PyMVPA is free software and requires nothing but free-software to run.</p></blockquote>
+<p>“PyMVPA(Multivariate Pattern Analysis in Python)是为大数据集提供统计学习分析的Python工具包，它提供了一个灵活可扩展的框架。它提供的功能有分类、回归、特征选择、数据导入导出、可视化等”</p>
+<p>官方主页：<a href="http://www.pymvpa.org/">http://www.pymvpa.org/</a></p>
+<p>9. <a href="https://github.com/pydata/pyrallel">Pyrallel</a> &#8211; Parallel Data Analytics in Python</p>
+<blockquote><p>Experimental project to investigate distributed computation patterns for machine learning and other semi-interactive data analytics tasks.</p></blockquote>
+<p>“Pyrallel(Parallel Data Analytics in Python)基于分布式计算模式的机器学习和半交互式的试验项目，可在小型集群上运行”</p>
+<p>Github代码页：<a href="https://github.com/pydata/pyrallel">http://github.com/pydata/pyrallel</a></p>
+<p>10. <a href="http://montepython.sourceforge.net/">Monte</a> &#8211; gradient based learning in Python</p>
+<blockquote><p>
+Monte (python) is a Python framework for building gradient based learning machines, like neural networks, conditional random fields, logistic regression, etc. Monte contains modules (that hold parameters, a cost-function and a gradient-function) and trainers (that can adapt a module&#8217;s parameters by minimizing its cost-function on training data). </p>
+<p>Modules are usually composed of other modules, which can in turn contain other modules, etc. Gradients of decomposable systems like these can be computed with back-propagation.</p></blockquote>
+<p>“Monte (machine learning in pure Python)是一个纯Python机器学习库。它可以迅速构建神经网络、条件随机场、逻辑回归等模型，使用inline-C优化，极易使用和扩展。”</p>
+<p>官方主页：<a href="http://montepython.sourceforge.net">http://montepython.sourceforge.net</a></p>
+<p>11. <a href="http://deeplearning.net/software/theano/">Theano</a></p>
+<blockquote><p>Theano is a Python library that allows you to define, optimize, and evaluate mathematical expressions involving multi-dimensional arrays efficiently. Theano features:<br />
+1）tight integration with NumPy – Use numpy.ndarray in Theano-compiled functions.<br />
+2）transparent use of a GPU – Perform data-intensive calculations up to 140x faster than with CPU.(float32 only)<br />
+3）efficient symbolic differentiation – Theano does your derivatives for function with one or many inputs.<br />
+4）speed and stability optimizations – Get the right answer for log(1+x) even when x is really tiny.<br />
+5）dynamic C code generation – Evaluate expressions faster.<br />
+6） extensive unit-testing and self-verification – Detect and diagnose many types of mistake.<br />
+Theano has been powering large-scale computationally intensive scientific investigations since 2007. But it is also approachable enough to be used in the classroom (IFT6266 at the University of Montreal).</p></blockquote>
+<p>“Theano 是一个 Python 库，用来定义、优化和模拟数学表达式计算，用于高效的解决多维数组的计算问题。Theano的特点：紧密集成Numpy；高效的数据密集型GPU计算；高效的符号微分运算；高速和稳定的优化；动态生成c代码；广泛的单元测试和自我验证。自2007年以来，Theano已被广泛应用于科学运算。theano使得构建深度学习模型更加容易，可以快速实现多种模型。PS：Theano，一位希腊美女，Croton最有权势的Milo的女儿，后来成为了毕达哥拉斯的老婆。”</p>
+<p>12. <a href="http://deeplearning.net/software/pylearn2/">Pylearn2</a></p>
+<blockquote><p>Pylearn2 is a machine learning library. Most of its functionality is built on top of Theano. This means you can write Pylearn2 plugins (new models, algorithms, etc) using mathematical expressions, and theano will optimize and stabilize those expressions for you, and compile them to a backend of your choice (CPU or GPU).</p></blockquote>
+<p>“Pylearn2建立在theano上，部分依赖scikit-learn上，目前Pylearn2正处于开发中，将可以处理向量、图像、视频等数据，提供MLP、RBM、SDA等深度学习模型。”</p>
+<p>官方主页：<a href="http://deeplearning.net/software/pylearn2/">http://deeplearning.net/software/pylearn2/</a></p>
+<p>其他的，欢迎大家补充，这里也会持续更新这篇文章。</p>
+<p>注：原创文章，转载请注明出处“<a href="http://www.52nlp.cn">我爱自然语言处理</a>”：<a href="http://www.52nlp.cn">www.52nlp.cn</a></p>
+<p>本文链接地址：<a href="http://www.52nlp.cn/python-网页爬虫-文本处理-科学计算-机器学习-数据挖掘">http://www.52nlp.cn/python-网页爬虫-文本处理-科学计算-机器学习-数据挖掘</a></p>
+<div class='yarpp-related'>
+<p>相关文章:<ol>
+<li><a href="http://www.52nlp.cn/googles-python-class" rel="bookmark" title="Google&#8217;s Python Class">Google&#8217;s Python Class </a></li>
+<li><a href="http://www.52nlp.cn/googles-python-class-sos" rel="bookmark" title="Google&#8217;s Python Class &#8211; SOS">Google&#8217;s Python Class &#8211; SOS </a></li>
+<li><a href="http://www.52nlp.cn/%e5%a6%82%e4%bd%95%e8%ae%a1%e7%ae%97%e4%b8%a4%e4%b8%aa%e6%96%87%e6%a1%a3%e7%9a%84%e7%9b%b8%e4%bc%bc%e5%ba%a6%e4%ba%8c" rel="bookmark" title="如何计算两个文档的相似度（二）">如何计算两个文档的相似度（二） </a></li>
+<li><a href="http://www.52nlp.cn/googles-python-class-sos-%e7%bb%ad-%e4%b8%8b%e8%bd%bd" rel="bookmark" title="Google’s Python Class SOS 续 &#8211;下载">Google’s Python Class SOS 续 &#8211;下载 </a></li>
+<li><a href="http://www.52nlp.cn/several-different-programming-language-version-of-hmm" rel="bookmark" title="几种不同程序语言的HMM版本">几种不同程序语言的HMM版本 </a></li>
+<li><a href="http://www.52nlp.cn/%e5%a6%82%e4%bd%95%e8%ae%a1%e7%ae%97%e4%b8%a4%e4%b8%aa%e6%96%87%e6%a1%a3%e7%9a%84%e7%9b%b8%e4%bc%bc%e5%ba%a6%e4%b8%89" rel="bookmark" title="如何计算两个文档的相似度（三）">如何计算两个文档的相似度（三） </a></li>
+<li><a href="http://www.52nlp.cn/%e6%8e%a8%e8%8d%90%ef%bc%8d%e7%94%a8python%e8%bf%9b%e8%a1%8c%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86%ef%bc%8d%e4%b8%ad%e6%96%87%e7%bf%bb%e8%af%91-nltk%e9%85%8d%e5%a5%97%e4%b9%a6" rel="bookmark" title="推荐《用Python进行自然语言处理》中文翻译-NLTK配套书">推荐《用Python进行自然语言处理》中文翻译-NLTK配套书 </a></li>
+<li><a href="http://www.52nlp.cn/%e6%9d%a1%e4%bb%b6%e9%9a%8f%e6%9c%ba%e5%9c%ba%e6%96%87%e7%8c%ae%e9%98%85%e8%af%bb%e6%8c%87%e5%8d%97" rel="bookmark" title="条件随机场文献阅读指南">条件随机场文献阅读指南 </a></li>
+<li><a href="http://www.52nlp.cn/mapreduce%e4%b8%8e%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86" rel="bookmark" title="MapReduce与自然语言处理">MapReduce与自然语言处理 </a></li>
+<li><a href="http://www.52nlp.cn/%e5%88%86%e4%ba%ab%ef%bc%9aconceptbro%e8%af%ad%e4%b9%89%e7%bd%91%e6%b5%8f%e8%a7%88%e5%99%a8" rel="bookmark" title="分享：ConceptBro语义网浏览器">分享：ConceptBro语义网浏览器 </a></li>
+</ol></p>
+</div>
+											</div><!-- .entry-content -->
+
+
+					<div class="entry-utility">
+						此条目发表在 <a href="http://www.52nlp.cn/category/%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98" title="查看数据挖掘中的全部文章" rel="category tag">数据挖掘</a>, <a href="http://www.52nlp.cn/category/%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0" title="查看机器学习中的全部文章" rel="category tag">机器学习</a>, <a href="http://www.52nlp.cn/category/%e7%a7%91%e5%ad%a6%e8%ae%a1%e7%ae%97" title="查看科学计算中的全部文章" rel="category tag">科学计算</a>, <a href="http://www.52nlp.cn/category/nlp" title="查看自然语言处理中的全部文章" rel="category tag">自然语言处理</a> 分类目录，贴了 <a href="http://www.52nlp.cn/tag/gensim" rel="tag">gensim</a>, <a href="http://www.52nlp.cn/tag/jieba" rel="tag">Jieba</a>, <a href="http://www.52nlp.cn/tag/jieba%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d" rel="tag">Jieba中文分词</a>, <a href="http://www.52nlp.cn/tag/langid" rel="tag">LangId</a>, <a href="http://www.52nlp.cn/tag/mbsp" rel="tag">MBSP</a>, <a href="http://www.52nlp.cn/tag/nltk" rel="tag">nltk</a>, <a href="http://www.52nlp.cn/tag/pattern" rel="tag">Pattern</a>, <a href="http://www.52nlp.cn/tag/python" rel="tag">python</a>, <a href="http://www.52nlp.cn/tag/python%e5%bc%80%e6%ba%90%e5%b7%a5%e5%85%b7%e5%8c%85" rel="tag">Python开源工具包</a>, <a href="http://www.52nlp.cn/tag/python%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98" rel="tag">Python数据挖掘</a>, <a href="http://www.52nlp.cn/tag/python%e6%96%87%e6%9c%ac%e5%a4%84%e7%90%86" rel="tag">Python文本处理</a>, <a href="http://www.52nlp.cn/tag/python%e6%96%87%e6%9c%ac%e6%8c%96%e6%8e%98" rel="tag">Python文本挖掘</a>, <a href="http://www.52nlp.cn/tag/python%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0" rel="tag">Python机器学习</a>, <a href="http://www.52nlp.cn/tag/python%e7%88%ac%e8%99%ab" rel="tag">Python爬虫</a>, <a href="http://www.52nlp.cn/tag/python%e7%a7%91%e5%ad%a6%e8%ae%a1%e7%ae%97" rel="tag">Python科学计算</a>, <a href="http://www.52nlp.cn/tag/python%e7%bd%91%e9%a1%b5%e7%88%ac%e8%99%ab" rel="tag">Python网页爬虫</a>, <a href="http://www.52nlp.cn/tag/scrapy" rel="tag">Scrapy</a>, <a href="http://www.52nlp.cn/tag/textblob" rel="tag">TextBlob</a>, <a href="http://www.52nlp.cn/tag/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d" rel="tag">中文分词</a>, <a href="http://www.52nlp.cn/tag/%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98" rel="tag">数据挖掘</a>, <a href="http://www.52nlp.cn/tag/%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98%e5%bc%80%e6%ba%90%e5%b7%a5%e5%85%b7%e5%8c%85" rel="tag">数据挖掘开源工具包</a>, <a href="http://www.52nlp.cn/tag/%e6%96%87%e6%9c%ac%e5%a4%84%e7%90%86" rel="tag">文本处理</a>, <a href="http://www.52nlp.cn/tag/%e6%96%87%e6%9c%ac%e5%a4%84%e7%90%86%e5%bc%80%e6%ba%90%e5%b7%a5%e5%85%b7%e5%8c%85" rel="tag">文本处理开源工具包</a>, <a href="http://www.52nlp.cn/tag/%e6%96%87%e6%9c%ac%e6%8c%96%e6%8e%98" rel="tag">文本挖掘</a>, <a href="http://www.52nlp.cn/tag/%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0" rel="tag">机器学习</a>, <a href="http://www.52nlp.cn/tag/%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0%e5%bc%80%e6%ba%90%e5%b7%a5%e5%85%b7%e5%8c%85" rel="tag">机器学习开源工具包</a>, <a href="http://www.52nlp.cn/tag/%e7%88%ac%e8%99%ab" rel="tag">爬虫</a>, <a href="http://www.52nlp.cn/tag/%e7%a7%91%e5%ad%a6%e8%ae%a1%e7%ae%97" rel="tag">科学计算</a>, <a href="http://www.52nlp.cn/tag/%e7%bd%91%e9%a1%b5%e7%88%ac%e8%99%ab" rel="tag">网页爬虫</a>, <a href="http://www.52nlp.cn/tag/%e8%af%ad%e8%a8%80%e6%a3%80%e6%b5%8b" rel="tag">语言检测</a> 标签。将<a href="http://www.52nlp.cn/python-%e7%bd%91%e9%a1%b5%e7%88%ac%e8%99%ab-%e6%96%87%e6%9c%ac%e5%a4%84%e7%90%86-%e7%a7%91%e5%ad%a6%e8%ae%a1%e7%ae%97-%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0-%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98" title="链向 Python 网页爬虫 &amp; 文本处理 &amp; 科学计算 &amp; 机器学习 &amp; 数据挖掘兵器谱 的固定链接" rel="bookmark">固定链接</a>加入收藏夹。											</div><!-- .entry-utility -->
+				</div><!-- #post-## -->
+
+				<div id="nav-below" class="navigation">
+					<div class="nav-previous"><a href="http://www.52nlp.cn/%e7%bf%bb%e8%af%91%e6%8a%80%e6%9c%af%e6%b2%99%e9%be%99%e7%ac%ac%e5%8d%81%e5%85%ad%e6%ac%a1%e6%b4%bb%e5%8a%a8-%e4%ba%92%e8%81%94%e7%bd%91%e6%8a%80%e6%9c%af%e9%a9%b1%e5%8a%a8" rel="prev"><span class="meta-nav">&larr;</span> 翻译技术沙龙第十六次活动——“互联网技术驱动下的语言服务众包模式” 通知</a></div>
+					<div class="nav-next"></div>
+				</div><!-- #nav-below -->
+
+				
+			<div id="comments">
+
+
+			<h3 id="comments-title">《<em>Python 网页爬虫 &#038; 文本处理 &#038; 科学计算 &#038; 机器学习 &#038; 数据挖掘兵器谱</em>》有 2 条评论</h3>
+
+
+			<ol class="commentlist">
+					<li class="comment even thread-even depth-1" id="li-comment-34574">
+		<div id="comment-34574">
+		<div class="comment-author vcard">
+			<img alt='' src='http://1.gravatar.com/avatar/970f2ee3b5ed0a8a352789c5d5bd7d06?s=40&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn">zhf</cite> <span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/python-%e7%bd%91%e9%a1%b5%e7%88%ac%e8%99%ab-%e6%96%87%e6%9c%ac%e5%a4%84%e7%90%86-%e7%a7%91%e5%ad%a6%e8%ae%a1%e7%ae%97-%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0-%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98/comment-page-1#comment-34574">
+			2014年07月24号21:55</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>thks.<br />
+感谢总结.在这个站点学到了很多.</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,34574,1,'zhf');">回复</a>]</p></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-34630">
+		<div id="comment-34630">
+		<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/8d7d1b238780c1907107b3ed1f271f6c?s=40&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn">simonliu</cite> <span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/python-%e7%bd%91%e9%a1%b5%e7%88%ac%e8%99%ab-%e6%96%87%e6%9c%ac%e5%a4%84%e7%90%86-%e7%a7%91%e5%ad%a6%e8%ae%a1%e7%ae%97-%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0-%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98/comment-page-1#comment-34630">
+			2014年07月25号11:13</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>不错，受教了。</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,34630,1,'simonliu');">回复</a>]</p></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+			</ol>
+
+
+
+								<div id="respond" class="comment-respond">
+				<h3 id="reply-title" class="comment-reply-title">发表评论 <small><a rel="nofollow" id="cancel-comment-reply-link" href="/python-%e7%bd%91%e9%a1%b5%e7%88%ac%e8%99%ab-%e6%96%87%e6%9c%ac%e5%a4%84%e7%90%86-%e7%a7%91%e5%ad%a6%e8%ae%a1%e7%ae%97-%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0-%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98#respond" style="display:none;">取消回复</a></small></h3>
+									<form action="http://www.52nlp.cn/wp-comments-post.php" method="post" id="commentform" class="comment-form">
+																			<p class="comment-notes">电子邮件地址不会被公开。 必填项已用<span class="required">*</span>标注</p>							<p class="comment-form-author"><label for="author">姓名 <span class="required">*</span></label> <input id="author" name="author" type="text" value="" size="30" aria-required='true' /></p>
+<p class="comment-form-email"><label for="email">电子邮件 <span class="required">*</span></label> <input id="email" name="email" type="text" value="" size="30" aria-required='true' /></p>
+<p class="comment-form-url"><label for="url">站点</label> <input id="url" name="url" type="text" value="" size="30" /></p>
+												<p class="comment-form-comment"><label for="comment">评论</label> <textarea id="comment" name="comment" cols="45" rows="8" aria-required="true"></textarea></p>						<p class="form-allowed-tags">您可以使用这些<abbr title="HyperText Markup Language">HTML</abbr>标签和属性： <code>&lt;a href=&quot;&quot; title=&quot;&quot;&gt; &lt;abbr title=&quot;&quot;&gt; &lt;acronym title=&quot;&quot;&gt; &lt;b&gt; &lt;blockquote cite=&quot;&quot;&gt; &lt;cite&gt; &lt;code&gt; &lt;del datetime=&quot;&quot;&gt; &lt;em&gt; &lt;i&gt; &lt;q cite=&quot;&quot;&gt; &lt;strike&gt; &lt;strong&gt; </code></p>						<p class="form-submit">
+							<input name="submit" type="submit" id="submit" value="发表评论" />
+							<input type='hidden' name='comment_post_ID' value='6666' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+						</p>
+						<p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="43b8316d4f" /></p><p style="display: none;"><input type="hidden" id="ak_js" name="ak_js" value="110"/></p><p><input type="hidden" id="comment_reply_ID" name="comment_reply_ID" value="0" /><input type="hidden" id="comment_reply_dp" name="comment_reply_dp" value="0" /></p><div id="cancel_reply" style="display:none;"><a href="javascript:void(0)" onclick="movecfm(null,0,1,null);" style="color:red;">点击取消回复</a></div><script type="text/javascript">
+/* <![CDATA[ */
+var commentformid = "commentform";
+var USERINFO = false;
+var atreply = "none";
+/* ]]> */
+</script>
+<script type="text/javascript" src="http://www.52nlp.cn/wp-content/plugins/wp-thread-comment/wp-thread-comment.js.php?jsver=common"></script>
+					</form>
+							</div><!-- #respond -->
+			
+</div><!-- #comments -->
+
+
+			</div><!-- #content -->
+		</div><!-- #container -->
+
+﻿
+		<div id="primary" class="widget-area" role="complementary">
+			<ul class="xoxo">
+<!-- begin l_sidebar -->
+	<div id="l_sidebar">
+<p>卓越网：<a href="http://www.amazon.cn/mn/searchApp?source=garypyang-23&searchType=1&keywords=自然语言处理" title="自然语言处理书籍"target=_blank>自然语言处理书籍</a><br>
+<li id="search-3" class="widget-container widget_search"><h3 class="widget-title">站内搜索</h3><form role="search" method="get" id="searchform" class="searchform" action="http://www.52nlp.cn/">
+				<div>
+					<label class="screen-reader-text" for="s">搜索：</label>
+					<input type="text" value="" name="s" id="s" />
+					<input type="submit" id="searchsubmit" value="搜索" />
+				</div>
+			</form></li><li id="text-4" class="widget-container widget_text"><h3 class="widget-title">NLPJob新鲜职位推荐:</h3>			<div class="textwidget"><p></p>
+<script src="http://www.nlpjob.com/api/api.php?action=getJobs
+&type=0&category=0&count=8&random=1&days_behind=7&response=js" type="text/javascript"></script>
+
+<script type="text/javascript">showJobs('jobber-container', 'jobber-list');</script></div>
+		</li><li id="text-3" class="widget-container widget_text"><h3 class="widget-title">52nlp新浪微博</h3>			<div class="textwidget"><p><iframe id="sina_widget_2104931705" style="width:100%; height:500px;" frameborder="0" scrolling="no" src="http://v.t.sina.com.cn/widget/widget_blog.php?uid=2104931705&height=500&skin=wd_01&showpic=1"></iframe></p>
+<p><!-- JiaThis Button BEGIN --><br />
+<script type="text/javascript" src="http://v3.jiathis.com/code/jiathis_r.js?uid=1340292124103344&move=0&amp;btn=r3.gif" charset="utf-8"></script><br />
+<!-- JiaThis Button END --></p>
+</div>
+		</li><li id="categories-309398091" class="widget-container widget_categories"><h3 class="widget-title">分类目录</h3>		<ul>
+	<li class="cat-item cat-item-72"><a href="http://www.52nlp.cn/category/mit-nlp" title="麻省理工学院开放式课程&quot;自然语言处理“的相关翻译文章">MIT自然语言处理</a> (23)
+</li>
+	<li class="cat-item cat-item-469"><a href="http://www.52nlp.cn/category/topic-model" title="查看Topic Model下的所有文章">Topic Model</a> (10)
+</li>
+	<li class="cat-item cat-item-87"><a href="http://www.52nlp.cn/category/wordpress" title="查看wordpress下的所有文章">wordpress</a> (6)
+</li>
+	<li class="cat-item cat-item-317"><a href="http://www.52nlp.cn/category/%e4%b8%93%e9%a2%98" title="查看专题下的所有文章">专题</a> (6)
+</li>
+	<li class="cat-item cat-item-263"><a href="http://www.52nlp.cn/category/chinese-information-processing" title="查看中文信息处理下的所有文章">中文信息处理</a> (17)
+</li>
+	<li class="cat-item cat-item-62"><a href="http://www.52nlp.cn/category/word-segmentation" title="查看中文分词下的所有文章">中文分词</a> (34)
+</li>
+	<li class="cat-item cat-item-420"><a href="http://www.52nlp.cn/category/%e5%b9%b6%e8%a1%8c%e7%ae%97%e6%b3%95" title="查看并行算法下的所有文章">并行算法</a> (1)
+</li>
+	<li class="cat-item cat-item-268"><a href="http://www.52nlp.cn/category/%e6%8b%9b%e8%81%98" title="查看招聘下的所有文章">招聘</a> (4)
+</li>
+	<li class="cat-item cat-item-560"><a href="http://www.52nlp.cn/category/%e6%8e%a8%e8%8d%90%e7%b3%bb%e7%bb%9f" title="查看推荐系统下的所有文章">推荐系统</a> (3)
+</li>
+	<li class="cat-item cat-item-354"><a href="http://www.52nlp.cn/category/%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98" title="查看数据挖掘下的所有文章">数据挖掘</a> (1)
+</li>
+	<li class="cat-item cat-item-241"><a href="http://www.52nlp.cn/category/text-classification" title="查看文本分类下的所有文章">文本分类</a> (2)
+</li>
+	<li class="cat-item cat-item-193"><a href="http://www.52nlp.cn/category/maximum-entropy-model" title="查看最大熵模型下的所有文章">最大熵模型</a> (7)
+</li>
+	<li class="cat-item cat-item-344"><a href="http://www.52nlp.cn/category/%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0" title="查看机器学习下的所有文章">机器学习</a> (13)
+</li>
+	<li class="cat-item cat-item-1"><a href="http://www.52nlp.cn/category/machine-translation" title="查看机器翻译下的所有文章">机器翻译</a> (54)
+</li>
+	<li class="cat-item cat-item-195"><a href="http://www.52nlp.cn/category/%e6%9d%a1%e4%bb%b6%e9%9a%8f%e6%9c%ba%e5%9c%ba" title="查看条件随机场下的所有文章">条件随机场</a> (3)
+</li>
+	<li class="cat-item cat-item-153"><a href="http://www.52nlp.cn/category/tagging" title="查看标注下的所有文章">标注</a> (13)
+</li>
+	<li class="cat-item cat-item-885"><a href="http://www.52nlp.cn/category/%e7%a7%91%e5%ad%a6%e8%ae%a1%e7%ae%97" title="查看科学计算下的所有文章">科学计算</a> (1)
+</li>
+	<li class="cat-item cat-item-538"><a href="http://www.52nlp.cn/category/%e7%bb%9f%e8%ae%a1%e5%ad%a6" title="查看统计学下的所有文章">统计学</a> (10)
+</li>
+	<li class="cat-item cat-item-126"><a href="http://www.52nlp.cn/category/translation-model" title="查看翻译模型下的所有文章">翻译模型</a> (2)
+</li>
+	<li class="cat-item cat-item-51"><a href="http://www.52nlp.cn/category/nlp" title="查看自然语言处理下的所有文章">自然语言处理</a> (223)
+</li>
+	<li class="cat-item cat-item-106"><a href="http://www.52nlp.cn/category/computational-linguistics" title="查看计算语言学下的所有文章">计算语言学</a> (38)
+</li>
+	<li class="cat-item cat-item-22"><a href="http://www.52nlp.cn/category/dictionary" title="查看词典下的所有文章">词典</a> (8)
+</li>
+	<li class="cat-item cat-item-221"><a href="http://www.52nlp.cn/category/semantics" title="查看语义学下的所有文章">语义学</a> (1)
+</li>
+	<li class="cat-item cat-item-161"><a href="http://www.52nlp.cn/category/semantic-web" title="查看语义网下的所有文章">语义网</a> (3)
+</li>
+	<li class="cat-item cat-item-37"><a href="http://www.52nlp.cn/category/corpus" title="查看语料库下的所有文章">语料库</a> (12)
+</li>
+	<li class="cat-item cat-item-86"><a href="http://www.52nlp.cn/category/language-model" title="查看语言模型下的所有文章">语言模型</a> (23)
+</li>
+	<li class="cat-item cat-item-156"><a href="http://www.52nlp.cn/category/speech-recognition" title="查看语音识别下的所有文章">语音识别</a> (4)
+</li>
+	<li class="cat-item cat-item-314"><a href="http://www.52nlp.cn/category/%e8%b4%9d%e5%8f%b6%e6%96%af%e6%a8%a1%e5%9e%8b" title="查看贝叶斯模型下的所有文章">贝叶斯模型</a> (1)
+</li>
+	<li class="cat-item cat-item-110"><a href="http://www.52nlp.cn/category/reprint" title="查看转载下的所有文章">转载</a> (28)
+</li>
+	<li class="cat-item cat-item-451"><a href="http://www.52nlp.cn/category/%e9%97%ae%e7%ad%94%e7%b3%bb%e7%bb%9f" title="查看问答系统下的所有文章">问答系统</a> (1)
+</li>
+	<li class="cat-item cat-item-3"><a href="http://www.52nlp.cn/category/informal-essay" title="查看随笔下的所有文章">随笔</a> (61)
+</li>
+	<li class="cat-item cat-item-60"><a href="http://www.52nlp.cn/category/hidden-markov-model" title="查看隐马尔科夫模型下的所有文章">隐马尔科夫模型</a> (36)
+</li>
+		</ul>
+</li><li id="archives-2" class="widget-container widget_archive"><h3 class="widget-title">文章归档</h3>		<ul>
+	<li><a href='http://www.52nlp.cn/2014/07'>2014年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/06'>2014年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/05'>2014年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/04'>2014年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/01'>2014年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/12'>2013年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/06'>2013年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/05'>2013年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/04'>2013年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/03'>2013年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/02'>2013年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/01'>2013年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/12'>2012年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/11'>2012年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/10'>2012年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/09'>2012年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/08'>2012年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/07'>2012年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/06'>2012年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/05'>2012年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/04'>2012年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/03'>2012年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/01'>2012年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/12'>2011年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/11'>2011年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/10'>2011年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/09'>2011年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/08'>2011年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/07'>2011年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/06'>2011年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/05'>2011年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/04'>2011年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/03'>2011年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/02'>2011年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/01'>2011年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/12'>2010年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/11'>2010年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/10'>2010年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/09'>2010年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/08'>2010年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/07'>2010年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/06'>2010年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/05'>2010年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/04'>2010年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/03'>2010年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/02'>2010年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/01'>2010年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/12'>2009年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/11'>2009年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/10'>2009年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/09'>2009年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/08'>2009年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/07'>2009年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/06'>2009年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/05'>2009年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/04'>2009年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/03'>2009年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/02'>2009年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/01'>2009年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2008/12'>2008年十二月</a></li>
+		</ul>
+</li>		<li id="recent-posts-2" class="widget-container widget_recent_entries">		<h3 class="widget-title">最新文章</h3>		<ul>
+					<li>
+				<a href="http://www.52nlp.cn/python-%e7%bd%91%e9%a1%b5%e7%88%ac%e8%99%ab-%e6%96%87%e6%9c%ac%e5%a4%84%e7%90%86-%e7%a7%91%e5%ad%a6%e8%ae%a1%e7%ae%97-%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0-%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98">Python 网页爬虫 &#038; 文本处理 &#038; 科学计算 &#038; 机器学习 &#038; 数据挖掘兵器谱</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e7%bf%bb%e8%af%91%e6%8a%80%e6%9c%af%e6%b2%99%e9%be%99%e7%ac%ac%e5%8d%81%e5%85%ad%e6%ac%a1%e6%b4%bb%e5%8a%a8-%e4%ba%92%e8%81%94%e7%bd%91%e6%8a%80%e6%9c%af%e9%a9%b1%e5%8a%a8">翻译技术沙龙第十六次活动——“互联网技术驱动下的语言服务众包模式” 通知</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e7%81%ab%e5%85%89%e6%91%87%e6%9b%b3%e7%a5%9e%e5%a5%87%e7%9a%84%e4%bc%bd%e7%8e%9b%e5%87%bd%e6%95%b0%e4%b8%8b">[火光摇曳]神奇的伽玛函数(下)</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e7%a5%9e%e5%a5%87%e7%9a%84%e4%bc%bd%e7%8e%9b%e5%87%bd%e6%95%b0%e4%b8%8a">[火光摇曳]神奇的伽玛函数(上)</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/nlpjob-%e4%b8%bb%e7%ab%99%e4%b8%8a%e7%ba%bf">NLPJob 主站上线</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e9%a1%ba%e4%b8%b0%e6%b5%b7%e6%b7%98sfbuy%e9%a6%96%e6%ac%a1%e4%bd%93%e9%aa%8c-%e7%be%8e%e5%9b%bd%e4%ba%9a%e9%a9%ac%e9%80%8a%e6%b5%b7%e6%b7%98kindle-dx%e8%bd%ac%e8%bf%90%e5%85%a8%e6%94%bb%e7%95%a5">顺丰海淘SFBuy首次体验-美国亚马逊海淘Kindle DX转运全攻略</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/digitalocean%e4%bd%bf%e7%94%a8%e5%b0%8f%e8%ae%b0">DigitalOcean使用小记</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%95%e5%85%a8%e6%96%87%e6%96%87%e6%a1%a3">中文分词入门之字标注法全文文档</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%954">中文分词入门之字标注法4</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%953">中文分词入门之字标注法3</a>
+						</li>
+				</ul>
+		</li><li id="recentcomments" class="widget-container widget_recentcomments"><h3 class="widget-title">最近评论</h3><ul><li class="rc-navi rc-clearfix"><span class="rc-loading">正在加载...</span></li><li id="rc-comment-temp" class="rc-item rc-comment rc-clearfix"><div class="rc-info"></div><div class="rc-timestamp"></div><div class="rc-excerpt"></div></li><li id="rc-ping-temp" class="rc-item rc-ping rc-clearfix"><span class="rc-label"></span></li></ul></li>			</ul>
+		</div><!-- #primary .widget-area -->
+
+
+		<div id="secondary" class="widget-area" role="complementary">
+			<ul class="xoxo">
+				<li id="linkcat-103" class="widget-container widget_links"><h3 class="widget-title">NLP相关网站</h3>
+	<ul class='xoxo blogroll'>
+<li><a href="http://www.aclweb.org/" rel="co-worker" title="The Association for Computational Linguistics" target="_blank">ACL</a></li>
+<li><a href="http://aclweb.org/anthology-new/" rel="co-worker" title="A Digital Archive of Research Papers in Computational Linguistics" target="_blank">ACL Anthology</a></li>
+<li><a href="http://belobog.si.umich.edu/clair/anthology/index.cgi" rel="colleague" target="_blank">ACL Anthology Network</a></li>
+<li><a href="http://aclweb.org/aclwiki/index.php?title=Main_Page" rel="colleague" title="the Wiki of the Association for Computational Linguistics" target="_blank">ACL Wiki</a></li>
+<li><a href="http://www.clsp.jhu.edu/" rel="colleague" target="_blank">CLSP</a></li>
+<li><a href="http://www.cwbbase.com/" rel="colleague" title="这是一个略具规模的中文语义词库, 也是稍有特色的汉语语义词典" target="_blank">CWB中文词库</a></li>
+<li><a href="http://www.euromatrix.net/" rel="colleague" target="_blank">EuroMatrix</a></li>
+<li><a href="http://www.freebase.com" rel="colleague" target="_blank">Freebase</a></li>
+<li><a href="http://www.clsp.jhu.edu/workshops/" rel="colleague" target="_blank">JHU Workshop</a></li>
+<li><a href="http://www.ldc.upenn.edu/" rel="colleague" title="Linguistic Data Consortium" target="_blank">LDC</a></li>
+<li><a href="http://www.statmt.org/moses/" rel="colleague" title="A factored phrase-based beam-search decoder for machine translation" target="_blank">Moses</a></li>
+<li><a href="http://nlpers.blogspot.com/" rel="colleague" title="国外一个非常不错的自然语言处理博客" target="_blank">nlper</a></li>
+<li><a href="http://www.powerset.com/" rel="colleague" target="_blank">Powerset</a></li>
+<li><a href="http://www.speech.sri.com/projects/srilm/" rel="colleague" title="- The SRI Language Modeling Toolkit" target="_blank">SRILM</a></li>
+<li><a href="http://www.statmt.org/" rel="colleague" title="This website is dedicated to research in statistical machine translation" target="_blank">Statistical Machine Translation</a></li>
+<li><a href="http://textanalysisonline.com/" target="_blank">Text Analysis</a></li>
+<li><a href="http://textminingonline.com/" target="_blank">Text Mining</a></li>
+<li><a href="http://textsummarization.net/" target="_blank">Text Summarization</a></li>
+<li><a href="http://w3china.org/index.htm" rel="friend" title="致力于促进W3C技术的广泛应用, 传播关于未来Web的知识与技术" target="_blank">中国万维网联盟</a></li>
+<li><a href="http://www.cipsc.org.cn/" rel="co-worker" title="Chinese Information Processing Society of China" target="_blank">中国中文信息学会</a></li>
+<li><a href="http://www.nlp.org.cn/" rel="colleague" title="中文自然语言处理开放平台" target="_blank">中文自然语言处理开放平台</a></li>
+<li><a href="http://www.mt-archive.info/" rel="colleague" title="Repository and bibliography of articles, books and papers on topics" target="_blank">机器翻译档案计划</a></li>
+<li><a href="http://www.statmt.org/europarl/" rel="colleague" target="_blank">欧洲议会平行语料库</a></li>
+<li><a href="http://www.keenage.com/" title="HowNet" target="_blank">知网</a></li>
+<li><a href="http://www.nlpir.org/" rel="friend" title="由张华平博士发起，由北京理工大学网络搜索与挖掘实验室运营，旨在推动NLP(自然语言处理)与IR(信息检索)领域的共享与共赢" target="_blank">自然语言处理与信息检索共享平台</a></li>
+<li><a href="http://mitel.ict.ac.cn/" rel="co-worker" title="中科院计算所多语言交互技术实验室" target="_blank">计算所多语言交互技术实验室</a></li>
+
+	</ul>
+</li>
+<li id="linkcat-2" class="widget-container widget_links"><h3 class="widget-title">友情链接</h3>
+	<ul class='xoxo blogroll'>
+<li><a href="http://blog.youxu.info/" title="一个计算机专业的 Ph.D. 学生徐宥的个人博客" target="_blank">4G spaces</a></li>
+<li><a href="http://blog.52nlp.org" rel="me" title="我爱自然语言处理完全镜像" target="_blank">52nlpblog</a></li>
+<li><a href="http://www.52nlp.com" rel="me" title="52nlp的英文站" target="_blank">52nlpcom</a></li>
+<li><a href="http://hi.baidu.com/drkevinzhang" rel="friend" title="ICTCLAS 张华平博士的空间" target="_blank">ICTCLAS 张华平博士的空间</a></li>
+<li><a href="http://blog.so8848.com/" rel="friend" title="信息检索博客" target="_blank">Information Retrieval Blog</a></li>
+<li><a href="http://interop123.com/default.aspx" rel="friend" title="崔晓源师兄关于NET技术的站点" target="_blank">NET互操作技术社区</a></li>
+<li><a href="http://bbs.w3china.org/" rel="friend" title="中国万维网联盟讨论区" target="_blank">W3CHINA讨论区</a></li>
+<li><a href="http://www.ailab.cn/" rel="friend" target="_blank">人工智能网</a></li>
+<li><a href="http://mindhacks.cn/" rel="friend" title="一个很有思想的价值博客!" target="_blank">刘未鹏之Mind Hacks</a></li>
+<li><a href="http://www.cnblogs.com/finallyliuyu/" rel="friend" target="_blank">原地转圈的驴子</a></li>
+<li><a href="http://xunren.thuir.org/" target="_blank">微博寻人（梁博）</a></li>
+<li><a href="http://52opencourse.com" rel="friend" title="我爱公开课，高质量公开课交流平台" target="_blank">我爱公开课</a></li>
+<li><a href="http://iregex.org/" rel="friend" target="_blank">我爱正则表达式</a></li>
+<li><a href="http://courseminer.com" target="_blank">挖课</a></li>
+<li><a href="http://www.sciencenet.cn/u/timy/" rel="friend" title="章成志老师的博客" target="_blank">章成志的博客</a></li>
+<li><a href="http://blog.csdn.net/v_JULY_v/" target="_blank">结构之法 算法之道</a></li>
+<li><a href="http://www.lingcc.com/" rel="friend" title="关注编译器,虚拟机,编程语言及技术,IT职业和程序员生活" target="_blank">编译点滴</a></li>
+<li><a href="http://www.52nlp.org" rel="me" title="52nlp的官方网站" target="_blank">自然语言处理</a></li>
+<li><a href="http://www.ieee.org.cn/" rel="friend" title="计算机科学论坛" target="_blank">计算机科学论坛</a></li>
+<li><a href="http://coursegraph.com/">课程图谱</a></li>
+<li><a href="http://blog.coursegraph.com" rel="friend">课程图谱博客</a></li>
+
+	</ul>
+</li>
+<li id="meta-4" class="widget-container widget_meta"><h3 class="widget-title">功能</h3>			<ul>
+			<li><a href="http://www.52nlp.cn/wp-login.php?action=register">注册</a></li>			<li><a href="http://www.52nlp.cn/wp-login.php">登录</a></li>
+			<li><a href="http://www.52nlp.cn/feed" title="使用RSS 2.0订阅本站点内容">文章<abbr title="Really Simple Syndication">RSS</abbr></a></li>
+			<li><a href="http://www.52nlp.cn/comments/feed" title="使用RSS订阅本站点的所有文章的近期评论">评论<abbr title="Really Simple Syndication">RSS</abbr></a></li>
+<li><a href="https://cn.wordpress.org/" title="基于WordPress，一个优美、先进的个人信息发布平台。">WordPress.org</a></li>			</ul>
+</li>			</ul>
+		</div><!-- #secondary .widget-area -->
+
+	</div><!-- #main -->
+
+	<div id="footer" role="contentinfo">
+		<div id="colophon">
+
+
+
+			<div id="site-info">
+				<a href="http://www.52nlp.cn/" title="我爱自然语言处理" rel="home">
+					我爱自然语言处理				</a>
+			</div><!-- #site-info -->
+
+			<div id="site-generator">
+								<a href="http://cn.wordpress.org/"
+						title="优雅的个人发布平台" rel="generator">
+					自豪地采用 WordPress。				</a>
+			</div><!-- #site-generator -->
+
+		</div><!-- #colophon -->
+	</div><!-- #footer -->
+
+</div><!-- #wrapper -->
+
+<script>
+/* <![CDATA[ */
+var rcGlobal = {
+	serverUrl		:'http://www.52nlp.cn',
+	infoTemp		:'%REVIEWER% 在 %POST%',
+	loadingText		:'正在加载',
+	noCommentsText	:'没有任何评论',
+	newestText		:'&laquo; 最新的',
+	newerText		:'&laquo; 上一页',
+	olderText		:'下一页 &raquo;',
+	showContent		:'',
+	external		:'',
+	avatarSize		:'0',
+	avatarPosition	:'left',
+	anonymous		:'匿名'
+};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://www.52nlp.cn/wp-content/plugins/akismet/_inc/form.js?ver=3.0.1'></script>
+<link rel='stylesheet' id='yarppRelatedCss-css'  href='http://www.52nlp.cn/wp-content/plugins/yet-another-related-posts-plugin/style/related.css?ver=3.9.1' type='text/css' media='all' />
+<script type='text/javascript' src='http://www.52nlp.cn/wp-content/plugins/wp-recentcomments/js/wp-recentcomments.js?ver=2.2.7'></script>
+	<p align="center"> 本站架设在 <a href="http://www.52nlp.cn/digitalocean%E4%BD%BF%E7%94%A8%E5%B0%8F%E8%AE%B0">DigitalOcean</a> 上, 采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本站内容必须也遵循“署名-非商业用途-保持一致”的创作共用协议.</p>
+<!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(["trackPageView"]);
+  _paq.push(["enableLinkTracking"]);
+
+  (function() {
+    var u=(("https:" == document.location.protocol) ? "https" : "http") + "://162.243.252.121/piwik/";
+    _paq.push(["setTrackerUrl", u+"piwik.php"]);
+    _paq.push(["setSiteId", "5"]);
+    var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0]; g.type="text/javascript";
+    g.defer=true; g.async=true; g.src=u+"piwik.js"; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Piwik Code -->
+</body>
+</html>

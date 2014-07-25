@@ -1,0 +1,657 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<title>DigitalOcean使用小记 | 我爱自然语言处理</title>
+<link rel="profile" href="http://gmpg.org/xfn/11" />
+<link rel="stylesheet" type="text/css" media="all" href="http://www.52nlp.cn/wp-content/themes/twentytenorg/style.css" />
+<link rel="pingback" href="http://www.52nlp.cn/xmlrpc.php" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; Feed" href="http://www.52nlp.cn/feed" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; 评论Feed" href="http://www.52nlp.cn/comments/feed" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; DigitalOcean使用小记评论Feed" href="http://www.52nlp.cn/digitalocean%e4%bd%bf%e7%94%a8%e5%b0%8f%e8%ae%b0/feed" />
+<link rel='stylesheet' id='yarppWidgetCss-css'  href='http://www.52nlp.cn/wp-content/plugins/yet-another-related-posts-plugin/style/widget.css?ver=3.9.1' type='text/css' media='all' />
+<link rel='stylesheet' id='codecolorer-css'  href='http://www.52nlp.cn/wp-content/plugins/codecolorer/codecolorer.css?ver=0.9.9' type='text/css' media='screen' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.52nlp.cn/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.52nlp.cn/wp-includes/wlwmanifest.xml" /> 
+<link rel='prev' title='中文分词入门之字标注法全文文档' href='http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%95%e5%85%a8%e6%96%87%e6%96%87%e6%a1%a3' />
+<link rel='next' title='顺丰海淘SFBuy首次体验-美国亚马逊海淘Kindle DX转运全攻略' href='http://www.52nlp.cn/%e9%a1%ba%e4%b8%b0%e6%b5%b7%e6%b7%98sfbuy%e9%a6%96%e6%ac%a1%e4%bd%93%e9%aa%8c-%e7%be%8e%e5%9b%bd%e4%ba%9a%e9%a9%ac%e9%80%8a%e6%b5%b7%e6%b7%98kindle-dx%e8%bd%ac%e8%bf%90%e5%85%a8%e6%94%bb%e7%95%a5' />
+<meta name="generator" content="WordPress 3.9.1" />
+<link rel='canonical' href='http://www.52nlp.cn/digitalocean%e4%bd%bf%e7%94%a8%e5%b0%8f%e8%ae%b0' />
+<link rel='shortlink' href='http://www.52nlp.cn/?p=6520' />
+<!-- wp thread comment 1.4.9.4.002 -->
+<style type="text/css" media="screen">
+.editComment, .editableComment, .textComment{
+	display: inline;
+}
+.comment-childs{
+	border: 1px solid #999;
+	margin: 5px 2px 2px 4px;
+	padding: 4px 2px 2px 4px;
+	background-color: white;
+}
+.chalt{
+	background-color: #E2E2E2;
+}
+#newcomment{
+	border:1px dashed #777;width:90%;
+}
+#newcommentsubmit{
+	color:red;
+}
+.adminreplycomment{
+	border:1px dashed #777;
+	width:99%;
+	margin:4px;
+	padding:4px;
+}
+.mvccls{
+	color: #999;
+}
+			
+</style>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: { equationNumbers: { autoNumber: "AMS" } },
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+    inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+    displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+    processEscapes: true
+  },
+  "HTML-CSS": { availableFonts: ["TeX"] }
+});
+</script><script type="text/javascript" src="http://www.52nlp.cn/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</head>
+
+<body class="single single-post postid-6520 single-format-standard">
+<div id="wrapper" class="hfeed">
+	<div id="header">
+		<div id="masthead">
+			<div id="branding" role="banner">
+								<div id="site-title">
+					<span>
+						<a href="http://www.52nlp.cn/" title="我爱自然语言处理" rel="home">我爱自然语言处理</a>
+					</span>
+				</div>
+				<div id="site-description">I Love Natural Language Processing</div>
+
+										<img src="http://www.52nlp.cn/wp-content/themes/twentytenorg/images/headers/path.jpg" width="940" height="198" alt="" />
+								</div><!-- #branding -->
+
+			<div id="access" role="navigation">
+			  				<div class="skip-link screen-reader-text"><a href="#content" title="跳至正文">跳至正文</a></div>
+								<div class="menu"><ul><li ><a href="http://www.52nlp.cn/">首页</a></li><li class="page_item page-item-2"><a href="http://www.52nlp.cn/about">关于</a></li><li class="page_item page-item-2557 page_item_has_children"><a href="http://www.52nlp.cn/resources">资源</a><ul class='children'><li class="page_item page-item-1271"><a href="http://www.52nlp.cn/resources/wpmatheditor">WpMathEditor</a></li></ul></li></ul></div>
+ 
+				<div class="menu"><ul><li class="page_item page-item-2"></li><li class="page_item page-item-2"><a href="http://coursegraph.com" title="课程图谱" target="_blank">课程图谱</a></li><li class="page_item page-item-2"><a href="http://www.nlpjob.com" title="求职" target="_blank">求职招聘</a></li></ul></div>
+			</div><!-- #access -->
+		</div><!-- #masthead -->
+	</div><!-- #header -->
+
+	<div id="main">
+
+		<div id="container">
+			<div id="content" role="main">
+
+			
+
+				<div id="nav-above" class="navigation">
+					<div class="nav-previous"><a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%95%e5%85%a8%e6%96%87%e6%96%87%e6%a1%a3" rel="prev"><span class="meta-nav">&larr;</span> 中文分词入门之字标注法全文文档</a></div>
+					<div class="nav-next"><a href="http://www.52nlp.cn/%e9%a1%ba%e4%b8%b0%e6%b5%b7%e6%b7%98sfbuy%e9%a6%96%e6%ac%a1%e4%bd%93%e9%aa%8c-%e7%be%8e%e5%9b%bd%e4%ba%9a%e9%a9%ac%e9%80%8a%e6%b5%b7%e6%b7%98kindle-dx%e8%bd%ac%e8%bf%90%e5%85%a8%e6%94%bb%e7%95%a5" rel="next">顺丰海淘SFBuy首次体验-美国亚马逊海淘Kindle DX转运全攻略 <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-above -->
+
+				<div id="post-6520" class="post-6520 post type-post status-publish format-standard hentry category-informal-essay tag-digital-ocean tag-digital-ocean- tag-digital-ocean- tag-digital-ocean- tag-digital-ocean- tag-digital-ocean--linode tag-digital-ocean- tag-digital-ocean- tag-digital-ocean tag-digital-ocean tag-digitalocean tag-digitalocean-ssd tag-digitalocean- tag-digitalocean- tag-digitalocean- tag-digitalocean- tag-digitalocean- tag-digitalocean- tag-digitalocean- tag-digitalocean tag-lindode-ssd tag-linode tag-linode- tag-linode- tag-linode tag-linode tag-vps tag-vps tag-vps">
+					<h1 class="entry-title">DigitalOcean使用小记</h1>
+
+					<div class="entry-meta">
+						<span class="meta-prep meta-prep-author">发表于</span> <a href="http://www.52nlp.cn/digitalocean%e4%bd%bf%e7%94%a8%e5%b0%8f%e8%ae%b0" title="23:28" rel="bookmark"><span class="entry-date">2014年01月18号</span></a> <span class="meta-sep">由</span> <span class="author vcard"><a class="url fn n" href="http://www.52nlp.cn/author/admin" title="查看所有由 52nlp 发布的文章">52nlp</a></span>					</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+						<p>晚上看到微博上的@developerWorks同学推荐<a href="https://www.digitalocean.com/?refcode=97b95ce9b422">DigitalOcean</a>, 赫然发现自己使用<a href="https://www.digitalocean.com/?refcode=97b95ce9b422">DigitalOcean</a>大概也一年了(2013年2月28日开始），自从前段时间把52nlp搬牵过来之后，我在国外的vps就只有<a href="https://www.digitalocean.com/?refcode=97b95ce9b422">DigitalOcean</a>了。所以在微博上简短回复了一下：</p>
+<blockquote><p>上半年就开始用DO了，52nlp前段时间也搬到DO了，用的是10美元每月的Plan, 彻底告别了linode。</p></blockquote>
+<p>自从08年底52nlp开张以来，依次用过便宜好用的虚拟主机host2ez, 朋友免费赞助的小空间，Godaddy上免费附赠的空间（但是带广告），国外的老鹰主机（Hawkhost)，以及用信用卡注册免费使用一年的AWS（但是一直没用上），直到遇见口碑极高的Linode，花上20多美元/每月搞一个完全自主拥有root权限的VPS（Virtual Private Server）后，发现自己已经离不开VPS了，虽然没有了Cpanel之类的控制面板可用(貌似也可以自己安装），但是更享受这种完全自主的命令行控制和Root权限。之后接触并玩过的VPS还有目前使用的阿里云和<a href="https://www.digitalocean.com/?refcode=97b95ce9b422">DigitalOcean</a>。</p>
+<p><a href="https://www.linode.com/?r=9d7e95783707b229e0879af58d0440591bfb37dd">Linode</a>大概使用了有两年，期间几乎没有出过什么问题，感觉非常棒，不过印象去年也是微博上某个朋友推荐我用<a href="https://www.digitalocean.com/?refcode=97b95ce9b422">DigitalOcean</a>，号称配置SSD VPS（ SSD cloud server， SSD云主机），了解了一下它的配置，发现最低配5美元/每月的Plan（512MB内存，1核，20G SSD硬盘, 1TB流量）和我每月20多美元的Linode Plan的配置基本旗鼓相当（不过目前linode最低配已经升级为1G内存&#8230;，印象也是这一年期间逐步加量不加价的，有竞争就是好啊），不过国外便宜的VPS有很多，不能因为便宜就放弃<a href="https://www.linode.com/?r=9d7e95783707b229e0879af58d0440591bfb37dd">Linode</a>，所以在没有放弃<a href="https://www.linode.com/?r=9d7e95783707b229e0879af58d0440591bfb37dd">Linode</a>的前提下选了一个<a href="https://www.digitalocean.com/?refcode=97b95ce9b422">Digital Ocean</a>中最便宜的5美元/月的Plan玩一下，在这个上面诞生了“<a href="http://52opencourse.com/">我爱公开课</a>”，“<a href="http://courseminer.com/">挖课</a>”等网站，也跑了一个python flask网站，<a href="http://coursegraph.com/">课程图谱</a>的前身：<a href="http://courserareview.com/">CourseraReview</a>，从2013年2月28号到目前为止，基本上还没有出现过什么问题，感觉还不错，也欢迎大家体验这几个网站。</p>
+<blockquote><p>注，这里更新一下关于Linode的一些信息（2014.5.12）：</p>
+<p>网友 Efin 留言：</p>
+<p>“我正在使用Linode的东京节点，用了刚一个礼拜，暂时未发现问题。<br />
+Linode现在最低配置是2G, 价格还是20刀/月。如果出现什么问题，可能会考虑试试这个DO。”</p>
+<p>所以特意去<a href="https://www.linode.com/?r=9d7e95783707b229e0879af58d0440591bfb37dd">linode</a>主页看了一下，最低配不仅升级了内存到2g，而且也换了ssd，价格上现在看Digitalocean目前也没啥优势，之后两家pk的应该还是服务。对于老牌的Linode和新锐DigitaoOcean来说，目前都很放心，所以选择权再于你自己了。唯一区别的是<a href="https://www.linode.com/?r=9d7e95783707b229e0879af58d0440591bfb37dd">linode</a>最低配是20美元起步，DigtialOcean 5美元起步，后者更适合新人入门
+</p></blockquote>
+<p>2013年年底，终于决定告别用了2年多的<a href="https://www.linode.com/?r=9d7e95783707b229e0879af58d0440591bfb37dd">Linode</a>，不是因为<a href="https://www.linode.com/?r=9d7e95783707b229e0879af58d0440591bfb37dd">Linode</a>不好，而是性价比没有<a href="https://www.digitalocean.com/?refcode=97b95ce9b422">DigitalOcean</a>好，刚好这篇对比DO和Linode的英文文章“<a href="http://blog.schneidmaster.com/digital-ocean-vs-linode/"target=_blank>Digital Ocean vs. Linode</a>”也道出了我的心声，这哥们也使用了2年的Linode，但是最终决定告别Linode，投向<a href="https://www.digitalocean.com/?refcode=97b95ce9b422">DigitalOcean</a>的怀抱。所以除了之前5美元的vps外，我又为52nlp选了一个DigitalOcean中最流行的10美元/月的Plan或者官方说法是&#8221;Droplets&#8221;，下面是我的后台截图，2个DigitalOcean Droplets：<br />
+<span id="more-6520"></span><br />
+<a href="http://www.52nlp.cn/wp-content/uploads/2014/01/Droplets.png"><img src="http://www.52nlp.cn/wp-content/uploads/2014/01/Droplets.png" alt="Digital Ocean Droplets" width="1087" height="486" class="alignnone size-full wp-image-6534" /></a></p>
+<p>这是10美元/月 vps的配置情况，选的是NewYork 2机房，安装的是Ubuntu 12.04 64位服务器（这个注册购买Digital后可选很多Linux服务器）:</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2014/01/DO-1GB.png"><img src="http://www.52nlp.cn/wp-content/uploads/2014/01/DO-1GB.png" alt="DigitalOcean 1GB VPS" width="1032" height="483" class="alignnone size-full wp-image-6538" /></a></p>
+<p><a href="https://www.digitalocean.com/?refcode=97b95ce9b422">DigitalOcean</a>的后台相对也很简洁，image下可以手动备份VPS镜像，自动备份需要付费（大约是你所用Plan价钱的1/5), 下图是一个自动备份记录：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2014/01/DO-Backup.png"><img src="http://www.52nlp.cn/wp-content/uploads/2014/01/DO-Backup.png" alt="DigitalOcean 备份" width="1041" height="619" class="alignnone size-full wp-image-6540" /></a></p>
+<p>SSH Key菜单下是教你如何添加ssh key建立2台机器之间的互信，以后通过ssh登录VPS不需要再次输入ssh密码：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2014/01/DO-SSH-Key.png"><img src="http://www.52nlp.cn/wp-content/uploads/2014/01/DO-SSH-Key.png" alt="DO SSH Key" width="1038" height="493" class="alignnone size-full wp-image-6542" /></a></p>
+<p>Billing是<a href="https://www.digitalocean.com/?refcode=97b95ce9b422">DigitalOcean</a>计费的页面，包括当前使用情况以及历史记录，DigitalOcean貌似允许欠费，另外相对于Linode每月月初就收费的情况，DO是按照小时计费的，相对灵活很多。这是我的账单页面，是从13年2月28号开始使用的，用Paypal付款，另外直接用双币信用卡付款也行：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2014/01/DigitalOcean-Billing.png"><img src="http://www.52nlp.cn/wp-content/uploads/2014/01/DigitalOcean-Billing.png" alt="DigitalOcean Billing" width="1039" height="578" class="alignnone size-full wp-image-6543" /></a></p>
+<p>Support页面是寻求<a href="https://www.digitalocean.com/?refcode=97b95ce9b422">DigitalOcean</a>工作人员帮助的地方，这个很重要，即使是VPS，也不能保证不会出任何问题，万一遇到个啥问题挂了，如果联系不上客服就麻烦了。DO虽然是初创企业，不过这一块儿做得挺不错的。目前为止，我提过两个不是很紧急的问题，一个是咨询如何直接用信用卡付款的问题，另外一个比较有意思，就是在购买第二个10美元配置的vps时，我先通过google搜了一个DO的优惠码（coupon)，这个优惠码显示可以省10美元，但是需要注册一个新的账户，我尝试这个老账号里使用，发现没有填这个优惠码的地方，就通过Support页面的New Ticket咨询如何使用？大概10分钟之类就收到回复，不过意思是很遗憾，老账号不能使用，只有新帐号可以使用，不过神奇的是在我的billing页面又显示我多了10美元（有邮件通知），所以这个优惠码还是生效了，估计是工作人员直接操作的，所以大家要是有优惠码的问题，不妨骚扰DO的工作人员。以下是我的support页面：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2014/01/Digital-Ocean-Support.png"><img src="http://www.52nlp.cn/wp-content/uploads/2014/01/Digital-Ocean-Support.png" alt="Digital Ocean Support" width="1019" height="466" class="alignnone size-full wp-image-6546" /></a></p>
+<p>关于优惠码，可以通过goole &#8220;digitalocean coupon&#8221; 发掘，我上次就是google了一个&#8221;thechangelog10&#8243;, 不知道现在还能用不？另外微博上@devloperWorks同学爆料：DigitalOcean 继续给力！10美元免费送！最新优惠码：2014SSD 已亲测，可用。只对新用户注册有效，想买 VPS 的同学可以关注下：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2014/01/digital-ocean-coupon.jpg"><img src="http://www.52nlp.cn/wp-content/uploads/2014/01/digital-ocean-coupon.jpg" alt="digital ocean coupon" width="1024" height="1042" class="alignnone size-full wp-image-6547" /></a></p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2014/01/digital-ocean优惠吗.jpg"><img src="http://www.52nlp.cn/wp-content/uploads/2014/01/digital-ocean优惠吗.jpg" alt="digital ocean优惠吗" width="1024" height="1017" class="alignnone size-full wp-image-6548" /></a></p>
+<p>关于<a href="https://www.digitalocean.com/?refcode=97b95ce9b422">DigitalOcean</a>优惠码，稍微再补充一下：</p>
+<blockquote><p>1、DigitalOcean官网：https://www.digitalocean.com/</p>
+<p>2、登录DigitalOcean后，点击添加信用卡。</p>
+<p>3、然后在右下角输入免费赠送x美元的优惠码：例如2014SSD，稍等一会儿就可以直接返回到Billing中看到自己已获10美元了。</p></blockquote>
+<p>至于DNS，API之类的目前我还没有用到，这里就不介绍了。关于<a href="https://www.digitalocean.com/?refcode=97b95ce9b422">DigitalOcean</a>的注册，今日到官方主页后，点击Sign Up后输入你的邮箱和密码即可，之后blabla的按照流程做即可，如果还不明白，可以看看下面这个“<a href="http://www.zhujiceping.com/digitalocean-how-to-use">digitalocean注册及使用简单教程</a>”，这里就不详述了。</p>
+<p>好久没有在这里扯淡了，今天晚上看到微博有感而发，从去年年初开始使用DigitalOcean，到目前为止DigitalOcean上超过100万个server在运行，深感口碑的力量之强大。最后再说明以下，这篇文章里嵌入了<a href="https://www.digitalocean.com/?refcode=97b95ce9b422">DigitalOcean</a>的推介链接，这也是国外一种常用的商品推介模式，如果您通过这个链接注册DigitalOcean并成功消费10美元，这里将得到一点refer money, 也非常感谢您的支持。</p>
+<p>最后关于DigitalOcean, 以下摘自<a href="http://www.36kr.com/p/205263.html">36氪</a>的一点介绍：</p>
+<blockquote><p>Digital Ocean 成立于 2012 年，是一家从 TechStars 孵化出来的云托管服务提供商。其特色服务是提供快速的固态硬盘服务器，宣称可在 55 秒钟搭建好一台云服务器。所有的服务器均拥有 1G 的网络接口，每月基础套餐为 1TB 流量，超出部分按每 GB2 美分计算。公司还提供了灵活的 API 供客户控制其私有虚拟服务器。控制面板也相当直观易用。目前在 Digital Ocean 上部署的服务器数量已达 34.6 万（注：现在以超过100万），公司目前每天新增的订户约为 500。</p></blockquote>
+<p>注：原创文章，转载请注明出处“<a href="http://www.52nlp.cn">我爱自然语言处理</a>”：<a href="http://www.52nlp.cn">www.52nlp.cn</a></p>
+<p>本文链接地址：<a href="http://www.52nlp.cn/digitalocean使用小记">http://www.52nlp.cn/digitalocean使用小记</a></p>
+<div class='yarpp-related'>
+<p>相关文章:<ol>
+<li><a href="http://www.52nlp.cn/acl-anthology-computational-linguistics-digital-archive" rel="bookmark" title="ACL Anthology——计算语言学的数字档案">ACL Anthology——计算语言学的数字档案 </a></li>
+<li><a href="http://www.52nlp.cn/natural-language-processing-company-teragram" rel="bookmark" title="自然语言处理公司巡礼一：Teragram">自然语言处理公司巡礼一：Teragram </a></li>
+</ol></p>
+</div>
+											</div><!-- .entry-content -->
+
+
+					<div class="entry-utility">
+						此条目发表在 <a href="http://www.52nlp.cn/category/informal-essay" title="查看随笔中的全部文章" rel="category tag">随笔</a> 分类目录，贴了 <a href="http://www.52nlp.cn/tag/digital-ocean" rel="tag">Digital Ocean</a>, <a href="http://www.52nlp.cn/tag/digital-ocean-%e4%bb%8b%e7%bb%8d" rel="tag">Digital Ocean 介绍</a>, <a href="http://www.52nlp.cn/tag/digital-ocean-%e4%bd%bf%e7%94%a8" rel="tag">Digital Ocean 使用</a>, <a href="http://www.52nlp.cn/tag/digital-ocean-%e5%a6%82%e4%bd%95" rel="tag">Digital Ocean 如何</a>, <a href="http://www.52nlp.cn/tag/digital-ocean-%e5%af%b9%e6%af%94" rel="tag">Digital Ocean 对比</a>, <a href="http://www.52nlp.cn/tag/digital-ocean-%e5%af%b9%e6%af%94-linode" rel="tag">Digital Ocean 对比 Linode</a>, <a href="http://www.52nlp.cn/tag/digital-ocean-%e6%b3%a8%e5%86%8c" rel="tag">Digital Ocean 注册</a>, <a href="http://www.52nlp.cn/tag/digital-ocean-%e7%bb%8f%e9%aa%8c" rel="tag">Digital Ocean 经验</a>, <a href="http://www.52nlp.cn/tag/digital-ocean%e6%8e%a8%e8%8d%90" rel="tag">Digital Ocean推荐</a>, <a href="http://www.52nlp.cn/tag/digital-ocean%e7%bb%8f%e9%aa%8c" rel="tag">Digital Ocean经验</a>, <a href="http://www.52nlp.cn/tag/digitalocean" rel="tag">DigitalOcean</a>, <a href="http://www.52nlp.cn/tag/digitalocean-ssd" rel="tag">digitalocean ssd</a>, <a href="http://www.52nlp.cn/tag/digitalocean-%e4%bb%8b%e7%bb%8d" rel="tag">DigitalOcean 介绍</a>, <a href="http://www.52nlp.cn/tag/digitalocean-%e4%bc%98%e6%83%a0%e7%a0%81" rel="tag">DigitalOcean 优惠码</a>, <a href="http://www.52nlp.cn/tag/digitalocean-%e4%bd%bf%e7%94%a8" rel="tag">DigitalOcean 使用</a>, <a href="http://www.52nlp.cn/tag/digitalocean-%e5%8f%a3%e7%a2%91" rel="tag">DigitalOcean 口碑</a>, <a href="http://www.52nlp.cn/tag/digitalocean-%e5%a6%82%e4%bd%95" rel="tag">DigitalOcean 如何</a>, <a href="http://www.52nlp.cn/tag/digitalocean-%e5%af%b9%e6%af%94" rel="tag">DigitalOcean 对比</a>, <a href="http://www.52nlp.cn/tag/digitalocean-%e6%b3%a8%e5%86%8c" rel="tag">DigitalOcean 注册</a>, <a href="http://www.52nlp.cn/tag/digitalocean%e4%bc%98%e6%83%a0%e7%a0%81" rel="tag">DigitalOcean优惠码</a>, <a href="http://www.52nlp.cn/tag/lindode-ssd" rel="tag">lindode ssd</a>, <a href="http://www.52nlp.cn/tag/linode" rel="tag">Linode</a>, <a href="http://www.52nlp.cn/tag/linode-%e4%bb%8b%e7%bb%8d" rel="tag">linode 介绍</a>, <a href="http://www.52nlp.cn/tag/linode-%e4%bb%b7%e6%a0%bc" rel="tag">linode 价格</a>, <a href="http://www.52nlp.cn/tag/linode%e4%bc%98%e6%83%a0%e7%a0%81" rel="tag">linode优惠码</a>, <a href="http://www.52nlp.cn/tag/linode%e5%af%b9%e6%af%94" rel="tag">Linode对比</a>, <a href="http://www.52nlp.cn/tag/vps" rel="tag">VPS</a>, <a href="http://www.52nlp.cn/tag/vps%e4%bd%bf%e7%94%a8" rel="tag">VPS使用</a>, <a href="http://www.52nlp.cn/tag/vps%e6%8e%a8%e8%8d%90" rel="tag">VPS推荐</a> 标签。将<a href="http://www.52nlp.cn/digitalocean%e4%bd%bf%e7%94%a8%e5%b0%8f%e8%ae%b0" title="链向 DigitalOcean使用小记 的固定链接" rel="bookmark">固定链接</a>加入收藏夹。											</div><!-- .entry-utility -->
+				</div><!-- #post-## -->
+
+				<div id="nav-below" class="navigation">
+					<div class="nav-previous"><a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%95%e5%85%a8%e6%96%87%e6%96%87%e6%a1%a3" rel="prev"><span class="meta-nav">&larr;</span> 中文分词入门之字标注法全文文档</a></div>
+					<div class="nav-next"><a href="http://www.52nlp.cn/%e9%a1%ba%e4%b8%b0%e6%b5%b7%e6%b7%98sfbuy%e9%a6%96%e6%ac%a1%e4%bd%93%e9%aa%8c-%e7%be%8e%e5%9b%bd%e4%ba%9a%e9%a9%ac%e9%80%8a%e6%b5%b7%e6%b7%98kindle-dx%e8%bd%ac%e8%bf%90%e5%85%a8%e6%94%bb%e7%95%a5" rel="next">顺丰海淘SFBuy首次体验-美国亚马逊海淘Kindle DX转运全攻略 <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-below -->
+
+				
+			<div id="comments">
+
+
+			<h3 id="comments-title">《<em>DigitalOcean使用小记</em>》有 16 条评论</h3>
+
+
+			<ol class="commentlist">
+					<li class="comment even thread-even depth-1" id="li-comment-11963">
+		<div id="comment-11963">
+		<div class="comment-author vcard">
+			<img alt='' src='http://1.gravatar.com/avatar/fc43a735e2c498f450a9908a5bd9ebf4?s=40&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn">Elgs</cite> <span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/digitalocean%e4%bd%bf%e7%94%a8%e5%b0%8f%e8%ae%b0/comment-page-1#comment-11963">
+			2014年03月21号15:26</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>droplet的名字如果不是域名的话，反向域名是不工作的。你可以试一下 dig -x 198.211.103.35，PTR记录是空的。这样唯一的坏处是如果你用这个主机做邮件服务器，接受方会来查你的ptr记录，如果不符合，直接就拒绝你的邮件了。</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,11963,1,'Elgs');">回复</a>]</p></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-12020">
+		<div id="comment-12020">
+		<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/0c1f36bf5ab7dd32cd796ac12d2ec83a?s=40&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn">风逐蓝天</cite> <span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/digitalocean%e4%bd%bf%e7%94%a8%e5%b0%8f%e8%ae%b0/comment-page-1#comment-12020">
+			2014年03月23号16:37</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>2014SSD 不能用了，过期了。。。</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,12020,1,'风逐蓝天');">回复</a>]</p><div class="comment-childs chalt" id="comment-12139"><img alt='' src='http://1.gravatar.com/avatar/94f3d2b2abd2f88443eee0eeeb7792fc?s=32&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">三月 27th, 2014 at 10:17</small></p><p>抱歉，可能要自己去Google一下其他的DigitalOcean优惠码了：DigitalOcean Coupon</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,12139,2,'52nlp');">回复</a>]</p></div></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="li-comment-15838">
+		<div id="comment-15838">
+		<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/6efef1143f97b39240418eb7ee8179ef?s=40&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn">loethen</cite> <span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/digitalocean%e4%bd%bf%e7%94%a8%e5%b0%8f%e8%ae%b0/comment-page-1#comment-15838">
+			2014年04月21号10:26</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>用过1个月的linode日本节点抽风严重，不知道DO有没有这种情况，和阿里云比如何？</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,15838,1,'loethen');">回复</a>]</p><div class="comment-childs chalt" id="comment-15939"><img alt='' src='http://1.gravatar.com/avatar/94f3d2b2abd2f88443eee0eeeb7792fc?s=32&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">四月 21st, 2014 at 16:24</small></p><p>linode之前也尝试过日本东京的节点，感觉有问题，有回归美国了；DO用了一年多，目前还没啥问题（纽约+洛杉矶机房），之前听说DO开放了新加坡的机房，貌似有点问题，难道是放在亚洲的问题？</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,15939,2,'52nlp');">回复</a>]</p></div></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-17369">
+		<div id="comment-17369">
+		<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/aedbba41773b3ee470f04c620f11d738?s=40&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn"><a href='http://www.fushanlang.com' rel='external nofollow' class='url'>浮山狼</a></cite> <span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/digitalocean%e4%bd%bf%e7%94%a8%e5%b0%8f%e8%ae%b0/comment-page-1#comment-17369">
+			2014年04月27号20:11</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>顶一个，我也是用过了很多vps之后 最终选择DigitalOcean的，linode用了一年，后来四五个vps节点全面转向到DigitalOcean， 基本上都选择的美国节点， 新加坡节点没用过。</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,17369,1,'浮山狼');">回复</a>]</p></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="li-comment-19688">
+		<div id="comment-19688">
+		<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/e0f88042403809ca0253a88b62e8793f?s=40&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn"><a href='http://hupuzhao.com' rel='external nofollow' class='url'>Efin</a></cite> <span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/digitalocean%e4%bd%bf%e7%94%a8%e5%b0%8f%e8%ae%b0/comment-page-1#comment-19688">
+			2014年05月12号11:19</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>我正在使用Linode的东京节点，用了刚一个礼拜，暂时未发现问题。<br />
+Linode现在最低配置是2G, 价格还是20刀/月。如果出现什么问题，可能会考虑试试这个DO。</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,19688,1,'Efin');">回复</a>]</p><div class="comment-childs chalt" id="comment-19689"><img alt='' src='http://1.gravatar.com/avatar/94f3d2b2abd2f88443eee0eeeb7792fc?s=32&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">五月 12th, 2014 at 11:36</small></p><p>刚才去linode主页看了一下，最低配不仅升级了内存到2g，而且也换了ssd，价格上digitalocean也没啥优势了，之后两家pk的应该还是服务了。如果你目前的linode东京vps没问题，我觉得基本上可以不用换了，即使出现啥问题，也可以考虑用linode内部的服务transfer到其他节点，这样还能保留你机器上的所有配置和东西，比较方便。</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,19689,2,'52nlp');">回复</a>]</p><div class="comment-childs" id="comment-19692"><img alt='' src='http://0.gravatar.com/avatar/e0f88042403809ca0253a88b62e8793f?s=32&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /><p><cite><a href='http://hupuzhao.com' rel='external nofollow' class='url'>Efin</a></cite> 回复:<br /><small class="commentmetadata">五月 12th, 2014 at 11:55</small></p><p>谢谢你的建议哈;)</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,19692,3,'Efin');">回复</a>]</p><div class="comment-childs chalt" id="comment-19699"><img alt='' src='http://1.gravatar.com/avatar/94f3d2b2abd2f88443eee0eeeb7792fc?s=32&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">五月 12th, 2014 at 13:07</small></p><p>客气</p>
+</div></div></div></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-20393">
+		<div id="comment-20393">
+		<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/497207c679a8f1d20fd46889c648f8fa?s=40&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn"><a href='http://www.zxc.so/' rel='external nofollow' class='url'>So Simple</a></cite> <span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/digitalocean%e4%bd%bf%e7%94%a8%e5%b0%8f%e8%ae%b0/comment-page-1#comment-20393">
+			2014年05月16号17:37</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>Linode东京的连接状况还是比DO好的。DO最大的软肋就是网络不是很好</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,20393,1,'So Simple');">回复</a>]</p><div class="comment-childs chalt" id="comment-26347"><img alt='' src='http://1.gravatar.com/avatar/94f3d2b2abd2f88443eee0eeeb7792fc?s=32&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">六月 11th, 2014 at 08:20</small></p><p>面向国内的服务dns解析可以用dnspod来改善一下</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,26347,2,'52nlp');">回复</a>]</p></div></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="li-comment-26125">
+		<div id="comment-26125">
+		<div class="comment-author vcard">
+			<img alt='' src='http://1.gravatar.com/avatar/938e7e442f88e81569f497614cc74741?s=40&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn">小荣哥</cite> <span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/digitalocean%e4%bd%bf%e7%94%a8%e5%b0%8f%e8%ae%b0/comment-page-1#comment-26125">
+			2014年06月9号20:15</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>写得很多！<br />
+现在新加坡的机房是走日本线路转的，速度不是很理想，还是美国的好些！</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,26125,1,'小荣哥');">回复</a>]</p><div class="comment-childs chalt" id="comment-26346"><img alt='' src='http://1.gravatar.com/avatar/94f3d2b2abd2f88443eee0eeeb7792fc?s=32&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">六月 11th, 2014 at 08:19</small></p><p>缘来如此</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,26346,2,'52nlp');">回复</a>]</p></div></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-28913">
+		<div id="comment-28913">
+		<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/6cb2949b0d47397ffc6541e759734a85?s=40&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn">xwsoul</cite> <span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/digitalocean%e4%bd%bf%e7%94%a8%e5%b0%8f%e8%ae%b0/comment-page-1#comment-28913">
+			2014年06月23号09:24</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>DO 的服务不好&#8230;<br />
+对滥用投诉管理的太2基本是别人投诉了直接转给你了. 不管问题是否还存在, 以及你是否已经彻底的解决了这个问题. 就算你之前多次提到过这个问题已经彻底解决了, 它还是会将滥用投诉转给到你.</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,28913,1,'xwsoul');">回复</a>]</p><div class="comment-childs chalt" id="comment-28955"><img alt='' src='http://1.gravatar.com/avatar/94f3d2b2abd2f88443eee0eeeb7792fc?s=32&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">六月 23rd, 2014 at 14:45</small></p><p>不知道为什么被投诉？我这边发起问题很快就有响应，目前感觉挺好的</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,28955,2,'52nlp');">回复</a>]</p></div></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+			</ol>
+
+
+
+								<div id="respond" class="comment-respond">
+				<h3 id="reply-title" class="comment-reply-title">发表评论 <small><a rel="nofollow" id="cancel-comment-reply-link" href="/digitalocean%e4%bd%bf%e7%94%a8%e5%b0%8f%e8%ae%b0#respond" style="display:none;">取消回复</a></small></h3>
+									<form action="http://www.52nlp.cn/wp-comments-post.php" method="post" id="commentform" class="comment-form">
+																			<p class="comment-notes">电子邮件地址不会被公开。 必填项已用<span class="required">*</span>标注</p>							<p class="comment-form-author"><label for="author">姓名 <span class="required">*</span></label> <input id="author" name="author" type="text" value="" size="30" aria-required='true' /></p>
+<p class="comment-form-email"><label for="email">电子邮件 <span class="required">*</span></label> <input id="email" name="email" type="text" value="" size="30" aria-required='true' /></p>
+<p class="comment-form-url"><label for="url">站点</label> <input id="url" name="url" type="text" value="" size="30" /></p>
+												<p class="comment-form-comment"><label for="comment">评论</label> <textarea id="comment" name="comment" cols="45" rows="8" aria-required="true"></textarea></p>						<p class="form-allowed-tags">您可以使用这些<abbr title="HyperText Markup Language">HTML</abbr>标签和属性： <code>&lt;a href=&quot;&quot; title=&quot;&quot;&gt; &lt;abbr title=&quot;&quot;&gt; &lt;acronym title=&quot;&quot;&gt; &lt;b&gt; &lt;blockquote cite=&quot;&quot;&gt; &lt;cite&gt; &lt;code&gt; &lt;del datetime=&quot;&quot;&gt; &lt;em&gt; &lt;i&gt; &lt;q cite=&quot;&quot;&gt; &lt;strike&gt; &lt;strong&gt; </code></p>						<p class="form-submit">
+							<input name="submit" type="submit" id="submit" value="发表评论" />
+							<input type='hidden' name='comment_post_ID' value='6520' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+						</p>
+						<p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="562ab358fb" /></p><p style="display: none;"><input type="hidden" id="ak_js" name="ak_js" value="27"/></p><p><input type="hidden" id="comment_reply_ID" name="comment_reply_ID" value="0" /><input type="hidden" id="comment_reply_dp" name="comment_reply_dp" value="0" /></p><div id="cancel_reply" style="display:none;"><a href="javascript:void(0)" onclick="movecfm(null,0,1,null);" style="color:red;">点击取消回复</a></div><script type="text/javascript">
+/* <![CDATA[ */
+var commentformid = "commentform";
+var USERINFO = false;
+var atreply = "none";
+/* ]]> */
+</script>
+<script type="text/javascript" src="http://www.52nlp.cn/wp-content/plugins/wp-thread-comment/wp-thread-comment.js.php?jsver=common"></script>
+					</form>
+							</div><!-- #respond -->
+			
+</div><!-- #comments -->
+
+
+			</div><!-- #content -->
+		</div><!-- #container -->
+
+﻿
+		<div id="primary" class="widget-area" role="complementary">
+			<ul class="xoxo">
+<!-- begin l_sidebar -->
+	<div id="l_sidebar">
+<p>卓越网：<a href="http://www.amazon.cn/mn/searchApp?source=garypyang-23&searchType=1&keywords=自然语言处理" title="自然语言处理书籍"target=_blank>自然语言处理书籍</a><br>
+<li id="search-3" class="widget-container widget_search"><h3 class="widget-title">站内搜索</h3><form role="search" method="get" id="searchform" class="searchform" action="http://www.52nlp.cn/">
+				<div>
+					<label class="screen-reader-text" for="s">搜索：</label>
+					<input type="text" value="" name="s" id="s" />
+					<input type="submit" id="searchsubmit" value="搜索" />
+				</div>
+			</form></li><li id="text-4" class="widget-container widget_text"><h3 class="widget-title">NLPJob新鲜职位推荐:</h3>			<div class="textwidget"><p></p>
+<script src="http://www.nlpjob.com/api/api.php?action=getJobs
+&type=0&category=0&count=8&random=1&days_behind=7&response=js" type="text/javascript"></script>
+
+<script type="text/javascript">showJobs('jobber-container', 'jobber-list');</script></div>
+		</li><li id="text-3" class="widget-container widget_text"><h3 class="widget-title">52nlp新浪微博</h3>			<div class="textwidget"><p><iframe id="sina_widget_2104931705" style="width:100%; height:500px;" frameborder="0" scrolling="no" src="http://v.t.sina.com.cn/widget/widget_blog.php?uid=2104931705&height=500&skin=wd_01&showpic=1"></iframe></p>
+<p><!-- JiaThis Button BEGIN --><br />
+<script type="text/javascript" src="http://v3.jiathis.com/code/jiathis_r.js?uid=1340292124103344&move=0&amp;btn=r3.gif" charset="utf-8"></script><br />
+<!-- JiaThis Button END --></p>
+</div>
+		</li><li id="categories-309398091" class="widget-container widget_categories"><h3 class="widget-title">分类目录</h3>		<ul>
+	<li class="cat-item cat-item-72"><a href="http://www.52nlp.cn/category/mit-nlp" title="麻省理工学院开放式课程&quot;自然语言处理“的相关翻译文章">MIT自然语言处理</a> (23)
+</li>
+	<li class="cat-item cat-item-469"><a href="http://www.52nlp.cn/category/topic-model" title="查看Topic Model下的所有文章">Topic Model</a> (10)
+</li>
+	<li class="cat-item cat-item-87"><a href="http://www.52nlp.cn/category/wordpress" title="查看wordpress下的所有文章">wordpress</a> (6)
+</li>
+	<li class="cat-item cat-item-317"><a href="http://www.52nlp.cn/category/%e4%b8%93%e9%a2%98" title="查看专题下的所有文章">专题</a> (6)
+</li>
+	<li class="cat-item cat-item-263"><a href="http://www.52nlp.cn/category/chinese-information-processing" title="查看中文信息处理下的所有文章">中文信息处理</a> (17)
+</li>
+	<li class="cat-item cat-item-62"><a href="http://www.52nlp.cn/category/word-segmentation" title="查看中文分词下的所有文章">中文分词</a> (34)
+</li>
+	<li class="cat-item cat-item-420"><a href="http://www.52nlp.cn/category/%e5%b9%b6%e8%a1%8c%e7%ae%97%e6%b3%95" title="查看并行算法下的所有文章">并行算法</a> (1)
+</li>
+	<li class="cat-item cat-item-268"><a href="http://www.52nlp.cn/category/%e6%8b%9b%e8%81%98" title="查看招聘下的所有文章">招聘</a> (4)
+</li>
+	<li class="cat-item cat-item-560"><a href="http://www.52nlp.cn/category/%e6%8e%a8%e8%8d%90%e7%b3%bb%e7%bb%9f" title="查看推荐系统下的所有文章">推荐系统</a> (3)
+</li>
+	<li class="cat-item cat-item-354"><a href="http://www.52nlp.cn/category/%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98" title="查看数据挖掘下的所有文章">数据挖掘</a> (1)
+</li>
+	<li class="cat-item cat-item-241"><a href="http://www.52nlp.cn/category/text-classification" title="查看文本分类下的所有文章">文本分类</a> (2)
+</li>
+	<li class="cat-item cat-item-193"><a href="http://www.52nlp.cn/category/maximum-entropy-model" title="查看最大熵模型下的所有文章">最大熵模型</a> (7)
+</li>
+	<li class="cat-item cat-item-344"><a href="http://www.52nlp.cn/category/%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0" title="查看机器学习下的所有文章">机器学习</a> (13)
+</li>
+	<li class="cat-item cat-item-1"><a href="http://www.52nlp.cn/category/machine-translation" title="查看机器翻译下的所有文章">机器翻译</a> (54)
+</li>
+	<li class="cat-item cat-item-195"><a href="http://www.52nlp.cn/category/%e6%9d%a1%e4%bb%b6%e9%9a%8f%e6%9c%ba%e5%9c%ba" title="查看条件随机场下的所有文章">条件随机场</a> (3)
+</li>
+	<li class="cat-item cat-item-153"><a href="http://www.52nlp.cn/category/tagging" title="查看标注下的所有文章">标注</a> (13)
+</li>
+	<li class="cat-item cat-item-885"><a href="http://www.52nlp.cn/category/%e7%a7%91%e5%ad%a6%e8%ae%a1%e7%ae%97" title="查看科学计算下的所有文章">科学计算</a> (1)
+</li>
+	<li class="cat-item cat-item-538"><a href="http://www.52nlp.cn/category/%e7%bb%9f%e8%ae%a1%e5%ad%a6" title="查看统计学下的所有文章">统计学</a> (10)
+</li>
+	<li class="cat-item cat-item-126"><a href="http://www.52nlp.cn/category/translation-model" title="查看翻译模型下的所有文章">翻译模型</a> (2)
+</li>
+	<li class="cat-item cat-item-51"><a href="http://www.52nlp.cn/category/nlp" title="查看自然语言处理下的所有文章">自然语言处理</a> (223)
+</li>
+	<li class="cat-item cat-item-106"><a href="http://www.52nlp.cn/category/computational-linguistics" title="查看计算语言学下的所有文章">计算语言学</a> (38)
+</li>
+	<li class="cat-item cat-item-22"><a href="http://www.52nlp.cn/category/dictionary" title="查看词典下的所有文章">词典</a> (8)
+</li>
+	<li class="cat-item cat-item-221"><a href="http://www.52nlp.cn/category/semantics" title="查看语义学下的所有文章">语义学</a> (1)
+</li>
+	<li class="cat-item cat-item-161"><a href="http://www.52nlp.cn/category/semantic-web" title="查看语义网下的所有文章">语义网</a> (3)
+</li>
+	<li class="cat-item cat-item-37"><a href="http://www.52nlp.cn/category/corpus" title="查看语料库下的所有文章">语料库</a> (12)
+</li>
+	<li class="cat-item cat-item-86"><a href="http://www.52nlp.cn/category/language-model" title="查看语言模型下的所有文章">语言模型</a> (23)
+</li>
+	<li class="cat-item cat-item-156"><a href="http://www.52nlp.cn/category/speech-recognition" title="查看语音识别下的所有文章">语音识别</a> (4)
+</li>
+	<li class="cat-item cat-item-314"><a href="http://www.52nlp.cn/category/%e8%b4%9d%e5%8f%b6%e6%96%af%e6%a8%a1%e5%9e%8b" title="查看贝叶斯模型下的所有文章">贝叶斯模型</a> (1)
+</li>
+	<li class="cat-item cat-item-110"><a href="http://www.52nlp.cn/category/reprint" title="查看转载下的所有文章">转载</a> (28)
+</li>
+	<li class="cat-item cat-item-451"><a href="http://www.52nlp.cn/category/%e9%97%ae%e7%ad%94%e7%b3%bb%e7%bb%9f" title="查看问答系统下的所有文章">问答系统</a> (1)
+</li>
+	<li class="cat-item cat-item-3"><a href="http://www.52nlp.cn/category/informal-essay" title="查看随笔下的所有文章">随笔</a> (61)
+</li>
+	<li class="cat-item cat-item-60"><a href="http://www.52nlp.cn/category/hidden-markov-model" title="查看隐马尔科夫模型下的所有文章">隐马尔科夫模型</a> (36)
+</li>
+		</ul>
+</li><li id="archives-2" class="widget-container widget_archive"><h3 class="widget-title">文章归档</h3>		<ul>
+	<li><a href='http://www.52nlp.cn/2014/07'>2014年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/06'>2014年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/05'>2014年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/04'>2014年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/01'>2014年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/12'>2013年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/06'>2013年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/05'>2013年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/04'>2013年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/03'>2013年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/02'>2013年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/01'>2013年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/12'>2012年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/11'>2012年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/10'>2012年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/09'>2012年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/08'>2012年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/07'>2012年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/06'>2012年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/05'>2012年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/04'>2012年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/03'>2012年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/01'>2012年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/12'>2011年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/11'>2011年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/10'>2011年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/09'>2011年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/08'>2011年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/07'>2011年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/06'>2011年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/05'>2011年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/04'>2011年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/03'>2011年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/02'>2011年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/01'>2011年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/12'>2010年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/11'>2010年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/10'>2010年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/09'>2010年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/08'>2010年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/07'>2010年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/06'>2010年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/05'>2010年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/04'>2010年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/03'>2010年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/02'>2010年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/01'>2010年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/12'>2009年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/11'>2009年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/10'>2009年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/09'>2009年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/08'>2009年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/07'>2009年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/06'>2009年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/05'>2009年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/04'>2009年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/03'>2009年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/02'>2009年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/01'>2009年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2008/12'>2008年十二月</a></li>
+		</ul>
+</li>		<li id="recent-posts-2" class="widget-container widget_recent_entries">		<h3 class="widget-title">最新文章</h3>		<ul>
+					<li>
+				<a href="http://www.52nlp.cn/python-%e7%bd%91%e9%a1%b5%e7%88%ac%e8%99%ab-%e6%96%87%e6%9c%ac%e5%a4%84%e7%90%86-%e7%a7%91%e5%ad%a6%e8%ae%a1%e7%ae%97-%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0-%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98">Python 网页爬虫 &#038; 文本处理 &#038; 科学计算 &#038; 机器学习 &#038; 数据挖掘兵器谱</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e7%bf%bb%e8%af%91%e6%8a%80%e6%9c%af%e6%b2%99%e9%be%99%e7%ac%ac%e5%8d%81%e5%85%ad%e6%ac%a1%e6%b4%bb%e5%8a%a8-%e4%ba%92%e8%81%94%e7%bd%91%e6%8a%80%e6%9c%af%e9%a9%b1%e5%8a%a8">翻译技术沙龙第十六次活动——“互联网技术驱动下的语言服务众包模式” 通知</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e7%81%ab%e5%85%89%e6%91%87%e6%9b%b3%e7%a5%9e%e5%a5%87%e7%9a%84%e4%bc%bd%e7%8e%9b%e5%87%bd%e6%95%b0%e4%b8%8b">[火光摇曳]神奇的伽玛函数(下)</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e7%a5%9e%e5%a5%87%e7%9a%84%e4%bc%bd%e7%8e%9b%e5%87%bd%e6%95%b0%e4%b8%8a">[火光摇曳]神奇的伽玛函数(上)</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/nlpjob-%e4%b8%bb%e7%ab%99%e4%b8%8a%e7%ba%bf">NLPJob 主站上线</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e9%a1%ba%e4%b8%b0%e6%b5%b7%e6%b7%98sfbuy%e9%a6%96%e6%ac%a1%e4%bd%93%e9%aa%8c-%e7%be%8e%e5%9b%bd%e4%ba%9a%e9%a9%ac%e9%80%8a%e6%b5%b7%e6%b7%98kindle-dx%e8%bd%ac%e8%bf%90%e5%85%a8%e6%94%bb%e7%95%a5">顺丰海淘SFBuy首次体验-美国亚马逊海淘Kindle DX转运全攻略</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/digitalocean%e4%bd%bf%e7%94%a8%e5%b0%8f%e8%ae%b0">DigitalOcean使用小记</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%95%e5%85%a8%e6%96%87%e6%96%87%e6%a1%a3">中文分词入门之字标注法全文文档</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%954">中文分词入门之字标注法4</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%953">中文分词入门之字标注法3</a>
+						</li>
+				</ul>
+		</li><li id="recentcomments" class="widget-container widget_recentcomments"><h3 class="widget-title">最近评论</h3><ul><li class="rc-navi rc-clearfix"><span class="rc-loading">正在加载...</span></li><li id="rc-comment-temp" class="rc-item rc-comment rc-clearfix"><div class="rc-info"></div><div class="rc-timestamp"></div><div class="rc-excerpt"></div></li><li id="rc-ping-temp" class="rc-item rc-ping rc-clearfix"><span class="rc-label"></span></li></ul></li>			</ul>
+		</div><!-- #primary .widget-area -->
+
+
+		<div id="secondary" class="widget-area" role="complementary">
+			<ul class="xoxo">
+				<li id="linkcat-103" class="widget-container widget_links"><h3 class="widget-title">NLP相关网站</h3>
+	<ul class='xoxo blogroll'>
+<li><a href="http://www.aclweb.org/" rel="co-worker" title="The Association for Computational Linguistics" target="_blank">ACL</a></li>
+<li><a href="http://aclweb.org/anthology-new/" rel="co-worker" title="A Digital Archive of Research Papers in Computational Linguistics" target="_blank">ACL Anthology</a></li>
+<li><a href="http://belobog.si.umich.edu/clair/anthology/index.cgi" rel="colleague" target="_blank">ACL Anthology Network</a></li>
+<li><a href="http://aclweb.org/aclwiki/index.php?title=Main_Page" rel="colleague" title="the Wiki of the Association for Computational Linguistics" target="_blank">ACL Wiki</a></li>
+<li><a href="http://www.clsp.jhu.edu/" rel="colleague" target="_blank">CLSP</a></li>
+<li><a href="http://www.cwbbase.com/" rel="colleague" title="这是一个略具规模的中文语义词库, 也是稍有特色的汉语语义词典" target="_blank">CWB中文词库</a></li>
+<li><a href="http://www.euromatrix.net/" rel="colleague" target="_blank">EuroMatrix</a></li>
+<li><a href="http://www.freebase.com" rel="colleague" target="_blank">Freebase</a></li>
+<li><a href="http://www.clsp.jhu.edu/workshops/" rel="colleague" target="_blank">JHU Workshop</a></li>
+<li><a href="http://www.ldc.upenn.edu/" rel="colleague" title="Linguistic Data Consortium" target="_blank">LDC</a></li>
+<li><a href="http://www.statmt.org/moses/" rel="colleague" title="A factored phrase-based beam-search decoder for machine translation" target="_blank">Moses</a></li>
+<li><a href="http://nlpers.blogspot.com/" rel="colleague" title="国外一个非常不错的自然语言处理博客" target="_blank">nlper</a></li>
+<li><a href="http://www.powerset.com/" rel="colleague" target="_blank">Powerset</a></li>
+<li><a href="http://www.speech.sri.com/projects/srilm/" rel="colleague" title="- The SRI Language Modeling Toolkit" target="_blank">SRILM</a></li>
+<li><a href="http://www.statmt.org/" rel="colleague" title="This website is dedicated to research in statistical machine translation" target="_blank">Statistical Machine Translation</a></li>
+<li><a href="http://textanalysisonline.com/" target="_blank">Text Analysis</a></li>
+<li><a href="http://textminingonline.com/" target="_blank">Text Mining</a></li>
+<li><a href="http://textsummarization.net/" target="_blank">Text Summarization</a></li>
+<li><a href="http://w3china.org/index.htm" rel="friend" title="致力于促进W3C技术的广泛应用, 传播关于未来Web的知识与技术" target="_blank">中国万维网联盟</a></li>
+<li><a href="http://www.cipsc.org.cn/" rel="co-worker" title="Chinese Information Processing Society of China" target="_blank">中国中文信息学会</a></li>
+<li><a href="http://www.nlp.org.cn/" rel="colleague" title="中文自然语言处理开放平台" target="_blank">中文自然语言处理开放平台</a></li>
+<li><a href="http://www.mt-archive.info/" rel="colleague" title="Repository and bibliography of articles, books and papers on topics" target="_blank">机器翻译档案计划</a></li>
+<li><a href="http://www.statmt.org/europarl/" rel="colleague" target="_blank">欧洲议会平行语料库</a></li>
+<li><a href="http://www.keenage.com/" title="HowNet" target="_blank">知网</a></li>
+<li><a href="http://www.nlpir.org/" rel="friend" title="由张华平博士发起，由北京理工大学网络搜索与挖掘实验室运营，旨在推动NLP(自然语言处理)与IR(信息检索)领域的共享与共赢" target="_blank">自然语言处理与信息检索共享平台</a></li>
+<li><a href="http://mitel.ict.ac.cn/" rel="co-worker" title="中科院计算所多语言交互技术实验室" target="_blank">计算所多语言交互技术实验室</a></li>
+
+	</ul>
+</li>
+<li id="linkcat-2" class="widget-container widget_links"><h3 class="widget-title">友情链接</h3>
+	<ul class='xoxo blogroll'>
+<li><a href="http://blog.youxu.info/" title="一个计算机专业的 Ph.D. 学生徐宥的个人博客" target="_blank">4G spaces</a></li>
+<li><a href="http://blog.52nlp.org" rel="me" title="我爱自然语言处理完全镜像" target="_blank">52nlpblog</a></li>
+<li><a href="http://www.52nlp.com" rel="me" title="52nlp的英文站" target="_blank">52nlpcom</a></li>
+<li><a href="http://hi.baidu.com/drkevinzhang" rel="friend" title="ICTCLAS 张华平博士的空间" target="_blank">ICTCLAS 张华平博士的空间</a></li>
+<li><a href="http://blog.so8848.com/" rel="friend" title="信息检索博客" target="_blank">Information Retrieval Blog</a></li>
+<li><a href="http://interop123.com/default.aspx" rel="friend" title="崔晓源师兄关于NET技术的站点" target="_blank">NET互操作技术社区</a></li>
+<li><a href="http://bbs.w3china.org/" rel="friend" title="中国万维网联盟讨论区" target="_blank">W3CHINA讨论区</a></li>
+<li><a href="http://www.ailab.cn/" rel="friend" target="_blank">人工智能网</a></li>
+<li><a href="http://mindhacks.cn/" rel="friend" title="一个很有思想的价值博客!" target="_blank">刘未鹏之Mind Hacks</a></li>
+<li><a href="http://www.cnblogs.com/finallyliuyu/" rel="friend" target="_blank">原地转圈的驴子</a></li>
+<li><a href="http://xunren.thuir.org/" target="_blank">微博寻人（梁博）</a></li>
+<li><a href="http://52opencourse.com" rel="friend" title="我爱公开课，高质量公开课交流平台" target="_blank">我爱公开课</a></li>
+<li><a href="http://iregex.org/" rel="friend" target="_blank">我爱正则表达式</a></li>
+<li><a href="http://courseminer.com" target="_blank">挖课</a></li>
+<li><a href="http://www.sciencenet.cn/u/timy/" rel="friend" title="章成志老师的博客" target="_blank">章成志的博客</a></li>
+<li><a href="http://blog.csdn.net/v_JULY_v/" target="_blank">结构之法 算法之道</a></li>
+<li><a href="http://www.lingcc.com/" rel="friend" title="关注编译器,虚拟机,编程语言及技术,IT职业和程序员生活" target="_blank">编译点滴</a></li>
+<li><a href="http://www.52nlp.org" rel="me" title="52nlp的官方网站" target="_blank">自然语言处理</a></li>
+<li><a href="http://www.ieee.org.cn/" rel="friend" title="计算机科学论坛" target="_blank">计算机科学论坛</a></li>
+<li><a href="http://coursegraph.com/">课程图谱</a></li>
+<li><a href="http://blog.coursegraph.com" rel="friend">课程图谱博客</a></li>
+
+	</ul>
+</li>
+<li id="meta-4" class="widget-container widget_meta"><h3 class="widget-title">功能</h3>			<ul>
+			<li><a href="http://www.52nlp.cn/wp-login.php?action=register">注册</a></li>			<li><a href="http://www.52nlp.cn/wp-login.php">登录</a></li>
+			<li><a href="http://www.52nlp.cn/feed" title="使用RSS 2.0订阅本站点内容">文章<abbr title="Really Simple Syndication">RSS</abbr></a></li>
+			<li><a href="http://www.52nlp.cn/comments/feed" title="使用RSS订阅本站点的所有文章的近期评论">评论<abbr title="Really Simple Syndication">RSS</abbr></a></li>
+<li><a href="https://cn.wordpress.org/" title="基于WordPress，一个优美、先进的个人信息发布平台。">WordPress.org</a></li>			</ul>
+</li>			</ul>
+		</div><!-- #secondary .widget-area -->
+
+	</div><!-- #main -->
+
+	<div id="footer" role="contentinfo">
+		<div id="colophon">
+
+
+
+			<div id="site-info">
+				<a href="http://www.52nlp.cn/" title="我爱自然语言处理" rel="home">
+					我爱自然语言处理				</a>
+			</div><!-- #site-info -->
+
+			<div id="site-generator">
+								<a href="http://cn.wordpress.org/"
+						title="优雅的个人发布平台" rel="generator">
+					自豪地采用 WordPress。				</a>
+			</div><!-- #site-generator -->
+
+		</div><!-- #colophon -->
+	</div><!-- #footer -->
+
+</div><!-- #wrapper -->
+
+<script>
+/* <![CDATA[ */
+var rcGlobal = {
+	serverUrl		:'http://www.52nlp.cn',
+	infoTemp		:'%REVIEWER% 在 %POST%',
+	loadingText		:'正在加载',
+	noCommentsText	:'没有任何评论',
+	newestText		:'&laquo; 最新的',
+	newerText		:'&laquo; 上一页',
+	olderText		:'下一页 &raquo;',
+	showContent		:'',
+	external		:'',
+	avatarSize		:'0',
+	avatarPosition	:'left',
+	anonymous		:'匿名'
+};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://www.52nlp.cn/wp-content/plugins/akismet/_inc/form.js?ver=3.0.1'></script>
+<link rel='stylesheet' id='yarppRelatedCss-css'  href='http://www.52nlp.cn/wp-content/plugins/yet-another-related-posts-plugin/style/related.css?ver=3.9.1' type='text/css' media='all' />
+<script type='text/javascript' src='http://www.52nlp.cn/wp-content/plugins/wp-recentcomments/js/wp-recentcomments.js?ver=2.2.7'></script>
+	<p align="center"> 本站架设在 <a href="http://www.52nlp.cn/digitalocean%E4%BD%BF%E7%94%A8%E5%B0%8F%E8%AE%B0">DigitalOcean</a> 上, 采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本站内容必须也遵循“署名-非商业用途-保持一致”的创作共用协议.</p>
+<!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(["trackPageView"]);
+  _paq.push(["enableLinkTracking"]);
+
+  (function() {
+    var u=(("https:" == document.location.protocol) ? "https" : "http") + "://162.243.252.121/piwik/";
+    _paq.push(["setTrackerUrl", u+"piwik.php"]);
+    _paq.push(["setSiteId", "5"]);
+    var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0]; g.type="text/javascript";
+    g.defer=true; g.async=true; g.src=u+"piwik.js"; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Piwik Code -->
+</body>
+</html>
