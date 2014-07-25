@@ -8,8 +8,13 @@ require 'time'
 require 'date'
 require 'yaml'
 require 'fileutils'
+require 'uri'
 
 config = YAML.load_file("_data/crawler.yml")
+
+def make_absolute( href, root )
+  URI.parse(root).merge(URI.parse(href)).to_s
+end
 
 config.each do |site|
   site_name = site['name']
@@ -22,6 +27,8 @@ config.each do |site|
   FileUtils.mkdir_p(data_dir) unless File.exists?(data_dir)
   meta_dir = site['meta_dir']
   FileUtils.mkdir_p(meta_dir) unless File.exists?(meta_dir)
+
+  FileUtils.mkdir_p("./images/#{site_name}/") unless File.exists?("./images/#{site_name}/")
 
   page = Nokogiri::HTML(open(list_url))
   rows = page.css(site['list_rows_sel'])
@@ -55,10 +62,21 @@ config.each do |site|
           site['post_content_excludes'].each do |exclude_node|
             post_content.search(exclude_node).remove
           end
+          post_images = {}
+          post_content.css('img').each do |img|
+            src = img['src']
+            src_digest = Digest::MD5.hexdigest(src)
+            post_images[src_digest] = src
+            img['src'] = "/images/#{site_name}/#{src_digest}.jpg"
+            uri = make_absolute(src, href)
+            p uri
+            File.open("./images/#{site_name}/#{src_digest}.jpg", 'wb') { |f| f.write(open(uri).read) }
+          end
 
           puts post_href
           puts post_title.text
           puts post_time.text
+          p post_images
 
           if site['post_time_p']
             puts post_time.text.strip
@@ -75,6 +93,12 @@ config.each do |site|
             file.puts("time: #{post_time}")
             file.puts("site_name: #{site_name}")
             file.puts("source_url: #{post_href}")
+            if post_images.size > 0
+              file.puts("images:")
+              post_images.each do |k, v|
+                file.puts("  #{k}: #{v}")
+              end
+            end
             file.puts("---")
             file.puts("{% raw %}")
             file.puts(post_content.inner_html)
