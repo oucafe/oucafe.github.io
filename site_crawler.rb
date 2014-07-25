@@ -5,6 +5,7 @@ require 'nokogiri'
 require 'open-uri'
 require 'digest/md5'
 require 'time'
+require 'date'
 require 'yaml'
 require 'fileutils'
 
@@ -59,7 +60,12 @@ config.each do |site|
           puts post_title.text
           puts post_time.text
 
-          post_time = Time.parse(post_time.text)
+          if site['post_time_p']
+            puts post_time.text.strip
+            post_time = Date.strptime(post_time.text.strip.gsub(/st|nd|rd|th/, ''), site['post_time_p'])
+          else
+            post_time = Time.parse(post_time.text)
+          end
           meta_fname = "#{meta_dir}/#{post_time.strftime('%F')}-#{File.basename(href).gsub('?', '-')}-#{Digest::MD5.hexdigest(href)[0..8]}.html"
           puts "\t...Success, saved to #{meta_fname}"
           File.open(meta_fname, 'w') {|file|
