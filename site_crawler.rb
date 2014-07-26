@@ -65,6 +65,7 @@ config.each do |site|
           post_images = {}
           post_content.css('img').each do |img|
             src = img['src']
+            next if src =~ /^data:/
             src_digest = Digest::MD5.hexdigest(src)
             post_images[src_digest] = src
             img['src'] = "/images/#{site_name}/#{src_digest}.jpg"
