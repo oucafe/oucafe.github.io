@@ -69,7 +69,7 @@ config.each do |site|
             src_digest = Digest::MD5.hexdigest(src)
             post_images[src_digest] = src
             img['src'] = "/images/#{site_name}/#{src_digest}.jpg"
-            uri = make_absolute(src, href)
+            uri = make_absolute(src, remote_url)
             p uri
             File.open("./images/#{site_name}/#{src_digest}.jpg", 'wb') { |f| f.write(open(uri).read) }
           end
