@@ -1,0 +1,430 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>深入理解Tagged Pointer - 唐巧的技术博客</title>
+  <meta name="author" content="唐巧">
+
+  
+  <meta name="description" content="版权说明 本文为InfoQ中文站特供稿件，首发地址为：文章链接。如需转载，请与InfoQ中文站联系。 【摘要】：为了节省内存和提高执行效率，苹果提出了Tagged Pointer的概念。对于64位程序，引入Tagged Pointer后，相关逻辑能减少一半的内存占用，以及3倍的访问速度提升， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.devtang.com/blog/2014/05/30/understand-tagged-pointer">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="唐巧的技术博客" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <!-- googleapis is fucked by gfw -->
+  <script src="http://cdn.staticfile.org/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-28029597-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">唐巧的技术博客</a></h1>
+  
+    <h2>记录下自己学习的点滴</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.devtang.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">所有文章</a></li>
+  <li><a href="/blog/categories/ios/">iOS开发专题</a></li>
+  <li><a href="http://weibo.com/tangqiaoboy" target="_blank">我的微博</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">深入理解Tagged Pointer</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-30T22:15:29+08:00" pubdate data-updated="true">May 30<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h3>版权说明</h3>
+
+<p>本文为InfoQ中文站特供稿件，首发地址为：<a href="http://www.infoq.com/cn/articles/deep-understanding-of-tagged-pointer">文章链接</a>。如需转载，请与InfoQ中文站联系。</p>
+
+<p>【摘要】：为了节省内存和提高执行效率，苹果提出了<code>Tagged Pointer</code>的概念。对于64位程序，引入Tagged Pointer后，相关逻辑能减少一半的内存占用，以及3倍的访问速度提升，100倍的创建、销毁速度提升。本文从<code>Tagged Pointer</code>试图解决的问题入手，带领读者理解<code>Tagged Pointer</code>的实现细节和优势，最后指出了使用时的注意事项。</p>
+
+<h2>前言</h2>
+
+<p>在2013年9月，苹果推出了<a href="http://en.wikipedia.org/wiki/IPhone_5S">iPhone5s</a>，与此同时，iPhone5s配备了首个采用64位架构的<a href="http://en.wikipedia.org/wiki/Apple_A7">A7双核处理器</a>，为了节省内存和提高执行效率，苹果提出了<code>Tagged Pointer</code>的概念。对于64位程序，引入Tagged Pointer后，相关逻辑能减少一半的内存占用，以及3倍的访问速度提升，100倍的创建、销毁速度提升。本文从<code>Tagged Pointer</code>试图解决的问题入手，带领读者理解<code>Tagged Pointer</code>的实现细节和优势，最后指出了使用时的注意事项。</p>
+
+<h2>问题</h2>
+
+<p>我们先看看原有的对象为什么会浪费内存。假设我们要存储一个NSNumber对象，其值是一个整数。正常情况下，如果这个整数只是一个NSInteger的普通变量，那么它所占用的内存是与CPU的位数有关，在32位CPU下占4个字节，在64位CPU下是占8个字节的。而指针类型的大小通常也是与CPU位数相关，一个指针所占用的内存在32位CPU下为4个字节，在64位CPU下也是8个字节。</p>
+
+<p>所以一个普通的iOS程序，如果没有<code>Tagged Pointer</code>对象，从32位机器迁移到64位机器中后，虽然逻辑没有任何变化，但这种NSNumber、NSDate一类的对象所占用的内存会翻倍。如下图所示：</p>
+
+<p><img src="/images/tagged_pointer_before.jpg"></p>
+
+<p>我们再来看看效率上的问题，为了存储和访问一个NSNumber对象，我们需要在堆上为其分配内存，另外还要维护它的引用计数，管理它的生命期。这些都给程序增加了额外的逻辑，造成运行效率上的损失。</p>
+
+<h2>Tagged Pointer</h2>
+
+<p>为了改进上面提到的内存占用和效率问题，苹果提出了<code>Tagged Pointer</code>对象。由于NSNumber、NSDate一类的变量本身的值需要占用的内存大小常常不需要8个字节，拿整数来说，4个字节所能表示的有符号整数就可以达到20多亿（注：2<sup>31</sup>=2147483648，另外1位作为符号位)，对于绝大多数情况都是可以处理的。</p>
+
+<p>所以我们可以将一个对象的指针拆成两部分，一部分直接保存数据，另一部分作为特殊标记，表示这是一个特别的指针，不指向任何一个地址。所以，引入了<code>Tagged Pointer</code>对象之后，64位CPU下NSNumber的内存图变成了以下这样：</p>
+
+<p><img src="/images/tagged_pointer_after.jpg"></p>
+
+<p>对此，我们也可以用 Xcode做实验来验证。我们的实验代码如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span> <span class="n">argv</span><span class="p">[])</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="err">@</span><span class="n">autoreleasepool</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">NSNumber</span> <span class="o">*</span><span class="n">number1</span> <span class="o">=</span> <span class="err">@</span><span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">NSNumber</span> <span class="o">*</span><span class="n">number2</span> <span class="o">=</span> <span class="err">@</span><span class="mi">2</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">NSNumber</span> <span class="o">*</span><span class="n">number3</span> <span class="o">=</span> <span class="err">@</span><span class="mi">3</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">NSNumber</span> <span class="o">*</span><span class="n">numberFFFF</span> <span class="o">=</span> <span class="err">@</span><span class="p">(</span><span class="mh">0xFFFF</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;number1 pointer is %p&quot;</span><span class="p">,</span> <span class="n">number1</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;number2 pointer is %p&quot;</span><span class="p">,</span> <span class="n">number2</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;number3 pointer is %p&quot;</span><span class="p">,</span> <span class="n">number3</span><span class="p">);</span>
+</span><span class='line'>        <span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;numberffff pointer is %p&quot;</span><span class="p">,</span> <span class="n">numberFFFF</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">UIApplicationMain</span><span class="p">(</span><span class="n">argc</span><span class="p">,</span> <span class="n">argv</span><span class="p">,</span> <span class="nb">nil</span><span class="p">,</span> <span class="n">NSStringFromClass</span><span class="p">([</span><span class="n">AppDelegate</span> <span class="n">class</span><span class="p">]));</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在该代码中，我们将几个Number类型的指针的值直接输出。需要注意的是，我们需要将模拟器切换成 64位的CPU来测试，如下图所示：</p>
+
+<p><img src="/images/tagged_pointer_switch_64bit_simulator.jpg"></p>
+
+<p>运行之后，我们得到的结果如下，可以看到，除去最后的数字最末尾的2以及最开头的0xb，其它数字刚好表示了相应NSNumber的值。</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">number1</span> <span class="n">pointer</span> <span class="n">is</span> <span class="mh">0xb000000000000012</span>
+</span><span class='line'><span class="n">number2</span> <span class="n">pointer</span> <span class="n">is</span> <span class="mh">0xb000000000000022</span>
+</span><span class='line'><span class="n">number3</span> <span class="n">pointer</span> <span class="n">is</span> <span class="mh">0xb000000000000032</span>
+</span><span class='line'><span class="n">numberFFFF</span> <span class="n">pointer</span> <span class="n">is</span> <span class="mh">0xb0000000000ffff2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>可见，苹果确实是将值直接存储到了指针本身里面。我们还可以猜测，数字最末尾的2以及最开头的0xb是否就是苹果对于<code>Tagged Pointer</code>的特殊标记呢？我们尝试放一个8字节的长的整数到<code>NSNumber</code>实例中，对于这样的实例，由于<code>Tagged Pointer</code>无法将其按上面的压缩方式来保存，那么应该就会以普通对象的方式来保存，我们的实验代码如下：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">NSNumber</span> <span class="o">*</span><span class="n">bigNumber</span> <span class="o">=</span> <span class="err">@</span><span class="p">(</span><span class="mh">0xEFFFFFFFFFFFFFFF</span><span class="p">);</span>
+</span><span class='line'><span class="n">NSLog</span><span class="p">(</span><span class="s">@&quot;bigNumber pointer is %p&quot;</span><span class="p">,</span> <span class="n">bigNumber</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>运行之后，结果如下，验证了我们的猜测，<code>bigNumber</code>的地址更像是一个普通的指针地址，和它本身的值看不出任何关系：</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='objc'><span class='line'><span class="n">bigNumber</span> <span class="n">pointer</span> <span class="n">is</span> <span class="mh">0x10921ecc0</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>可见，当8字节可以承载用于表示的数值时，系统就会以<code>Tagged Pointer</code>的方式生成指针，如果8字节承载不了时，则又用以前的方式来生成普通的指针。关于以上关于<code>Tag Pointer</code>的存储细节，我们也可以在<a href="https://www.mikeash.com/pyblog/friday-qa-2012-07-27-lets-build-tagged-pointers.html">这里</a>找到相应的讨论，但是其中关于<code>Tagged Pointer</code>的实现细节与我们的实验并不相符，笔者认为可能是苹果更改了具体的实现细节，并且这并不影响<code>Tagged Pointer</code>我们讨论<code>Tagged Pointer</code>本身的优点。</p>
+
+<h2>特点</h2>
+
+<p>我们也可以在WWDC2013的《Session 404 Advanced in Objective-C》视频中，看到苹果对于<code>Tagged Pointer</code>特点的介绍：</p>
+
+<ol>
+<li><code>Tagged Pointer</code>专门用来存储小的对象，例如<code>NSNumber</code>和<code>NSDate</code></li>
+<li><code>Tagged Pointer</code>指针的值不再是地址了，而是真正的值。所以，实际上它不再是一个对象了，它只是一个披着对象皮的普通变量而已。所以，它的内存并不存储在堆中，也不需要malloc和free。</li>
+<li>在内存读取上有着3倍的效率，创建时比以前快106倍。</li>
+</ol>
+
+
+<p>由此可见，苹果引入<code>Tagged Pointer</code>，不但减少了64位机器下程序的内存占用，还提高了运行效率。完美地解决了小内存对象在存储和访问效率上的问题。</p>
+
+<h2>isa指针</h2>
+
+<p><code>Tagged Pointer</code>的引入也带来了问题，即<code>Tagged Pointer</code>因为并不是真正的对象，而是一个伪对象，所以你如果完全把它当成对象来使，可能会让它露马脚。比如我在<a href="http://blog.devtang.com/blog/2013/10/15/objective-c-object-model/">《Objective-C对象模型及应用》</a>一文中就写道，所有对象都有 <code>isa</code> 指针，而<code>Tagged Pointer</code>其实是没有的，因为它不是真正的对象。
+因为不是真正的对象，所以如果你直接访问<code>Tagged Pointer</code>的<code>isa</code>成员的话，在编译时将会有如下警告：</p>
+
+<p><img src="/images/tagged_pointer_isa_forbidden.jpg"></p>
+
+<p>对于上面的写法，应该换成相应的方法调用，如 <code>isKindOfClass</code> 和 <code>object_getClass</code>。只要避免在代码中直接访问对象的isa变量，即可避免这个问题。</p>
+
+<h2>总结</h2>
+
+<p>苹果将<code>Tagged Pointer</code>引入，给64位系统带来了内存的节省和运行效率的提高。<code>Tagged Pointer</code>通过在其最后一个bit位设置一个特殊标记，用于将数据直接保存在指针本身中。因为<code>Tagged Pointer</code>并不是真正的对象，我们在使用时需要注意不要直接访问其isa变量。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">唐巧</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-05-30T22:15:29+08:00" pubdate data-updated="true">May 30<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ios/'>iOS</a>
+  
+</span>
+
+
+    </p>
+    <p class="meta">
+      原创文章，版权声明：自由转载-非商用-非衍生-保持署名 | <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh" id="">Creative Commons BY-NC-ND 3.0</a>
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+    <style>
+    .flash-video{display:none;}
+</style>
+<!-- JiaThis Button BEGIN -->
+<div id="ckepop">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_tsina">新浪微博</a>
+<a class="jiathis_button_t163">网易微博</a>
+<a class="jiathis_button_tqq">腾讯微博</a>
+<a class="jiathis_button_renren">人人网</a>
+<a class="jiathis_button_douban">豆瓣</a>
+
+<a href="http://www.jiathis.com/share?uid=1574434" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+var jiathis_config={
+    data_track_clickback:true,
+    sm:"t163,tsina,tqq,renren,douban",
+    summary:"",
+    hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v2.jiathis.com/code_mini/jia.js?uid=1574434" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+<br />
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" id="UYScript" src="http://v1.uyan.cc/js/iframe.js?UYUserId=89581" async=""></script>
+<!-- UY END -->
+
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/05/25/use-cocoapod-to-manage-ios-lib-dependency/" title="Previous Post: 用CocoaPods做iOS程序的依赖管理">&laquo; 用CocoaPods做iOS程序的依赖管理</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/06/01/interview-on-miqun/" title="Next Post: 专访《iOS测试指南》作者羋峮">专访《iOS测试指南》作者羋峮 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>赞助商</h1>
+  <p>
+     <a href="http://co.youdao.com/?keyfrom=tangqiao" target="_blank"><img width="260px" src="/images/youdao_co.gif" /></a>
+  </p>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/07/27/ios-levelup-tips/">iOS开发如何提高</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/22/ios-weekly-18/">iOS移动开发周报-第18期</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/11/ios-weekly-17/">iOS移动开发周报-第17期</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/03/ios-weekly-16/">iOS移动开发周报-第16期</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/02/talk-about-wwdc2014/">WWDC2014，苹果的“软件”发布会</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/29/ios-dev-tools/">那些好用的iOS开发工具</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/24/ios-weekly-15/">iOS移动开发周报-第15期</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/10/ios-weekly-14/">iOS移动开发周报-第14期</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/02/use-gitcafe-to-host-blog/">将博客从GitHub迁移到GitCafe</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/01/ios-weekly-13/">iOS移动开发周报-第13期</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/01/interview-on-miqun/">专访《iOS测试指南》作者羋峮</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/30/understand-tagged-pointer/">深入理解Tagged Pointer</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>About Me</h1>
+  <p> Blogger, InfoQ编辑, iOS开发, 创业者。<br/>
+      <br/>Java开发工程师，曾开发网易微博后台。
+      <br/>iOS开发工程师，曾开发有道云笔记、粉笔网、猿题库。
+      <br/>
+      <br/>新浪微博: <a href='http://weibo.com/tangqiaoboy' target='_blank'>唐巧_boy</a>
+      <span id="wb_follow_btn"></span>
+      <br />我的<strong>"iOSDevTips"</strong>微信公众账号:
+      <br/><img width="220px" src="/images/weixin-qr.jpg" />
+  </p>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  &copy; 2014 - 唐巧 -
+  <span class="credit">基于 <a href="http://octopress.org" target="_blank">Octopress</a></span>
+  <span class="credit">, 感谢 <a href="http://gitcafe.com/signup?invited_by=tangqiaoboy" target="_blank">GitCafe</a> 为本站提供存储空间</span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+<script src=" http://tjs.sjs.sinajs.cn/open/api/js/wb.js?appkey=2351546126" type="text/javascript" charset="utf-8"></script>
+<script>
+WB2.anyWhere(function(W){
+W.widget.followButton({
+    uid: 1708947107,
+    id: "wb_follow_btn"
+    });
+});
+</script>
+
+
+</body>
+</html>

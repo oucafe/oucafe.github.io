@@ -1,0 +1,338 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>专门针对越狱iOS设备的盗号木马出现 - 唐巧的技术博客</title>
+  <meta name="author" content="唐巧">
+
+  
+  <meta name="description" content="关于木马 今天，国外的iOS开发者 @iOn1c 发现一个来自中国的开发者&#8221;WANG XIN&#8221;签名的iOS平台的木马插件，该插件是一个名为Unflod.dylib动态链接库，可以将越狱机器上的Apple ID用户名和密码盗取，并且发送到指定服务器上。 &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.devtang.com/blog/2014/04/19/ios-jailbreak-trojan">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="唐巧的技术博客" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <!-- googleapis is fucked by gfw -->
+  <script src="http://cdn.staticfile.org/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-28029597-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">唐巧的技术博客</a></h1>
+  
+    <h2>记录下自己学习的点滴</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.devtang.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">所有文章</a></li>
+  <li><a href="/blog/categories/ios/">iOS开发专题</a></li>
+  <li><a href="http://weibo.com/tangqiaoboy" target="_blank">我的微博</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">专门针对越狱iOS设备的盗号木马出现</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-19T00:27:38+08:00" pubdate data-updated="true">Apr 19<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p><img src="/images/jailbreak-warning.jpg"></p>
+
+<h3>关于木马</h3>
+
+<p>今天，国外的iOS开发者 <a href="https://twitter.com/iOn1c">@iOn1c</a> 发现一个来自中国的开发者&#8221;WANG XIN&#8221;签名的iOS平台的木马插件，该插件是一个名为<code>Unflod.dylib</code>动态链接库，可以将越狱机器上的Apple ID用户名和密码盗取，并且发送到指定服务器上。<a href="http://pastebin.com/raw.php?i=QxVRd2ha">这里</a>有该恶意插件的反汇编代码。<a href="https://www.sektioneins.de/en/blog/14-04-18-iOS-malware-campaign-unflod-baby-panda.html">这里</a>有关于该木马插件的详细分析。</p>
+
+<h3>检测与原理</h3>
+
+<p>检查你的设备是否有该木马的方法：用<code>iFile</code>查看<code>/Library/MobileSubstrate/DynamicLibraries/Unflod.dylib</code> 文件是否存在，如果存在，请立即删除并且重新启动设备。</p>
+
+<p>国外的越狱开发者也分析了一下该插件的工作原理，它通过监听所有的SSL协议，来截取用户的帐号和密码。所以理论上，该技术方案其实不光可以监听Apple ID帐号，还可以用来监听支付宝、微信等应用的帐号和密码。</p>
+
+<h3>感想</h3>
+
+<p>自从2010年7月26日，美国版权局修改《千禧年数字版权法》中的豁免条款，认可了iOS越狱的合法性以后，国外越狱社区就一直在为了自由地使用iPhone设备努力。国外的Cydia商店不但提供了大量优秀的免费软件，也提供了付费的越狱软件的下载。越狱在国外，是与盗版严格划清界限的，大多数的越狱开发者，也都是为了更好的使用iPhone而开发相关软件。</p>
+
+<p>但是在国内，大部分的越狱用户的目的还是停留在使用盗版软件上，这也反映出国人的版权意识薄弱以及法律对于知识产权保护的不力。相关的盗版软件渠道，不但能够堂堂正正的宣传<a href="http://weibo.com/2786069543/yxpdRrpGB?mod=weibotime">“海量正版软件游戏，全部免费安装”</a>，而且有些公司还能被大公司以<a href="http://tech.sina.com.cn/i/baidubuy91/">上亿美金收购</a>。只能说国内的环境实在是太奇葩。</p>
+
+<p>以下是某助手的广告截图，你相信全部苹果游戏应用，本身就是免费的么？</p>
+
+<p><img src="/images/kuaiyong.jpg"></p>
+
+<p>这次由中国开发者&#8221;WANG XIN&#8221;签名的这个木马插件，实在是让中国人自“太极”事件之后再次蒙羞。简单来说，就是坏了规矩。以后来自中国越狱开发者开发的正常越狱软件，将会受到更多潜在的“歧视”和“关照”。而国外的开发者看中国市场，会更加坚定地认为这是一个盗版横行的市场，从而想办法特别“关照”中国用户或者直接像很多国外的游戏厂商那样，直接忽视中国市场。</p>
+
+<h3>建议</h3>
+
+<p>最后回说安全这件事，笔者作为一个资深iOS开发者，建议一般普通用户，如果是为了用盗版软件就别越狱了，各种国内的越狱渠道都非常不安全的。</p>
+
+<p>如果是开发者们为了研究安全而越狱的，最好也只是在专门研究用的iTouch上使用，以避免可能的安全风险。</p>
+
+<p>虽然感觉那一天还比较遥远，但真心希望有一天，国内对于版权的保护能够开展起来，这对于整个中国互联网产业的发展，将会是一个极大的促进。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">唐巧</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-04-19T00:27:38+08:00" pubdate data-updated="true">Apr 19<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ios/'>iOS</a>
+  
+</span>
+
+
+    </p>
+    <p class="meta">
+      原创文章，版权声明：自由转载-非商用-非衍生-保持署名 | <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh" id="">Creative Commons BY-NC-ND 3.0</a>
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+    <style>
+    .flash-video{display:none;}
+</style>
+<!-- JiaThis Button BEGIN -->
+<div id="ckepop">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_tsina">新浪微博</a>
+<a class="jiathis_button_t163">网易微博</a>
+<a class="jiathis_button_tqq">腾讯微博</a>
+<a class="jiathis_button_renren">人人网</a>
+<a class="jiathis_button_douban">豆瓣</a>
+
+<a href="http://www.jiathis.com/share?uid=1574434" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+var jiathis_config={
+    data_track_clickback:true,
+    sm:"t163,tsina,tqq,renren,douban",
+    summary:"",
+    hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v2.jiathis.com/code_mini/jia.js?uid=1574434" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+<br />
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" id="UYScript" src="http://v1.uyan.cc/js/iframe.js?UYUserId=89581" async=""></script>
+<!-- UY END -->
+
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/04/18/ios-weekly-8/" title="Previous Post: iOS移动开发周报-第8期">&laquo; iOS移动开发周报-第8期</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/04/25/ios-weekly-9/" title="Next Post: iOS移动开发周报-第9期">iOS移动开发周报-第9期 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>赞助商</h1>
+  <p>
+     <a href="http://co.youdao.com/?keyfrom=tangqiao" target="_blank"><img width="260px" src="/images/youdao_co.gif" /></a>
+  </p>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/07/27/ios-levelup-tips/">iOS开发如何提高</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/22/ios-weekly-18/">iOS移动开发周报-第18期</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/11/ios-weekly-17/">iOS移动开发周报-第17期</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/03/ios-weekly-16/">iOS移动开发周报-第16期</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/02/talk-about-wwdc2014/">WWDC2014，苹果的“软件”发布会</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/29/ios-dev-tools/">那些好用的iOS开发工具</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/24/ios-weekly-15/">iOS移动开发周报-第15期</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/10/ios-weekly-14/">iOS移动开发周报-第14期</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/02/use-gitcafe-to-host-blog/">将博客从GitHub迁移到GitCafe</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/01/ios-weekly-13/">iOS移动开发周报-第13期</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/06/01/interview-on-miqun/">专访《iOS测试指南》作者羋峮</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/05/30/understand-tagged-pointer/">深入理解Tagged Pointer</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>About Me</h1>
+  <p> Blogger, InfoQ编辑, iOS开发, 创业者。<br/>
+      <br/>Java开发工程师，曾开发网易微博后台。
+      <br/>iOS开发工程师，曾开发有道云笔记、粉笔网、猿题库。
+      <br/>
+      <br/>新浪微博: <a href='http://weibo.com/tangqiaoboy' target='_blank'>唐巧_boy</a>
+      <span id="wb_follow_btn"></span>
+      <br />我的<strong>"iOSDevTips"</strong>微信公众账号:
+      <br/><img width="220px" src="/images/weixin-qr.jpg" />
+  </p>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  &copy; 2014 - 唐巧 -
+  <span class="credit">基于 <a href="http://octopress.org" target="_blank">Octopress</a></span>
+  <span class="credit">, 感谢 <a href="http://gitcafe.com/signup?invited_by=tangqiaoboy" target="_blank">GitCafe</a> 为本站提供存储空间</span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+<script src=" http://tjs.sjs.sinajs.cn/open/api/js/wb.js?appkey=2351546126" type="text/javascript" charset="utf-8"></script>
+<script>
+WB2.anyWhere(function(W){
+W.widget.followButton({
+    uid: 1708947107,
+    id: "wb_follow_btn"
+    });
+});
+</script>
+
+
+</body>
+</html>
