@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+   <meta name="apple-mobile-web-app-capable" content="yes" />
+   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+   <!-- <link rel="apple-touch-icon" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-iphone.png" /> -->
+   <link rel="apple-touch-icon-precomposed" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-iphone-precomposed.png" />
+   <link rel="apple-touch-icon" sizes="72x72" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-ipad.png" />
+   <link rel="apple-touch-icon" sizes="114x114" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-iphone-retina.png" />
+   <link rel="apple-touch-icon" sizes="144x144" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-ipad-retina.png" />
+   
+   <title>JavaScript中的立即执行函数表达式</title>
+   <meta name="author" content="Jeremy Wei" />
+   <link href="http://feeds.feedburner.com/JeremyWei" rel="alternate" title="Jeremy Wei" type="application/atom+xml" />
+   <link rel="shortcut icon" type="image/x-icon" href="http://s0-weizhifeng-net.b0.upaiyun.com/favicon.ico">
+      
+   <!-- Homepage CSS -->
+   <link rel="stylesheet" href="http://s0-weizhifeng-net.b0.upaiyun.com/css/screen.css?1123" type="text/css" media="screen, projection" />
+   <!-- <link rel="stylesheet" href="/css/screen.css?0831" type="text/css" media="screen, projection" /> -->
+   
+   <script type="text/javascript" charset="utf-8">
+   // Mobile Safari in standalone mode
+   if(("standalone" in window.navigator) && window.navigator.standalone){
+	   
+   	// If you want to prevent remote links in standalone web apps opening Mobile Safari, change 'remotes' to true
+   	var noddy, remotes = true;
+	
+   	document.addEventListener('click', function(event) {
+		
+   		noddy = event.target;
+		
+   		// Bubble up until we hit link or top HTML element. Warning: BODY element is not compulsory so better to stop on HTML
+   		while(noddy.nodeName !== "A" && noddy.nodeName !== "HTML") {
+   	        noddy = noddy.parentNode;
+   	    }
+		
+   		if('href' in noddy && noddy.href.indexOf('http') !== -1 && (noddy.href.indexOf(document.location.host) !== -1 || remotes))
+   		{
+   			event.preventDefault();
+   			document.location.href = noddy.href;
+   		}
+	
+   	},false);
+   }
+   </script>
+</head>
+<body>
+	
+<div class="site">
+  <pre class="nav margin-for-mobile">["<a href='/tech.html'>文</a>", "<a href='/translate.html'>譯</a>", "<a href='/poem.html'>詩</a>", "<a href='/5000years.html'>史</a>", "<a href='/resume.html'>己</a>"]</pre>
+  <br />
+  <div id="post">
+	<h1>JavaScript中的立即执行函数表达式</h1>
+	<div class="copyright">
+	作者: JeremyWei | 可以转载, 但必须以超链接形式标明文章原始出处和作者信息及版权声明<br />
+	网址: http://weizhifeng.net/immediately-invoked-function-expression.html
+	</div>
+
+	<h1>前言</h1>
+
+<p>在使用JavaScript的时候经常会看见类似如下的函数调用方式：</p>
+
+<pre><code>(function(){ 
+    console.log("test");
+})();
+</code></pre>
+
+<p>或者</p>
+
+<pre><code>(function(){ 
+    console.log("test");
+}());
+</code></pre>
+
+<p>一些流行的库也是这样，比如<a href="http://code.jquery.com/jquery-1.10.2.js">jQuery</a></p>
+
+<pre><code>(function( window, undefined ) {
+    // code here
+}) ( window );
+</code></pre>
+
+<p>社区对此种用法的称呼不尽相同，其中包括「自执行匿名函数」（self-executing anonymous function），「立即执行函数表达式」（Immediately-Invoked Function Expression，以下简称IIFE），笔者倾向于第二种叫法。本文浅析一下IIFE是什么以及为什么要如此用。</p>
+
+<h1>立即执行函数表达式</h1>
+
+<p>普通的函数声明与调用方式有以下几种：</p>
+
+<pre><code>// 声明函数f1
+function f1() {
+    console.log("f1");
+}
+
+// 通过()来调用此函数
+f1();
+
+// 或者
+// 建立匿名函数并赋予变量f2
+var f2 = function() {
+    console.log("f2");
+}
+
+// 通过()来调用此函数
+f2();
+</code></pre>
+
+<p>以上都是以显示的方式声明函数，然后再进行通过<code>()</code>来进行调用，那么如果想要直接调用匿名函数呢？可以做到吗？试一下：</p>
+
+<pre><code>// 直接在匿名函数后边加()（方式A）
+function () {console.log("f1");}(); // SyntaxError: Unexpected token (
+</code></pre>
+
+<p>很不幸，出错了：<code>SyntaxError: Unexpected token (</code>。那么试试前言中的方法：</p>
+
+<pre><code>// 在匿名函数外面套一个()，然后再用()来调用（方式B）
+(function(){ console.log("test");})(); // test
+
+// 在方式A的外层套一个()（方式C）
+(function(){ console.log("test");}()); // test
+</code></pre>
+
+<p>以上这两种方式都是可以正常运行的，如果仅仅到这里是不够的，必需要「知其然，知其所以然」，让我们看看为什么A不可以运行，而B和C是可以运行的。原来，JavaScript解释器会在默认的情况下把遇到的<code>function</code>关键字当作是函数声明语句(<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function">statement</a>)来进行解释的，而函数声明语句是这样的：</p>
+
+<pre><code>function name([param] [, param] [..., param]) {
+   statements
+}
+</code></pre>
+
+<p>A的调用方式明显是有语法错误的，所以才会抛出异常<code>SyntaxError: Unexpected token (</code>。但是B，C为什么可以正常运行？这是因为在JavaScript中<code>()</code>之间只能包含表达式（expression），所以在以B，C方式运行的时候，解释器把<code>()</code>中的内容当作表达式（expression）而不是语句(statement)来执行。为了能够更好的解释B，C调用方式的原理，在这里插入对<code>()</code>操作符的简单介绍：</p>
+
+<pre><code>// 如果传入字面量（literal），则返回表达式（expression）
+(1) // 1
+(function(){console.log("f");}) // function () {console.log("f")}
+</code></pre>
+
+<p>这里不会对<code>()</code>做更深入的探讨，如果读者感兴趣，可以自行google。OK，我们先看B的调用方式：</p>
+
+<pre><code>(function(){ console.log("test");})(); // test
+</code></pre>
+
+<p>由于把函数的声明写在了<code>()</code>之中，所以解释器以表达式（expression）来解析其中代码，而根据我们上面的介绍知道如果向<code>()</code>中传入函数声明会直接返回此函数，此步执行完成之后，临时结果用伪代码来表示的话，应该类似这样：</p>
+
+<pre><code>anonymousFunction();
+</code></pre>
+
+<p>这个就是函数的通用调用方式，所以继续执行。对于C的调用方式就更加容易理解了，直接把<code>()</code>中的内容当作表达式来进行解释。</p>
+
+<p>所以根据上面的解释，我们知道只要能让JavaScript解释器以「函数表达式」而不是「函数声明」来处理匿名函数的立即执行就可以了，把语句放在<code>()</code>之中只是其中的一种方法而已，根据这个思路我们可以用其他方式来实现同样的目的，比如：</p>
+
+<pre><code>// 如果本身就是expression，那么根本不需要做任何处理
+var i = function(){ return 10; }();
+true &amp;&amp; function(){ /* code */ }();
+0, function(){ /* code */ }();
+
+// 如果你不在乎返回值，可以这么做
+!function(){ /* code */ }();
+~function(){ /* code */ }();
+-function(){ /* code */ }();
++function(){ /* code */ }();
+
+// 还有更奇葩的方式，但是不知道性能如何，来自
+// http://twitter.com/kuvos/status/18209252090847232
+new function(){ /* code */ }
+new function(){ /* code */ }()
+</code></pre>
+
+<h1>为什么要用立即执行函数表达式</h1>
+
+<p>为什么要用立即执行函数表达式呢？有以下几个场景。</p>
+
+<ul>
+<li>模拟块作用域
+众所周知，JavaScript没有C或Java中的块作用域（block），只有函数作用域，在同时调用多个库的情况下，很容易造成对象或者变量的覆盖，比如：</li>
+</ul>
+
+
+<p>liba.js</p>
+
+<pre><code>var num = 1;
+// code....
+</code></pre>
+
+<p>libb.js</p>
+
+<pre><code>var num = 2;
+// code....
+</code></pre>
+
+<p>如果在页面中同时引用<code>liba.js</code>和<code>liba.js</code>两个库，必然导致<code>num</code>变量被覆盖，为了解决这个问题，可以通过IIFE来解决：</p>
+
+<p>liba.js</p>
+
+<pre><code>(function(){
+    var num = 1;
+    // code....
+})();
+</code></pre>
+
+<p>libb.js</p>
+
+<pre><code>(function(){
+    var num = 2;
+    // code....
+})();
+</code></pre>
+
+<p>经过改造之后，两个库的代码就完全独立，并不会互相影响。</p>
+
+<ul>
+<li>解决闭包冲突</li>
+</ul>
+
+
+<p><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Closures">闭包</a>（closure）是JavaScript的一个语言特性，简单来说就是在函数内部所定义的函数可以持有外层函数的执行环境，即使在外层函数已经执行完毕的情况下，在这里就不详细介绍了，感兴趣的可以自行Google。我们这里只举一个由闭包引起的最常见的问题：</p>
+
+<pre><code>var f1 = function() {
+    var res = [];
+    var fun = null;
+    for(var i = 0; i &lt; 10; i++) {
+        fun = function() { console.log(i);};//产生闭包
+        res.push(fun);
+    }
+
+    return res;
+}
+
+// 会输出10个10，而不是预期的0 1 2 3 4 5 6 7 8 9
+var res = f1();
+for(var i = 0; i &lt; res.length; i++) {
+    res[i]();
+}
+</code></pre>
+
+<p>修改成：</p>
+
+<pre><code>var f1 = function() {
+    var res = [];
+    for(var i = 0; i &lt; 10; i++) {
+        // 添加一个IIFE
+        (function(index) {
+            fun = function() {console.log(index);};
+            res.push(fun);
+        })(i);
+    }
+
+    return res;
+}
+
+// 输出结果为0 1 2 3 4 5 6 7 8 9
+var res = f1();
+for(var i = 0; i &lt; res.length; i++) {
+    res[i]();
+}
+</code></pre>
+
+<ul>
+<li>模拟单例</li>
+</ul>
+
+
+<p>在JavaScript的OOP中，我们可以通过IIFE来实现，如下：</p>
+
+<pre><code>var counter = (function(){
+    var i = 0; 
+    return {
+        get: function(){
+            return i;
+        },
+        set: function( val ){
+            i = val;
+        },
+        increment: function() {
+            return ++i;
+        }
+    };
+}());
+
+counter.get(); // 0
+counter.set( 3 );
+counter.increment(); // 4
+counter.increment(); // 5
+</code></pre>
+
+<h1>总结</h1>
+
+<p>本文浅析了JavaScript中的立即执行函数表达式（Immediately-Invoked Function Expression），指出其存在的原因和其原理，最后举了常用的应用场景，希望对大家有所帮助。</p>
+
+<p>参考：<br/>
+<a href="http://benalman.com/news/2010/11/immediately-invoked-function-expression/#iife">http://benalman.com/news/2010/11/immediately-invoked-function-expression/#iife</a><br/>
+<a href="http://blog.coolaj86.com/articles/how-and-why-auto-executing-function.html">http://blog.coolaj86.com/articles/how-and-why-auto-executing-function.html</a><br/>
+<a href="http://stackoverflow.com/questions/592396/what-is-the-purpose-of-a-self-executing-function-in-javascript">http://stackoverflow.com/questions/592396/what-is-the-purpose-of-a-self-executing-function-in-javascript</a><br/>
+<a href="http://www.cnblogs.com/TomXu/archive/2011/12/31/2289423.html">http://www.cnblogs.com/TomXu/archive/2011/12/31/2289423.html</a><br/>
+<a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/function</a></p>
+
+	(完)
+
+	<div class="post-info">
+		27 Oct 2013  
+	
+		
+	
+		
+	</div>
+	
+	<!-- disqus start -->
+	<div id="disqus_thread"></div>
+	<script type="text/javascript">
+	    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+	    var disqus_shortname = 'jeremywei'; // required: replace example with your forum shortname
+
+	    /* * * DON'T EDIT BELOW THIS LINE * * */
+	    (function() {
+	        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+	        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+	        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	    })();
+	</script>
+	<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+	<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+	<!-- disqus end -->
+
+	<!-- related start -->
+	<div id="related">
+	  <h2>相关内容</h2>
+	  <ul class="posts">
+	    
+	      <li><span>26 Jul 2014</span> &raquo; <a href="/learn-chef-02.html">Chef入门（二）</a></li>
+	    
+	      <li><span>19 Jul 2014</span> &raquo; <a href="/learn-chef-01.html">Chef入门（一）</a></li>
+	    
+	      <li><span>29 Jun 2014</span> &raquo; <a href="/backup-and-restore-data-of-mongodb.html">Mongodb数据的备份与恢复</a></li>
+	    
+	      <li><span>02 May 2014</span> &raquo; <a href="/build-private-npm-registry-with-npmjs-and-kappa.html">利用kappa搭建私有NPM仓库</a></li>
+	    
+	      <li><span>26 Apr 2014</span> &raquo; <a href="/how-to-publish-a-node-module.html">如何发布Node模块到NPM社区</a></li>
+	    
+	  </ul>
+	</div>
+	<!-- related end -->
+</div>
+  
+<div class="footer"></div>
+<div class="power">  
+  Powered by <a href="http://github.com/" targe="_blank">Github</a> &nbsp;&amp;&amp;&nbsp; <a href="http://jekyllrb.com/" target="_blank">Jekyll</a> 
+</div>
+</div>
+
+<a href="http://github.com/jeremywei" target="_blank">
+	<img class="right-banner first" src="http://s0-weizhifeng-net.b0.upaiyun.com/images/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" />
+</a>
+
+<a href="http://www.phptherightway.com" target="_blank">
+    <img class="right-banner second" src="http://s0-weizhifeng-net.b0.upaiyun.com/images/php-the-right-way-120x60.png" alt="PHP: The Right Way"/>
+</a>
+</body>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-5179718-7']);
+  _gaq.push(['_setDomainName', 'weizhifeng.net']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</html>

@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+   <meta name="apple-mobile-web-app-capable" content="yes" />
+   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+   <!-- <link rel="apple-touch-icon" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-iphone.png" /> -->
+   <link rel="apple-touch-icon-precomposed" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-iphone-precomposed.png" />
+   <link rel="apple-touch-icon" sizes="72x72" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-ipad.png" />
+   <link rel="apple-touch-icon" sizes="114x114" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-iphone-retina.png" />
+   <link rel="apple-touch-icon" sizes="144x144" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-ipad-retina.png" />
+   
+   <title>微信API For Node.js</title>
+   <meta name="author" content="Jeremy Wei" />
+   <link href="http://feeds.feedburner.com/JeremyWei" rel="alternate" title="Jeremy Wei" type="application/atom+xml" />
+   <link rel="shortcut icon" type="image/x-icon" href="http://s0-weizhifeng-net.b0.upaiyun.com/favicon.ico">
+      
+   <!-- Homepage CSS -->
+   <link rel="stylesheet" href="http://s0-weizhifeng-net.b0.upaiyun.com/css/screen.css?1123" type="text/css" media="screen, projection" />
+   <!-- <link rel="stylesheet" href="/css/screen.css?0831" type="text/css" media="screen, projection" /> -->
+   
+   <script type="text/javascript" charset="utf-8">
+   // Mobile Safari in standalone mode
+   if(("standalone" in window.navigator) && window.navigator.standalone){
+	   
+   	// If you want to prevent remote links in standalone web apps opening Mobile Safari, change 'remotes' to true
+   	var noddy, remotes = true;
+	
+   	document.addEventListener('click', function(event) {
+		
+   		noddy = event.target;
+		
+   		// Bubble up until we hit link or top HTML element. Warning: BODY element is not compulsory so better to stop on HTML
+   		while(noddy.nodeName !== "A" && noddy.nodeName !== "HTML") {
+   	        noddy = noddy.parentNode;
+   	    }
+		
+   		if('href' in noddy && noddy.href.indexOf('http') !== -1 && (noddy.href.indexOf(document.location.host) !== -1 || remotes))
+   		{
+   			event.preventDefault();
+   			document.location.href = noddy.href;
+   		}
+	
+   	},false);
+   }
+   </script>
+</head>
+<body>
+	
+<div class="site">
+  <pre class="nav margin-for-mobile">["<a href='/tech.html'>文</a>", "<a href='/translate.html'>譯</a>", "<a href='/poem.html'>詩</a>", "<a href='/5000years.html'>史</a>", "<a href='/resume.html'>己</a>"]</pre>
+  <br />
+  <div id="post">
+	<h1>微信API For Node.js</h1>
+	<div class="copyright">
+	作者: JeremyWei | 可以转载, 但必须以超链接形式标明文章原始出处和作者信息及版权声明<br />
+	网址: http://weizhifeng.net/weixin-with-node.js.html
+	</div>
+
+	<p><img src="http://s0-weizhifeng-net.b0.upaiyun.com/images/tech/nodejs.jpg" title="Node.js" alt="Node.js" /></p>
+
+<h1>介绍</h1>
+
+<p><code>weixin-api</code>是对微信公众平台<a href="http://mp.weixin.qq.com/wiki/index.php?title=%E6%B6%88%E6%81%AF%E6%8E%A5%E5%8F%A3%E6%8C%87%E5%8D%97">消息接口</a>的Node.js实现。</p>
+
+<ul>
+<li>NPM：<a href="https://npmjs.org/package/weixin-api">https://npmjs.org/package/weixin-api</a></li>
+<li>Github：<a href="https://github.com/JeremyWei/weixin_api">https://github.com/JeremyWei/weixin_api</a></li>
+</ul>
+
+
+<h1>安装</h1>
+
+<pre><code>$ npm install weixin-api
+</code></pre>
+
+<h1>功能</h1>
+
+<h3>消息监听</h3>
+
+<p>根据微信公众平台的API规范，对四种消息进行监听，通过传递<code>callback</code>来对消息进行处理，其中callback只有一个参数<code>msg</code>，不同消息其<code>msg</code>内容不同，各属性代表的含义请对照微信公众平台的API规范。</p>
+
+<ul>
+<li><p><code>textMsg(function(msg) {})</code><br/>
+说明：监听文本消息<br/>
+msg结构：<br/>
+    {<br/>
+        toUserName : '',
+        fromUserName : '',
+        createTime : '',
+        msgType : 'text',
+        content : '',
+        msgId : ''
+    }</p></li>
+<li><p><code>imageMsg(function(msg) {})</code><br/>
+说明：监听图片消息<br/>
+msg结构：<br/>
+    {<br/>
+        toUserName : '',
+        fromUserName : '',
+        createTime : '',
+        msgType : 'image',
+        picUrl : '',
+        msgId : ''
+    }</p></li>
+<li><p><code>locationMsg(function(msg) {})</code><br/>
+说明：监听位置信息<br/>
+msg结构：<br/>
+    {<br/>
+        toUserName : '',
+        fromUserName : '',
+        createTime : '',
+        msgType : 'location',
+        locationX : '',
+        locationY : '',
+        scale : '',
+        label : '',
+        msgId : ''
+    }</p></li>
+<li><p><code>urlMsg(function(msg) {})</code><br/>
+ 说明：监听链接信息<br/>
+ msg结构：<br/>
+     {<br/>
+         toUserName : "",
+         fromUserName : "",
+         createTime : "",
+         msgType : "link",
+         title : "",
+         description : ""
+         url : ""
+         msgId : ""
+     }</p></li>
+<li><p><code>eventMsg(function(msg) {})</code><br/>
+ 说明：监听事件信息<br/>
+ msg结构：<br/>
+     {<br/>
+         toUserName : "",
+         fromUserName : "",
+         createTime : "",
+         msgType : "event",
+         event : "",
+         eventKey : ""
+     }</p></li>
+</ul>
+
+
+<h3>消息回复</h3>
+
+<p>消息的回复统一使用<code>sendMsg(msg)</code>方法，其中<code>msg</code>可以为以下内容：</p>
+
+<ul>
+<li><p>回复文本消息</p>
+
+<pre><code>  var msg = {
+      fromUserName : "",
+      toUserName : "",
+      msgType : "text",
+      content : "(╯°□°）╯︵ ┻━┻",
+      funcFlag : 0
+  };
+</code></pre></li>
+<li><p>回复音乐消息</p>
+
+<pre><code>  var msg = {
+      fromUserName : "",
+      toUserName : "",
+      msgType : "music",
+      title : "向往",
+      description : "李健《向往》",
+      musicUrl : "",
+      HQMusicUrl : "",
+      funcFlag : 0
+  };
+</code></pre></li>
+<li><p>回复图文消息</p>
+
+<pre><code>  var articles = [];
+  articles[0] = {
+      title : "PHP依赖管理工具Composer入门",
+      description : "PHP依赖管理工具Composer入门",
+      picUrl : "http://weizhifeng.net/images/tech/composer.png",
+      url : "http://weizhifeng.net/manage-php-dependency-with-composer.html"
+  };
+
+  articles[1] = {
+      title : "八月西湖",
+      description : "八月西湖",
+      picUrl : "http://weizhifeng.net/images/poem/bayuexihu.jpg",
+      url : "http://weizhifeng.net/bayuexihu.html"
+  };
+
+  articles[2] = {
+      title : "「翻译」Redis协议",
+      description : "「翻译」Redis协议",
+      picUrl : "http://weizhifeng.net/images/tech/redis.png",
+      url : "http://weizhifeng.net/redis-protocol.html"
+  };
+
+  // 返回图文消息
+  var msg = {
+      fromUserName : "",
+      toUserName : "",
+      msgType : "news",
+      articles : articles,
+      funcFlag : 0
+  }
+</code></pre></li>
+</ul>
+
+
+<h1>示例</h1>
+
+<p>我们使用<a href="http://expressjs.com/">express</a>来创建一个简单的微信应用</p>
+
+<h2>安装express</h2>
+
+<pre><code>$ npm install express -g
+</code></pre>
+
+<h2>创建应用</h2>
+
+<pre><code>$ express myweixin
+</code></pre>
+
+<p><code>cd myweixin</code>修改<code>package.json</code>，添加对weixin-api的依赖：</p>
+
+<pre><code>{
+  "name": "application-name",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "3.1.1",
+    "jade": "*",
+    "xml2js" : "0.2.6",
+    "weixin-api" : "*"
+  }
+}
+</code></pre>
+
+<p>然后执行<code>npm install</code></p>
+
+<h2>app.js</h2>
+
+<pre><code>var express = require('express'),
+    weixin = require('weixin-api'),
+    app = express();
+
+// 解析器
+app.use(express.bodyParser());
+
+// 接入验证
+app.get('/', function(req, res) {
+
+    // 签名成功
+    if (weixin.checkSignature(req)) {
+        res.send(200, req.query.echostr);
+    } else {
+        res.send(200, 'fail');
+    }
+});
+
+// config
+weixin.token = '你的token';
+
+// 监听文本消息
+weixin.textMsg(function(msg) {
+    console.log("textMsg received");
+    console.log(JSON.stringify(msg));
+
+    var resMsg = {};
+
+    switch (msg.content) {
+        case "文本" :
+            resMsg = {
+                fromUserName : msg.toUserName,
+                toUserName : msg.fromUserName,
+                msgType : "text",
+                content : "(╯°□°）╯︵ ┻━┻",
+                funcFlag : 0
+            };
+            break;
+
+        case "音乐" :
+            resMsg = {
+                fromUserName : msg.toUserName,
+                toUserName : msg.fromUserName,
+                msgType : "music",
+                title : "向往",
+                description : "李健《向往》",
+                musicUrl : "",
+                HQMusicUrl : "",
+                funcFlag : 0
+            };
+            break;
+
+        case "图文" :
+
+            var articles = [];
+            articles[0] = {
+                title : "PHP依赖管理工具Composer入门",
+                description : "PHP依赖管理工具Composer入门",
+                picUrl : "http://weizhifeng.net/images/tech/composer.png",
+                url : "http://weizhifeng.net/manage-php-dependency-with-composer.html"
+            };
+
+            articles[1] = {
+                title : "八月西湖",
+                description : "八月西湖",
+                picUrl : "http://weizhifeng.net/images/poem/bayuexihu.jpg",
+                url : "http://weizhifeng.net/bayuexihu.html"
+            };
+
+            articles[2] = {
+                title : "「翻译」Redis协议",
+                description : "「翻译」Redis协议",
+                picUrl : "http://weizhifeng.net/images/tech/redis.png",
+                url : "http://weizhifeng.net/redis-protocol.html"
+            };
+
+            // 返回图文消息
+            resMsg = {
+                fromUserName : msg.toUserName,
+                toUserName : msg.fromUserName,
+                msgType : "news",
+                articles : articles,
+                funcFlag : 0
+            }
+    }
+
+    weixin.sendMsg(resMsg);
+});
+
+// 监听图片消息
+weixin.imageMsg(function(msg) {
+    //
+    console.log("imageMsg received");
+    console.log(JSON.stringify(msg));
+});
+
+// 监听位置消息
+weixin.locationMsg(function(msg) {
+    //
+    console.log("locationMsg received");
+    console.log(JSON.stringify(msg));
+});
+
+// 监听链接消息
+weixin.urlMsg(function(msg) {
+    //
+    console.log("urlMsg received");
+    console.log(JSON.stringify(msg));
+});
+
+// Start
+app.post('/', function(req, res) {
+
+    // loop
+    weixin.loop(req, res);
+
+});
+
+app.listen(3000);
+</code></pre>
+
+<h2>启动</h2>
+
+<pre><code>$ cd myweixin 
+$ node app.js
+</code></pre>
+
+<h1>结尾</h1>
+
+<p>这个package还有很多不完善的地方，欢迎fork，：）</p>
+
+	(完)
+
+	<div class="post-info">
+		14 Apr 2013  
+	
+		
+	
+		
+	</div>
+	
+	<!-- disqus start -->
+	<div id="disqus_thread"></div>
+	<script type="text/javascript">
+	    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+	    var disqus_shortname = 'jeremywei'; // required: replace example with your forum shortname
+
+	    /* * * DON'T EDIT BELOW THIS LINE * * */
+	    (function() {
+	        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+	        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+	        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	    })();
+	</script>
+	<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+	<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+	<!-- disqus end -->
+
+	<!-- related start -->
+	<div id="related">
+	  <h2>相关内容</h2>
+	  <ul class="posts">
+	    
+	      <li><span>26 Jul 2014</span> &raquo; <a href="/learn-chef-02.html">Chef入门（二）</a></li>
+	    
+	      <li><span>19 Jul 2014</span> &raquo; <a href="/learn-chef-01.html">Chef入门（一）</a></li>
+	    
+	      <li><span>29 Jun 2014</span> &raquo; <a href="/backup-and-restore-data-of-mongodb.html">Mongodb数据的备份与恢复</a></li>
+	    
+	      <li><span>02 May 2014</span> &raquo; <a href="/build-private-npm-registry-with-npmjs-and-kappa.html">利用kappa搭建私有NPM仓库</a></li>
+	    
+	      <li><span>26 Apr 2014</span> &raquo; <a href="/how-to-publish-a-node-module.html">如何发布Node模块到NPM社区</a></li>
+	    
+	  </ul>
+	</div>
+	<!-- related end -->
+</div>
+  
+<div class="footer"></div>
+<div class="power">  
+  Powered by <a href="http://github.com/" targe="_blank">Github</a> &nbsp;&amp;&amp;&nbsp; <a href="http://jekyllrb.com/" target="_blank">Jekyll</a> 
+</div>
+</div>
+
+<a href="http://github.com/jeremywei" target="_blank">
+	<img class="right-banner first" src="http://s0-weizhifeng-net.b0.upaiyun.com/images/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" />
+</a>
+
+<a href="http://www.phptherightway.com" target="_blank">
+    <img class="right-banner second" src="http://s0-weizhifeng-net.b0.upaiyun.com/images/php-the-right-way-120x60.png" alt="PHP: The Right Way"/>
+</a>
+</body>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-5179718-7']);
+  _gaq.push(['_setDomainName', 'weizhifeng.net']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</html>

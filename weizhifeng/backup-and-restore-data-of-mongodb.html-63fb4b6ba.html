@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+   <meta name="apple-mobile-web-app-capable" content="yes" />
+   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+   <!-- <link rel="apple-touch-icon" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-iphone.png" /> -->
+   <link rel="apple-touch-icon-precomposed" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-iphone-precomposed.png" />
+   <link rel="apple-touch-icon" sizes="72x72" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-ipad.png" />
+   <link rel="apple-touch-icon" sizes="114x114" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-iphone-retina.png" />
+   <link rel="apple-touch-icon" sizes="144x144" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-ipad-retina.png" />
+   
+   <title>Mongodb数据的备份与恢复</title>
+   <meta name="author" content="Jeremy Wei" />
+   <link href="http://feeds.feedburner.com/JeremyWei" rel="alternate" title="Jeremy Wei" type="application/atom+xml" />
+   <link rel="shortcut icon" type="image/x-icon" href="http://s0-weizhifeng-net.b0.upaiyun.com/favicon.ico">
+      
+   <!-- Homepage CSS -->
+   <link rel="stylesheet" href="http://s0-weizhifeng-net.b0.upaiyun.com/css/screen.css?1123" type="text/css" media="screen, projection" />
+   <!-- <link rel="stylesheet" href="/css/screen.css?0831" type="text/css" media="screen, projection" /> -->
+   
+   <script type="text/javascript" charset="utf-8">
+   // Mobile Safari in standalone mode
+   if(("standalone" in window.navigator) && window.navigator.standalone){
+	   
+   	// If you want to prevent remote links in standalone web apps opening Mobile Safari, change 'remotes' to true
+   	var noddy, remotes = true;
+	
+   	document.addEventListener('click', function(event) {
+		
+   		noddy = event.target;
+		
+   		// Bubble up until we hit link or top HTML element. Warning: BODY element is not compulsory so better to stop on HTML
+   		while(noddy.nodeName !== "A" && noddy.nodeName !== "HTML") {
+   	        noddy = noddy.parentNode;
+   	    }
+		
+   		if('href' in noddy && noddy.href.indexOf('http') !== -1 && (noddy.href.indexOf(document.location.host) !== -1 || remotes))
+   		{
+   			event.preventDefault();
+   			document.location.href = noddy.href;
+   		}
+	
+   	},false);
+   }
+   </script>
+</head>
+<body>
+	
+<div class="site">
+  <pre class="nav margin-for-mobile">["<a href='/tech.html'>文</a>", "<a href='/translate.html'>譯</a>", "<a href='/poem.html'>詩</a>", "<a href='/5000years.html'>史</a>", "<a href='/resume.html'>己</a>"]</pre>
+  <br />
+  <div id="post">
+	<h1>Mongodb数据的备份与恢复</h1>
+	<div class="copyright">
+	作者: JeremyWei | 可以转载, 但必须以超链接形式标明文章原始出处和作者信息及版权声明<br />
+	网址: http://weizhifeng.net/backup-and-restore-data-of-mongodb.html
+	</div>
+
+	<p><img src="http://s0-weizhifeng-net.b0.upaiyun.com/images/tech/mongodb.png" title="Mongodb" alt="Mongodb" /></p>
+
+<h1>写在前面</h1>
+
+<p>本文已经假设你已经安装好了Mongodb(2.4)，并且已经开启了<a href="http://docs.mongodb.org/v2.4/reference/configuration-options/#auth">auth</a>。</p>
+
+<h1>用户</h1>
+
+<p>首先我们添加备份和恢复数据所需的用户，这个用户需要有<a href="http://docs.mongodb.org/v2.4/reference/user-privileges/#readWrite">readWrite</a>和<a href="http://docs.mongodb.org/v2.4/reference/user-privileges/#userAdmin">userAdmin</a>权限</p>
+
+<pre><code>$ mongo
+$ use admin
+$ db.auth("admin", "youradminpasswd");
+$ use backupdb
+$ db.addUser({ user: "backup", pwd: "passwd", roles: [ "readWrite", "userAdmin" ] })
+</code></pre>
+
+<h1>备份</h1>
+
+<p>我们使用<a href="http://docs.mongodb.org/v2.4/reference/program/mongodump/#bin.mongodump">mongodump</a>来进行数据的备份（注意：mongodump不会备份local数据库中内容）。</p>
+
+<p>mongodump可以通过以下两种方式来进行数据的备份：</p>
+
+<ul>
+<li>连接到<a href="http://docs.mongodb.org/v2.4/reference/program/mongod/#bin.mongod">mongod</a>或者<a href="http://docs.mongodb.org/v2.4/reference/program/mongos/#bin.mongos">mongos</a></li>
+<li>直接访问数据文件</li>
+</ul>
+
+
+<p>这个工具可以备份整个服务器、单个database或者单个collection的数据，也可以通过查询语句只备份collection中的部分数据。</p>
+
+<p>如果不带任何参数直接执行mongodump，那么它会去连接本地（127.0.0.1或者localhost）27017端口上的MongoDB实例，并且会创建名为<code>dump</code>的备份。</p>
+
+<p>先看第一种方式：</p>
+
+<pre><code>$ mongodump --host mongodb.example.net --port 27017 --db test --collection some --username backup --password passwd
+</code></pre>
+
+<p>以上会使mongodump连接到mongodb.example.net:27017上的mongod，并且把db<code>test</code>中的<code>some</code>collection备份到dump目录下。</p>
+
+<p>再看第二种方式：</p>
+
+<pre><code>$ mongodump --dbpath /data/db --out /data/backup --db test --username backup --password passwd
+</code></pre>
+
+<p>在这种方式下不需要运行mongod实例，如果已经运行了，必须要停掉。<code>--dbpath</code>指定了数据库文件的位置。 mongodump会直接读取数据库文件，在读取过程中会lock数据文件夹，以防其他Mongodb实例写入而导致数据不一致。<code>--out</code>指定了备份存放的文件夹。</p>
+
+<p>注意：从Mongodb<code>2.2</code>版本开始，mongodump使用的数据格式与旧版本的mongod实例不兼容。所以不要使用新版本（>=2.2）的mongodump去备份旧数据。</p>
+
+<h1>恢复</h1>
+
+<p>使用mongodump备份的数据，需要使用<a href="http://docs.mongodb.org/v2.4/reference/program/mongorestore/#bin.mongorestore">mongorestore</a>来恢复。</p>
+
+<p>mongorestore恢复数据的方式与mongodump相对应，也是分为两种：</p>
+
+<ul>
+<li>连接到<a href="http://docs.mongodb.org/v2.4/reference/program/mongod/#bin.mongod">mongod</a>或者<a href="http://docs.mongodb.org/v2.4/reference/program/mongos/#bin.mongos">mongos</a></li>
+<li>直接写入到数据文件</li>
+</ul>
+
+
+<p>mongorestore既可以恢复整个备份也可以恢复一部分。</p>
+
+<p>第一种方式：</p>
+
+<pre><code>$ mongorestore --host mongodb.example.net --port 27017 --db test --collection some --username backup --password password /data/backup
+</code></pre>
+
+<p>以上会从/data/backup中恢复数据，其中只恢复<code>test</code>db中<code>some</code>collection到mongodb.example.net:27017中。如果不指定<code>--host</code>和<code>--port</code>option，那么mongorestore会默认使用localhost:27017。</p>
+
+<p>如果只想恢复部分数据，可以使用<code>--filter</code>option：</p>
+
+<pre><code>$ mongorestore --filter '{"field": 1}'
+</code></pre>
+
+<p>以上会把dump文件夹数据中<code>field</code>为<code>1</code>的document恢复到mongod中。</p>
+
+<p>第二种方式：</p>
+
+<pre><code>$ mongorestore --dbpath /data/db --journal /data/backup
+</code></pre>
+
+<p>以上可以在mongod没有运行的情况下把数据恢复到<code>/data/db</code>。<code>--journal</code>option可以确保mongorestore在日志中记录所有的操作，这可以防止恢复操作异常中断（断电、磁盘故障）而引起的数据损坏。</p>
+
+<h1>参考</h1>
+
+<ul>
+<li><a href="http://docs.mongodb.org/v2.4/tutorial/backup-with-mongodump/">http://docs.mongodb.org/v2.4/tutorial/backup-with-mongodump/</a></li>
+<li><a href="http://docs.mongodb.org/v2.4/reference/program/mongorestore/">http://docs.mongodb.org/v2.4/reference/program/mongorestore/</a></li>
+<li><a href="http://docs.mongodb.org/v2.4/reference/program/mongodump/#bin.mongodump">http://docs.mongodb.org/v2.4/reference/program/mongodump/</a></li>
+</ul>
+
+
+	(完)
+
+	<div class="post-info">
+		29 Jun 2014  
+	
+		
+	
+		
+	</div>
+	
+	<!-- disqus start -->
+	<div id="disqus_thread"></div>
+	<script type="text/javascript">
+	    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+	    var disqus_shortname = 'jeremywei'; // required: replace example with your forum shortname
+
+	    /* * * DON'T EDIT BELOW THIS LINE * * */
+	    (function() {
+	        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+	        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+	        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	    })();
+	</script>
+	<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+	<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+	<!-- disqus end -->
+
+	<!-- related start -->
+	<div id="related">
+	  <h2>相关内容</h2>
+	  <ul class="posts">
+	    
+	      <li><span>26 Jul 2014</span> &raquo; <a href="/learn-chef-02.html">Chef入门（二）</a></li>
+	    
+	      <li><span>19 Jul 2014</span> &raquo; <a href="/learn-chef-01.html">Chef入门（一）</a></li>
+	    
+	      <li><span>02 May 2014</span> &raquo; <a href="/build-private-npm-registry-with-npmjs-and-kappa.html">利用kappa搭建私有NPM仓库</a></li>
+	    
+	      <li><span>26 Apr 2014</span> &raquo; <a href="/how-to-publish-a-node-module.html">如何发布Node模块到NPM社区</a></li>
+	    
+	      <li><span>29 Mar 2014</span> &raquo; <a href="/node-version-management-via-n-and-nvm.html">利用n和nvm管理Node的版本</a></li>
+	    
+	  </ul>
+	</div>
+	<!-- related end -->
+</div>
+  
+<div class="footer"></div>
+<div class="power">  
+  Powered by <a href="http://github.com/" targe="_blank">Github</a> &nbsp;&amp;&amp;&nbsp; <a href="http://jekyllrb.com/" target="_blank">Jekyll</a> 
+</div>
+</div>
+
+<a href="http://github.com/jeremywei" target="_blank">
+	<img class="right-banner first" src="http://s0-weizhifeng-net.b0.upaiyun.com/images/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" />
+</a>
+
+<a href="http://www.phptherightway.com" target="_blank">
+    <img class="right-banner second" src="http://s0-weizhifeng-net.b0.upaiyun.com/images/php-the-right-way-120x60.png" alt="PHP: The Right Way"/>
+</a>
+</body>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-5179718-7']);
+  _gaq.push(['_setDomainName', 'weizhifeng.net']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</html>

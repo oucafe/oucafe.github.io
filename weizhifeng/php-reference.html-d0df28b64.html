@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+   <meta name="apple-mobile-web-app-capable" content="yes" />
+   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+   <!-- <link rel="apple-touch-icon" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-iphone.png" /> -->
+   <link rel="apple-touch-icon-precomposed" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-iphone-precomposed.png" />
+   <link rel="apple-touch-icon" sizes="72x72" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-ipad.png" />
+   <link rel="apple-touch-icon" sizes="114x114" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-iphone-retina.png" />
+   <link rel="apple-touch-icon" sizes="144x144" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-ipad-retina.png" />
+   
+   <title>PHP引用以及误区</title>
+   <meta name="author" content="Jeremy Wei" />
+   <link href="http://feeds.feedburner.com/JeremyWei" rel="alternate" title="Jeremy Wei" type="application/atom+xml" />
+   <link rel="shortcut icon" type="image/x-icon" href="http://s0-weizhifeng-net.b0.upaiyun.com/favicon.ico">
+      
+   <!-- Homepage CSS -->
+   <link rel="stylesheet" href="http://s0-weizhifeng-net.b0.upaiyun.com/css/screen.css?1123" type="text/css" media="screen, projection" />
+   <!-- <link rel="stylesheet" href="/css/screen.css?0831" type="text/css" media="screen, projection" /> -->
+   
+   <script type="text/javascript" charset="utf-8">
+   // Mobile Safari in standalone mode
+   if(("standalone" in window.navigator) && window.navigator.standalone){
+	   
+   	// If you want to prevent remote links in standalone web apps opening Mobile Safari, change 'remotes' to true
+   	var noddy, remotes = true;
+	
+   	document.addEventListener('click', function(event) {
+		
+   		noddy = event.target;
+		
+   		// Bubble up until we hit link or top HTML element. Warning: BODY element is not compulsory so better to stop on HTML
+   		while(noddy.nodeName !== "A" && noddy.nodeName !== "HTML") {
+   	        noddy = noddy.parentNode;
+   	    }
+		
+   		if('href' in noddy && noddy.href.indexOf('http') !== -1 && (noddy.href.indexOf(document.location.host) !== -1 || remotes))
+   		{
+   			event.preventDefault();
+   			document.location.href = noddy.href;
+   		}
+	
+   	},false);
+   }
+   </script>
+</head>
+<body>
+	
+<div class="site">
+  <pre class="nav margin-for-mobile">["<a href='/tech.html'>文</a>", "<a href='/translate.html'>譯</a>", "<a href='/poem.html'>詩</a>", "<a href='/5000years.html'>史</a>", "<a href='/resume.html'>己</a>"]</pre>
+  <br />
+  <div id="post">
+	<h1>PHP引用以及误区</h1>
+	<div class="copyright">
+	作者: JeremyWei | 可以转载, 但必须以超链接形式标明文章原始出处和作者信息及版权声明<br />
+	网址: http://weizhifeng.net/php-reference.html
+	</div>
+
+	<h3>什么是引用</h3>
+
+<p>PHP中的引用可以理解成变量的别名。由于PHP的变量名是存储在符号表(symbol table)中的，变量内容是存储在堆中，引用就是用符号表中的不同符号(symbol)名称来访问同一存储内容，和Unix文件系统中的<a href="http://en.wikipedia.org/wiki/Hard_link" title="Hard link">hardlink</a>是同一个概念，比如：</p>
+
+<pre><code>&lt;?php
+$a = 1;
+$b = &amp;$a; //$a与$b指向同一内容
+$b = 2;
+echo $b; //2
+echo $a; //2
+</code></pre>
+
+<h3>传递引用</h3>
+
+<p>引用传递很简单，就是一个「&amp;」符号，比如：</p>
+
+<pre><code>&lt;?php
+function foo(&amp;$a) {
+  $a = 2;
+}
+
+$b = 1;
+foo($b);
+echo $b; //2
+</code></pre>
+
+<h3>返回引用</h3>
+
+<p>大多数情况下并不需要返回引用来提高性能，zend引擎会自己进行优化，但是如果你非得返回引用得话，可以按照以下方式来返回引用：</p>
+
+<pre><code>&lt;?php
+class foo {
+    public $value = 42;
+
+    public function &amp;getValue() { // 需要一个"&amp;"
+        return $this-&gt;value;
+    }
+}
+
+$obj = new foo;
+$myValue = &amp;$obj-&gt;getValue(); // 还需要一个"&amp;"，$myValue是对class foo中的$value的引用
+$obj-&gt;value = 2;              // 修改对象的$value属性
+echo $myValue;                // 输出2，$myValue与class foo中的$value值相同
+</code></pre>
+
+<h3>与指针的区别</h3>
+
+<p>引用与指针很像，但是其并不是指针，看如下的代码：</p>
+
+<pre><code>&lt;?php
+    $a = 0;
+    $b = &amp;a;
+    echo $a; //0
+    unset($b);
+    echo $a; //0
+</code></pre>
+
+<p>由于$b只是$a的别名，所以即使$b被释放了，$a没有任何影响，但是指针可不是这样的，看如下代码：</p>
+
+<pre><code>#include &lt;stdio.h&gt;
+int main(int argc, char const *argv[]) {
+    int a = 0;
+    int* b = &amp;a;
+
+    printf("%i\n", a); //0
+    free(b);
+    printf("%i\n", a); //*** error for object 0x7fff6350da08: pointer being freed was not allocated
+}
+</code></pre>
+
+<p>由于b是指向a的指针，所以释放了b的内存之后，再访问a就会出现错误，比较明显的说明了PHP引用与C指针的区别。</p>
+
+<h3>对象与引用</h3>
+
+<p>在PHP中使用对象的时候，大家总是被告知“对象是按照引用传递的”，其实这是个误区。PHP的对象变量存储的是此对象的一个标示符，在传递对象的时候，其实传递的就是这个标示符，而并不是引用，看如下代码：</p>
+
+<pre><code>&lt;?php
+$a = new A;
+$b = $a;    
+$b-&gt;testA = 2;
+
+/*
+ * 此时$a,$b的关系：
+ *        +-----------+      +-----------------+
+ * $a --&gt; | object id | ---&gt; | object(Class A) |
+ *        +-----------+      +-----------------+
+ *                               ^
+ *        +-----------+          |
+ * $b --&gt; | object id | ---------+
+ *        +-----------+    
+ *
+ *
+ */
+
+$c = new B;
+$a = $c;
+$a-&gt;testB = "Changed Class B";
+
+/*
+ * 此时$a,$b,$c的关系：
+ *        +-----------+      +-----------------+
+ * $b --&gt; | object id | ---&gt; | object(Class A) |
+ *        +-----------+      +-----------------+
+ *                               
+ *        +------------+          
+ * $a --&gt; | object id2 | -------------+
+ *        +------------+              |
+ *                                    v
+ *        +------------+      +-----------------+
+ * $c --&gt; | object id2 | ---&gt; | object(Class B) |
+ *        +------------+      +-----------------+
+ */
+
+echo "object a: "; var_dump($a); //["testB"]=&gt; string(15) "Changed Class B"
+echo "object b: "; var_dump($b); //["testA"] =&gt; int(2)
+echo "object c: "; var_dump($c); //["testB"]=&gt; string(15) "Changed Class B"
+</code></pre>
+
+<p>如果对象是按照引用传递的，那么$a, $b, $c输出的内容应该一样，事实上结果并非如此。 看下面通过引用传递对象的列子：</p>
+
+<pre><code>&lt;?php
+$aa = new A;
+$bb = &amp;$aa;  // 引用 
+$bb-&gt;testA = 2;
+
+/*
+ * 此时$aa, $bb的关系：
+ *
+ *         +-----------+      +-----------------+
+ * $bb --&gt; | object id | ---&gt; | object(Class A) |
+ *         +-----------+      +-----------------+
+ *              ^                  
+ *              |
+ * $aa ---------+ 
+ *
+ *
+ */
+
+$cc = new B;
+$aa = $cc;
+$aa-&gt;testB = "Changed Class B";
+
+/*
+ * 此时$aa, $bb, $cc的关系：
+ *
+ *         +-----------+      +-----------------+
+ *         | object id | ---&gt; | object(Class A) |
+ *         +-----------+      +-----------------+
+ *              
+ * $bb ----&gt;-----+      
+ *               |
+ * $aa ----&gt;-----+
+ *               |  
+ *               v   
+ *         +------------+      
+ *         | object id2 | --------------+ 
+ *         +------------+               |
+ *                                      v
+ *         +------------+      +-----------------+
+ * $cc --&gt; | object id2 | ---&gt; | object(Class B) |
+ *         +------------+      +-----------------+
+ */
+
+echo "object aa: "; var_dump($aa); //["testB"]=&gt;string(15) "Changed Class B"
+echo "object bb: "; var_dump($bb); //["testB"]=&gt;string(15) "Changed Class B"
+echo "object cc: "; var_dump($cc); //["testB"]=&gt;string(15) "Changed Class B"
+</code></pre>
+
+<p>此时$aa，$bb，$cc三者内容完全一样，所以可以看出对象并不是按照引用传递，要尽快走出这个误区。</p>
+
+<p>参考：</p>
+
+<p><a href="http://www.php.net/manual/en/language.references.php">http://www.php.net/manual/en/language.references.php</a>
+<a href="http://www.php.net/manual/en/language.oop5.references.php">http://www.php.net/manual/en/language.oop5.references.php</a></p>
+
+	(完)
+
+	<div class="post-info">
+		13 Mar 2012  
+	
+		
+	
+		
+	</div>
+	
+	<!-- disqus start -->
+	<div id="disqus_thread"></div>
+	<script type="text/javascript">
+	    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+	    var disqus_shortname = 'jeremywei'; // required: replace example with your forum shortname
+
+	    /* * * DON'T EDIT BELOW THIS LINE * * */
+	    (function() {
+	        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+	        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+	        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	    })();
+	</script>
+	<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+	<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+	<!-- disqus end -->
+
+	<!-- related start -->
+	<div id="related">
+	  <h2>相关内容</h2>
+	  <ul class="posts">
+	    
+	      <li><span>26 Jul 2014</span> &raquo; <a href="/learn-chef-02.html">Chef入门（二）</a></li>
+	    
+	      <li><span>19 Jul 2014</span> &raquo; <a href="/learn-chef-01.html">Chef入门（一）</a></li>
+	    
+	      <li><span>29 Jun 2014</span> &raquo; <a href="/backup-and-restore-data-of-mongodb.html">Mongodb数据的备份与恢复</a></li>
+	    
+	      <li><span>02 May 2014</span> &raquo; <a href="/build-private-npm-registry-with-npmjs-and-kappa.html">利用kappa搭建私有NPM仓库</a></li>
+	    
+	      <li><span>26 Apr 2014</span> &raquo; <a href="/how-to-publish-a-node-module.html">如何发布Node模块到NPM社区</a></li>
+	    
+	  </ul>
+	</div>
+	<!-- related end -->
+</div>
+  
+<div class="footer"></div>
+<div class="power">  
+  Powered by <a href="http://github.com/" targe="_blank">Github</a> &nbsp;&amp;&amp;&nbsp; <a href="http://jekyllrb.com/" target="_blank">Jekyll</a> 
+</div>
+</div>
+
+<a href="http://github.com/jeremywei" target="_blank">
+	<img class="right-banner first" src="http://s0-weizhifeng-net.b0.upaiyun.com/images/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" />
+</a>
+
+<a href="http://www.phptherightway.com" target="_blank">
+    <img class="right-banner second" src="http://s0-weizhifeng-net.b0.upaiyun.com/images/php-the-right-way-120x60.png" alt="PHP: The Right Way"/>
+</a>
+</body>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-5179718-7']);
+  _gaq.push(['_setDomainName', 'weizhifeng.net']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</html>

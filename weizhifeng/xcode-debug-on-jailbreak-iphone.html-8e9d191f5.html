@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+   <meta name="apple-mobile-web-app-capable" content="yes" />
+   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+   <!-- <link rel="apple-touch-icon" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-iphone.png" /> -->
+   <link rel="apple-touch-icon-precomposed" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-iphone-precomposed.png" />
+   <link rel="apple-touch-icon" sizes="72x72" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-ipad.png" />
+   <link rel="apple-touch-icon" sizes="114x114" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-iphone-retina.png" />
+   <link rel="apple-touch-icon" sizes="144x144" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-ipad-retina.png" />
+   
+   <title>在越狱iPhone上进行Xcode调试</title>
+   <meta name="author" content="Jeremy Wei" />
+   <link href="http://feeds.feedburner.com/JeremyWei" rel="alternate" title="Jeremy Wei" type="application/atom+xml" />
+   <link rel="shortcut icon" type="image/x-icon" href="http://s0-weizhifeng-net.b0.upaiyun.com/favicon.ico">
+      
+   <!-- Homepage CSS -->
+   <link rel="stylesheet" href="http://s0-weizhifeng-net.b0.upaiyun.com/css/screen.css?1123" type="text/css" media="screen, projection" />
+   <!-- <link rel="stylesheet" href="/css/screen.css?0831" type="text/css" media="screen, projection" /> -->
+   
+   <script type="text/javascript" charset="utf-8">
+   // Mobile Safari in standalone mode
+   if(("standalone" in window.navigator) && window.navigator.standalone){
+	   
+   	// If you want to prevent remote links in standalone web apps opening Mobile Safari, change 'remotes' to true
+   	var noddy, remotes = true;
+	
+   	document.addEventListener('click', function(event) {
+		
+   		noddy = event.target;
+		
+   		// Bubble up until we hit link or top HTML element. Warning: BODY element is not compulsory so better to stop on HTML
+   		while(noddy.nodeName !== "A" && noddy.nodeName !== "HTML") {
+   	        noddy = noddy.parentNode;
+   	    }
+		
+   		if('href' in noddy && noddy.href.indexOf('http') !== -1 && (noddy.href.indexOf(document.location.host) !== -1 || remotes))
+   		{
+   			event.preventDefault();
+   			document.location.href = noddy.href;
+   		}
+	
+   	},false);
+   }
+   </script>
+</head>
+<body>
+	
+<div class="site">
+  <pre class="nav margin-for-mobile">["<a href='/tech.html'>文</a>", "<a href='/translate.html'>譯</a>", "<a href='/poem.html'>詩</a>", "<a href='/5000years.html'>史</a>", "<a href='/resume.html'>己</a>"]</pre>
+  <br />
+  <div id="post">
+	<h1>在越狱iPhone上进行Xcode调试</h1>
+	<div class="copyright">
+	作者: JeremyWei | 可以转载, 但必须以超链接形式标明文章原始出处和作者信息及版权声明<br />
+	网址: http://weizhifeng.net/xcode-debug-on-jailbreak-iphone.html
+	</div>
+
+	<p><img src="http://s0-weizhifeng-net.b0.upaiyun.com/images/tech/xcode.jpg" title="Xcode" alt="Xcode" /></p>
+
+<h1>说明</h1>
+
+<p><a href="https://developer.apple.com/programs/ios/">苹果开发者认证</a>每年<code>$99</code>，对于一个初学者和票友来说暂时没必要买，但是又想在真机上进行调试，那么只能hack了，网上相关中文资料很多，但是都有些过时，版本太老，遂总结一篇。</p>
+
+<p>本文在以下环境下测试通过：</p>
+
+<ul>
+<li>XCode：Version 4.6.1 (4H512)</li>
+<li>IOS SDK：6.1</li>
+<li>iPhone：IOS 6.1(Jail Break)</li>
+<li>Mac OS X：10.8.3 Mountain Lion</li>
+</ul>
+
+
+<h1>修改SDKSettings.plist</h1>
+
+<p>首先进入以下目录</p>
+
+<pre><code>$ cd /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.1.sdk
+</code></pre>
+
+<p>在修改之前，先备份一下SDKSettings.plist：</p>
+
+<pre><code>$ sudo cp SDKSettings.plist SDKSettings.plist.bak
+$ sudo vi SDKSettings.plist
+</code></pre>
+
+<p>修改<code>CODE_SIGNING_REQUIRED</code>和<code>ENTITLEMENTS_REQUIRED</code>这两个配置的值从<code>YES</code>修改为<code>NO</code>。</p>
+
+<h1>创建签名证书</h1>
+
+<p>首先打开<code>钥匙串访问</code>应用，然后打开<code>钥匙串访问-&gt;证书助理-&gt;创建证书</code>开始创建证书，
+注意要保证证书名称为<code>iPhone Developer</code>：</p>
+
+<p><img src="http://s0-weizhifeng-net.b0.upaiyun.com/images/xcode/01.png" title="01" alt="01" /></p>
+
+<p>点击继续：</p>
+
+<p><img src="http://s0-weizhifeng-net.b0.upaiyun.com/images/xcode/02.png" title="02" alt="02" /></p>
+
+<p>添加邮箱：</p>
+
+<p><img src="http://s0-weizhifeng-net.b0.upaiyun.com/images/xcode/03.png" title="03" alt="03" /></p>
+
+<p>点击继续，勾选<code>签名</code>：</p>
+
+<p><img src="http://s0-weizhifeng-net.b0.upaiyun.com/images/xcode/04.png" title="04" alt="04" /></p>
+
+<p>点击继续，勾选<code>代码签名</code>：</p>
+
+<p><img src="http://s0-weizhifeng-net.b0.upaiyun.com/images/xcode/05.png" title="05" alt="05" /></p>
+
+<p>然后一路点击「继续」就可以了。</p>
+
+<h1>Xcode</h1>
+
+<p>打开<code>Xcode</code>，选择<code>TARGETS</code>中的<code>Build Settings</code>选项卡，然后在<code>Code Signing</code>中选择我们刚创建的证书<code>iPhone Developer</code>：</p>
+
+<p><img src="http://s0-weizhifeng-net.b0.upaiyun.com/images/xcode/06.png" title="06" alt="06" /></p>
+
+<p>然后选择<code>Summary</code>选项卡，勾选<code>Use Entitlements File</code>：</p>
+
+<p><img src="http://s0-weizhifeng-net.b0.upaiyun.com/images/xcode/07.png" title="07" alt="07" /></p>
+
+<p>选中刚生成的<code>.entitlements</code>文件（不同的项目名称，生成的文件名不一样）：</p>
+
+<p><img src="http://s0-weizhifeng-net.b0.upaiyun.com/images/xcode/08.png" title="08" alt="08" /></p>
+
+<p>在文件中添加一个名为<code>get-task-allow</code>的配置项，类型为<code>Boolean</code>，值为<code>YES</code>：</p>
+
+<p><img src="http://s0-weizhifeng-net.b0.upaiyun.com/images/xcode/09.png" title="09" alt="09" /></p>
+
+<p>重启<code>Xcode</code></p>
+
+<h1>安装Appsync</h1>
+
+<p>首先确保你的iPhone已经越狱，打开<code>Cydia</code>：</p>
+
+<p><img src="http://s0-weizhifeng-net.b0.upaiyun.com/images/xcode/10.png" title="10" alt="10" /></p>
+
+<p>然后打开<code>管理-&gt;编辑-&gt;添加</code>，添加源<code>http://repo.hackyouriphone.org/</code>：</p>
+
+<p><img src="http://s0-weizhifeng-net.b0.upaiyun.com/images/xcode/11.png" title="11" alt="11" /></p>
+
+<p>可能会提示源有问题，点击<code>仍然添加</code>：</p>
+
+<p><img src="http://s0-weizhifeng-net.b0.upaiyun.com/images/xcode/12.png" title="12" alt="12" /></p>
+
+<p>然后搜索<code>appsync</code>，安装<code>AppSync fo IOS 6</code>：</p>
+
+<p><img src="http://s0-weizhifeng-net.b0.upaiyun.com/images/xcode/13.png" title="13" alt="13" /></p>
+
+<h1>调试</h1>
+
+<p>选择<code>IOS Device</code>进行调试：</p>
+
+<p><img src="http://s0-weizhifeng-net.b0.upaiyun.com/images/xcode/14.png" title="14" alt="14" /></p>
+
+<p>然后你就可以在自己的真机上调试了，Enjoy Coding　：）</p>
+
+<h1>参考</h1>
+
+<p><a href="http://stackoverflow.com/questions/15354719/code-sign-error-with-xcode4-6-on-jailbroken-device">http://stackoverflow.com/questions/15354719/code-sign-error-with-xcode4-6-on-jailbroken-device</a></p>
+
+<p><a href="http://stackoverflow.com/questions/10842595/developing-with-jailbroken-iphone-xcode">http://stackoverflow.com/questions/10842595/developing-with-jailbroken-iphone-xcode</a></p>
+
+	(完)
+
+	<div class="post-info">
+		30 Apr 2013  
+	
+		
+	
+		
+	</div>
+	
+	<!-- disqus start -->
+	<div id="disqus_thread"></div>
+	<script type="text/javascript">
+	    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+	    var disqus_shortname = 'jeremywei'; // required: replace example with your forum shortname
+
+	    /* * * DON'T EDIT BELOW THIS LINE * * */
+	    (function() {
+	        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+	        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+	        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	    })();
+	</script>
+	<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+	<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+	<!-- disqus end -->
+
+	<!-- related start -->
+	<div id="related">
+	  <h2>相关内容</h2>
+	  <ul class="posts">
+	    
+	      <li><span>26 Jul 2014</span> &raquo; <a href="/learn-chef-02.html">Chef入门（二）</a></li>
+	    
+	      <li><span>19 Jul 2014</span> &raquo; <a href="/learn-chef-01.html">Chef入门（一）</a></li>
+	    
+	      <li><span>29 Jun 2014</span> &raquo; <a href="/backup-and-restore-data-of-mongodb.html">Mongodb数据的备份与恢复</a></li>
+	    
+	      <li><span>02 May 2014</span> &raquo; <a href="/build-private-npm-registry-with-npmjs-and-kappa.html">利用kappa搭建私有NPM仓库</a></li>
+	    
+	      <li><span>26 Apr 2014</span> &raquo; <a href="/how-to-publish-a-node-module.html">如何发布Node模块到NPM社区</a></li>
+	    
+	  </ul>
+	</div>
+	<!-- related end -->
+</div>
+  
+<div class="footer"></div>
+<div class="power">  
+  Powered by <a href="http://github.com/" targe="_blank">Github</a> &nbsp;&amp;&amp;&nbsp; <a href="http://jekyllrb.com/" target="_blank">Jekyll</a> 
+</div>
+</div>
+
+<a href="http://github.com/jeremywei" target="_blank">
+	<img class="right-banner first" src="http://s0-weizhifeng-net.b0.upaiyun.com/images/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" />
+</a>
+
+<a href="http://www.phptherightway.com" target="_blank">
+    <img class="right-banner second" src="http://s0-weizhifeng-net.b0.upaiyun.com/images/php-the-right-way-120x60.png" alt="PHP: The Right Way"/>
+</a>
+</body>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-5179718-7']);
+  _gaq.push(['_setDomainName', 'weizhifeng.net']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</html>

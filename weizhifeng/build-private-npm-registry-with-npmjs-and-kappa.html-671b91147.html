@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+   <meta name="apple-mobile-web-app-capable" content="yes" />
+   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+   <!-- <link rel="apple-touch-icon" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-iphone.png" /> -->
+   <link rel="apple-touch-icon-precomposed" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-iphone-precomposed.png" />
+   <link rel="apple-touch-icon" sizes="72x72" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-ipad.png" />
+   <link rel="apple-touch-icon" sizes="114x114" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-iphone-retina.png" />
+   <link rel="apple-touch-icon" sizes="144x144" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-ipad-retina.png" />
+   
+   <title>利用kappa搭建私有NPM仓库</title>
+   <meta name="author" content="Jeremy Wei" />
+   <link href="http://feeds.feedburner.com/JeremyWei" rel="alternate" title="Jeremy Wei" type="application/atom+xml" />
+   <link rel="shortcut icon" type="image/x-icon" href="http://s0-weizhifeng-net.b0.upaiyun.com/favicon.ico">
+      
+   <!-- Homepage CSS -->
+   <link rel="stylesheet" href="http://s0-weizhifeng-net.b0.upaiyun.com/css/screen.css?1123" type="text/css" media="screen, projection" />
+   <!-- <link rel="stylesheet" href="/css/screen.css?0831" type="text/css" media="screen, projection" /> -->
+   
+   <script type="text/javascript" charset="utf-8">
+   // Mobile Safari in standalone mode
+   if(("standalone" in window.navigator) && window.navigator.standalone){
+	   
+   	// If you want to prevent remote links in standalone web apps opening Mobile Safari, change 'remotes' to true
+   	var noddy, remotes = true;
+	
+   	document.addEventListener('click', function(event) {
+		
+   		noddy = event.target;
+		
+   		// Bubble up until we hit link or top HTML element. Warning: BODY element is not compulsory so better to stop on HTML
+   		while(noddy.nodeName !== "A" && noddy.nodeName !== "HTML") {
+   	        noddy = noddy.parentNode;
+   	    }
+		
+   		if('href' in noddy && noddy.href.indexOf('http') !== -1 && (noddy.href.indexOf(document.location.host) !== -1 || remotes))
+   		{
+   			event.preventDefault();
+   			document.location.href = noddy.href;
+   		}
+	
+   	},false);
+   }
+   </script>
+</head>
+<body>
+	
+<div class="site">
+  <pre class="nav margin-for-mobile">["<a href='/tech.html'>文</a>", "<a href='/translate.html'>譯</a>", "<a href='/poem.html'>詩</a>", "<a href='/5000years.html'>史</a>", "<a href='/resume.html'>己</a>"]</pre>
+  <br />
+  <div id="post">
+	<h1>利用kappa搭建私有NPM仓库</h1>
+	<div class="copyright">
+	作者: JeremyWei | 可以转载, 但必须以超链接形式标明文章原始出处和作者信息及版权声明<br />
+	网址: http://weizhifeng.net/build-private-npm-registry-with-npmjs-and-kappa.html
+	</div>
+
+	<p><img src="http://s0-weizhifeng-net.b0.upaiyun.com/images/tech/npm.png" title="NPM" alt="NPM" /></p>
+
+<h1>写在前面</h1>
+
+<p>采用Node.js开发私有或者商业项目的时候，我们需要创建一些内部使用的module供多个项目之间共用，这些module显然你不想发布到社区，默认情况下<code>npm publish</code>和<code>npm install</code>都是对<a href="https://registry.npmjs.org/">registry.npmjs.org</a>进行操作，而我们需要的是这样一种仓库：对于一个module，首先操作私有仓库，如果私有仓库中不存在此module，则操作官方的仓库，架构大致如下：</p>
+
+<pre><code>                          +--+
++------------+            |p |
+| client     |   'foo'?   |r |          +------------+
+|            |  --------&gt; |o |  'foo'?  |            |
+|            |            |x |  ------&gt; | private    |
+|            |            |y | &lt;------  | registry   |
+|            |            |  |    404   +------------+
+|            |            |  |
+|            |            |  |          'foo'?     +---------------+
+|            |            |  |  -----------------&gt; |               |
+|            |            |  | &lt;-----------------  |  public       |
+|            | &lt;--------  |  |         'foo'       |  registry     |
++------------+    'foo'   +--+                     +---------------+
+</code></pre>
+
+<p>本文采用eBay开源的<a href="https://github.com/krakenjs/kappa">kappa</a>代理和<a href="https://github.com/npm/npm-registry-couchapp">NPM官方registry</a>来实现以上架构。</p>
+
+<h1>CouchDB</h1>
+
+<p><a href="http://docs.couchdb.org/en/latest/intro/index.html">CouchDB</a>是专门为Web而生的数据库，它以JSON的格式对数据进行存储，数据库的操作是通过HTTP REST方法进行。CouchDB需要的版本为1.5.0及以上。（以下是在Mac上安装CouchDB的方法，其他系统安装方法见<a href="http://docs.couchdb.org/en/latest/install/index.html">官方文档</a>）</p>
+
+<pre><code>$ brew install automake libtool erlang icu4c spidermonkey 
+$ brew link icu4c
+$ brew link erlang
+$ brew install couchdb
+</code></pre>
+
+<p>编辑配置文件<code>local.ini</code>（/usr/local/etc/couchdb/local.ini），添加如下内容：</p>
+
+<pre><code>[couch_httpd_auth]
+public_fields = appdotnet, avatar, avatarMedium, avatarLarge, date, email, fields, freenode, fullname, github, homepage, name, roles, twitter, type, _id, _rev
+users_db_public = true
+
+[httpd]
+secure_rewrites = false
+
+[couchdb]
+delayed_commits = false
+</code></pre>
+
+<p>之后，部署自启动脚本并启动CouchDB</p>
+
+<pre><code>$ ln -sfv /usr/local/opt/couchdb/*.plist ~/Library/LaunchAgents
+$ launchctl load ~/Library/LaunchAgents/homebrew.mxcl.couchdb.plist
+</code></pre>
+
+<p>创建数据库<code>registry</code></p>
+
+<pre><code>$ curl -X PUT http://localhost:5984/registry
+</code></pre>
+
+<p>添加管理员<code>admin</code>，密码为<code>admin</code>：</p>
+
+<pre><code>$ HOST="http://127.0.0.1:5984"
+$ curl -X PUT $HOST/_config/admins/admin -d '"admin"'
+</code></pre>
+
+<h1>NPM Registry</h1>
+
+<p>接下来我们来安装NPM Registry应用</p>
+
+<pre><code>$ git clone git://github.com/npm/npm-registry-couchapp
+$ cd npm-registry-couchapp
+$ npm install
+</code></pre>
+
+<p>之后，同步<code>ddoc</code>到<code>_design/scratch</code></p>
+
+<pre><code>$ echo "_npm-registry-couchapp:couch=http://admin:admin@localhost:5984/registry" &gt;&gt; ~/.npmrc
+$ npm start
+</code></pre>
+
+<p>确认views已经load：</p>
+
+<pre><code>$ npm run load
+LOADING: fieldsInUse
+HTTP/1.1 200 OK
+Server: CouchDB/1.5.0 (Erlang OTP/R16B03)
+ETag: "DPBK9T7XVY4LAM7S6CS2G2JLZ"
+Date: Thu, 01 May 2014 06:06:01 GMT
+Content-Type: text/plain; charset=utf-8
+Content-Length: 0
+Cache-Control: must-revalidate
+</code></pre>
+
+<p>把ddoc从<code>_design/scratch</code>copy到<code>_design/app</code>：</p>
+
+<pre><code>$ npm run copy
+&gt; npm-registry-couchapp@2.1.4 copy /Users/weizhifeng/dev/node/npm-registry-couchapp
+&gt; bash ./copy.sh
+
+Did you already run the load-views.sh script? (type 'yes')
+yes
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100    41  100    41    0     0  10408      0 --:--:-- --:--:-- --:--:-- 13666
+{"ok":true,"id":"_design/app","rev":"1-36f4a9b735467b7817ae26b547524fd2"}
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+100  4869  100  4869    0     0  1051k      0 --:--:-- --:--:-- --:--:-- 1188k
+{"ok":true,"id":"_design/_auth","rev":"2-ebde50b9ecf5a06240c0e3c4166c847f"}
+</code></pre>
+
+<p>以上完成之后，我们就可以把npm的仓库指向自己刚搭建的仓库：</p>
+
+<pre><code>$ echo "registry = http://admin:admin@localhost:5984/registry/_design/app/_rewrite" &gt;&gt; ~/.npmrc
+</code></pre>
+
+<p>为了能发布module，需要添加npm用户：</p>
+
+<pre><code>$ npm adduser
+</code></pre>
+
+<p>用户添加完成之后，可以把私有module进行发布：</p>
+
+<pre><code>$ cd your-own-package
+$ npm publish
+</code></pre>
+
+<p>发布完成之后，可以在CouchDB的<a href="http://127.0.0.1:5984/_utils/database.html?registry">管理界面</a>中找到module的信息。</p>
+
+<p>这样，我们就搭建好了私有的npm仓库，并且已经可以向其中发布module了。那么接下来我们要实现架构图中的<code>Proxy</code>。</p>
+
+<h1>Kappa</h1>
+
+<p><a href="https://github.com/krakenjs/kappa">Kappa</a>是由eBay创建的一个基于<a href="https://npmjs.org/package/npm-delegate">npm-delegate</a>和<a href="https://github.com/spumko/hapi">hapi</a>的npm代理，通过kappa我们不需要复制整个公共的仓库数据就能创建自己的私有仓库。</p>
+
+<p>安装kappa</p>
+
+<pre><code>$ npm install -g kappa
+</code></pre>
+
+<p>下载<a href="https://github.com/JeremyWei/npm-proxy">npm-proxy</a>应用：</p>
+
+<pre><code>$ git clone https://github.com/JeremyWei/npm-proxy.git
+$ cd npm-proxy &amp;&amp; npm install
+</code></pre>
+
+<p>修改config.json文件：</p>
+
+<pre><code>{
+    "servers": [
+        {
+            "host": "localhost",
+            "port": 8100
+        },
+        {
+            "host": "localhost",
+            "port": 8143,
+            "tls": {
+                "requestCert": true,
+                "rejectUnauthorized": true,
+                "key": "file:./key.pem",
+                "cert": "file:./cert.pem"
+            }
+        }
+    ],
+    "plugins": {
+        "kappa": {
+            "vhost": "npm.myorg.com",
+            "paths": [
+                "http://admin:admin@localhost:5984/registry/_design/app/_rewrite/",
+                "https://registry.npmjs.org/"
+            ]
+        }
+    }
+}
+</code></pre>
+
+<ul>
+<li><code>vhost</code>是虚拟主机，可以修改成自己需要的，但是要注意与下面的内容保持一致。</li>
+<li><code>paths</code>数组第一个元素是本地私有仓库，第二个元素是公共仓库。</li>
+</ul>
+
+
+<p>之后添加<code>npm.myorg.com</code>到hosts</p>
+
+<pre><code>$ echo "127.0.0.1 npm.myorg.com" &gt;&gt; /etc/hosts
+</code></pre>
+
+<p>在启动proxy之前需要<code>npm cache clean</code>清除一下缓存，否则很有可能在<code>npm start</code>时候出现以下错误：</p>
+
+<pre><code>2013-12-02T23:19:33.688Z HAPI,HANDLER,ERROR {"msec":0.15241800248622894}
+2013-12-02T23:19:33.689Z HAPI,RESPONSE,ERROR unspecified
+</code></pre>
+
+<p>启动proxy：</p>
+
+<pre><code>$ npm start
+&gt; kappa -c config.json
+
+Kappa listening on localhost:8100
+Kappa listening on localhost:8143
+</code></pre>
+
+<p>启动成功之后就可以把registry地址换成代理地址：</p>
+
+<pre><code>echo "registry = http://npm.myorg.com:8100" &gt;&gt; ~/.npmrc
+</code></pre>
+
+<p>完成之后，我们在自己的项目中测试代理是否工作正常：</p>
+
+<pre><code>$ npm install 
+npm http GET http://npm.myorg.com:8100/mongodb
+npm http GET http://npm.myorg.com:8100/mocha
+</code></pre>
+
+<p>如果以上没有问题，那么恭喜你终于有了自己的私有npm仓库。</p>
+
+<h1>参考</h1>
+
+<ul>
+<li><a href="https://github.com/npm/npm-registry-couchapp">https://github.com/npm/npm-registry-couchapp</a></li>
+<li><a href="https://github.com/krakenjs/kappa">https://github.com/krakenjs/kappa</a></li>
+<li><a href="http://clock.co.uk/blog/how-to-create-a-private-npmjs-repository">http://clock.co.uk/blog/how-to-create-a-private-npmjs-repository</a></li>
+<li><a href="http://stackoverflow.com/questions/10386310/how-to-install-a-private-npm-module-without-my-own-registry">http://stackoverflow.com/questions/10386310/how-to-install-a-private-npm-module-without-my-own-registry</a></li>
+</ul>
+
+
+	(完)
+
+	<div class="post-info">
+		02 May 2014  
+	
+		
+	
+		
+	</div>
+	
+	<!-- disqus start -->
+	<div id="disqus_thread"></div>
+	<script type="text/javascript">
+	    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+	    var disqus_shortname = 'jeremywei'; // required: replace example with your forum shortname
+
+	    /* * * DON'T EDIT BELOW THIS LINE * * */
+	    (function() {
+	        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+	        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+	        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	    })();
+	</script>
+	<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+	<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+	<!-- disqus end -->
+
+	<!-- related start -->
+	<div id="related">
+	  <h2>相关内容</h2>
+	  <ul class="posts">
+	    
+	      <li><span>26 Jul 2014</span> &raquo; <a href="/learn-chef-02.html">Chef入门（二）</a></li>
+	    
+	      <li><span>19 Jul 2014</span> &raquo; <a href="/learn-chef-01.html">Chef入门（一）</a></li>
+	    
+	      <li><span>29 Jun 2014</span> &raquo; <a href="/backup-and-restore-data-of-mongodb.html">Mongodb数据的备份与恢复</a></li>
+	    
+	      <li><span>26 Apr 2014</span> &raquo; <a href="/how-to-publish-a-node-module.html">如何发布Node模块到NPM社区</a></li>
+	    
+	      <li><span>29 Mar 2014</span> &raquo; <a href="/node-version-management-via-n-and-nvm.html">利用n和nvm管理Node的版本</a></li>
+	    
+	  </ul>
+	</div>
+	<!-- related end -->
+</div>
+  
+<div class="footer"></div>
+<div class="power">  
+  Powered by <a href="http://github.com/" targe="_blank">Github</a> &nbsp;&amp;&amp;&nbsp; <a href="http://jekyllrb.com/" target="_blank">Jekyll</a> 
+</div>
+</div>
+
+<a href="http://github.com/jeremywei" target="_blank">
+	<img class="right-banner first" src="http://s0-weizhifeng-net.b0.upaiyun.com/images/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" />
+</a>
+
+<a href="http://www.phptherightway.com" target="_blank">
+    <img class="right-banner second" src="http://s0-weizhifeng-net.b0.upaiyun.com/images/php-the-right-way-120x60.png" alt="PHP: The Right Way"/>
+</a>
+</body>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-5179718-7']);
+  _gaq.push(['_setDomainName', 'weizhifeng.net']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</html>

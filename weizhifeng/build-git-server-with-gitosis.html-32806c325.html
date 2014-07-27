@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+   <meta name="apple-mobile-web-app-capable" content="yes" />
+   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+   <!-- <link rel="apple-touch-icon" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-iphone.png" /> -->
+   <link rel="apple-touch-icon-precomposed" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-iphone-precomposed.png" />
+   <link rel="apple-touch-icon" sizes="72x72" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-ipad.png" />
+   <link rel="apple-touch-icon" sizes="114x114" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-iphone-retina.png" />
+   <link rel="apple-touch-icon" sizes="144x144" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-ipad-retina.png" />
+   
+   <title>使用Gitosis搭建Git服务器</title>
+   <meta name="author" content="Jeremy Wei" />
+   <link href="http://feeds.feedburner.com/JeremyWei" rel="alternate" title="Jeremy Wei" type="application/atom+xml" />
+   <link rel="shortcut icon" type="image/x-icon" href="http://s0-weizhifeng-net.b0.upaiyun.com/favicon.ico">
+      
+   <!-- Homepage CSS -->
+   <link rel="stylesheet" href="http://s0-weizhifeng-net.b0.upaiyun.com/css/screen.css?1123" type="text/css" media="screen, projection" />
+   <!-- <link rel="stylesheet" href="/css/screen.css?0831" type="text/css" media="screen, projection" /> -->
+   
+   <script type="text/javascript" charset="utf-8">
+   // Mobile Safari in standalone mode
+   if(("standalone" in window.navigator) && window.navigator.standalone){
+	   
+   	// If you want to prevent remote links in standalone web apps opening Mobile Safari, change 'remotes' to true
+   	var noddy, remotes = true;
+	
+   	document.addEventListener('click', function(event) {
+		
+   		noddy = event.target;
+		
+   		// Bubble up until we hit link or top HTML element. Warning: BODY element is not compulsory so better to stop on HTML
+   		while(noddy.nodeName !== "A" && noddy.nodeName !== "HTML") {
+   	        noddy = noddy.parentNode;
+   	    }
+		
+   		if('href' in noddy && noddy.href.indexOf('http') !== -1 && (noddy.href.indexOf(document.location.host) !== -1 || remotes))
+   		{
+   			event.preventDefault();
+   			document.location.href = noddy.href;
+   		}
+	
+   	},false);
+   }
+   </script>
+</head>
+<body>
+	
+<div class="site">
+  <pre class="nav margin-for-mobile">["<a href='/tech.html'>文</a>", "<a href='/translate.html'>譯</a>", "<a href='/poem.html'>詩</a>", "<a href='/5000years.html'>史</a>", "<a href='/resume.html'>己</a>"]</pre>
+  <br />
+  <div id="post">
+	<h1>使用Gitosis搭建Git服务器</h1>
+	<div class="copyright">
+	作者: JeremyWei | 可以转载, 但必须以超链接形式标明文章原始出处和作者信息及版权声明<br />
+	网址: http://weizhifeng.net/build-git-server-with-gitosis.html
+	</div>
+
+	<p><img src="http://s0-weizhifeng-net.b0.upaiyun.com/images/tech/git.jpg" title="Git" alt="Git" /></p>
+
+<h3>1.安装gitosis</h3>
+
+<p>首先是获取gitosis（这里假设你已经安装过git）：</p>
+
+<pre><code>git clone git://github.com/res0nat0r/gitosis.git
+</code></pre>
+
+<p>接下来安装gitosis：</p>
+
+<pre><code>sudo python setup.py install
+</code></pre>
+
+<p>如果出现以下错误：</p>
+
+<pre><code>Traceback (most recent call last):
+ File "setup.py", line 2, in ?
+ from setuptools import setup, find_packages
+ ImportError: No module named setuptools
+</code></pre>
+
+<p>或者
+    -bash: python: command not found</p>
+
+<p>那么你还需要安装python-setuptools：</p>
+
+<pre><code>sudo yum install python-setuptools
+</code></pre>
+
+<p>接下来添加用来管理仓库的用户，用户名任意，我们这里使用git：</p>
+
+<pre><code>useradd git
+</code></pre>
+
+<p>Mac用户在「系统偏好设置　»　用户与群组 」中添加。</p>
+
+<p>修改PATH，使git用户可以调用git：</p>
+
+<pre><code>vi /home/git/.bashrc
+PATH=/usr/local/bin:/usr/local/git/bin:$PATH
+</code></pre>
+
+<p>创建key pair，并拷贝public key到/tmp下，这样可以确保gitosis-init命令对其有读取权限：</p>
+
+<pre><code>ssh-keygen -t rsa
+cp ~/.ssh/id_rsa.pub /tmp/id_rsa.pub
+</code></pre>
+
+<p>以git用户来执行gitosis-init命令：</p>
+
+<pre><code>sudo -H -u git gitosis-init &amp;lt; /tmp/id_rsa.pub
+</code></pre>
+
+<p>此时/home/git下增加了两个目录：</p>
+
+<pre><code>gitosis
+repositories
+</code></pre>
+
+<p>其中gitosis是gitosis的根目录，repositories是仓库存放目录。</p>
+
+<p>如果出现以下错误：</p>
+
+<pre><code>if install git from source, otherwise:
+raise child_exception
+OSError: [Errno 2] No such file or directory
+</code></pre>
+
+<p>那么做个symlink：</p>
+
+<pre><code>ln -s /usr/local/bin/git /usr/bin/git
+</code></pre>
+
+<p>给脚本post-update赋予可执行权限：</p>
+
+<pre><code>sudo chmod 755 /home/git/repositories/gitosis-admin.git/hooks/post-update
+</code></pre>
+
+<h3>2. 添加新仓库</h3>
+
+<p>gitosis的管理是通过git来管理的，clone一下：</p>
+
+<pre><code>git clone git@localhost:gitosis-admin.git
+</code></pre>
+
+<p>如果出现以下错误：</p>
+
+<pre><code>Cloning into gitosis-admin...
+ssh: connect to host 192.168.1.30 port 22: Connection refused
+fatal: The remote end hung up unexpectedly 
+</code></pre>
+
+<p>那么确认当前机器openssh是否已经启动，Mac用户通过&#8221;系统偏好　-&gt;　共享　-&gt;　远程登录&#8221;进行设置。</p>
+
+<pre><code>cd gitosis-admin
+ls -l
+-rw-r--r--  1 weizhifeng  staff  124  6 14 13:45 gitosis.conf
+drwxr-xr-x  3 weizhifeng  staff  102  6 14 13:46 keydir
+</code></pre>
+
+<p>keydir目录用来存放用户的public key(.pub文件)，gitosis.conf为配置文件。</p>
+
+<p>看一下配置文件：</p>
+
+<pre><code>cat gitosis.conf
+[gitosis]
+
+[group gitosis-admin]
+    members = Mac
+    writable = gitosis-admin
+</code></pre>
+
+<p>其中group代表一个组，writable是仓库名，members是此仓库的成员，可以有多个成员，用空格进行分割。</p>
+
+<p>添加一个新仓库：</p>
+
+<pre><code>[group test]
+    members = Mac
+    writable = test
+</code></pre>
+
+<p>把更改提交并push到git@localhost:gitosis-admin.git：</p>
+
+<pre><code>git commit -a -m "添加新仓库test"
+git push
+</code></pre>
+
+<p>在本地创建一个仓库，并push到git@localhost:test.git，gitosis会在/home/git/repositories自动创建test.git这个仓库：</p>
+
+<pre><code>mkdir test
+cd test 
+touch README
+git init
+git remote add origin git@localhost:test.git
+git push origin master
+</code></pre>
+
+<h3>3. 添加用户</h3>
+
+<p>假设我们要添加的用户为jeremy，那么需要创建key pair：</p>
+
+<pre><code>ssh-keygen -t rsa
+</code></pre>
+
+<p>假设生成的public key为~/.ssh/jeremy.pub</p>
+
+<pre><code>cd gitosis-admin
+</code></pre>
+
+<p>修改gitosis.conf，修改后为如下：</p>
+
+<pre><code>[group test]
+members = Mac jeremy
+writable = test
+</code></pre>
+
+<p>注意.pub文件名和你要在members中添加的用户名要完全一样。</p>
+
+<p>拷贝jeremy.pub到keydir中：</p>
+
+<pre><code>cp　~/.ssh/jeremy.pub keydir/
+</code></pre>
+
+<p>把更改push到gitosis-admin.git：</p>
+
+<pre><code>git commit -a -m "添加jeremy到test仓库"
+git push
+</code></pre>
+
+<p>接下来把private key分发给jeremy，然后他就可以从自己的机器上进行clone了：</p>
+
+<pre><code>git clone git@SERVER_HOSTNAME:test.git
+</code></pre>
+
+<p>如果出现以下错误：</p>
+
+<pre><code>ERROR:gitosis.serve.main:Repository read access denied
+fatal: The remote end hung up unexpectedly
+</code></pre>
+
+<p>是因为使用了内容相同，名字不同的public key(.pub)。</p>
+
+<h3>4.其他</h3>
+
+<p>如果SSH使用的不是22端口，那么请如下修改：</p>
+
+<pre><code>vi ~/.ssh/config
+Host myserver.com
+Port 2345      
+</code></pre>
+
+<h3>5. 参考</h3>
+
+<p><a href="http://scie.nti.st/2007/11/14/hosting-git-repositories-the-easy-and-secure-way/%22">http://scie.nti.st/2007/11/14/hosting-git-repositories-the-easy-and-secure-way/</a>  <br/>
+<a href="http://lukhnos.org/blog/en/archives/162/">http://lukhnos.org/blog/en/archives/162/</a> <br/>
+<a href="http://blog.longwin.com.tw/2011/03/linux-gitosis-git-server-2011/">http://blog.longwin.com.tw/2011/03/linux-gitosis-git-server-2011/</a></p>
+
+	(完)
+
+	<div class="post-info">
+		16 Jun 2012  
+	
+		
+	
+		
+	</div>
+	
+	<!-- disqus start -->
+	<div id="disqus_thread"></div>
+	<script type="text/javascript">
+	    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+	    var disqus_shortname = 'jeremywei'; // required: replace example with your forum shortname
+
+	    /* * * DON'T EDIT BELOW THIS LINE * * */
+	    (function() {
+	        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+	        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+	        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	    })();
+	</script>
+	<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+	<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+	<!-- disqus end -->
+
+	<!-- related start -->
+	<div id="related">
+	  <h2>相关内容</h2>
+	  <ul class="posts">
+	    
+	      <li><span>26 Jul 2014</span> &raquo; <a href="/learn-chef-02.html">Chef入门（二）</a></li>
+	    
+	      <li><span>19 Jul 2014</span> &raquo; <a href="/learn-chef-01.html">Chef入门（一）</a></li>
+	    
+	      <li><span>29 Jun 2014</span> &raquo; <a href="/backup-and-restore-data-of-mongodb.html">Mongodb数据的备份与恢复</a></li>
+	    
+	      <li><span>02 May 2014</span> &raquo; <a href="/build-private-npm-registry-with-npmjs-and-kappa.html">利用kappa搭建私有NPM仓库</a></li>
+	    
+	      <li><span>26 Apr 2014</span> &raquo; <a href="/how-to-publish-a-node-module.html">如何发布Node模块到NPM社区</a></li>
+	    
+	  </ul>
+	</div>
+	<!-- related end -->
+</div>
+  
+<div class="footer"></div>
+<div class="power">  
+  Powered by <a href="http://github.com/" targe="_blank">Github</a> &nbsp;&amp;&amp;&nbsp; <a href="http://jekyllrb.com/" target="_blank">Jekyll</a> 
+</div>
+</div>
+
+<a href="http://github.com/jeremywei" target="_blank">
+	<img class="right-banner first" src="http://s0-weizhifeng-net.b0.upaiyun.com/images/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" />
+</a>
+
+<a href="http://www.phptherightway.com" target="_blank">
+    <img class="right-banner second" src="http://s0-weizhifeng-net.b0.upaiyun.com/images/php-the-right-way-120x60.png" alt="PHP: The Right Way"/>
+</a>
+</body>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-5179718-7']);
+  _gaq.push(['_setDomainName', 'weizhifeng.net']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</html>
