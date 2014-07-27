@@ -33,82 +33,80 @@ config.each do |site|
   page = Nokogiri::HTML(open(list_url))
   rows = page.css(site['list_rows_sel'])
 
-  rows[0..20].each do |row|
-    hrefs = row.css("a").map{ |a| 
-      a['href'] if a['href'] =~ /^\// or a['href'].start_with?(base_url)
-    }.compact.uniq
+  hrefs = rows[0..25].map { |a|
+    a['href'] if a['href'] =~ /^\// or a['href'].start_with?(base_url)
+  }.compact.uniq
 
-    hrefs.each do |href|
-      remote_url = href.start_with?(base_url) ? href : base_url + href
-      puts remote_url
-      local_fname = "#{data_dir}/#{File.basename(href).gsub('?', '__')}-#{Digest::MD5.hexdigest(href)[0..8]}.html"
+  hrefs.each do |href|
+    remote_url = href.start_with?(base_url) ? href : base_url + href
+    puts remote_url
+    local_fname = "#{data_dir}/#{File.basename(href).gsub('?', '__')}-#{Digest::MD5.hexdigest(href)[0..8]}.html"
 
-      unless File.exists?(local_fname)
-        puts "Fetching #{remote_url}..."
-        begin
-          page_content = open(remote_url, site['headers_hash']).read
-        rescue Exception=>e
-          puts "Error: #{e}"
-          sleep 5
+    unless File.exists?(local_fname)
+      puts "Fetching #{remote_url}..."
+      begin
+        page_content = open(remote_url, site['headers_hash']).read
+      rescue Exception=>e
+        puts "Error: #{e}"
+        sleep 5
+      else
+        File.open(local_fname, 'w'){|file| file.write(page_content)}
+        puts "\t...Success, saved to #{local_fname}"
+
+        post = Nokogiri::HTML(page_content)
+        post_href = remote_url
+        post_title = post.css(site['post_title_sel']).first
+        post_time = post.css(site['post_time_sel']).first
+        post_content = post.css(site['post_content_sel']).first
+        site['post_content_excludes'].each do |exclude_node|
+          post_content.search(exclude_node).remove
+        end
+        post_images = {}
+        post_content.css('img').each do |img|
+          src = img['src']
+          next if src =~ /^data:/
+          src_digest = Digest::MD5.hexdigest(src)
+          post_images[src_digest] = src
+          img['src'] = "/images/#{site_name}/#{src_digest}.jpg"
+          uri = make_absolute(src, remote_url)
+          p uri
+          File.open("./images/#{site_name}/#{src_digest}.jpg", 'wb') { |f| f.write(open(uri).read) }
+        end
+
+        puts post_href
+        puts post_title.text
+        puts post_time.text
+        p post_images
+
+        if site['post_time_p']
+          puts post_time.text.strip
+          post_time = Date.strptime(post_time.text.strip.gsub(/st|nd|rd|th/, ''), site['post_time_p'])
         else
-          File.open(local_fname, 'w'){|file| file.write(page_content)}
-          puts "\t...Success, saved to #{local_fname}"
-
-          post = Nokogiri::HTML(page_content)
-          post_href = remote_url
-          post_title = post.css(site['post_title_sel']).first
-          post_time = post.css(site['post_time_sel']).first
-          post_content = post.css(site['post_content_sel']).first
-          site['post_content_excludes'].each do |exclude_node|
-            post_content.search(exclude_node).remove
-          end
-          post_images = {}
-          post_content.css('img').each do |img|
-            src = img['src']
-            next if src =~ /^data:/
-            src_digest = Digest::MD5.hexdigest(src)
-            post_images[src_digest] = src
-            img['src'] = "/images/#{site_name}/#{src_digest}.jpg"
-            uri = make_absolute(src, remote_url)
-            p uri
-            File.open("./images/#{site_name}/#{src_digest}.jpg", 'wb') { |f| f.write(open(uri).read) }
-          end
-
-          puts post_href
-          puts post_title.text
-          puts post_time.text
-          p post_images
-
-          if site['post_time_p']
-            puts post_time.text.strip
-            post_time = Date.strptime(post_time.text.strip.gsub(/st|nd|rd|th/, ''), site['post_time_p'])
-          else
-            post_time = Time.parse(post_time.text)
-          end
-          meta_fname = "#{meta_dir}/#{post_time.strftime('%F')}-#{File.basename(href).gsub('?', '-')}-#{Digest::MD5.hexdigest(href)[0..8]}.html"
-          puts "\t...Success, saved to #{meta_fname}"
-          File.open(meta_fname, 'w') {|file|
-            file.puts("---")
-            file.puts("layout: post")
-            file.puts("title: '#{post_title.text}'")
-            file.puts("time: #{post_time}")
-            file.puts("site_name: #{site_name}")
-            file.puts("source_url: #{post_href}")
-            if post_images.size > 0
-              file.puts("images:")
-              post_images.each do |k, v|
-                file.puts("  #{k}: #{v}")
-              end
+          post_time = Time.parse(post_time.text)
+        end
+        meta_fname = "#{meta_dir}/#{post_time.strftime('%F')}-#{File.basename(href).gsub('?', '-')}-#{Digest::MD5.hexdigest(href)[0..8]}.html"
+        puts "\t...Success, saved to #{meta_fname}"
+        File.open(meta_fname, 'w') {|file|
+          file.puts("---")
+          file.puts("layout: post")
+          file.puts("title: '#{post_title.text}'")
+          file.puts("time: #{post_time}")
+          file.puts("site_name: #{site_name}")
+          file.puts("source_url: #{post_href}")
+          if post_images.size > 0
+            file.puts("images:")
+            post_images.each do |k, v|
+              file.puts("  #{k}: #{v}")
             end
-            file.puts("---")
-            file.puts("{% raw %}")
-            file.puts(post_content.inner_html)
-            file.puts("{% endraw %}")
-          }
-        ensure
-          sleep 1.0 + rand
-        end  # done: begin/rescue
-      end # done: unless File.exists?
-    end
+          end
+          file.puts("---")
+          file.puts("{% raw %}")
+          file.puts(post_content.inner_html)
+          file.puts("{% endraw %}")
+        }
+      ensure
+        sleep 1.0 + rand
+      end  # done: begin/rescue
+    end # done: unless File.exists?
   end
 end
