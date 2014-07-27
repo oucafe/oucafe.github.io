@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+   <meta name="apple-mobile-web-app-capable" content="yes" />
+   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+   <!-- <link rel="apple-touch-icon" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-iphone.png" /> -->
+   <link rel="apple-touch-icon-precomposed" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-iphone-precomposed.png" />
+   <link rel="apple-touch-icon" sizes="72x72" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-ipad.png" />
+   <link rel="apple-touch-icon" sizes="114x114" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-iphone-retina.png" />
+   <link rel="apple-touch-icon" sizes="144x144" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-ipad-retina.png" />
+   
+   <title>Sed</title>
+   <meta name="author" content="Jeremy Wei" />
+   <link href="http://feeds.feedburner.com/JeremyWei" rel="alternate" title="Jeremy Wei" type="application/atom+xml" />
+   <link rel="shortcut icon" type="image/x-icon" href="http://s0-weizhifeng-net.b0.upaiyun.com/favicon.ico">
+      
+   <!-- Homepage CSS -->
+   <link rel="stylesheet" href="http://s0-weizhifeng-net.b0.upaiyun.com/css/screen.css?1123" type="text/css" media="screen, projection" />
+   <!-- <link rel="stylesheet" href="/css/screen.css?0831" type="text/css" media="screen, projection" /> -->
+   
+   <script type="text/javascript" charset="utf-8">
+   // Mobile Safari in standalone mode
+   if(("standalone" in window.navigator) && window.navigator.standalone){
+	   
+   	// If you want to prevent remote links in standalone web apps opening Mobile Safari, change 'remotes' to true
+   	var noddy, remotes = true;
+	
+   	document.addEventListener('click', function(event) {
+		
+   		noddy = event.target;
+		
+   		// Bubble up until we hit link or top HTML element. Warning: BODY element is not compulsory so better to stop on HTML
+   		while(noddy.nodeName !== "A" && noddy.nodeName !== "HTML") {
+   	        noddy = noddy.parentNode;
+   	    }
+		
+   		if('href' in noddy && noddy.href.indexOf('http') !== -1 && (noddy.href.indexOf(document.location.host) !== -1 || remotes))
+   		{
+   			event.preventDefault();
+   			document.location.href = noddy.href;
+   		}
+	
+   	},false);
+   }
+   </script>
+</head>
+<body>
+	
+<div class="site">
+  <pre class="nav margin-for-mobile">["<a href='/tech.html'>文</a>", "<a href='/translate.html'>譯</a>", "<a href='/poem.html'>詩</a>", "<a href='/5000years.html'>史</a>", "<a href='/resume.html'>己</a>"]</pre>
+  <br />
+  <div id="post">
+	<h1>Sed</h1>
+	<div class="copyright">
+	作者: JeremyWei | 可以转载, 但必须以超链接形式标明文章原始出处和作者信息及版权声明<br />
+	网址: http://weizhifeng.net/learning-sed.html
+	</div>
+
+	<h3>介绍</h3>
+
+<p>Sed（<strong>s</strong>tream <strong>ed</strong>itor），是个非常方便的流处理器，其执行流程如下： 拷贝输入流中第一行的内容到模式空间（pattern space），如果地址约束（address restriction）成立，那么对模式空间的内容执行第一个sed命令，然后接着执行下一条sed命令，当最后的操作执行完之后，输出模式空间的内容，读入下一行内容。</p>
+
+<h3>地址约束（address restriction）</h3>
+
+<p>就是对输入的行进行一个条件测试，如果满足就执行接下来的sed命令，否则不执行，主要有以下类型：  <br/>
+* 5,8表示输入的行位于第5到第8行之间   <br/>
+* /match/表示输入的行中匹配到了match  <br/>
+* /start/,/stop/表示从匹配到start开始，到匹配到stop为止，输入行位于这个区间  <br/>
+* 5,/stop/表示从第5行开始，到匹配到stop为止，输入行位于这个区间</p>
+
+<h3>语法格式</h3>
+
+<p>单条命令</p>
+
+<pre><code>sed 'address command' &lt; in &gt; out
+</code></pre>
+
+<p>多命令</p>
+
+<pre><code>sed -e 'address command'  -e 'address2 command2' &lt; in &gt; out 
+</code></pre>
+
+<p>如果命令太多，可以把命令放在一个文件script-file中</p>
+
+<pre><code>sed -f script-file &lt; in &gt; out 
+</code></pre>
+
+<h3>常用命令</h3>
+
+<h3>1. s（substitute）这个命令是我们用的最多的，用来进行文本替换</h3>
+
+<p>把old.txt中的"foo"全部(g的作用)替换成"bar"</p>
+
+<pre><code>sed 's/foo/bar/g' old.txt &gt; new.txt
+</code></pre>
+
+<p>只替换第二个"foo"为"bar"</p>
+
+<pre><code>sed 's/foo/bar/2' old.txt &gt; new.txt
+</code></pre>
+
+<p>&amp;代表匹配的字符内容，以下会把“foo”替换成“(foo)”</p>
+
+<pre><code>echo foo | sed 's/[a-z]+/(&amp;)/'
+</code></pre>
+
+<p>可以用1,2...9来引用正则表达式的子模式，以下的输出是“bar foo”</p>
+
+<pre><code>echo foo bar | sed 's/([a-z]*) ([a-z]*)/2 1/'
+</code></pre>
+
+<p>默认情况下sed会把替换之后的内容完全输出，以下命令可以让sed只输出被修改过的内容</p>
+
+<pre><code>sed -n 's/foo/(&amp;)/p' new.txt
+</code></pre>
+
+<p>这只会对第5行至第8行进行处理，其中“5,8”为一个区间，与“s/foo/(foo)/”之间有一个空格</p>
+
+<pre><code>sed '5,8 s/foo/(foo)/'
+</code></pre>
+
+<p>以下会对101行以后（包括101）的内容做替换，“$”代表最后一行</p>
+
+<pre><code>sed '101,$ s/foo/bar/'
+</code></pre>
+
+<p>以下会对文本中含有"start"行的内容进行替换</p>
+
+<pre><code>sed '/start/ s/foo/bar/'
+</code></pre>
+
+<p>如果一个表达式以反斜杠开始，那么接下来的字符就是分隔符。以下使用","来作为分隔符</p>
+
+<pre><code>sed ',^#, s/[0-9][0-9]*//'
+</code></pre>
+
+<p>你可以指定两个正则表达式作为一个区间。以下会删除“start” “stop”两个关键词之间的注释</p>
+
+<pre><code>sed '/start/,/stop/ s/#.*//'
+</code></pre>
+
+<p>你可以把行号和正则表达式合并在一起。以下将会从文件第一行开始到匹配到“start”为止，把这个范围内的注释删掉</p>
+
+<pre><code>sed -e '1,/start/ s/#.*//'
+</code></pre>
+
+<h3>2. d（delete）这个命令用来删除必要的行</h3>
+
+<p>以下把11行之后的内容删掉</p>
+
+<pre><code>sed '11,$ d'
+</code></pre>
+
+<p>以下为删除所有空白和tab</p>
+
+<pre><code>sed -e 's/#.*//' -e 's/[ ^I]*$//' -e '/^$/ d'
+</code></pre>
+
+<h3>3. p（print） 这个命令用来控制sed的输出</h3>
+
+<p>打印前10行</p>
+
+<pre><code>sed -n '1,10 p'
+</code></pre>
+
+<p>打印匹配的内容，和'grep match'一样的效果</p>
+
+<pre><code>sed -n '/match/ p'
+</code></pre>
+
+<p>不打印匹配的内容，和'grep -v match'一样的效果</p>
+
+<pre><code>sed -n '/match/ !p'
+</code></pre>
+
+<h3>4. q（quit）命令用来在适当的时候让sed退出</h3>
+
+<p>在第11行退出</p>
+
+<pre><code>sed '11 q'
+</code></pre>
+
+<p>q命令不能用在区间中，以下是错的，因为你不可能让sed退出10次</p>
+
+<pre><code>sed '1,10 q'
+</code></pre>
+
+<h3>5. w（write）这个命令用来把处理过的内容写入指定的文件</h3>
+
+<p>把"in"中的偶数写入文件"even"</p>
+
+<pre><code>sed -n 's/^[0-9]*[02468]/&amp;/w even' &lt; in
+</code></pre>
+
+<h3>6. r（read）这个命令用来读入指定文件的内容</h3>
+
+<p>以下在包含INCLUDE的行后面插入"file"文件的内容</p>
+
+<pre><code>sed '/INCLUDE/ r file' &lt; in
+</code></pre>
+
+<h3>7. a（add）, c（chang）,i（insert）</h3>
+
+<ul>
+<li>a 在匹配行后面添加一行</li>
+<li>c 替换匹配内容的行</li>
+<li>i 在匹配行前面添加一行</li>
+</ul>
+
+
+<p>在WORD后面插入一行</p>
+
+<pre><code>sed '
+    /WORD/ a
+    Add this line after every line with WORD
+'
+</code></pre>
+
+<p>在WORD前面插入一行</p>
+
+<pre><code>sed '
+    /WORD/ i
+    Add this line before evey line before WORD
+'
+</code></pre>
+
+<p>替换WORD所在行的内容</p>
+
+<pre><code>sed '
+    /WORD/ c
+    Replace the current line with the line
+'
+</code></pre>
+
+<p>以上三个命令都可以插入多行</p>
+
+<pre><code>sed '
+    /WORD/ a
+    Add this line
+    This line
+    And this line
+'
+</code></pre>
+
+<h3>8. = 命令用来输出行号</h3>
+
+<p>输出行号
+    sed -n '/foo/ =' test.txt</p>
+
+<p>输出最大行号</p>
+
+<pre><code>sed -n '$=' test.txt
+</code></pre>
+
+<h3>9. y这个命令用来做转换用</h3>
+
+<p>把单词从小写装换成大写</p>
+
+<pre><code>sed 'y/abcdef/ABCDEF/' file
+</code></pre>
+
+<h3>分组</h3>
+
+<p>你可以用「{」和「}」来把命令分组，如下</p>
+
+<pre><code>#!/bin/sh
+# This is a Bourne shell script that removes #-type comments
+# between 'begin' and 'end' words.
+sed -n '
+    /begin/,/end/ {
+    s/#.*//
+    s/[ ^I]*$//
+    /^$/ d
+    p
+    }
+'
+</code></pre>
+
+<p>参考：</p>
+
+<p><a href="http://www.grymoire.com/Unix/Sed.html">http://www.grymoire.com/Unix/Sed.html</a></p>
+
+	(完)
+
+	<div class="post-info">
+		10 Aug 2011  
+	
+		
+	
+		
+	</div>
+	
+	<!-- disqus start -->
+	<div id="disqus_thread"></div>
+	<script type="text/javascript">
+	    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+	    var disqus_shortname = 'jeremywei'; // required: replace example with your forum shortname
+
+	    /* * * DON'T EDIT BELOW THIS LINE * * */
+	    (function() {
+	        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+	        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+	        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	    })();
+	</script>
+	<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+	<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+	<!-- disqus end -->
+
+	<!-- related start -->
+	<div id="related">
+	  <h2>相关内容</h2>
+	  <ul class="posts">
+	    
+	      <li><span>26 Jul 2014</span> &raquo; <a href="/learn-chef-02.html">Chef入门（二）</a></li>
+	    
+	      <li><span>19 Jul 2014</span> &raquo; <a href="/learn-chef-01.html">Chef入门（一）</a></li>
+	    
+	      <li><span>29 Jun 2014</span> &raquo; <a href="/backup-and-restore-data-of-mongodb.html">Mongodb数据的备份与恢复</a></li>
+	    
+	      <li><span>02 May 2014</span> &raquo; <a href="/build-private-npm-registry-with-npmjs-and-kappa.html">利用kappa搭建私有NPM仓库</a></li>
+	    
+	      <li><span>26 Apr 2014</span> &raquo; <a href="/how-to-publish-a-node-module.html">如何发布Node模块到NPM社区</a></li>
+	    
+	  </ul>
+	</div>
+	<!-- related end -->
+</div>
+  
+<div class="footer"></div>
+<div class="power">  
+  Powered by <a href="http://github.com/" targe="_blank">Github</a> &nbsp;&amp;&amp;&nbsp; <a href="http://jekyllrb.com/" target="_blank">Jekyll</a> 
+</div>
+</div>
+
+<a href="http://github.com/jeremywei" target="_blank">
+	<img class="right-banner first" src="http://s0-weizhifeng-net.b0.upaiyun.com/images/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" />
+</a>
+
+<a href="http://www.phptherightway.com" target="_blank">
+    <img class="right-banner second" src="http://s0-weizhifeng-net.b0.upaiyun.com/images/php-the-right-way-120x60.png" alt="PHP: The Right Way"/>
+</a>
+</body>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-5179718-7']);
+  _gaq.push(['_setDomainName', 'weizhifeng.net']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</html>
