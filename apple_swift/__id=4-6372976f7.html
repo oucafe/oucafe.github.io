@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
+<head>
+
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="Author" content="Apple Inc." />
+<meta name="viewport" content="width=1024" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="icon" href="/favicon.ico" />
+<link rel="stylesheet" href="https://devimages.apple.com.edgekey.net/assets/core/styles/base.css" type="text/css" />
+<link rel="stylesheet" href="https://devimages.apple.com.edgekey.net/assets/core/styles/adc.css" type="text/css" />
+<link rel="stylesheet" href="/assets/core/styles/templates.css" type="text/css" />
+<link rel="stylesheet" href="https://devimages.apple.com.edgekey.net/assets/styles/topbar.css" type="text/css" />
+<script src="https://devimages.apple.com.edgekey.net/assets/core/scripts/lib/prototype.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/core/scripts/lib/scriptaculous.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/core/scripts/browserdetect.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/core/scripts/apple_core.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/core/scripts/search_decorator.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/core/scripts/adc_core.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/scripts/ac_retina.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/scripts/topbarDropdown.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+	document.write('<link rel="stylesheet" type="text/css" href="https://devimages.apple.com.edgekey.net/assets/styles/script.css" media="screen">');
+</script>
+<!-- Augmented Search -->
+<link rel="stylesheet" href="https://devimages.apple.com.edgekey.net/assets/styles/augmented_search.css" type="text/css">
+<script src="https://devimages.apple.com.edgekey.net/assets/scripts/lib/jquery/jquery-1.11.0.min.js"></script>
+<script>jQuery.noConflict();</script>
+<script src="https://devimages.apple.com.edgekey.net/assets/scripts/augmented_search.js"></script>
+	<title>Building  assert()  in Swift, Part 1: Lazy Evaluation - Swift Blog - Apple Developer</title>
+	<meta name="omni-page" content="Swift Blog - Building  assert()  in Swift, Part 1: Lazy Evaluation" />
+	<meta name="Description" content="Get the latest news and helpful tips on the Swift programming language from the engineers who created it.">
+	<link href="/swift/styles/swift.css" rel="stylesheet" type="text/css">
+	<link rel="alternate" type="application/rss+xml"  title="Building  assert()  in Swift, Part 1: Lazy Evaluation - Swift Blog - Apple Developer"  href="feed://developer.apple.com/swift/blog/news.rss" />
+</head>
+<body class="white swift-blog">
+
+	<div id="globalheader">
+	
+	<h1 data-hires="true"><a href="/">Apple Developer</a></h1>
+	<ul id="gh-nav">
+		<li id="gh-nav-technologies"><a href="/technologies/">Technologies</a></li>
+		<li id="gh-nav-resources"><a href="/resources/">Resources</a></li>
+		<li id="gh-nav-programs"><a href="/programs/">Programs</a></li>
+		<li id="gh-nav-support"><a href="/support/">Support</a></li>
+		<li id="gh-nav-membercenter"><a href="/membercenter/">Member Center</a></li>
+	</ul>
+
+	<div id="gh-search" data-hires="true">
+		<form action="/search/index.php" method="get" accept-charset="utf-8"><div>
+			<label for="gh-adcsearch">
+				<span class="prettyplaceholder"></span>
+				<input type="text" name="q" id="gh-adcsearch" class="adcsearch prettysearch augmented">
+			</label>
+		</div></form>
+	</div>
+
+	<script type="text/javascript">
+		Event.onDOMReady(function() {
+			// Get root path for Global Header Active class
+			ghLocation = location.pathname.split('/')[1];
+			// Make sure it doesn't try to add a file extension to the css class
+			if(ghLocation.include('.')) ghLocation = ghLocation.split('.')[0];
+			// Add Global Header Active State Class
+			$$('body')[0].addClassName('gh-nav-'+location.pathname.split('/')[1]+'-active');
+		});
+	</script>
+	
+</div>
+	<div id="top">
+<!-- SiteCatalyst code version: H.8. Copyright 1997-2006 Omniture, Inc. -->
+<script type="text/javascript">
+/* RSID: */
+var s_account="appleglobal,appleusdeveloper"
+</script>
+
+<script type="text/javascript" src="https://www.apple.com/metrics/scripts/s_code_h.js"></script>
+<script type="text/javascript">
+s.pageName=AC.Tracking.pageName();
+s.channel="www.us.developer"
+
+/************* DO NOT ALTER ANYTHING BELOW THIS LINE ! **************/
+var s_code=s.t();if(s_code)document.write(s_code)</script>
+<!-- End SiteCatalyst code version: H.8. -->
+</div>	<!-- - -->
+<div class="swift-header-container" data-hires="true">
+    <div class="swift-header">
+        <img class="padding-top-5"  src="https://devimages.apple.com.edgekey.net/swift/images/swift-logo-title.png" width="800" height="110" alt="Swift" />
+        <img class="padding-top-10" src="https://devimages.apple.com.edgekey.net/swift/images/swift-logo-intro.png" width="800" height="40" alt="A new programming language for iOS and OS X" />
+        <p class="imagereplace">Swift: A new programming language for iOS and OS X.</p>
+    </div>
+</div>
+<!-- - -->
+
+	<div id="content" class="content" data-hires="true">
+		<section class="layout-tabs">
+			<div class="tab-wrapper">
+				<div class="divider"></div>
+				<div class="grid3col tabs">
+					<div class="column one"><a href="/swift/">Overview</a></div>
+					<div class="column two active"><a href="/swift/blog/">Blog</a></div>
+					<div class="column three"><a href="/swift/resources/">Resources</a></div>
+				</div>
+			</div>
+		</section>
+
+		<section class="blog-articles padding-bottom-70">
+						<ul class="article-list">
+													<li id="article-4" class="article padding-top-50 ">
+						<p class="article-date lighter">Jul 18, 2014</p>
+												<h2>Building <span class="menlo">assert()</span> in Swift, Part 1: Lazy Evaluation</h2>
+						
+						<span> <p>When designing Swift we made a key decision to do away with the C preprocessor, eliminating bugs and making code much easier to understand. This is a big win for developers, but it also means Swift needs to implement some old features in new ways.  Most of these features are obvious (importing modules, conditional compilation), but perhaps the most interesting one is how Swift supports macros like <span class="keyword">assert()</span>.</p> <p>When building for release in C, the <span class="keyword">assert()</span> macro has no runtime performance impact because it doesn’t evaluate any arguments.  One popular implementation in C looks like this:</p> <pre><code><span class="preprocessor">#ifdef NDEBUG
+#define assert(e)  ((void)<span class="number">0</span>)
+#else
+#define assert(e)  \
+	((void) ((e) ? ((void)<span class="number">0</span>) : __assert (#e, __FILE__, __LINE__)))
+#define __assert(e, file, line) \
+	((void)printf (<span class="string">"%s:%u: failed assertion `%s'\n"</span>, file, line, e), abort())
+#endif</span></code></pre> <p>Swift’s assert analog provides almost all of the functionality of C’s assert, without using the preprocessor, and in a much cleaner way.  Let’s dive in and learn about some interesting features of Swift.</p> <h3>Lazy Evaluation of Arguments</h3> <p>When implementing <span class="keyword">assert()</span> in Swift, the first challenge we encounter is that there is no obvious way for a function to accept an expression without evaluating it.  For example, say we tried to use:</p> <pre><code><span class="key">func</span> assert(x : <span class="title">Bool</span>) {
+	<span class="preprocessor">#if !NDEBUG
+
+		<span class="comment">/*noop*/</span>
+	#endif</span>
+}</code></pre> <p>Even when assertions are disabled, the application would take the performance hit of evaluating the expression:</p> <pre><code>assert(someExpensiveComputation() != <span class="number">42</span>)</code></pre> <p>One way we could fix this is by changing the definition of assert to take a closure:</p> <pre><code><span class="key">func</span> assert(predicate : () -&gt; <span class="title">Bool</span>) {
+	<span class="preprocessor">#if !NDEBUG</span>
+		<span class="key">if</span> !predicate() {
+			abort()
+		}
+	<span class="preprocessor">#endif</span>
+}</code></pre> <p>This evaluates the expression only when assertions are enabled, like we want, but it leaves us with an unfortunate calling syntax:</p> <pre><code>assert({ someExpensiveComputation() != <span class="number">42</span> })</code></pre> <p>We can fix this by using the Swift <span class="keyword">@auto_closure</span> attribute.  The auto-closure attribute can be used on an argument to a function to indicate that an unadorned expression should be implicitly wrapped in a closure to the function.  The example then looks like this:</p> <pre><code><span class="key">func</span> assert(predicate : <span class="key">@auto_closure ()</span> -&gt; <span class="title">Bool</span>) {
+	<span class="preprocessor">#if !NDEBUG</span>
+		<span class="key">if</span> !predicate() {
+			abort()
+		}
+	<span class="preprocessor">#endif</span>
+}</code></pre> <p>This allows you to call it naturally, as in:</p> <pre><code>assert(someExpensiveComputation() != <span class="number">42</span>)</code></pre> <p>Auto-closures are a powerful feature because you can conditionally evaluate an expression, evaluate it many times, and use the bound expression in any way a closure can be used.  Auto-closures are used in other places in Swift as well.  For example, the implementation of short-circuiting logical operators looks like this:</p> <pre><code><span class="key">func</span> &&(lhs: <span class="title">LogicValue</span>, rhs: <span class="key">@auto_closure</span> () -&gt; <span class="title">LogicValue</span>) -&gt; <span class="title">Bool</span> {
+	<span class="key">return</span> lhs.<span class="method">getLogicValue()</span> ? rhs().<span class="method">getLogicValue()</span> : <span class="title">false</span>
+}</code></pre> <p>By taking the right side of the expression as an auto-closure, Swift provides proper lazy evaluation of that subexpression.</p> <h3>Auto-Closures</h3> <p>As with macros in C, auto-closures are a very powerful feature that must be used carefully because there is no indication on the caller side that argument evaluation is affected.  Auto-closures are intentionally limited to only take an empty argument list, and you shouldn’t use them in cases that feel like control flow. Use them when they provide useful semantics that people would expect (perhaps for a “futures” API) but don’t use them just to optimize out the braces on closures.</p> <p>This covers one special aspect of the implementation of assert in Swift, but there is more to come.</p></span>
+												<a class="arrow arrow-left" href="http://developer.apple.com/swift/blog/#article-4">All Blog Posts</a>
+											</li>
+											</section>
+
+	</div><!-- /content -->
+
+	<div id="globalfooter">
+		<div id="breadory">
+			<ol id="breadcrumbs">
+				<li class="home"><a href="/">Developer</a></li>
+				<li><a href="/swift/">Swift</a></li>
+								<li><a href="/swift/blog/">Blog</a></li>
+				<li>Building <span class="menlo">assert()</span> in Swift, Part 1: Lazy Evaluation</li>
+							</ol>
+		</div><!--/breadory-->
+		<p class="gf-buy">Shop the <a href="http://www.apple.com/store/">Apple Online Store</a> (1-800-MY-APPLE), visit an <a href="http://www.apple.com/retail/">Apple Retail Store</a>, or find a <a href="http://www.apple.com/buy/locator/">reseller</a>.</p>
+<ul class="gf-links piped">
+	<li><a href="/news/" class="first">News</a></li>
+	<li><a href="/register/">Register</a></li>
+	<li><a href="/bug-reporting/">Report Bugs</a></li>
+	<li><a href="/contact/">Contact Us</a></li>
+</ul>
+<div class="gf-sosumi">
+	<p>Copyright © 2014 Apple Inc. All rights reserved.</p>
+	<ul class="piped">
+		<li><a href="http://www.apple.com/legal/internet-services/terms/site.html" class="first">Terms of Use</a></li>
+		<li><a href="http://www.apple.com/privacy/">Privacy Policy</a></li>
+	</ul>
+</div>
+<div id="localization-links">
+	<ul>
+		<li><a href="/cn/" title="Simplified Chinese">简体中文</a></li>
+		<li><a href="/jp/" title="Japanese">日本語</a></li>
+		<li><a href="/kr/" title="Korean">한국어</a></li>
+	</ul>
+</div>	</div><!--/globalfooter-->
+</body>
+</html>
