@@ -1,0 +1,538 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>在 MacBook 上使用 PDL 绘图</title>
+    
+    <meta name="author" content="陈子">
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!-- Le styles -->
+    <link href="/assets/themes/twitter/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/themes/twitter/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+    <link href="/assets/themes/twitter/css/pygments/default.css" rel="stylesheet" type="text/css">
+    <!-- Le fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+  </head>
+  <body>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="/">三斗室</a>
+          <ul class="nav">
+            
+            
+            
+
+
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/archive.html">归档</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">分类</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/errata.html">《网站运维技术与实践》勘误</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/pages.html">Pages</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/projects.html">学习记录</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">标签</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+
+
+
+
+            <li><a href="http://chenlinux.com/poetry/index.html" />诗文集</a></li>
+            <li><link title="RSS 2.0" type="application/rss+xml" href="http://chenlinux.com/feed.xml" rel="alternate" /><a href="http://chenlinux.com/feed.xml" target="_blank">RSS订阅</a></li>
+          </ul>
+          <ul class="nav pull-right"><li><a href="/about.html">有关我</a></li></ul>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+    <div class="row">
+      <div class="span7">
+        
+<div class="row">
+  <div class="page-header">
+    <h1>在 MacBook 上使用 PDL 绘图 <small></small></h1>
+    <div class="date"><span>27 July 2014</span></div>
+  
+    <ul class="tag_box pull-right">
+    
+    
+
+
+  
+     
+    	<li><a href="/tags.html#zabbix-ref">zabbix <span>1</span></a></li>
+     
+    	<li><a href="/tags.html#pdl-ref">pdl <span>1</span></a></li>
+     
+    	<li><a href="/tags.html#python-ref">python <span>10</span></a></li>
+     
+    	<li><a href="/tags.html#numpy-ref">numpy <span>2</span></a></li>
+     
+    	<li><a href="/tags.html#macbook-ref">macbook <span>1</span></a></li>
+    
+  
+
+
+
+    </ul>
+    
+  </div>
+  <div style='background-color: #FFF;'>
+    <p>之前在 Linux 服务器上使用 PDL，主要是一些矩阵函数，这次准备在个人电脑上使用 PDL，尤其是本身的绘图功能，其一目的就是导出 zabbix 中存储的监控数据，通过 PDL 绘图观察其季节性分布情况。</p>
+
+<p>不过在使用的时候，发现在 MacBook 上跑 PDL 还是有点上手难度的。和 pylab 不同，PDL 是使用了 X11 的，而 MacBook 最新的版本里，X11 已经不再是自带的了。所以需要单独去下载 <a href="https://www.macupdate.com/app/mac/26593/xquartz">XQuartz</a> 安装包来提供 X11 支持。</p>
+
+<p>安装好了 XQuartz 以后，再安装 PDL::Graphics:: 名字空间下的几个模块就好办了。</p>
+
+<ul>
+  <li>PDL::Graphics::Simple</li>
+  <li>PDL::Graphics::Gnuplot</li>
+  <li>PDL::Graphics::PGPLOT</li>
+  <li>PDL::Graphics::Prima</li>
+</ul>
+
+<p>另外还有 PDL::Graphics::PLplot 等，不过通过 <code>port install plplot</code> 安装的 plplot 没有 header 文件，所以 PDL::Graphics::PLplot 是安装不上的，既然前面已经有了不少，这里也就不再追求自己下载 plplot 源代码来安装了。</p>
+
+<p>PDL::Graphics::Simple 是 《PDL Book》开篇第一个示例就使用的模块，其实际就是按顺序尝试加载 <code>::Gnuplot</code>、<code>::PGPLOT</code>、<code>::PLplot</code> 和 <code>::Prima</code>。所以，保证有一个可用就好了。</p>
+
+<p>不过在我的 air 上实际的效果来看，perldl 命令在使用 子进程跟 gnuplot 交互的时候<strong>非常非常非常的慢！</strong></p>
+
+<p>好了，现在就可以运行程序了：</p>
+
+<div class="highlight"><pre><code class="language-perl" data-lang="perl"><span class="c1">#!/usr/bin/env perl</span>
+<span class="k">use</span> <span class="n">strict</span><span class="p">;</span>
+<span class="k">use</span> <span class="n">warnings</span><span class="p">;</span>
+<span class="k">use</span> <span class="n">utf8</span><span class="p">;</span>
+<span class="k">use</span> <span class="n">feature</span> <span class="s">&#39;:5.16&#39;</span><span class="p">;</span>
+<span class="k">use</span> <span class="nn">Path::</span><span class="n">Tiny</span><span class="p">;</span>
+<span class="k">use</span> <span class="n">YAML</span><span class="p">;</span>
+<span class="k">use</span> <span class="n">PDL</span><span class="p">;</span>
+<span class="k">use</span> <span class="nn">PDL::Graphics::</span><span class="n">PGPLOT</span><span class="p">;</span>
+<span class="k">use</span> <span class="nn">Zabbix2::</span><span class="n">API</span><span class="p">;</span>
+
+<span class="k">my</span> <span class="nv">$config</span> <span class="o">=</span> <span class="n">Load</span><span class="p">(</span> <span class="n">path</span><span class="p">(</span><span class="s">&#39;config.yml&#39;</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">slurp</span> <span class="p">);</span>
+<span class="k">my</span> <span class="nv">$zbconf</span> <span class="o">=</span> <span class="nv">$config</span><span class="o">-&gt;</span><span class="p">{</span><span class="s">&#39;zabbix&#39;</span><span class="p">};</span>
+<span class="k">my</span> <span class="nv">$zabbix</span> <span class="o">=</span>
+  <span class="nn">Zabbix2::</span><span class="n">API</span><span class="o">-&gt;</span><span class="k">new</span><span class="p">(</span>
+    <span class="n">server</span> <span class="o">=&gt;</span> <span class="s">&quot;http://$zbconf-&gt;{&#39;addr&#39;}/zabbix/api_jsonrpc.php&quot;</span> <span class="p">);</span>
+
+<span class="nb">eval</span> <span class="p">{</span>
+    <span class="nv">$zabbix</span><span class="o">-&gt;</span><span class="n">login</span><span class="p">(</span>
+        <span class="n">user</span>     <span class="o">=&gt;</span> <span class="nv">$zbconf</span><span class="o">-&gt;</span><span class="p">{</span><span class="s">&#39;user&#39;</span><span class="p">},</span>
+        <span class="n">password</span> <span class="o">=&gt;</span> <span class="nv">$zbconf</span><span class="o">-&gt;</span><span class="p">{</span><span class="s">&#39;pass&#39;</span><span class="p">}</span>
+    <span class="p">);</span>
+<span class="p">};</span>
+<span class="k">if</span> <span class="p">(</span><span class="vg">$@</span><span class="p">)</span> <span class="p">{</span> <span class="nb">die</span> <span class="s">&#39;could not authenticate&#39;</span> <span class="p">}</span>
+
+<span class="k">my</span> <span class="nv">$items</span> <span class="o">=</span> <span class="nv">$zabbix</span><span class="o">-&gt;</span><span class="n">fetch</span><span class="p">(</span>
+    <span class="s">&#39;Item&#39;</span><span class="p">,</span>
+    <span class="n">params</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="n">groupids</span> <span class="o">=&gt;</span> <span class="mi">21</span><span class="p">,</span>
+        <span class="n">hostids</span>  <span class="o">=&gt;</span> <span class="mi">11036</span><span class="p">,</span>
+        <span class="n">graphids</span> <span class="o">=&gt;</span> <span class="mi">1824829</span><span class="p">,</span>
+    <span class="p">}</span>
+<span class="p">);</span>
+<span class="k">for</span> <span class="k">my</span> <span class="nv">$item</span> <span class="p">(</span><span class="nv">@$items</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">say</span> <span class="nv">$item</span><span class="o">-&gt;</span><span class="n">data</span><span class="o">-&gt;</span><span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">};</span>
+    <span class="k">my</span> <span class="nv">$itemid</span> <span class="o">=</span> <span class="nv">$item</span><span class="o">-&gt;</span><span class="n">data</span><span class="o">-&gt;</span><span class="p">{</span><span class="s">&#39;itemid&#39;</span><span class="p">};</span>
+    <span class="n">say</span> <span class="nv">$itemid</span><span class="p">;</span>
+    <span class="k">my</span> <span class="nv">$sitems</span> <span class="o">=</span> <span class="nv">$zabbix</span><span class="o">-&gt;</span><span class="n">fetch_single</span><span class="p">(</span>
+        <span class="s">&#39;Item&#39;</span><span class="p">,</span>
+        <span class="n">params</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="n">itemids</span> <span class="o">=&gt;</span> <span class="nv">$itemid</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">);</span>
+    <span class="k">my</span> <span class="nv">$pdl</span> <span class="o">=</span> <span class="n">pdl</span><span class="p">(</span><span class="nb">map</span> <span class="p">{</span><span class="nv">$_</span><span class="o">-&gt;</span><span class="p">{</span><span class="n">value</span><span class="p">}}</span> <span class="nv">@</span><span class="p">{</span> <span class="nv">$sitems</span><span class="o">-&gt;</span><span class="n">history</span><span class="p">(</span> <span class="n">time_from</span> <span class="o">=&gt;</span> <span class="nb">time</span><span class="p">()</span> <span class="o">-</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">3600</span> <span class="p">)</span> <span class="p">});</span>
+    <span class="n">bin</span><span class="p">(</span><span class="n">hist</span><span class="p">(</span><span class="nv">$pdl</span><span class="p">));</span>
+<span class="p">}</span></code></pre></div>
+
+<p>这里使用了 <a href="https://metacpan.org/pod/Zabbix2::API">Zabbix2::API</a> 模块，相对比 <a href="http://blog.zabbix.com/getting-started-with-zabbix-api/1381/">zabbix 官方博客示例</a>直接使用 <a href="https://metacpan.org/pod/JSON::RPC">JSON::RPC</a> 模块，以及 python 的 pyzabbix 模块来说，Zabbix2::API 模块封装的非常好，history 是作为 item 对象的属性出现，而不是单独再请求一次 <code>history.get</code>。</p>
+
+<p>另外，不知道为什么，使用 pyzabbix 模块就一直无法正常使用，而自己写 requests 和 json 却没问题。上面的 perl 脚本用 python 改写就是下面这样：</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="c">#!/usr/bin/env python</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Read item history from zabbix, and plot as histogram</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.mlab</span> <span class="kn">as</span> <span class="nn">mlab</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="n">ZABBIX_URI</span> <span class="o">=</span> <span class="s">&#39;http://test.zabbix.com/zabbix/api_jsonrpc.php&#39;</span>
+<span class="n">ZABBIX_USR</span> <span class="o">=</span> <span class="s">&#39;user&#39;</span>
+<span class="n">ZABBIX_PWD</span> <span class="o">=</span> <span class="s">&#39;pass&#39;</span>
+<span class="n">HOURS</span> <span class="o">=</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">1</span>
+
+<span class="k">def</span> <span class="nf">zabbixLogin</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">passwd</span><span class="p">):</span>
+  <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;user&#39;</span><span class="p">:</span><span class="n">user</span><span class="p">,</span>
+    <span class="s">&#39;password&#39;</span><span class="p">:</span><span class="n">passwd</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="n">zabbixCall</span><span class="p">(</span><span class="s">&#39;user.login&#39;</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">zabbixCall</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{},</span> <span class="n">auth</span><span class="o">=</span><span class="s">&#39;&#39;</span><span class="p">):</span>
+  <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;jsonrpc&#39;</span><span class="p">:</span><span class="s">&#39;2.0&#39;</span><span class="p">,</span>
+    <span class="s">&#39;method&#39;</span><span class="p">:</span><span class="n">method</span><span class="p">,</span>
+    <span class="s">&#39;params&#39;</span><span class="p">:</span><span class="n">params</span><span class="p">,</span>
+    <span class="s">&#39;id&#39;</span><span class="p">:</span><span class="mi">1</span>
+  <span class="p">}</span>
+  <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">auth</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">data</span><span class="p">[</span><span class="s">&#39;auth&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">auth</span>
+  <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">ZABBIX_URI</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">),</span> <span class="n">headers</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;content-type&#39;</span><span class="p">:</span><span class="s">&#39;application/json-rpc&#39;</span><span class="p">})</span>
+  <span class="k">return</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s">&#39;result&#39;</span><span class="p">]</span>
+
+<span class="n">authId</span> <span class="o">=</span> <span class="n">zabbixLogin</span><span class="p">(</span><span class="n">ZABBIX_USR</span><span class="p">,</span> <span class="n">ZABBIX_PWD</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s">&#39;Get Auth ID: &#39;</span> <span class="o">+</span> <span class="n">authId</span><span class="p">)</span>
+<span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="s">&#39;groupids&#39;</span><span class="p">:</span><span class="mi">21</span><span class="p">,</span>
+  <span class="s">&#39;hostids&#39;</span><span class="p">:</span><span class="mi">11036</span><span class="p">,</span>
+  <span class="s">&#39;graphids&#39;</span><span class="p">:</span><span class="mi">1824829</span>
+<span class="p">}</span>
+<span class="n">items</span> <span class="o">=</span> <span class="n">zabbixCall</span><span class="p">(</span><span class="s">&#39;item.get&#39;</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">authId</span><span class="p">)</span>
+
+<span class="n">begin</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">mktime</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">timetuple</span><span class="p">())</span> <span class="o">-</span> <span class="mi">3600</span> <span class="o">*</span> <span class="n">HOURS</span>
+<span class="k">print</span><span class="p">(</span><span class="s">&#39;Begin loop for history...&#39;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+  <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">&#39;output&#39;</span><span class="p">:</span><span class="s">&#39;extend&#39;</span><span class="p">,</span>
+    <span class="s">&#39;history&#39;</span><span class="p">:</span><span class="mi">0</span><span class="p">,</span>
+    <span class="s">&#39;itemids&#39;</span><span class="p">:</span><span class="n">item</span><span class="p">[</span><span class="s">&#39;itemid&#39;</span><span class="p">],</span>
+    <span class="s">&#39;time_from&#39;</span><span class="p">:</span><span class="n">begin</span>
+  <span class="p">}</span>
+  <span class="n">ret</span> <span class="o">=</span> <span class="n">zabbixCall</span><span class="p">(</span><span class="s">&#39;history.get&#39;</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">authId</span><span class="p">)</span>
+  <span class="n">history</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s">&#39;value&#39;</span><span class="p">]),</span> <span class="n">ret</span><span class="p">)</span>
+  <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">history</span><span class="p">)</span>
+
+  <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">normed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;item: &#39;</span> <span class="o">+</span> <span class="n">item</span><span class="p">[</span><span class="s">&#39;itemid&#39;</span><span class="p">])</span>
+
+<span class="c">#  lline = numpy.percentile(v, 25)</span>
+<span class="c">#  uline = numpy.percentile(v, 75)</span>
+<span class="c">#  low = 2 * lline - uline</span>
+<span class="c">#  up = 2 * uline - lline</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">sym</span><span class="o">=</span><span class="s">&#39;+&#39;</span><span class="p">,</span> <span class="n">notch</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;item: &#39;</span> <span class="o">+</span> <span class="n">item</span><span class="p">[</span><span class="s">&#39;itemid&#39;</span><span class="p">])</span>
+  <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></code></pre></div>
+
+
+    <hr>
+    <div class="pagination">
+      <ul>
+      
+        <li class="prev"><a href="/2014/07/08/rex-test-spec" title="Rex::Test::Spec 模块">&larr; Previous</a></li>
+      
+        <li><a href="/archive.html">Archive</a></li>
+      
+        <li class="next disabled"><a>Next &rarr;</a>
+      
+      </ul>
+    </div>
+    <hr>
+    
+
+
+  <!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" id="UYScript" src="http://v1.uyan.cc/js/iframe.js?UYUserId=1589850" async=""></script>
+<!-- UY END -->
+
+
+
+
+
+
+  </div>
+</div>
+  
+
+
+      </div>
+      <div class="span4">
+          
+          <div class="well sidebar-nav">
+             <ul id="relate_blog" class="nav nav-list">
+               <li class="nav-header">最近文章</li>
+               
+                 <li><a href="/2014/07/08/rex-test-spec">Rex::Test::Spec 模块</a></li>
+               
+                 <li><a href="/2014/06/13/serverspec-intro">Serverspec 工具介绍</a></li>
+               
+                 <li><a href="/2014/06/13/anyevent-redis-for-dns-check">用 Redis 做分布式 DNS/HTTP 检测汇总系统</a></li>
+               
+                 <li><a href="/2014/06/12/rex-usage">Rex 简明手册</a></li>
+               
+                 <li><a href="/2014/06/12/perldancer-tips">PerlDancer 框架笔记</a></li>
+               
+                 <li><a href="/2014/06/12/perl-tips">Perl 编程的个人惯例</a></li>
+               
+                 <li><a href="/2014/06/11/nginx-access-log-to-elasticsearch">用 LEK 组合处理 Nginx 访问日志</a></li>
+               
+                 <li><a href="/2014/06/08/perl-script-for-avbot">配合 avbot 的 HTTP 接口做自动应答的 Perl 脚本</a></li>
+               
+                 <li><a href="/2014/06/04/skyline-port-to-perl">用 Perl5 改写 skyline 异常检测算法</a></li>
+               
+            </ul>
+          </div>
+        
+        <div class="well sidebar-nav">
+          <iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=1&ptype=1&speed=0&skin=2&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=1035836154&verifier=a26926d5&dpc=1"></iframe>
+        </div>
+        <div class="well sidebar-nav">
+            <div id="uyan_list_time_frame"></div>
+            <script type="text/javascript" id="UYScriptTime" src="http://v1.uyan.cc/js/iframe_time_list.js?UYUserId=1589850&rankType=time" async=""></script>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(英文)</li>
+            
+              <li><a href="http://codeascraft.com/" title="Etsy 运维团队博客">Code as Craft</a></li>
+            
+              <li><a href="http://devopsanywhere.blogspot.jp/" title="">devopsanywhere</a></li>
+            
+              <li><a href="http://www.jedi.be/blog/" title="">Jong En Dynamische Informatica</a></li>
+            
+              <li><a href="http://www.planetdevops.net/" title="">planetdevops</a></li>
+            
+              <li><a href="http://www.kitchensoap.com/" title="《网站运维》作者，Etsy 运维">Kitchen Soap</a></li>
+            
+              <li><a href="http://blog.johngoulah.com" title="Musings of linux, open source, cloud computing and systems">John Goulah</a></li>
+            
+              <li><a href="http://serverfault.com/" title="stackexchange下属的系统工程师问答网站">serverfault</a></li>
+            
+              <li><a href="http://www.thegeekstuff.com/" title="各种超酷Linux命令用法">TheGeekStuff</a></li>
+            
+              <li><a href="http://neilb.org/" title="The good,the bad,and the beautiful">neilb</a></li>
+            
+              <li><a href="http://www.reddit.com/r/perl/" title="">reddit perl 频道</a></li>
+            
+              <li><a href="http://jpetazzo.github.io/" title="">~jpetazzo</a></li>
+            
+              <li><a href="http://www.perfplanet.com/" title="News and views from the web performance blogosphere">Performance Planet</a></li>
+            
+              <li><a href="http://cuddletech.com/blog/" title="Use UNIX or die">Cuddle Tech</a></li>
+            
+              <li><a href="http://showmetheco.de/" title="Viacheslav Tykhanovskyi(PocketIO/Text::Haml)">No time to wait</a></li>
+            
+              <li><a href="http://blog.dataloop.io/" title="A new SaaS monitoring tool for DevOps & Operations">Dataloop.IO</a></li>
+            
+              <li><a href="http://www.ducea.com/" title="">MDLog:/sysadmin</a></li>
+            
+              <li><a href="http://planeteria.org/perl6/" title="Perl6 文集">Planet Perl 6</a></li>
+            
+              <li><a href="http://www.metaforsoftware.com/blog/" title="">metafor</a></li>
+            
+              <li><a href="http://blog.kablamo.org/" title="Eric Johnson，一个游走在伦敦和北京的 Perler">kablamo</a></li>
+            
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(中文)</li>
+            
+              <li><a href="http://www.nginxs.com/" title="">eric</a></li>
+            
+              <li><a href="http://www.hellodb.net/" title="Ali DBA 张瑞">Hello DBA</a></li>
+            
+              <li><a href="http://blog.nosqlfan.com/" title="not only sql信息集散地">NoSQLfan</a></li>
+            
+              <li><a href="http://ourmysql.com/" title="">OurMySQL</a></li>
+            
+              <li><a href="http://zauc.wordpress.com/" title="">Timo</a></li>
+            
+              <li><a href="http://www.liurongxing.com/" title="">刘荣星</a></li>
+            
+              <li><a href="http://www.cnadn.net/" title="F5工程师">应用交付学习之路</a></li>
+            
+              <li><a href="http://scmbob.org/" title="杭州NSN工程师，shell高人~">扛一肩记忆</a></li>
+            
+              <li><a href="http://www.php-oa.com/" title="音悦台技术经理">扶凯</a></li>
+            
+              <li><a href="http://www.lark.net.cn/" title="王剑">lark's cloud</a></li>
+            
+              <li><a href="http://log.heartoutside.com/" title="HeartOutSide">HeartOutside</a></li>
+            
+              <li><a href="http://blog.liulantao.com/" title="刘兰涛">Lax</a></li>
+            
+              <li><a href="http://niubie.me/" title="莫言">莫言</a></li>
+            
+              <li><a href="http://noops.me/" title="小米运维部">NoOps</a></li>
+            
+              <li><a href="http://www.searchtech.pro/" title="">云端分布式搜索技术</a></li>
+            
+              <li><a href="http://www.usefulshare.com" title="当当网安全运维">UsefulShare</a></li>
+            
+              <li><a href="http://junqili.com/" title="深入研究puppet">纸飞机</a></li>
+            
+              <li><a href="http://www.chinaxing.org/" title="">ChinaXing</a></li>
+            
+              <li><a href="http://bubbyroom.com/" title="守住每一天">Liuyu's blog</a></li>
+            
+              <li><a href="http://blog.aka-cool.net/" title="">Aka.Why</a></li>
+            
+              <li><a href="http://blog.l8ii.com/" title="刘侨">LairdNote</a></li>
+            
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="booklists" class="nav nav-list">
+          <li class="nav-header">我写的第一本技术书籍</li>
+          <li><a href='http://product.china-pub.com/3769604'><img src='http://images.china-pub.com/ebook3765001-3770000/3769604/shupi.jpg' border='0' alt='网站运维技术与实践'/></a></li>
+        </div>
+      </div>
+    </div> <!-- row -->
+      <footer>
+        <p>&copy; 陈子 2012 
+          with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
+          and <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap</a>
+        </p>
+      </footer>
+    </div> <!-- /container -->
+    
+
+    <!-- JiaThis Button BEGIN -->
+    <script type="text/javascript">var jiathis_config = {data_track_clickback:true};</script>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jiathis_r.js?move=0&amp;uid=1589850" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    <!-- UJian Button BEGIN -->
+    <script type="text/javascript" src="http://v1.ujian.cc/code/ujian.js?type=slide&uid=1589850"></script>
+    <!-- UJian Button END -->
+  </body>
+</html>
+
