@@ -30,7 +30,12 @@ config.each do |site|
 
   FileUtils.mkdir_p("./images/#{site_name}/") unless File.exists?("./images/#{site_name}/")
 
-  page = Nokogiri::HTML(open(list_url))
+  begin
+    page = Nokogiri::HTML(open(list_url))
+  rescue Errno::ETIMEDOUT => e
+    p e
+    next
+  end
   rows = page.css(site['list_rows_sel'])
 
   hrefs = rows[0..25].map { |a|
