@@ -75,7 +75,12 @@ config.each do |site|
           img['src'] = "/images/#{site_name}/#{src_digest}.jpg"
           uri = make_absolute(src, remote_url)
           p uri
-          File.open("./images/#{site_name}/#{src_digest}.jpg", 'wb') { |f| f.write(open(uri).read) }
+          begin
+            File.open("./images/#{site_name}/#{src_digest}.jpg", 'wb') { |f| f.write(open(uri).read) }
+          rescue => e
+            puts "#  ---   ./images/#{site_name}/#{src_digest}.jpg"
+            p e
+          end
         end
 
         puts post_href
