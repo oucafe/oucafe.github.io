@@ -76,7 +76,7 @@ config.each do |site|
           uri = make_absolute(src, remote_url)
           p uri
           begin
-            File.open("./images/#{site_name}/#{src_digest}.jpg", 'wb') { |f| f.write(open(uri).read) }
+            File.open("./images/#{site_name}/#{src_digest}.jpg", 'wb') { |f| f.write(open(uri, :read_timeout => 60, :proxy => 'http://42.120.23.151:13128').read) }
           rescue => e
             puts "#  ---   ./images/#{site_name}/#{src_digest}.jpg"
             p e
