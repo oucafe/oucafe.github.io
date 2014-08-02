@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
+<head>
+
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="Author" content="Apple Inc." />
+<meta name="viewport" content="width=device-width" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="icon" href="/favicon.ico" />
+<link rel="stylesheet" href="https://devimages.apple.com.edgekey.net/assets/core/styles/base.css" type="text/css" />
+<link rel="stylesheet" href="/assets/core/styles/templates.css" type="text/css" />
+<link rel="stylesheet" href="/assets/core/styles/responsify.css" type="text/css" />
+<script src="https://devimages.apple.com.edgekey.net/assets/core/scripts/lib/prototype.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/core/scripts/lib/scriptaculous.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/core/scripts/browserdetect.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/core/scripts/apple_core.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/core/scripts/search_decorator.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/core/scripts/adc_core.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/scripts/ac_retina.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+	document.write('<link rel="stylesheet" type="text/css" href="https://devimages.apple.com.edgekey.net/assets/styles/script.css" media="screen">');
+</script>
+<!-- Augmented Search -->
+<link rel="stylesheet" href="https://devimages.apple.com.edgekey.net/assets/styles/augmented_search.css" type="text/css">
+<script src="https://devimages.apple.com.edgekey.net/assets/scripts/lib/jquery/jquery-1.11.0.min.js"></script>
+<script>jQuery.noConflict();</script>
+<script src="https://devimages.apple.com.edgekey.net/assets/scripts/augmented_search.js"></script>
+	<title>Files and Initialization - Swift Blog - Apple Developer</title>
+	<meta name="omni-page" content="Files and Initialization - Swift Blog - Apple Developer" />
+	<meta name="Description" content="Get the latest news and helpful tips on the Swift programming language from the engineers who created it.">
+	<link href="/swift/styles/swift.css" rel="stylesheet" type="text/css">
+</head>
+<body class="white responsify swift-blog">
+
+	<div id="globalheader-wrapper">
+<nav id="globalheader" data-hires="true">
+	
+	<h1 data-hires="true"><a href="/">Apple Developer</a></h1>
+	<ul id="gh-nav">
+		<li id="gh-nav-technologies"><a href="/technologies/">Technologies</a></li>
+		<li id="gh-nav-resources"><a href="/resources/">Resources</a></li>
+		<li id="gh-nav-programs"><a href="/programs/">Programs</a></li>
+		<li id="gh-nav-support"><a href="/support/">Support</a></li>
+		<li id="gh-nav-membercenter"><a href="/membercenter/">Member Center</a></li>
+	</ul>
+
+	<div id="gh-search" data-hires="true">
+		<form action="/search/index.php" method="get" accept-charset="utf-8"><div>
+			<label for="gh-adcsearch">
+				<span class="prettyplaceholder"></span>
+				<input type="text" name="q" id="gh-adcsearch" class="adcsearch prettysearch augmented">
+			</label>
+		</div></form>
+	</div>
+
+	<script type="text/javascript">
+		Event.onDOMReady(function() {
+			// Get root path for Global Header Active class
+			ghLocation = location.pathname.split('/')[1];
+			// Make sure it doesn't try to add a file extension to the css class
+			if(ghLocation.include('.')) ghLocation = ghLocation.split('.')[0];
+			// Add Global Header Active State Class
+			$$('body')[0].addClassName('gh-nav-'+location.pathname.split('/')[1]+'-active');
+		});
+	</script>
+</nav>
+</div>
+	<div id="top">
+<!-- SiteCatalyst code version: H.8. Copyright 1997-2006 Omniture, Inc. -->
+<script type="text/javascript">
+/* RSID: */
+var s_account="appleglobal,appleusdeveloper"
+</script>
+
+<script type="text/javascript" src="https://www.apple.com/metrics/scripts/s_code_h.js"></script>
+<script type="text/javascript">
+s.pageName=AC.Tracking.pageName();
+s.channel="www.us.developer"
+
+/************* DO NOT ALTER ANYTHING BELOW THIS LINE ! **************/
+var s_code=s.t();if(s_code)document.write(s_code)</script>
+<!-- End SiteCatalyst code version: H.8. -->
+</div>	<!-- - -->
+<div class="swift-header-container" data-hires="true">
+    <div class="swift-header">
+        <p class="imagereplace">Swift: A new programming language for iOS and OS X.</p>
+    </div>
+</div>
+<!-- - -->
+
+	<div id="content" class="content responsify" data-hires="true">
+		<section class="layout-tabs">
+			<div class="tab-wrapper">
+				<div class="divider"></div>
+				<div class="grid3col tabs">
+					<div class="column one"><a href="/swift/">Overview</a></div>
+					<div class="column two active"><a href="/swift/blog/">Blog</a></div>
+					<div class="column three"><a href="/swift/resources/">Resources</a></div>
+				</div>
+			</div>
+		</section>
+
+		<section class="blog-articles padding-bottom-40">
+						<ul class="article-list">
+													<li id="article-7" class="article padding-top-50 ">
+						<p class="article-date lighter">Aug  1, 2014</p>
+												<h2>Files and Initialization</h2>
+						
+						<span> <p>By now, most of you have written a small Swift app or experimented in the playground. You may even have experienced an error after you copied code from a playground into another file and wondered, “What is actually going on? What is the difference between a playground file, and other Swift source files?” This post will explain how Swift deals with the files in your project, and how global data is initialized.</p> <h3>Files in an App</h3> <p>A Swift app is composed of any number of files, each with the functions, classes, and other declarations that make up the app. Most Swift files in your app are <strong>order-independent</strong>, meaning you can use a type before it is defined, and can even import modules at the bottom of the file (although that is not recommended Swift style.)</p> <p>However, top-level code is not allowed in most of your Swift source files. For clarity, any executable statement not written within a function body, within a class, or otherwise encapsulated is considered top-level. We have this rule because if top-level code were allowed in all your files, it would be hard to determine where to start the program.</p> <h3>Playgrounds, REPL, and Top-Level Code</h3> <p>You may be wondering why the code below works perfectly in a playground. This example isn’t encapsulated in anything, so it must be top-level code:</p> <pre><code><span class="method">println</span>(<span class="string">"Hello world"</span>)</code></pre> <p>The above single-line program works — with no additional code at all — because playground files do support the execution of top-level code. Code within a playground file is <strong>order-dependent</strong>, run in top-down lexical order. For example, you can’t use a type before you define it. Of course, Swift playground files can also define functions, classes, and any other legal Swift code, but they don’t need to.  This makes it easy to learn the Swift language or try a new API without writing a lot of code to get started.</p> <p>In addition to playgrounds, top-level code can also be run in the REPL (Read-Eval-Print-Loop) or when launching Swift files as scripts. To use Swift for scripting, you can use shebang-style launching by starting your Swift file with “#!/usr/bin/xcrun swift” or type “xcrun swift myFile.swift” within Terminal.</p> <h3>Application Entry Points and “main.swift”</h3> <p>You’ll notice that earlier we said top-level code isn’t allowed in <em>most</em> of your app’s source files. The exception is a special file named “main.swift”, which behaves much like a playground file, but is built with your app’s source code. The “main.swift” file can contain top-level code, and the order-dependent rules apply as well. In effect, the first line of code to run in “main.swift” is implicitly defined as the main entrypoint for the program. This allows the minimal Swift program to be a single line — as long as that line is in “main.swift”.</p> <p>In Xcode, Mac templates default to including a “main.swift” file, but for iOS apps the default for new iOS project templates is to add <span class="keyword">@UIApplicationMain</span> to a regular Swift file. This causes the compiler to synthesize a <span class="keyword">main</span> entry point for your iOS app, and eliminates the need for a “main.swift” file.</p> <p>Alternatively, you can link in an implementation of <span class="keyword">main</span> written in Objective-C, common when incrementally migrating projects from Objective-C to Swift.</p> <h3>Global Variables</h3> <p>Given how Swift determines where to start executing an app, how should global variables work? In the following line of code, when should the initializer run?</p> <pre><code><span class="key">var</span> someGlobal = <span class="pointer">foo</span>()</code></pre> <p>In a single-file program, code is executed top-down, similar to the behavior of variables within a function.  Pretty simple. The answer for complex apps is less obvious, and we considered three different options:</p> <ul class="numbered"> <li>Restrict initializers of global variables to be simple constant expressions, as C does.</li> <li>Allow any initializer, run as a static constructor at app load time, as C++ does.</li> <li>Initialize lazily, run the initializer for a global the first time it is referenced, similar to Java.</li> </ul> <p>The first approach was ruled out because Swift doesn’t need constant expressions like C does. In Swift, constants are generally implemented as (inlined) function calls.  And there are good reasons to use complex initializers, e.g. to set up singletons or allocate a dictionary.</p> <p>The second approach was ruled out because it is bad for the performance of large systems, as all of the initializers in all the files must run before the application starts up. This is also unpredictable, as the order of initialization in different files is unspecified.</p> <p>Swift uses the third approach, which is the best of all worlds: it allows custom initializers, startup time in Swift scales cleanly with no global initializers to slow it down, and the order of execution is completely predictable.</p> <p>The lazy initializer for a global variable (also for static members of structs and enums) is run the first time that global is accessed, and is launched as <span class="keyword">dispatch_once</span> to make sure that the initialization is atomic.  This enables a cool way to use <span class="keyword">dispatch_once</span> in your code: just declare a global variable with an initializer and mark it <span class="keyword">private</span>.</p> <h3>Summary</h3> <p>Swift is designed to make it easy to experiment in a playground or to quickly build a script. A complete program can be a single line of code. Of course, Swift was also designed to scale to the most complex apps you can dream up. With “main.swift” you can take complete control over initialization or you can let <span class="keyword">@UIApplicationMain</span> do the startup work for you on iOS.</p></span>
+												<a class="arrow arrow-left" href="http://developer.apple.com/swift/blog/#article-7">All Blog Posts</a>
+											</li>
+											</section>
+
+	</div><!-- /content -->
+
+	<div id="globalfooter-wrapper">
+		<footer id="globalfooter">
+			<div id="breadory">
+				<ol id="breadcrumbs">
+					<li class="home"><a href="/">Developer</a></li>
+					<li><a href="/swift/">Swift</a></li>
+										<li><a href="/swift/blog/">Blog</a></li>
+					<li>Files and Initialization</li>
+									</ol>
+			</div><!--/breadory-->
+			<p class="gf-buy">Shop the <a href="http://www.apple.com/store/">Apple Online Store</a> (1-800-MY-APPLE), visit an <a href="http://www.apple.com/retail/">Apple Retail Store</a>, or find a <a href="http://www.apple.com/buy/locator/">reseller</a>.</p>
+<ul class="gf-links piped">
+	<li><a href="/news/" class="first">News</a></li>
+	<li><a href="/register/">Register</a></li>
+	<li><a href="/bug-reporting/">Report Bugs</a></li>
+	<li><a href="/contact/">Contact Us</a></li>
+</ul>
+<div class="gf-sosumi">
+	<p>Copyright © 2014 Apple Inc. All rights reserved.</p>
+	<ul class="piped">
+		<li><a href="http://www.apple.com/legal/internet-services/terms/site.html" class="first">Terms of Use</a></li>
+		<li><a href="http://www.apple.com/privacy/">Privacy Policy</a></li>
+	</ul>
+</div>
+<div id="localization-links">
+	<ul>
+		<li><a href="/cn/" title="Simplified Chinese">简体中文</a></li>
+		<li><a href="/jp/" title="Japanese">日本語</a></li>
+		<li><a href="/kr/" title="Korean">한국어</a></li>
+	</ul>
+</div>		</footer><!--/globalfooter-->
+	</div><!-- /globalfooter-wrapper -->
+</body>
+</html>
