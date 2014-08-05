@@ -1,0 +1,1512 @@
+<!DOCTYPE html>   
+<!--[if lt IE 7 ]> <html lang="en" class="no-js ie6"> <![endif]-->
+<!--[if IE 7 ]> <html lang="en" class="no-js ie7"> <![endif]-->
+<!--[if IE 8 ]> <html lang="en" class="no-js ie8"> <![endif]-->
+<!--[if IE 9 ]> <html lang="en" class="no-js ie9"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html lang="zh-CN" prefix="og: http://ogp.me/ns#" xmlns:wb="http://open.weibo.com/wb" class="no-js"> <!--<![endif]-->
+
+
+<!-- BEGIN head -->
+<head>
+
+	<!-- Title -->
+	<title>你或许想要用到的三个新的Javascript API - 博客 - 伯乐在线</title>
+	
+	<!-- Meta Tags -->
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	
+	<!-- Favicon & Mobileicon -->
+	<link rel="shortcut icon" href="http://jbcdn2.b0.upaiyun.com/2013/12/favicon.png" />
+	<link rel="apple-touch-icon" href="http://jbcdn2.b0.upaiyun.com/2013/12/jobbole-blog-logo-mobile.png" />
+	
+	<!-- RSS, Atom & Pingbacks -->
+		<link rel="alternate" title="博客 &#8211; 伯乐在线 RSS Feed" href="http://blog.jobbole.com/feed/" />
+		<link rel="alternate" title="RSS .92" href="http://blog.jobbole.com/feed/rss/" />
+	<link rel="alternate" title="Atom 0.3" href="http://blog.jobbole.com/feed/atom/" />
+	<link rel="pingback" href="http://blog.jobbole.com/xmlrpc.php" />
+	
+	<!-- Theme Hook -->
+	
+<!-- This site is optimized with the Yoast WordPress SEO plugin v1.4.13 - http://yoast.com/wordpress/seo/ -->
+<meta name="description" content="我今天来给大家介绍一些仍然还处在初期阶段的API。大家必须知道这些API是非常新的，在这三个里面有两个都是在几天之前刚刚发布的。正因如此，这些API现目前都还无法使用。但是如果你有兴趣了解它们具体是用来做什么的，你可以继续阅读下面关于它们的详细介绍"/>
+<link rel="canonical" href="http://blog.jobbole.com/74773/" />
+<meta property='og:locale' content='zh_CN'/>
+<meta property='og:type' content='article'/>
+<meta property='og:title' content='你或许想要用到的三个新的Javascript API - 博客 - 伯乐在线'/>
+<meta property='og:description' content='我今天来给大家介绍一些仍然还处在初期阶段的API。大家必须知道这些API是非常新的，在这三个里面有两个都是在几天之前刚刚发布的。正因如此，这些API现目前都还无法使用。但是如果你有兴趣了解它们具体是用来做什么的，你可以继续阅读下面关于它们的详细介绍'/>
+<meta property='og:url' content='http://blog.jobbole.com/74773/'/>
+<meta property='og:site_name' content='博客 - 伯乐在线'/>
+<meta property='og:image' content='http://jbcdn2.b0.upaiyun.com/2014/01/578f813c1b14702dae808fa9456828f7.png'/>
+<!-- / Yoast WordPress SEO plugin. -->
+
+<link rel='stylesheet' id='v48fv_images-css'  href='http://blog.jobbole.com/wp-content/plugins/mu-widgets/library/base/public/css/images.css?ver=1.2.v48fv' type='text/css' media='all' />
+<link rel='stylesheet' id='v48fv_front-css'  href='http://blog.jobbole.com/wp-content/plugins/mu-widgets/library/base/public/css/front.css?ver=1.2.v48fv' type='text/css' media='all' />
+<link rel='stylesheet' id='v48fv_common-css'  href='http://blog.jobbole.com/wp-content/plugins/mu-widgets/library/base/public/css/common.css?ver=1.2.v48fv' type='text/css' media='all' />
+<link rel='stylesheet' id='bbp-default-bbpress-css'  href='http://blog.jobbole.com/wp-content/plugins/bbpress/templates/default/css/bbpress.css?ver=2.3.2' type='text/css' media='screen' />
+<link rel='stylesheet' id='bp-legacy-css-css'  href='http://blog.jobbole.com/wp-content/plugins/buddypress/bp-templates/bp-legacy/css/buddypress.css?ver=1.7.2' type='text/css' media='screen' />
+<link rel='stylesheet' id='wp-polls-css'  href='http://blog.jobbole.com/wp-content/plugins/wp-polls/polls-css.css?ver=2.63' type='text/css' media='all' />
+<link rel='stylesheet' id='bpbbpst-bbpress-widget-css-css'  href='http://blog.jobbole.com/wp-content/plugins/buddy-bbpress-support-topic/css/bpbbpst-bbpress-widget.css?ver=3.5.2' type='text/css' media='all' />
+<link rel='stylesheet' id='core3.0-css'  href='http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/styles/shCore.css?ver=3.0' type='text/css' media='all' />
+<link rel='stylesheet' id='core-Default3.0-css'  href='http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/styles/shCoreDefault.css?ver=3.0' type='text/css' media='all' />
+<link rel='stylesheet' id='theme-Default3.0-css'  href='http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/styles/shThemeDefault.css?ver=3.0' type='text/css' media='all' />
+<link rel='stylesheet' id='lightboxStyle-css'  href='http://blog.jobbole.com/wp-content/plugins/lightbox-plus/css/shadowed/colorbox.css?ver=2.6' type='text/css' media='screen' />
+<script type='text/javascript' src='http://blog.jobbole.com/wp-includes/js/jquery/jquery.js?ver=1.8.3'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var BP_DTheme = {"my_favs":"\u6211\u7684\u6536\u85cf","accepted":"\u5df2\u63a5\u53d7","rejected":"\u5df2\u62d2\u7edd","show_all_comments":"\u663e\u793a\u8be5\u8bdd\u9898\u6240\u6709\u8bc4\u8bba","show_all":"\u663e\u793a\u5168\u90e8","comments":"\u8bc4\u8bba","close":"\u5173\u95ed","view":"\u67e5\u770b","mark_as_fav":"\u6536\u85cf","remove_fav":"\u79fb\u9664\u6536\u85cf"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/plugins/buddypress/bp-templates/bp-legacy/js/buddypress.js?ver=1.7.2'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-includes/js/comment-reply.min.js?ver=3.5.2'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/modernizr.js?ver=2.5.3'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/js/rc-textarea-hl.js?ver=1.3'></script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://blog.jobbole.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://blog.jobbole.com/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='http://blog.jobbole.com/?p=74773' />
+
+		<script type="text/javascript">
+			/* <![CDATA[ */
+			
+						jQuery(document).ready( function() {
+
+				/* Use backticks instead of <code> for the Code button in the editor */
+				if ( typeof( edButtons ) !== 'undefined' ) {
+					edButtons[110] = new QTags.TagButton( 'code', 'code', '`', '`', 'c' );
+					QTags._buttonsInit();
+				}
+
+				/* Tab from topic title */
+				jQuery( '#bbp_topic_title' ).bind( 'keydown.editor-focus', function(e) {
+					if ( e.which !== 9 )
+						return;
+
+					if ( !e.ctrlKey && !e.altKey && !e.shiftKey ) {
+						if ( typeof( tinymce ) !== 'undefined' ) {
+							if ( ! tinymce.activeEditor.isHidden() ) {
+								var editor = tinymce.activeEditor.editorContainer;
+								jQuery( '#' + editor + ' td.mceToolbar > a' ).focus();
+							} else {
+								jQuery( 'textarea.bbp-the-content' ).focus();
+							}
+						} else {
+							jQuery( 'textarea.bbp-the-content' ).focus();
+						}
+
+						e.preventDefault();
+					}
+				});
+
+				/* Shift + tab from topic tags */
+				jQuery( '#bbp_topic_tags' ).bind( 'keydown.editor-focus', function(e) {
+					if ( e.which !== 9 )
+						return;
+
+					if ( e.shiftKey && !e.ctrlKey && !e.altKey ) {
+						if ( typeof( tinymce ) !== 'undefined' ) {
+							if ( ! tinymce.activeEditor.isHidden() ) {
+								var editor = tinymce.activeEditor.editorContainer;
+								jQuery( '#' + editor + ' td.mceToolbar > a' ).focus();
+							} else {
+								jQuery( 'textarea.bbp-the-content' ).focus();
+							}
+						} else {
+							jQuery( 'textarea.bbp-the-content' ).focus();
+						}
+
+						e.preventDefault();
+					}
+				});
+			});
+						/* ]]> */
+		</script>
+
+	
+	<script type="text/javascript">var ajaxurl = 'http://blog.jobbole.com/wp-admin/admin-ajax.php';</script>
+
+
+<!-- Comment Rating plugin Version: 2.9.32 by Bob King, http://wealthynetizen.com/, dynamic comment voting & styling. --> 
+<style type="text/css" media="screen">
+   .ckrating_highly_rated {background-color:#FFFFCC !important;}
+   .ckrating_poorly_rated {opacity:0.6;filter:alpha(opacity=60) !important;}
+   .ckrating_hotly_debated {background-color:#FFF0F5 !important;}
+</style>
+
+<script type="text/javascript">
+	window._wp_rp_static_base_url = 'http://dtmvdvtzf8rz0.cloudfront.net/static/';
+	window._wp_rp_wp_ajax_url = "http://blog.jobbole.com/wp-admin/admin-ajax.php";
+	window._wp_rp_plugin_version = '2.8';
+	window._wp_rp_post_id = '74773';
+	window._wp_rp_num_rel_posts = '10';
+</script>
+<style type="text/css">
+.wp-polls .pollbar {
+	margin: 1px;
+	font-size: 6px;
+	line-height: 8px;
+	height: 8px;
+	background: #0CA3C4;
+	border: 1px solid #fff;
+}
+</style>
+
+<!-- WP SyntaxHighlighter Ver.1.7.3 CSS for code Begin -->
+<style type='text/css'>
+.syntaxhighlighter,
+.syntaxhighlighter a,
+.syntaxhighlighter div,
+.syntaxhighlighter code,
+.syntaxhighlighter table,
+.syntaxhighlighter table td,
+.syntaxhighlighter table tr,
+.syntaxhighlighter table tbody,
+.syntaxhighlighter table thead,
+.syntaxhighlighter table caption,
+.syntaxhighlighter textarea {
+font-size: 12px !important; /* Set the font size in pixels */  
+font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace !important; /* Set the font type */  
+}
+.syntaxhighlighter table caption {
+/* For Title(Caption) */  
+font-size: 14px !important; /* Set the font size in pixels */  
+font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace !important; /* Set the font type */  
+}
+.syntaxhighlighter.nogutter td.code .line {
+/* Set the left padding space when no-gutter in ver. 3.0 */  
+padding-left: 3px !important;
+}
+.syntaxhighlighter {
+/* For Chrome/Safari(WebKit) */  
+/* Hide the superfluous vertical scrollbar in ver. 3.0 */  
+overflow-y: hidden !important;
+padding: 1px !important;
+}
+.widget-area.syntaxhighlighter a,
+.widget-area.syntaxhighlighter div,
+.widget-area.syntaxhighlighter code,
+.widget-area.syntaxhighlighter table,
+.widget-area.syntaxhighlighter table td,
+.widget-area.syntaxhighlighter table tr,
+.widget-area.syntaxhighlighter table tbody,
+.widget-area.syntaxhighlighter table thead,
+.widget-area.syntaxhighlighter table caption,
+.widget-area.syntaxhighlighter textarea {
+/* For Widget */  
+font-size: 14px !important; /* Set the font size in pixels */  
+font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace !important; /* Set the font type */  
+}
+.widget-area table caption {
+/* For Widget */  
+/* For Title(Caption) */  
+font-size: 10px !important; /* Set the font size in pixels */  
+font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace !important; /* Set the font type */  
+}
+</style>
+<!-- WP SyntaxHighlighter Ver.1.7.3 CSS for code End -->
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="http://blog.jobbole.com/wp-content/themes/jobboleblogv3/style.css" media="screen" />
+	<!-- link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Noticia+Text:400,700italic,700,400italic" media="screen" / -->
+	<style>
+				*::selection { background: #0099cc; }
+		*::-moz-selection { background: #0099cc; }
+		body { background: #ffffff  }
+		a, .tabs ul.nav li a:hover, .tabs ul.nav li.active a, .dropcap, .toggle.hover .toggle-title, li.comment cite a:hover, h3.widget-title, .post-meta .meta-title:hover, .the-latest a:hover h4, .aw_socialcounter_widget li a:hover, .aw_tabbed_widget #tab-latest-comments a:hover { color: #0099cc; }
+		a:hover { color: #b30000; }
+		input:focus, textarea:focus { border-color: #0099cc; }
+		#searchsubmit, .highlight, .aw_tabbed_widget .tabs ul.nav li.active a, footer .aw_tabbed_widget .tabs ul.nav li.active a, #top .aw_tabbed_widget .tabs ul.nav li.active a, .aw_tabbed_widget .tabs ul.nav li a:hover, footer .aw_tabbed_widget .tabs ul.nav li a:hover, #top .aw_tabbed_widget .tabs ul.nav li a:hover, .aw_twitter_widget .twitter-icon, .testimonial-icon, #top-closed:hover, .flex-control-nav a:hover, .flex-control-nav a.flex-active { background-color: #0099cc; }
+		.submit { background-color: #0099cc; border-color: #007399; }
+		.submit:hover { background-color: #b30000; border-color: #860000; }
+		#searchsubmit:hover { background-color: #b30000; }
+		.toggle.hover .toggle-icon { border-top-color: #0099cc; }
+		.toggle.hover.active .toggle-icon { border-bottom-color: #0099cc; }
+		.flex-direction-nav li .flex-prev:hover { border-right-color: #0099cc; }
+		.flex-direction-nav li .flex-next:hover { border-left-color: #0099cc; }
+		@media only screen and (min-width: 768px) and (max-width: 959px) {
+			.aw_tabbed_widget .tabs ul.nav li a:hover, .tabs ul.nav li.active a { color: #0099cc; }
+		}
+		@media screen and (max-width: 767px) {
+			.tabs ul.nav li a:hover, .tabs ul.nav li.active a { color: #0099cc; }
+		}
+	</style>
+		
+	<!--[if IE 8]>
+		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<script src="http://ie7-js.googlecode.com/svn/version/2.1(beta4)/IE9.js"></script>
+    <![endif]-->
+
+	<!-- Links: RSS + Atom Syndication + Pingback etc. -->
+	<link rel="alternate" type="application/rss+xml" title="博客 &#8211; 伯乐在线 RSS Feed" href="http://blog.jobbole.com/feed/" />
+	<link rel="alternate" type="text/xml" title="RSS .92" href="http://blog.jobbole.com/feed/rss/" />
+	<link rel="alternate" type="application/atom+xml" title="Atom 0.3" href="http://blog.jobbole.com/feed/atom/" />
+	<link rel="pingback" href="http://blog.jobbole.com/xmlrpc.php" />
+    <script src="http://tjs.sjs.sinajs.cn/open/api/js/wb.js?appkey=2606191112" type="text/javascript" charset="utf-8"></script>
+
+<!-- END head -->
+</head>
+
+<!-- BEGIN body -->
+<body class="single single-post postid-74773 single-format-standard chrome no-js">
+
+		
+	
+	<!-- BEGIN #top-nav -->
+	<nav id="top-nav" class="menu-nav">
+		
+		<!-- BEGIN .container -->
+		<div class="container">
+
+			<div class="grid-12"><ul id="menu-main-menu" class="menu"><li id="menu-item-46856" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-46856"><a href="http://top.jobbole.com/?utm_source=jobboleblog-top-nav">头条</a></li>
+<li id="menu-item-46858" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-46858"><a href="http://www.jobbole.com/groups?utm_source=jobboleblog-top-nav">小组</a></li>
+<li id="menu-item-46860" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-46860"><a href="http://hao.jobbole.com/?utm_source=jobboleblog-top-nav">资源</a></li>
+<li id="menu-item-46861" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-46861"><a href="http://www.jobbole.com/register">注册</a></li>
+<li id="menu-item-46862" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-46862"><a href="http://www.jobbole.com/wp-login.php">登录</a></li>
+</ul></div>				
+			<div class="clear"></div>
+		
+		</div>
+		<!-- END .container -->
+    
+	</nav>
+	<!-- END #top-nav -->
+	
+	  	
+	<!-- BEGIN #wrapper -->
+	<div id="wrapper" class="container">
+
+		<!-- BEGIN header -->
+		<header>
+		
+						
+			<div class="header-wrapper">
+								
+				<!-- BEGIN #logo -->
+				<div id="logo" class="leaderboard-true">
+				
+										<a href="http://blog.jobbole.com"><img src="http://jbcdn2.b0.upaiyun.com/2013/12/jbblog-logo.png" width="137" height="85" alt="博客 &#8211; 伯乐在线"/></a>
+									
+				</div>
+				<!-- END #logo -->
+				
+				<!-- BEGIN #leaderboard -->
+				<div id="leaderboard">
+				
+					<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<ins class="adsbygoogle"
+     style="display:inline-block;width:728px;height:90px"
+     data-ad-client="ca-pub-7056282119617872"
+     data-ad-slot="3173555691"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>				
+				</div>
+				<!-- END #leaderboard -->
+				
+				<div class="clear"></div>
+			
+			</div>
+			
+						
+			<div class="clear"></div>
+			
+			<!-- BEGIN #main-nav -->
+			<nav id="main-nav" class="grid-12 menu-nav">
+
+				<div class="menu-sub-menu-container"><ul id="main-nav-menu" class="menu"><li id="menu-item-33290" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-33290"><a href="http://blog.jobbole.com/">首页</a></li>
+<li id="menu-item-33406" class="menu-item menu-item-type-post_type menu-item-object-page current_page_parent menu-item-33406"><a href="http://blog.jobbole.com/all-posts/">最新文章</a></li>
+<li id="menu-item-70342" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-70342"><a href="http://blog.jobbole.com/category/online-courses/">在线课程</a></li>
+<li id="menu-item-33325" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33325"><a href="http://blog.jobbole.com/category/news/">业界</a></li>
+<li id="menu-item-33319" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33319"><a href="http://blog.jobbole.com/category/programmer/">开发</a></li>
+<li id="menu-item-33313" class="menu-item menu-item-type-taxonomy menu-item-object-category current-post-ancestor current-menu-parent current-post-parent menu-item-33313"><a href="http://blog.jobbole.com/category/it-tech/">IT技术</a>
+<ul class="sub-menu">
+	<li id="menu-item-55604" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55604"><a href="http://blog.jobbole.com/tag/linux/">Linux</a></li>
+	<li id="menu-item-55607" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55607"><a href="http://blog.jobbole.com/tag/unix/">UNIX</a></li>
+	<li id="menu-item-55605" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55605"><a href="http://blog.jobbole.com/tag/mysql/">MySQL</a></li>
+	<li id="menu-item-55621" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55621"><a href="http://blog.jobbole.com/tag/nosql/">NoSQL</a></li>
+	<li id="menu-item-55622" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55622"><a href="http://blog.jobbole.com/tag/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></li>
+	<li id="menu-item-55606" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55606"><a href="http://blog.jobbole.com/tag/git/">Git</a></li>
+	<li id="menu-item-55635" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55635"><a href="http://blog.jobbole.com/tag/%E7%AE%97%E6%B3%95/">算法</a></li>
+	<li id="menu-item-55612" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55612"><a href="http://blog.jobbole.com/tag/%e6%b5%8b%e8%af%95/">测试</a></li>
+	<li id="menu-item-55618" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55618"><a href="http://blog.jobbole.com/tag/%e5%ae%89%e5%85%a8/">信息安全</a></li>
+	<li id="menu-item-55636" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55636"><a href="http://blog.jobbole.com/tag/vim/">Vim</a></li>
+</ul>
+</li>
+<li id="menu-item-33323" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33323"><a href="http://blog.jobbole.com/category/design/">设计</a>
+<ul class="sub-menu">
+	<li id="menu-item-55610" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55610"><a href="http://blog.jobbole.com/tag/%e7%bd%91%e9%a1%b5%e8%ae%be%e8%ae%a1/">网页设计</a></li>
+	<li id="menu-item-55608" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55608"><a href="http://blog.jobbole.com/tag/ui/">UI设计</a></li>
+	<li id="menu-item-55609" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55609"><a href="http://blog.jobbole.com/tag/%e4%ba%a4%e4%ba%92%e8%ae%be%e8%ae%a1/">交互设计</a></li>
+	<li id="menu-item-55611" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55611"><a href="http://blog.jobbole.com/tag/%e7%94%a8%e6%88%b7%e4%bd%93%e9%aa%8c/">用户体验</a></li>
+</ul>
+</li>
+<li id="menu-item-33317" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33317"><a href="http://blog.jobbole.com/category/startup/">创业</a></li>
+<li id="menu-item-33390" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33390"><a href="http://blog.jobbole.com/category/career/">IT职场</a></li>
+<li id="menu-item-56110" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-56110"><a href="http://blog.jobbole.com/category/overseas/">在国外</a></li>
+<li id="menu-item-59536" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-59536"><a href="#">频道</a>
+<ul class="sub-menu">
+	<li id="menu-item-57230" class="menu-item menu-item-type-taxonomy menu-item-object-category current-post-ancestor current-menu-parent current-post-parent menu-item-57230"><a href="http://blog.jobbole.com/category/webfront/">Web前端</a></li>
+	<li id="menu-item-56557" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-56557"><a href="http://blog.jobbole.com/category/ios/">iOS</a></li>
+	<li id="menu-item-59344" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-59344"><a href="http://blog.jobbole.com/category/android/">Android</a></li>
+	<li id="menu-item-56965" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-56965"><a href="http://blog.jobbole.com/category/python/">Python</a></li>
+	<li id="menu-item-53194" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-53194"><a href="http://www.importnew.com">Java</a></li>
+	<li id="menu-item-57616" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-57616"><a href="http://blog.jobbole.com/category/c-cpp/">C/C++</a></li>
+	<li id="menu-item-57003" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-57003"><a href="http://blog.jobbole.com/category/php-programmer/">PHP</a></li>
+	<li id="menu-item-55603" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55603"><a href="http://blog.jobbole.com/tag/ruby/">Ruby</a></li>
+	<li id="menu-item-70347" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-70347"><a href="http://blog.jobbole.com/tag/go/">Go</a></li>
+</ul>
+</li>
+<li id="menu-item-33388" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33388"><a href="http://blog.jobbole.com/category/other/">更多 ></a>
+<ul class="sub-menu">
+	<li id="menu-item-56094" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-56094"><a href="http://blog.jobbole.com/category/interview/">访谈</a></li>
+	<li id="menu-item-56111" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-56111"><a href="http://blog.jobbole.com/tag/featuredpost/">经典回顾</a></li>
+	<li id="menu-item-33665" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33665"><a href="http://blog.jobbole.com/category/humor-comic/">趣文</a></li>
+	<li id="menu-item-33321" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33321"><a href="http://blog.jobbole.com/category/freelance/">自由职业</a></li>
+	<li id="menu-item-33408" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33408"><a href="http://blog.jobbole.com/category/resources/">工具与资源</a></li>
+	<li id="menu-item-33407" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33407"><a href="http://blog.jobbole.com/category/books/">书籍与教程</a></li>
+</ul>
+</li>
+</ul></div>				
+				<div class="clear"></div>
+            
+			</nav>
+			<!-- END #main-nav -->
+			
+			<div class="clear"></div>
+		
+		</header>
+		<!-- END header -->
+		
+		<div id="breadcrumb" class="grid-12 margin-20"><div class="breadcrumb-wrapper"><!-- Breadcrumb NavXT 4.4.0 -->
+<a title="Go to 伯乐在线." href="http://www.jobbole.com" class="main-home">伯乐在线</a> &gt; <a href="http://blog.jobbole.com" class="home">首页</a> &gt; <a href="http://blog.jobbole.com/all-posts/" class="post-root post-post">所有文章</a> &gt; <a href="http://blog.jobbole.com/category/it-tech/" class="category">IT技术</a> &gt; 你或许想要用到的三个新的Javascript API</div></div><div class="clear"></div>
+
+<!-- BEGIN .grid-8 -->
+<div class="grid-8">
+
+		
+	<!-- BEGIN .post -->
+<div class="post-74773 post type-post status-publish format-standard hentry category-it-tech category-webfront tag-javascript tag-web tag-web tag-web odd" id="post-74773">
+	
+	<!-- BEGIN .entry-header -->
+	<div class="entry-header">
+	
+				
+		<h1>你或许想要用到的三个新的Javascript API</h1>
+		
+							
+	</div>
+	<!-- BEGIN .entry-header -->
+	
+	<!-- BEGIN .entry-meta -->
+	<div class="entry-meta">
+	
+		<p class="entry-meta-hide-on-mobile">2014/08/04 | 分类： <a href="http://blog.jobbole.com/category/it-tech/" title="查看 IT技术 中的全部文章" rel="category tag">IT技术</a>, <a href="http://blog.jobbole.com/category/webfront/" title="查看 Web前端 中的全部文章" rel="category tag">Web前端</a> | <a href="http://blog.jobbole.com/74773/#respond" title="《你或许想要用到的三个新的Javascript API》上的评论">0 条评论</a>
+
+		 | 标签： <a href="http://blog.jobbole.com/tag/javascript/">Javascript</a>, <a href="http://blog.jobbole.com/tag/web%e5%89%8d%e7%ab%af/">Web前端</a>, <a href="http://blog.jobbole.com/tag/web%e5%ba%94%e7%94%a8/">web应用</a>, <a href="http://blog.jobbole.com/tag/web%e5%bc%80%e5%8f%91/">Web开发</a></p>
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style" style="display: block; margin: 0 0px; clear: both;"><span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_tsina"></a>
+<a class="jiathis_button_weixin"></a>
+<a class="jiathis_button_qzone"></a>
+<a class="jiathis_button_fb"></a>
+<a class="jiathis_button_renren"></a>
+<a class="jiathis_button_douban"></a>
+<a class="jiathis_button_readitlater"></a>
+<a class="jiathis_button_evernote"></a>
+<a class="jiathis_button_ydnote"></a>
+<a href="http://www.jiathis.com/share?uid=1745061" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+<a class="jiathis_counter_style"></a>
+</div>
+<!-- JiaThis Button END -->
+
+
+	</div>
+	<!-- END .entry-meta -->
+
+	<!-- BEGIN .entry -->
+	<div class="entry">
+					
+		<p class='copyright-area'>本文由 <a href='http://blog.jobbole.com'>伯乐在线</a> - <a href='http://blog.jobbole.com/author/lydashsbok/'>刘忻沂</a> 翻译自 <a target='_blank' href='http://www.sitepoint.com/3-new-javascript-apis-may-want-follow/'>Aurelio De Rosa</a>。未经许可，禁止转载！<br/>欢迎加入：<a target='_blank' href='http://www.jobbole.com/groups/6/'>技术翻译小组</a>，或分享原创到<a href='http://top.jobbole.com?utm_source=jobboleblog-article' target='_blank'>伯乐头条</a>。</p>
+<!-- div id="ad1">
+<script type="text/javascript">
+google_ad_client = "ca-pub-7056282119617872";
+google_ad_slot = "6645040531";
+google_ad_width = 300;
+google_ad_height = 250;
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</div>
+<br/ -->
+
+<p>如果你是一个SitePoint的老读者并且是我的粉丝的话，那么你已经知道我写了很多关于HTML5以及JS API的文章。到目前为止，我已经发布了一些介绍你现在就可以马上使用的API，尽管可能会用到polyfill的方式。（译注：不知道什么是polyfill请<a href="http://www.kankanews.com/ICkengine/archives/70998.shtml">点击这里</a>。）</p>
+<p>但是今天我可能要打破这个常规来给大家介绍一些仍然还处在初期阶段的API。大家必须知道这些API是非常新的，在这三个里面有两个都是在几天之前刚刚发布的。正因如此，这些API现目前都还无法使用。但是如果你有兴趣了解它们具体是用来做什么的，你可以继续阅读下面关于它们的详细介绍，同时也欢迎留下你的看法和回应。</p>
+<p>废话不多说，现在开始！</p>
+<p>&nbsp;</p>
+<h2>Web Alarms API</h2>
+<p><a href="http://www.w3.org/TR/web-alarms/">Web Alarms API</a>让你可以配置设备的闹铃设置，从而能够安排通知消息或让某个特定的应用在指定的时间点启动。这个API最典型的用法会涉及到像闹钟，日历，或其他任何需要在特定时间进行特定操作的程序。</p>
+<p>自从去年开始，这个API刚刚成为了一个W3C的设计草案。因此所有有待成为W3C官方推荐的相关细节都还在初期阶段。这个API需要通过<span style="color: #008000;">window.navigator</span>对象下的<span style="color: #008000;">alarms</span>属性来使用。<span style="color: #008000;">alarms</span>属性会提供三个函数：</p>
+<ul>
+<li><span style="color: #008000;"><strong>getAll(): </strong></span>从设备获取全部已有的闹铃并以包含<span style="color: #008000;">Alarm</span>对象的数组形式返回。</li>
+<li><span style="color: #008000;"><strong>add(): </strong></span>注册一个基于<span style="color: #008000;">Date</span>对象的闹铃并返回一个<span style="color: #008000;">AlarmRequest</span>对象。</li>
+<li><strong><span style="color: #008000;">remove():</span> </strong>通过唯一ID移除一个之前注册的闹铃（唯一性仅针对应用本身）</li>
+</ul>
+<p>&nbsp;</p>
+<p>为了向大家演示理想情况下这些函数应当如何使用，这里有一个添加闹铃的例子（请记住现目前任何浏览器都不支持这段代码）</p>
+<pre class="brush: javascript; gutter: true">var alarmId;
+var request = navigator.alarms.add(
+    new Date(&quot;June 29, 2012 07:30:00&quot;),
+    &quot;respectTimezone&quot;,
+);
+
+request.onsuccess = function (e) {
+    alarmId = e.target.result;
+};
+
+request.onerror = function (e) {
+    alert(e.target.error.name);
+};</pre>
+<p>然后，如果你想要移除之前添加的闹铃，可以这样写：</p>
+<pre class="brush: javascript; gutter: true">var request = navigator.alarms.remove(alarmId);
+
+request.onsuccess = function (e) {
+    alert(&quot;alarm removed&quot;);
+};
+
+request.onerror = function (e) {
+    alert(e.target.error.name);
+};</pre>
+<p>如果你想要了解更多关于Web Alarms API，请参阅<a href="http://www.w3.org/TR/web-alarms/">相关细节文档</a>。</p>
+<p>&nbsp;</p>
+<h2>Presentation API</h2>
+<p><a href="http://webscreens.github.io/presentation-api/">Presentation API</a>的目标就是让投影仪或TV这样的第二显示设备能够被Web使用，包括所有通过有线（HDMI，DVI等）连接以及通过无线（MiraCast, Chromecast, DLNA, AirPlay等）的设备。这个API所做的就是在请求页面与第二显示设备上的演示页面之间实现消息互通。</p>
+<p>请注意该API细节并不属于W3C标准，也不在W3C标准计划当中。这个API需要通过<span style="color: #008000;">window.navigator</span>对象下的<span style="color: #008000;">presentation</span>属性来使用。该属性提供了一个叫<span style="color: #008000;">requestSession()</span>函数，以及<span style="color: #008000;">present</span>和<span style="color: #008000;">availablechange</span>两个事件。<span style="color: #008000;">requestSession()</span>函数可以用来启动或恢复第二显示设备上的演示。它会返回一个<span style="color: #008000;">session</span>对象指代当前的演示。当通过<span style="color: #008000;">requestSession()</span>传入的url里面的演示内容被加载完成后，演示屏幕的页面会收到<span style="color: #008000;">present</span>事件。最后，在第一张演示出现后或者最后一张演示完成后会发出<span style="color: #008000;">availablechange</span>事件。</p>
+<p>举个例子，来自细节文档，该API的用法如下所示：</p>
+<pre class="brush: javascript; gutter: true">&lt;button disabled&gt;Show&lt;/button&gt;
+
+&lt;script&gt;
+var presentation = navigator.presentation,
+    showButton = document.querySelector(&#039;button&#039;);
+
+presentation.onavailablechange = function(e) {
+  showButton.disabled = !e.available;
+  showButton.onclick = show;
+};
+
+function show() {
+  var session = presentation.requestSession(&#039;http://example.org/&#039;);
+
+  session.onstatechange = function() {
+    switch (session.state) {
+      case &#039;connected&#039;:
+        session.postMessage(/*...*/);
+        session.onmessage = function() { /*...*/ };
+        break;
+      case &#039;disconnected&#039;:
+        console.log(&#039;Disconnected.&#039;);
+        break;
+    }
+  };
+}
+&lt;/script&gt;</pre>
+<p>如果你想要了解更多关于Presentation API的消息，可以看看<a href="http://webscreens.github.io/presentation-api/">最终报告</a>。</p>
+<p>&nbsp;</p>
+<h2>Standby API</h2>
+<p><a href="http://boiler23.github.io/screen-wake/">Standby API</a>让你可以在顶层浏览器页面中请求屏幕持续显示锁。这可以防止设备进入省电状态（例如屏幕自动关闭）。这个功能对有些web应用来说至关重要。例如，想像一下你正在驾车并在手机上使用基于web的导航软件（非本地应用）。如果你不去触碰屏幕的话，你的手机的屏幕会自动关闭，除非你事前在手机上进行过相关的设置。在这样的情况下，通常你是想要让屏幕保持显示状态的。这恰恰是这个API适用的地方。</p>
+<p>这个API需要通过<span style="color: #008000;">window.navigator</span>对象下的<span style="color: #008000;">wakeLock</span>属性来使用。它会提供两个函数：</p>
+<ul>
+<li><strong><span style="color: #008000;">request()</span>:</strong> 使当前应用能让屏幕保持显示状态。</li>
+<li><strong><span style="color: #008000;">release()</span>:<span style="color: #008000;"> </span></strong>释放持续显示锁，这样屏幕就不会再被强制要求显示。</li>
+</ul>
+<p>这两个函数都只接受一个参数，其只能是<span style="color: #008000;">“screen”</span>或<span style="color: #008000;">“system”</span>。前者表示操作针对的是设备屏幕，而后者针对的是除屏幕之外如CPU或广播之类的其他设备资源。</p>
+<p>以下例子会演示如何适用该API让设备屏幕保持显示状态：</p>
+<pre class="brush: javascript; gutter: true">navigator.wakeLock.request(&quot;display&quot;).then(
+    function successFunction() {
+        // do something
+    },
+    function errorFunction() {
+        // do something else
+    }
+);</pre>
+<p>要让设备允许屏幕关闭，我们可以用以下方法：</p>
+<pre class="brush: javascript; gutter: true">navigator.wakeLock.release(&quot;display&quot;);</pre>
+<p>如果你想要了解关于Standby API的更多信息，可以参考这个<a href="http://boiler23.github.io/screen-wake/">非官方草案</a>。</p>
+<p>&nbsp;</p>
+<h2>总结</h2>
+<p>在这篇文章里我给大家介绍了一些崭新的JS API。我要再次强调因为它们都还处在非常早期的阶段，所以目前没有浏览器支持。因此我们也没法实际地操作它们。然而正因为它们如此之新大家现在都有机会跟进它们接下来的发展甚至参与帮助它们的细节设计的完善。</p>
+<p>Web开发的未来一片光明，加入进来吧！</p>
+
+
+<!-- div id="ad1">
+</div -->
+
+<p><a target="_blank" rel="nofollow" href="http://www.jobdeer.com/?fr=jobbole"><img src="http://jbcdn2.b0.upaiyun.com/2014/06/8b8517e334ae87e4094570d9ce62c7f7.png"></img></a></p>
+	
+
+
+	</div>
+	<!-- END .entry -->
+
+
+
+
+
+
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_24x24">
+<a class="jiathis_button_tsina"></a>
+<a class="jiathis_button_weixin"></a>
+<a class="jiathis_button_qzone"></a>
+<a class="jiathis_button_fb"></a>
+<a class="jiathis_button_renren"></a>
+<a class="jiathis_button_douban"></a>
+<a class="jiathis_button_googleplus"></a>
+<a class="jiathis_button_readitlater"></a>
+<a class="jiathis_button_evernote"></a>
+<a class="jiathis_button_ydnote"></a>
+<a href="http://www.jiathis.com/share?uid=1745061" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+<a class="jiathis_counter_style"></a>
+</div>
+
+
+<script type="text/javascript" >
+var jiathis_config={
+	data_track_clickback:false,
+	title:"《你或许想要用到的三个新的Javascript API》",
+	summary:"我今天来给大家介绍一些仍然还处在初期阶段的API。大家必须知道这些API是非常新的，在这三个里面有两个都是在几天之前刚刚发布的。正因如此，这些API现目前都还无法使用。但是如果你有兴趣了解它们具体是用来做什么的，你可以继续阅读下面关于它们的详细介绍",
+	pic:"http://jbcdn2.b0.upaiyun.com/2014/01/578f813c1b14702dae808fa9456828f7.png",
+	appkey:{
+                "tsina":2606191112
+        },
+	ralateuid:{
+		"tsina":1670481425
+	},
+	hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1745061" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+<br/><br/>
+
+
+</div>
+<!-- END .post -->		
+	<!-- BEGIN #author-bio -->
+
+<div id="author-bio">
+	
+	<h3 class="widget-title">
+	关于作者： <a href="http://blog.jobbole.com/author/lydashsbok/">刘忻沂</a>
+	（ <a target="_blank" style="text-decoration: none;" href="http://www.jobbole.com/members/lydashsbok">@lydashsbok</a> ）
+	</h3>
+	<div class="alignleft">
+		<a href="http://blog.jobbole.com/author/lydashsbok/">
+			<img src="http://blog.jobbole.com/wp-content/uploads/avatars/9644/b001894c675cfe8706558d03a42cf1a3-bpthumb.jpg" class="avatar user-9644-avatar avatar-60 photo" width="60" height="60" alt="刘忻沂 的头像" />		</a>
+	</div>
+	<p>（新浪微博：<a href="http://weibo.com/u/1401389584">@lyDASHsBOK</a>）</p>
+	<p>
+		<a style="text-decoration: none;" href="http://blog.jobbole.com/author/lydashsbok/">查看刘忻沂的更多文章 >> </a>
+	</p>
+	<div class="clear"></div>
+	
+</div>
+
+<!-- END #author-bio -->	
+	
+<div class="wp_rp_wrap  wp_rp_plain" id="wp_rp_first"><div class="wp_rp_content"><h3 class="related_post_title">相关文章</h3><ul class="related_post wp_rp" style="visibility: visible"><li ><a href="http://blog.jobbole.com/29454/" class="wp_rp_title">常用的Javascript设计模式</a></li><li ><a href="http://blog.jobbole.com/31281/" class="wp_rp_title">2012年36个最佳前端开发指南</a></li><li ><a href="http://blog.jobbole.com/19197/" class="wp_rp_title">网易邮箱前端Javascript编码规范：基础规范</a></li><li ><a href="http://blog.jobbole.com/10926/" class="wp_rp_title">2011年回顾：把Javascript推到极限的20个网站</a></li><li ><a href="http://blog.jobbole.com/29815/" class="wp_rp_title">构建web前端异常监控系统–FdSafe</a></li><li ><a href="http://blog.jobbole.com/65551/" class="wp_rp_title">用 CSS3 和 JavaScript 制作径向动画菜单</a></li><li ><a href="http://blog.jobbole.com/68485/" class="wp_rp_title">精选在线课程：前端开发入门、进阶与实战（中文系列）</a></li><li ><a href="http://blog.jobbole.com/56689/" class="wp_rp_title">只有20行Javascript代码！手把手教你写一个页面模板引擎</a></li><li ><a href="http://blog.jobbole.com/67560/" class="wp_rp_title">编写可测试的 JavaScript 代码</a></li><li ><a href="http://blog.jobbole.com/19203/" class="wp_rp_title">网易邮箱前端Javascript编码规范：类规范</a></li></ul></div></div>
+			
+	
+<!-- BEGIN #respond -->
+<div id="respond">
+
+	<h3 class="widget-title">发表评论</h3>
+	
+	<!-- BEGIN .cancel-comment-reply -->
+	<p class="cancel-comment-reply">
+		
+		<a rel="nofollow" id="cancel-comment-reply-link" href="/74773/#respond" style="display:none;">点击这里取消回复。</a>		
+	</p>
+	<!-- END .cancel-comment-reply -->
+
+		
+	<!-- BEGIN #comment-form -->
+	<form action="http://blog.jobbole.com/wp-comments-post.php" method="post" id="comment-form">
+		
+		<fieldset>
+		
+			<legend class="none">Comment form</legend>
+			
+			<!-- BEGIN .container -->
+			<div class="container">
+			
+							
+				<div class="grid-4 margin-20">
+					<label for="author">Name<span class="red">*</span></label>
+				</div>
+				
+				<div class="grid-4 margin-20">
+					<div class="input-wrapper"><input type="text" name="author" id="author" value="" tabindex="1" size="30" class="required" placeholder="姓名" /></div>
+				</div>
+				<div class="clear"></div>
+				
+				<div class="grid-4 margin-20">
+					<label for="email">邮箱<span class="red">*</span></label>
+				</div>
+				
+				<div class="grid-4 margin-20">
+					<div class="input-wrapper"><input type="email" name="email" id="email" value="" tabindex="2" size="30" class="required email" placeholder="请填写邮箱" /></div>
+				</div>
+				<div class="clear"></div>
+				
+				<div class="grid-4 margin-20">
+					<label for="url">网站 (请以 http://开头)</label>
+				</div>
+				
+				<div class="grid-4 margin-20">
+					<div class="input-wrapper"><input type="url" name="url" id="url" value="" tabindex="3" size="30" placeholder="请填写网站地址" /></div>
+				</div>
+				<div class="clear"></div>
+				
+								
+				<div class="grid-8 margin-20">
+					<label for="comment" class="none margin-20">评论内容<span class="red">*</span></label>
+					<div class="input-wrapper"><textarea name="comment" id="comment" rows="20" cols="30" class="required" tabindex="4" onkeydown="if(event.ctrlKey && event.keyCode==13){document.getElementById('comment-form-submit').click(); return false;}" placeholder="请填写评论内容" ></textarea></div>
+				</div>
+				<div class="clear"></div>
+				
+			</div>
+			<!-- END .container -->
+			
+			<p>(<span class="red">*</span>) 表示必填项</p>
+			<p><div class="submit-wrapper"><a id="comment-form-submit" class="submit">提交评论</a></div></p>
+			<input type='hidden' name='comment_post_ID' value='74773' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+			<p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="e8044c0818" /></p>			
+		</fieldset>
+		
+	</form>
+	<!-- END #comment-form -->
+	
+	
+</div>
+<!-- END #respond -->
+
+
+			<p class="nocomments none">还没有评论。</p>
+	 
+<h3 id="comments-from-weibo" class="widget-title">来自微博的评论</h3>
+<wb:comments url="http://blog.jobbole.com/74773/" border="y" width="auto" color="e8e8e8,ffffff,4c4c4c,5093d5,cccccc,f0f0f0" appkey="2606191112" ralateuid="1670481425" ></wb:comments>
+
+
+
+		
+				
+	<!-- BEGIN .navigation -->
+	<div class="navigation margin-20">
+	
+		<div class="alignleft"><a href="http://blog.jobbole.com/74716/" rel="prev">&laquo; 机器学习算法基础概念学习总结</a></div>
+		<div class="alignright"><a href="http://blog.jobbole.com/74795/" rel="next">对TCP/IP网络协议的深入浅出归纳 &raquo;</a></div>
+		<div class="clear"></div>
+
+	</div>
+	<!-- END .navigation -->
+	
+		
+</div>
+<!-- END .grid-8 -->
+
+<!-- BEGIN #sidebar -->
+<div id="sidebar" class="grid-4">
+
+	<div id="search-7" class="widget widget_search"><!-- BEGIN #searchform -->
+<form method="get" id="searchform" action="http://blog.jobbole.com/">
+
+	<label class="none" for="s">Search for:</label>
+	<div class="input-wrapper"><input type="text" value="" name="s" id="s" placeholder="Search" /></div>
+	<input type="submit" id="searchsubmit" value="Search" />
+	
+</form>
+<!-- END #searchform --></div><div id="text-39" class="widget widget_text"><h3 class="widget-title">推荐关注</h3>			<div class="textwidget"><div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://top.jobbole.com?utm_source=jobboleblog-sidebar" target="_blank"><img src="http://jbcdn2.b0.upaiyun.com/2014/07/53a397f357d0212df7f0f4dbb2f33732.jpg" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://top.jobbole.com?utm_source=jobboleblog-sidebar" target="_blank">伯乐头条 &#8211; 分享和发现原创</a><br /> 在IT互联网领域，伯乐头条是投递和发现优秀原创的最佳聚合站点之一。</p>
+</p></div>
+<div class="clear"></div>
+</div>
+</div>
+		</div><div id="aw_tabbed_widget-9" class="widget aw_tabbed_widget"><div class="tabs"><ul class="nav clearfix"><li><a id="link-most-discussed" href="#tab-most-discussed" title="Web前端热门文章">Web前端热门文章</a></li><li><a id="link-latest-comments" href="#tab-latest-comments" title="整站本周热门文章">整站本周热门文章</a></li></ul><div id="tab-most-discussed" class="tab"><div class="floated-thumb">							
+							
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta ">
+							
+								<p>
+								    <span class="numb">0</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/74290/" title="阅读 jQuery 源码的18个惊喜">阅读 jQuery 源码的18个惊喜</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+							
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta  no-thumb">
+							
+								<p>
+								    <span class="numb">1</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/72798/" title="开发者的10个最佳代码游乐场">开发者的10个最佳代码游乐场</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+							
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta ">
+							
+								<p>
+								    <span class="numb">2</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/72810/" title="函数式 JavaScript（1）：介绍">函数式 JavaScript（1）：介绍</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+							
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta ">
+							
+								<p>
+								    <span class="numb">3</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/73031/" title="用 Express 和 AbsurdJS 做 Node.js 应用">用 Express 和 AbsurdJS 做 Node.js 应用</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+							
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta ">
+							
+								<p>
+								    <span class="numb">4</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/73465/" title="学习JavaScript的在线课程和指南">学习JavaScript的在线课程和指南</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+							
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta ">
+							
+								<p>
+								    <span class="numb">5</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/73688/" title="学习JavaScript的必备读物">学习JavaScript的必备读物</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+							
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta  no-thumb">
+							
+								<p>
+								    <span class="numb">6</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/73744/" title="Chrome 中能帮助我们开发的一些利器">Chrome 中能帮助我们开发的一些利器</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+							
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta  no-thumb">
+							
+								<p>
+								    <span class="numb">7</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/74110/" title="详解Javascript 中的this指针">详解Javascript 中的this指针</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+							
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta ">
+							
+								<p>
+								    <span class="numb">8</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/74199/" title="JavaScript 中的数字">JavaScript 中的数字</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+							
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta ">
+							
+								<p>
+								    <span class="numb">9</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/74504/" title="八卦Google的前端开发方式及流程">八卦Google的前端开发方式及流程</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+						</div></div><div id="tab-latest-comments" class="tab"><div class="floated-thumb">							
+											
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta  no-thumb">
+							
+								<p>
+								    <span class="numb">0</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/74614/" title="数字证书原理">数字证书原理</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+											
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta ">
+							
+								<p>
+								    <span class="numb">1</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/74574/" title="算法系列：计数排序">算法系列：计数排序</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+											
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta ">
+							
+								<p>
+								    <span class="numb">2</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/74515/" title="125个基本的C#面试问答">125个基本的C#面试问答</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+											
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta ">
+							
+								<p>
+								    <span class="numb">3</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/74628/" title="关于测试人员的职业发展">关于测试人员的职业发展</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+											
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta  no-thumb">
+							
+								<p>
+								    <span class="numb">4</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/74562/" title="密码改变了我的生活">密码改变了我的生活</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+											
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta  no-thumb">
+							
+								<p>
+								    <span class="numb">5</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/74541/" title="这个12岁英国男孩学也不上了，全职开发游戏，从游戏中学习">12岁英国男孩不上学，全职开发游戏</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+											
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta ">
+							
+								<p>
+								    <span class="numb">6</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/65518/" title="在安卓系统上使用Google Analytics API V4">在安卓系统上使用Google Analytics API V4</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+											
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta ">
+							
+								<p>
+								    <span class="numb">7</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/74240/" title="安卓中如何实现滑动导航">安卓中如何实现滑动导航</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+											
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta ">
+							
+								<p>
+								    <span class="numb">8</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/74252/" title="Python编程中的反模式">Python编程中的反模式</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+											
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta  no-thumb">
+							
+								<p>
+								    <span class="numb">9</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/74263/" title="算法系列：煎饼排序">算法系列：煎饼排序</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+						</div></div></div></div><div id="text-25" class="widget widget_text"><h3 class="widget-title">热门课程</h3>			<div class="textwidget"><div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://www.imooc.com/view/149?utm_source=jobboleblog" target="_blank"><img src="http://jbcdn2.b0.upaiyun.com/2014/06/3db1c52a1bf71df7a0b08b484d57e16d.png" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://www.imooc.com/view/149?utm_source=jobboleblog" target="_blank">Swift开发完整的天气iOS APP</a><br /> 免费课程！教大家使用Swift语言开发一个完整的天气 iOS APP。</p>
+</p></div>
+<div class="clear"></div>
+</div>
+<div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://www.imooc.com/view/96?utm_source=jobboleblog" target="_blank"><img src="http://jbcdn2.b0.upaiyun.com/2014/06/e5bb91f253000fa7862f448fc981b8f51.png" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://www.imooc.com/view/96?utm_source=jobboleblog" target="_blank">Android攻城狮的第一门课</a><br /> 课程的目标就是“看得懂、学得会、做得出”，为后续的学习打下夯实的基础。</p>
+</p></div>
+<div class="clear"></div>
+</div>
+<div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://www.imooc.com/view/85?utm_source=jobboleblog" target="_blank"><img src="http://jbcdn2.b0.upaiyun.com/2014/02/3628c00234b56ae208e1bed14b343e92.jpg" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://www.imooc.com/view/85?utm_source=jobboleblog" target="_blank">Java入门第一季</a><br /> iMooc最受欢迎的课程，Java系列教程目前已经到了第3季。</p>
+</p></div>
+<div class="clear"></div>
+</div>
+<div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://www.imooc.com/view/100?utm_source=jobboleblog" target="_blank"><img src="http://jbcdn2.b0.upaiyun.com/2014/08/297a2a63dd08502febee07187c0bbe11.jpeg" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://www.imooc.com/view/100?utm_source=jobboleblog" target="_blank">手把手教你实现电商网站开发</a><br /> 了解和掌握一个完整的电商网站制作的流程和开发过程。</p>
+</p></div>
+<div class="clear"></div>
+</div>
+<div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://www.imooc.com/view/139?utm_source=jobboleblog" target="_blank"><img src="http://jbcdn2.b0.upaiyun.com/2014/08/894735b970c19da6337db5d30c4cafef.gif" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://www.imooc.com/view/139?utm_source=jobboleblog" target="_blank">Photoshop 入门教程——新手过招</a><br /> 揭开PS的面纱，让你掌握PS的基本用法。</p>
+</p></div>
+<div class="clear"></div>
+</div>
+</div>
+		</div><div id="aw_top_contributors_widget-6" class="widget aw_top_contributors_widget">		
+		<h3 class="widget-title">Web前端频道作者</h3>
+		
+		<!-- BEGIN .container -->
+		<div class="container ffox_most_active">
+			<li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/nighca/" title="nighca的文章"><img src="http://gravatar.com/avatar/eceefec19e19757a07e9e2dac63be644?d=mm&amp;s=32&amp;r=G" class="avatar user-9329-avatar avatar-32 photo" width="32" height="32" alt="nighca 的头像" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/kmokidd/" title="kmokidd的文章"><img src="http://blog.jobbole.com/wp-content/uploads/avatars/13503/7e9d555d52e5718860728b1325185d4d-bpthumb.png" class="avatar user-13503-avatar avatar-32 photo" width="32" height="32" alt="kmokidd 的头像" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/monokurobo/" title="蔡蔡的文章"><img src="http://blog.jobbole.com/wp-content/uploads/avatars/10971/c7de0071e8376a99fc1d964a23711bb3-bpthumb.jpg" class="avatar user-10971-avatar avatar-32 photo" width="32" height="32" alt="蔡蔡 的头像" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/owenchen/" title="陈 鑫伟的文章"><img src="http://blog.jobbole.com/wp-content/uploads/sites/2/userphoto/11729.thumbnail.jpg" alt="陈 鑫伟" width="50" height="46" class="photo" style="border:0px;height:32px;width:32px" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/jaward/" title="Jaward华仔的文章"><img src="http://blog.jobbole.com/wp-content/uploads/sites/2/userphoto/6951.thumbnail.jpg" alt="Jaward华仔" width="46" height="50" class="photo" style="border:0px;height:32px;width:32px" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/aimujie/" title="埃姆杰的文章"><img src="http://blog.jobbole.com/wp-content/uploads/sites/2/userphoto/9337.thumbnail.jpg" alt="埃姆杰" width="50" height="50" class="photo" style="border:0px;height:32px;width:32px" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/alabebop/" title="兔米酱的文章"><img src="http://gravatar.com/avatar/7e64ed8590561a4108e1406fbe115558?d=mm&amp;s=32&amp;r=G" class="avatar user-8223-avatar avatar-32 photo" width="32" height="32" alt="兔米酱 的头像" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/yanhaijing/" title="yanhaijing的文章"><img src="http://blog.jobbole.com/wp-content/uploads/sites/2/userphoto/9174.thumbnail.jpg" alt="yanhaijing" width="50" height="50" class="photo" style="border:0px;height:32px;width:32px" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/jakiewoo/" title="梧桐的文章"><img src="http://blog.jobbole.com/wp-content/uploads/sites/2/userphoto/11659.thumbnail.jpg" alt="梧桐" width="50" height="50" class="photo" style="border:0px;height:32px;width:32px" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/rubyisapm/" title="rubyisapm的文章"><img src="http://blog.jobbole.com/wp-content/uploads/sites/2/userphoto/9331.thumbnail.jpg" alt="rubyisapm" width="50" height="50" class="photo" style="border:0px;height:32px;width:32px" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/njuyz/" title="njuyz的文章"><img src="http://blog.jobbole.com/wp-content/uploads/sites/2/userphoto/12435.thumbnail.jpg" alt="njuyz" width="50" height="50" class="photo" style="border:0px;height:32px;width:32px" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/abell123/" title="abell123的文章"><img src="http://blog.jobbole.com/wp-content/uploads/avatars/18072/fa3181aa4a04aee98b8a2b64f47cade9-bpthumb.png" class="avatar user-18072-avatar avatar-32 photo" width="32" height="32" alt="abell123 的头像" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/heloowird/" title="heloowird的文章"><img src="http://blog.jobbole.com/wp-content/uploads/sites/2/userphoto/13952.thumbnail.jpg" alt="heloowird" width="50" height="50" class="photo" style="border:0px;height:32px;width:32px" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/daozen/" title="道禅的文章"><img src="http://blog.jobbole.com/wp-content/uploads/avatars/9385/d544c0112c85e27383f405ef3020dfc5-bpthumb.jpg" class="avatar user-9385-avatar avatar-32 photo" width="32" height="32" alt="道禅 的头像" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/szxw/" title="酸斋笑我的文章"><img src="http://blog.jobbole.com/wp-content/uploads/avatars/9345/1c7ef7d8aed8e8cf14aceaee9cf1b8bd-bpthumb.png" class="avatar user-9345-avatar avatar-32 photo" width="32" height="32" alt="酸斋笑我 的头像" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/flora-hu/" title="胡蓉的文章"><img src="http://gravatar.com/avatar/766e0744e95dd552e100a1f35fe96cf6?d=mm&amp;s=32&amp;r=G" class="avatar user-7216-avatar avatar-32 photo" width="32" height="32" alt="胡蓉 的头像" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/huanglimin/" title="黄利民的文章"><img src="http://blog.jobbole.com/wp-content/uploads/sites/2/userphoto/6285.thumbnail.jpg" alt="黄利民" width="67" height="80" class="photo" style="border:0px;height:32px;width:32px" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/ivy3372/" title="Ivy_Ling的文章"><img src="http://blog.jobbole.com/wp-content/uploads/sites/2/userphoto/9340.thumbnail.jpg" alt="Ivy_Ling" width="50" height="50" class="photo" style="border:0px;height:32px;width:32px" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/rotciv/" title="杨帅的文章"><img src="http://blog.jobbole.com/wp-content/uploads/sites/2/userphoto/10992.thumbnail.jpg" alt="杨帅" width="50" height="50" class="photo" style="border:0px;height:32px;width:32px" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/ctcetl/" title="Hacker_YHJ的文章"><img src="http://blog.jobbole.com/wp-content/uploads/sites/2/userphoto/9298.thumbnail.jpg" alt="Hacker_YHJ" width="50" height="50" class="photo" style="border:0px;height:32px;width:32px" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/ahking/" title="Alex的文章"><img src="http://blog.jobbole.com/wp-content/uploads/sites/2/userphoto/12684.thumbnail.jpg" alt="Alex" width="50" height="50" class="photo" style="border:0px;height:32px;width:32px" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/fengliu222/" title="Moejser的文章"><img src="http://blog.jobbole.com/wp-content/uploads/sites/2/userphoto/17677.thumbnail.jpg" alt="Moejser" width="50" height="50" class="photo" style="border:0px;height:32px;width:32px" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/guoxz1988/" title="蝈蝈的文章"><img src="http://blog.jobbole.com/wp-content/uploads/sites/2/userphoto/9284.thumbnail.jpg" alt="蝈蝈" width="50" height="50" class="photo" style="border:0px;height:32px;width:32px" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/alon/" title="涂鸦码龙的文章"><img src="http://gravatar.com/avatar/a0ccfbfb52c36e90f90eae6622b6b5ec?d=mm&amp;s=32&amp;r=G" class="avatar user-17784-avatar avatar-32 photo" width="32" height="32" alt="涂鸦码龙 的头像" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/lenville/" title="Lenville的文章"><img src="http://gravatar.com/avatar/3853090beffe060209b97a60192e1dee?d=mm&amp;s=32&amp;r=G" class="avatar user-9383-avatar avatar-32 photo" width="32" height="32" alt="Lenville 的头像" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/juanjuanguai/" title="卷卷怪的文章"><img src="http://blog.jobbole.com/wp-content/uploads/sites/2/userphoto/11075.thumbnail.jpg" alt="卷卷怪" width="50" height="50" class="photo" style="border:0px;height:32px;width:32px" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/shinancao/" title="shinancao的文章"><img src="http://blog.jobbole.com/wp-content/uploads/sites/2/userphoto/16964.thumbnail.jpg" alt="shinancao" width="50" height="50" class="photo" style="border:0px;height:32px;width:32px" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/frankfang/" title="方应杭的文章"><img src="http://blog.jobbole.com/wp-content/uploads/sites/2/userphoto/10503.thumbnail.jpg" alt="方应杭" width="50" height="50" class="photo" style="border:0px;height:32px;width:32px" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/huaming/" title="华铭的文章"><img src="http://blog.jobbole.com/wp-content/uploads/sites/2/userphoto/12987.thumbnail.jpeg" alt="华铭" width="50" height="50" class="photo" style="border:0px;height:32px;width:32px" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/mllongze/" title="Tel的文章"><img src="http://blog.jobbole.com/wp-content/uploads/sites/2/userphoto/11095.thumbnail.jpg" alt="Tel" width="50" height="50" class="photo" style="border:0px;height:32px;width:32px" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/carman/" title="Carman的文章"><img src="http://blog.jobbole.com/wp-content/uploads/avatars/18492/bb087d7961b271f2d1290e5cbfe343c1-bpthumb.jpg" class="avatar user-18492-avatar avatar-32 photo" width="32" height="32" alt="Carman 的头像" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/xiaoyu/" title="厉瑶的文章"><img src="http://blog.jobbole.com/wp-content/uploads/sites/2/userphoto/8445.thumbnail.jpg" alt="厉瑶" width="50" height="50" class="photo" style="border:0px;height:32px;width:32px" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/lellansin/" title="Lellansin的文章"><img src="http://gravatar.com/avatar/6d794c840d9c79c738e740fae268eb1b?d=mm&amp;s=32&amp;r=G" class="avatar user-10561-avatar avatar-32 photo" width="32" height="32" alt="Lellansin 的头像" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/matrixyuri/" title="孑良的文章"><img src="http://blog.jobbole.com/wp-content/uploads/sites/2/userphoto/11737.thumbnail.jpg" alt="孑良" width="50" height="50" class="photo" style="border:0px;height:32px;width:32px" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/txxg/" title="塔塔的文章"><img src="http://blog.jobbole.com/wp-content/uploads/sites/2/userphoto/13276.thumbnail.jpg" alt="塔塔" width="50" height="50" class="photo" style="border:0px;height:32px;width:32px" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/daijiahua/" title="戴嘉华的文章"><img src="http://blog.jobbole.com/wp-content/uploads/sites/2/userphoto/7211.thumbnail.jpg" alt="戴嘉华" width="72" height="80" class="photo" style="border:0px;height:32px;width:32px" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/emicats2013/" title="emicats2013的文章"><img src="http://blog.jobbole.com/wp-content/uploads/avatars/9372/376d3b073dfd073fb6438d770cb886ab-bpthumb.jpg" class="avatar user-9372-avatar avatar-32 photo" width="32" height="32" alt="emicats2013 的头像" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/riverphoenix/" title="riverphoenix的文章"><img src="http://blog.jobbole.com/wp-content/uploads/sites/2/userphoto/11065.thumbnail.jpg" alt="riverphoenix" width="50" height="50" class="photo" style="border:0px;height:32px;width:32px" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/luakuc/" title="孤舟8027的文章"><img src="http://gravatar.com/avatar/2e2120c7f5bb60acb21c65073a26fe06?d=mm&amp;s=32&amp;r=G" class="avatar user-14173-avatar avatar-32 photo" width="32" height="32" alt="孤舟8027 的头像" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com/author/lydashsbok/" title="刘忻沂的文章"><img src="http://blog.jobbole.com/wp-content/uploads/avatars/9644/b001894c675cfe8706558d03a42cf1a3-bpthumb.jpg" class="avatar user-9644-avatar avatar-32 photo" width="32" height="32" alt="刘忻沂 的头像" /></a></li>				
+			<div class="clear"></div>
+						
+		</div>
+		<br/>
+		<!-- END .container -->
+				
+		</div><div id="recent_comments_widget-6" class="widget recent_comments_widget">		<h3 class='widget-title'>最新评论（期待您也参与评论）</h3>
+		<ul>
+		
+					
+			<li id="rc-comment-60861" class="rc-item rc-comment rc-clearfix">
+				<img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://blog.jobbole.com/wp-content/uploads/avatars/21013/01325770a69948bede51f2cc3fd246c3-bpthumb.jpg">
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/74380/#comment-60861" rel="nofollow">空格大辩论 - 解决了世界上最重要的争论：for 语句的周围是否需要额外的空格</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				Google Java Style : http://google-styleguide.googl...								<span class="rc-reviewer"> juyujuyu</span>
+								</div>
+			</li>
+			
+						
+			<li id="rc-comment-60837" class="rc-item rc-comment rc-clearfix">
+				<img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://gravatar.com/avatar/77c2eb3c5204121f670d2da0ba3d7f88?d=mm&s=32&r=G">
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/74515/#comment-60837" rel="nofollow">125个基本的C#面试问答</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				Enum  这个是枚举好不好!!								<span class="rc-reviewer"> Tom.tang</span>
+								</div>
+			</li>
+			
+						
+			<li id="rc-comment-60788" class="rc-item rc-comment rc-clearfix">
+				<img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://0.gravatar.com/avatar/05d10a078b1bef0994d7c7576c3d8d14?s=32&d=mm&r=G">
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/74574/#comment-60788" rel="nofollow">算法系列：计数排序</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				给的例子代码好像有两个bug,void countingSort(int * array, int ...								<span class="rc-reviewer"> xiexiangh69</span>
+								</div>
+			</li>
+			
+						
+			<li id="rc-comment-60790" class="rc-item rc-comment rc-clearfix">
+				<img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://1.gravatar.com/avatar/f9a6a125528b57a83cca6a4d718c1dbf?s=32&d=mm&r=G">
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/37041/#comment-60790" rel="nofollow">37signals员工的办公环境</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				谁会在一个光线这么足的逆光的窗口摆一个显示器？你们觉得这科学么》									<a class="rc-reviewer" target="_blank" href="#null" rel="nofollow external"> 上尉诗人</a>
+								</div>
+			</li>
+			
+						
+			<li id="rc-comment-60784" class="rc-item rc-comment rc-clearfix">
+				<img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://0.gravatar.com/avatar/ed358d89183652aa978fd4939842acbd?s=32&d=mm&r=G">
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/74515/#comment-60784" rel="nofollow">125个基本的C#面试问答</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				谢谢分享，很有用								<span class="rc-reviewer"> 天命</span>
+								</div>
+			</li>
+			
+						
+			<li id="rc-comment-60783" class="rc-item rc-comment rc-clearfix">
+				<img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://0.gravatar.com/avatar/69110d9262a861d0a5a5a2506d7af2fd?s=32&d=mm&r=G">
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/74614/#comment-60783" rel="nofollow">数字证书原理</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				看着真费劲，感觉没那么复杂，可以先看看这篇文章吧：公钥私钥加密解密数字证书数字签名详解 http:/...									<a class="rc-reviewer" target="_blank" href="http://shentar.me" rel="nofollow external"> 童燕群</a>
+								</div>
+			</li>
+			
+						
+			<li id="rc-comment-60780" class="rc-item rc-comment rc-clearfix">
+				<img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://1.gravatar.com/avatar/d8a3b2854c4917d39d52b96cd0da3461?s=32&d=mm&r=G">
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/42550/#comment-60780" rel="nofollow">数据工程师必知算法：蓄水池抽样</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				前n-1个数据中数据被返回的概率为：(1/(n-1))*((n-1)/n)= 1/n									<a class="rc-reviewer" target="_blank" href="http://codemany.com" rel="nofollow external"> dohkoos</a>
+								</div>
+			</li>
+			
+						
+			<li id="rc-comment-60749" class="rc-item rc-comment rc-clearfix">
+				<img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://1.gravatar.com/avatar/1778859e28d65adee4a052358cd13e56?s=32&d=mm&r=G">
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/74574/#comment-60749" rel="nofollow">算法系列：计数排序</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				计数排序有个假设的前提-&gt;每个输入元素都是基于0到k之间的整数								<span class="rc-reviewer"> link</span>
+								</div>
+			</li>
+			
+					
+		</ul>
+        </div><div id="text-26" class="widget widget_text">			<div class="textwidget"><p><script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><ins class="adsbygoogle" style="display:inline-block;width:300px;height:250px" data-ad-client="ca-pub-7056282119617872" data-ad-slot="8418538291"></ins><script> (adsbygoogle = window.adsbygoogle || []).push({}); </script></p>
+</div>
+		</div><div id="aw_most_active_users_widget-6" class="widget aw_most_active_users_widget">		
+		<h3 class="widget-title">活跃的Web前端文章读者</h3>
+		
+		<!-- BEGIN .container -->
+		<div class="container ffox_most_active">
+			<li><a ref='nofollow' target='_blank' href="http://yanhaijing.com" title="yanhaijing"><img src="http://blog.jobbole.com/wp-content/uploads/sites/2/userphoto/9174.thumbnail.jpg" alt="yanhaijing" width="50" height="50" class="photo" style="border:0px;height:32px;width:32px" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com" title="灯盏细辛"><img alt='' src='http://0.gravatar.com/avatar/ac306d3a0d5f982dc9ebd96c3c7f2a20?s=32&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com" title="黄利民"><img src="http://blog.jobbole.com/wp-content/uploads/sites/2/userphoto/6285.thumbnail.jpg" alt="黄利民" width="67" height="80" class="photo" style="border:0px;height:32px;width:32px" /></a></li><li><a ref='nofollow' target='_blank' href="http://codemany.com" title="dohkoos"><img src="http://gravatar.com/avatar/d8a3b2854c4917d39d52b96cd0da3461?d=mm&amp;s=32&amp;r=G" class="avatar user-8356-avatar avatar-32 photo" width="32" height="32" alt="dohkoos 的头像" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com" title="Agent"><img alt='' src='http://1.gravatar.com/avatar/1066e949043016f0f3427935582f251a?s=32&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com" title="多蒙菜"><img alt='' src='http://1.gravatar.com/avatar/dee8ea79410098612f9347b6e0afb34f?s=32&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com" title="黄余粮"><img src="http://blog.jobbole.com/wp-content/uploads/sites/2/userphoto/6296.thumbnail.jpg" alt="黄余粮" width="80" height="80" class="photo" style="border:0px;height:32px;width:32px" /></a></li><li><a ref='nofollow' target='_blank' href="http://www.nimojs.com" title="nimo"><img src="http://gravatar.com/avatar/37b4c85d40888de0e82954e92da741d4?d=mm&amp;s=32&amp;r=G" class="avatar user-11825-avatar avatar-32 photo" width="32" height="32" alt="nimo 的头像" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com" title="hadeser"><img src="http://gravatar.com/avatar/48d1308cf76624c21ef5f5a77d8ec7b9?d=mm&amp;s=32&amp;r=G" class="avatar user-11091-avatar avatar-32 photo" width="32" height="32" alt="hadeser 的头像" /></a></li><li><a ref='nofollow' target='_blank' href="http://shansing.com" title="闪闪的星"><img alt='' src='http://1.gravatar.com/avatar/53f4768c62aa59ff9c6511b8255193fd?s=32&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com" title="camelwoo"><img alt='' src='http://0.gravatar.com/avatar/eadaa416b21b2803f7133a7e6fcb0afa?s=32&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /></a></li><li><a ref='nofollow' target='_blank' href="http://my.oschina.net/clarkhill" title="崔钢"><img src="http://gravatar.com/avatar/47d5e47271b65109e8d22abc8ca61ab2?d=mm&amp;s=32&amp;r=G" class="avatar user-10693-avatar avatar-32 photo" width="32" height="32" alt="gavin 的头像" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com" title="Cloud R"><img alt='' src='http://1.gravatar.com/avatar/51c91dfa10aceb1dd8139b772e59a59c?s=32&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com" title="小秋爱前端"><img src="http://blog.jobbole.com/wp-content/uploads/avatars/12951/073bc27838a4fb37d8392e18a95a67d6-bpthumb.jpg" class="avatar user-12951-avatar avatar-32 photo" width="32" height="32" alt="小秋爱前端 的头像" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com" title="youngsterxyf"><img alt='' src='http://0.gravatar.com/avatar/8c3c504e180e14ce1410cb384a10d759?s=32&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com" title="海阳"><img alt='' src='http://1.gravatar.com/avatar/bf2ff3d7fc62c936d199e69696b06e4a?s=32&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /></a></li><li><a ref='nofollow' target='_blank' href="http://weakish.github.io" title="weakish"><img alt='' src='http://0.gravatar.com/avatar/255b0472c4482c3ea433ab84b4e742e8?s=32&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com" title="CuGBabyBeaR"><img src="http://blog.jobbole.com/wp-content/uploads/sites/2/userphoto/9327.thumbnail.png" alt="CuGBabyBeaR" width="50" height="50" class="photo" style="border:0px;height:32px;width:32px" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com" title="Yang"><img alt='' src='http://0.gravatar.com/avatar/e66e750f09c129a19d9e5b4a0d5c1dbc?s=32&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com" title="陈志成"><img src="http://gravatar.com/avatar/8177f9ddd43a2e22430f9df8098b25d5?d=mm&amp;s=32&amp;r=G" class="avatar user-6202-avatar avatar-32 photo" width="32" height="32" alt="陈志成 的头像" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com" title="king"><img src="http://blog.jobbole.com/wp-content/uploads/avatars/16959/0af5eb432a6eebb63532465cd06c6227-bpthumb.jpg" class="avatar user-16959-avatar avatar-32 photo" width="32" height="32" alt="king 的头像" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com" title="jack"><img alt='' src='http://1.gravatar.com/avatar/bf2bd3db937104696119a12925121b26?s=32&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /></a></li><li><a ref='nofollow' target='_blank' href="http://foolyoghurt.github.io" title="foolyoghurt"><img src="http://gravatar.com/avatar/d8e028bac244a4d16e6115e6d5d9d0ec?d=mm&amp;s=32&amp;r=G" class="avatar user-9940-avatar avatar-32 photo" width="32" height="32" alt="Puchi 的头像" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com" title="newseditors"><img alt='' src='http://1.gravatar.com/avatar/7fb965a0dc2871a24947239b0ec05480?s=32&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /></a></li><li><a ref='nofollow' target='_blank' href="http://yimity.com" title="一米"><img alt='' src='http://0.gravatar.com/avatar/2cd017d1dcba182c216aa78ead86ee7a?s=32&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com" title="ShiLei"><img alt='' src='http://0.gravatar.com/avatar/8a6c3153859207800eec6299d5c5f105?s=32&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com" title="sd"><img alt='' src='http://1.gravatar.com/avatar/7953135e3524e879ac03d406da89e118?s=32&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com" title="kmokidd"><img src="http://blog.jobbole.com/wp-content/uploads/avatars/13503/7e9d555d52e5718860728b1325185d4d-bpthumb.png" class="avatar user-13503-avatar avatar-32 photo" width="32" height="32" alt="kmokidd 的头像" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com" title="test"><img alt='' src='http://0.gravatar.com/avatar/0eb178cec364c022a189c3814e5f7483?s=32&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com" title="星期六的黄昏"><img alt='' src='http://0.gravatar.com/avatar/8392613f3b47ebaf39ce73392f5d133a?s=32&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /></a></li><li><a ref='nofollow' target='_blank' href="http://www.cnblogs.com/AndyWithPassion/" title="AndrewZhang"><img alt='' src='http://1.gravatar.com/avatar/7d82afe5ec4038c696eff8b13b0f35ee?s=32&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com" title="jinc"><img alt='' src='http://1.gravatar.com/avatar/f761d43fe93598376e083c226ce5d135?s=32&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.sina.com.cn/u/1139003535" title="轼佣"><img src="http://gravatar.com/avatar/e372ec6f50029388f48aa7f12bcff5cd?d=mm&amp;s=32&amp;r=G" class="avatar user-7653-avatar avatar-32 photo" width="32" height="32" alt="轼佣 的头像" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com" title="JQYang"><img alt='' src='http://0.gravatar.com/avatar/254a91048101bceb5ecb1ce46ae8ab5e?s=32&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com" title="Satan"><img alt='' src='http://0.gravatar.com/avatar/aa2e25c22ef9b77522f7134b80b8aa30?s=32&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com" title="jingshou"><img alt='' src='http://0.gravatar.com/avatar/0085f5e8e286c1c8eca25ba10b7ec08f?s=32&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com" title="抓狂"><img src="http://gravatar.com/avatar/51f1b2eda5ee6c7f057e74dd9b3f7661?d=mm&amp;s=32&amp;r=G" class="avatar user-11415-avatar avatar-32 photo" width="32" height="32" alt="ljf10000 的头像" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com" title="Faith"><img src="http://gravatar.com/avatar/ff354493c4dc4200e323b2ed52d028ea?d=mm&amp;s=32&amp;r=G" class="avatar user-13005-avatar avatar-32 photo" width="32" height="32" alt="Faith2013 的头像" /></a></li><li><a ref='nofollow' target='_blank' href="http://blog.jobbole.com" title="特里"><img alt='' src='http://1.gravatar.com/avatar/55502f40dc8b7c769880b10874abc9d0?s=32&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /></a></li><li><a ref='nofollow' target='_blank' href="http://www.cnblogs.com/dolphinX/" title="dolphinX"><img alt='' src='http://1.gravatar.com/avatar/ba2d311c279e24dde9c5e1a7a3dcdb1e?s=32&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /></a></li>				
+			<div class="clear"></div>
+						
+		</div>
+		<br/>
+		<!-- END .container -->
+				
+		</div>	
+	<!-- BEGIN .container -->
+	<div class="container">
+	
+		<!-- BEGIN .grid-2 -->
+		<div class="grid-2">
+			
+						
+		</div>
+		<!-- END .grid-2 -->
+		
+		<!-- BEGIN .grid-2 -->
+		<div class="grid-2">
+			
+						
+		</div>
+		<!-- END .grid-2 -->
+		
+		<div class="clear"></div>
+			
+	</div>
+	<!-- END .container -->
+
+</div>
+<!-- END #sidebar -->
+<div class="clear"></div>	
+
+
+</div>
+<!-- END #wrapper -->
+
+<!-- BEGIN footer -->
+<footer>
+
+	<!-- BEGIN .container -->
+	<div class="container">
+		
+		<!-- BEGIN .grid-4 -->
+		<div class="grid-4">
+			
+			<div id="text-3" class="widget widget_text"><h3 class="widget-title">关于伯乐在线博客</h3>			<div class="textwidget"><p>在这个信息爆炸的时代，人们已然被大量、快速并且简短的信息所包围。然而，我们相信：过多“快餐”式的阅读只会令人“虚胖”，缺乏实质的内涵。伯乐在线博客团队正试图以我们微薄的力量，把优秀的原创/译文分享给读者，为“快餐”添加一些“营养”元素。</p>
+<p>伯乐在线-博客( blog.JobBole.com )专注于分享职业相关的博客文章、业界资讯和职业相关的优秀工具和资源。博文类别包括：程序员、设计、营销、互联网、IT技术、自由职业、创业、运营、管理、翻译和人力资源等等。期待您通过<a href="http://blog.jobbole.com/feed/">RSS订阅</a>和<a href="http://weibo.com/jobbole">微博</a>关注我们。如果您也愿意分享一份自己的原创/译文，可以<a target="_blank" href="http://top.jobbole.com">从这里开始</a>～</p>
+</div>
+		</div>			
+		</div>
+		<!-- END .grid-4 -->
+		
+		<!-- BEGIN .grid-4 -->
+		<div class="grid-4">
+			
+			<div id="text-7" class="widget widget_text"><h3 class="widget-title">联系我们</h3>			<div class="textwidget"><p><strong>网站合作和广告投放</strong></p>
+<p>联系邮箱：Webmaster (at) JobBole.com<br />
+QQ： 630772296  （加好友请注明来意）<br />
+交换友情链接要求：PR>=4</p>
+<p><strong>网站使用问题</strong></p>
+<p>请直接<a  href='mailto:webmaster@jobbole.com'>联系我们</a>询问或者反馈</p>
+</div>
+		</div>			
+		</div>
+		<!-- END .grid-4 -->
+		
+		<!-- BEGIN .grid-4 -->
+		<div class="grid-4">
+			
+			<div id="text-4" class="widget widget_text"><h3 class="widget-title">欢迎关注并订阅伯乐在线博客</h3>			<div class="textwidget"><div id="aw_socialcounter_widget-2" class="widget aw_socialcounter_widget">
+<ul>
+<li>
+<a target="_blank" href="http://weibo.com/jobbole"><img class="alignleft" src="http://blog.jobbole.com/common_images/sina_32.png"  alt="关注我们的新浪微博" title="关注我们的新浪微博" /></a></p>
+<div class="view-rss"><a  target="_blank"  href="http://blog.jobbole.com/feed/" class="rss-link"><img class="alignleft" src="http://blog.jobbole.com/common_images/rss_32.png"  alt="RSS订阅" title="RSS订阅" /></a></div>
+<p><a target="_blank" href="http://list.qq.com/cgi-bin/qf_invite?id=f12eb90e095ea83b9c0683e2822949378899f8628c96050b"><img class="alignleft" src="http://blog.jobbole.com/common_images/email_32.png"  alt="邮件订阅" title="邮件订阅" /></a>
+</li>
+</ul>
+</div>
+<p><br/><br />
+<script language=javascript> 
+var randomNum = Math.round(Math.random()*4);
+var image=new Array(5);
+image[0]="design-weixin-logo.jpg";
+image[1]="jobbole-weixin-logo.jpg";
+image[2]="programmer-weixin-logo.jpg";
+image[3]="geekfan-weixin.png";
+image[4]="importnew-weixin.png";
+var imageUrl="http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/img/"+image[randomNum];
+var titles=new Array(5);
+titles[0]="扫描关注设计的那些事，微信号：AboutDesigner";
+titles[1]="扫描关注伯乐在线，微信号：Jobbole";
+titles[2]="扫描关注程序员的那些事，微信号：iProgrammer";
+titles[3]="扫描关注极客范，微信号：iGeekFan";
+titles[4]="扫描关注ImportNew，微信号：importnew";
+var imageTitle = titles[randomNum];
+var adHTML = "<img src='"+imageUrl+"' title='"+imageTitle+"' alt='"+imageTitle+"' border='0'>";
+document.write(adHTML);
+</script></p>
+</div>
+		</div>			
+		</div>
+		<!-- END .grid-4 -->
+		
+		<div class="clear"></div>
+	
+	</div>
+	<!-- END .container -->
+
+	<!-- BEGIN #bottom -->
+	<div id="bottom">
+	
+		<!-- BEGIN .container -->
+		<div class="container">
+		
+			<!-- BEGIN .grid-12 -->
+			<div class="grid-12">
+	
+				<p>&copy; 2014 <a href="http://blog.jobbole.com">博客 &#8211; 伯乐在线</a>. <a href="http://www.miibeian.gov.cn" target="_blank" rel="nofollow">京ICP备10038840号</a> <span style="float:right; ">
+<a href="http://www.jobbole.com">首页</a>&nbsp;&nbsp;
+<a href="http://blog.jobbole.com">博客首页</a>&nbsp;&nbsp;
+<a href="http://www.jobbole.com/about-us">关于我们</a>&nbsp;&nbsp;
+<a href="http://www.jobbole.com/contact-us/">联系我们</a>&nbsp;&nbsp;
+<a href="http://www.jobbole.com/contact-us/">广告投放</a>&nbsp;&nbsp;
+<a href="http://www.jobbole.com/contact-us/">网站合作</a>&nbsp;&nbsp;
+<a href="http://www.jobbole.com/terms-of-use/">使用条款</a>
+</span> </p>
+			
+			</div>
+			<!-- END .grid-12 -->
+			
+			<div class="clear"></div>
+						
+		</div>
+		<!-- END .container -->
+		
+	</div>
+	<!-- END #bottom -->
+	
+</footer>
+<!-- END footer -->
+
+
+	
+
+<!-- Generated in 1.401 seconds. (485 q) -->
+
+	
+<!-- WP SyntaxHighlighter Ver.1.7.3 Begin -->
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shCore.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shLegacy.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shAutoloader.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushAppleScript.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushAS3.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushBash.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushColdFusion.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCpp.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCSharp.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCss.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDelphi.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDiff.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushErlang.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJava.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJavaFX.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJScript.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPerl.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPhp.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPlain.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPowerShell.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPython.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushRuby.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSass.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushScala.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSql.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushVb.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushXml.js?ver=3.0"></script>
+<script type="text/javascript">//<![CDATA[
+	SyntaxHighlighter.autoloader(
+	"applescript	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushAppleScript.js?ver=3.0"
+	,"as3 actionscript3	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushAS3.js?ver=3.0"
+	,"bash shell	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushBash.js?ver=3.0"
+	,"cf coldfusion	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushColdFusion.js?ver=3.0"
+	,"cpp c	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCpp.js?ver=3.0"
+	,"c# c-sharp csharp	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCSharp.js?ver=3.0"
+	,"css	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCss.js?ver=3.0"
+	,"delphi pas pascal	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDelphi.js?ver=3.0"
+	,"diff patch	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDiff.js?ver=3.0"
+	,"erl erlang	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushErlang.js?ver=3.0"
+	,"java	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJava.js?ver=3.0"
+	,"jfx javafx	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJavaFX.js?ver=3.0"
+	,"js jscript javascript	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJScript.js?ver=3.0"
+	,"perl pl	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPerl.js?ver=3.0"
+	,"php	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPhp.js?ver=3.0"
+	,"plain text	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPlain.js?ver=3.0"
+	,"ps powershell	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPowerShell.js?ver=3.0"
+	,"py python	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPython.js?ver=3.0"
+	,"rails ror ruby rb	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushRuby.js?ver=3.0"
+	,"sass scss	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSass.js?ver=3.0"
+	,"scala	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushScala.js?ver=3.0"
+	,"sql	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSql.js?ver=3.0"
+	,"vb vbnet	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushVb.js?ver=3.0"
+	,"xml xhtml xslt html	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushXml.js?ver=3.0"
+	);
+	SyntaxHighlighter.defaults['auto-links'] = false;
+	SyntaxHighlighter.defaults['quick-code'] = true;
+	SyntaxHighlighter.defaults['title'] = '';
+	SyntaxHighlighter.defaults['class-name'] = 'notranslate';
+	SyntaxHighlighter.defaults['collapse'] = false;
+	SyntaxHighlighter.defaults['first-line'] = 1;
+	SyntaxHighlighter.defaults['gutter'] = true;
+	SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+	SyntaxHighlighter.defaults['smart-tabs'] = true;
+	SyntaxHighlighter.defaults['tab-size'] = 4;
+	SyntaxHighlighter.defaults['toolbar'] = false;
+ SyntaxHighlighter.config.stripBrs = true;
+	SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+	SyntaxHighlighter.config.strings.help = '?';
+	SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+	SyntaxHighlighter.config.strings.noBrush = "Can't find brush for: ";
+	SyntaxHighlighter.config.strings.brushNotHtmlScript = "Brush wasn't configured for html-script option: ";
+	SyntaxHighlighter.all();
+	dp.SyntaxHighlighter.HighlightAll('code')
+//]]></script>
+<!-- WP SyntaxHighlighter Ver.1.7.3 End -->
+<!-- Lightbox Plus ColorBox v2.6/1.3.32 - 2013.01.24 - Message: 0-->
+<script type="text/javascript">
+jQuery(document).ready(function($){
+  $("a[rel*=lightbox]").colorbox({speed:450,initialWidth:"300",initialHeight:"100",opacity:0.8,loop:false,scrolling:false,escKey:false,arrowKey:false,top:false,right:false,bottom:false,left:false});
+});
+</script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/plugins/comment-rating/ck-karma.js?ver=3.5.2'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var viewsCacheL10n = {"admin_ajax_url":"http:\/\/blog.jobbole.com\/wp-admin\/admin-ajax.php","post_id":"74773"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/plugins/wp-postviews/postviews-cache.js?ver=1.64'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var pollsL10n = {"ajax_url":"http:\/\/blog.jobbole.com\/wp-admin\/admin-ajax.php","text_wait":"Your last request is still being processed. Please wait a while ...","text_valid":"Please choose a valid poll answer.","text_multiple":"\u6700\u591a\u53ea\u5141\u8bb8\u6295\u7684\u9009\u9879\uff1a","show_loading":"1","show_fading":"1"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/plugins/wp-polls/polls-js.js?ver=2.63'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/ready.js?ver=1.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/easing.js?ver=1.3'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/superfish.js?ver=1.4.8'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/validate.js?ver=1.9.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/touchwipe.js?ver=1.1.1'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/caroufredsel.js?ver=5.5.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/flexslider.js?ver=2.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/jplayer.js?ver=2.1.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/fitvids.js?ver=1.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/selectnav.js?ver=0.1'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/effects.js?ver=1.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/plugins/lightbox-plus/js/jquery.colorbox.1.3.32.js?ver=1.3.32'></script>
+
+
+<div id="full-btm" style="position:fixed; left:50%; top:550px; margin-left:425px;  z-index:100; text-align:center; cursor:pointer;">
+<a><img src="http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/img/back-btm.png" width="20" border=0 alt="跳到底部" title="跳到底部"></a>
+</div>
+
+<script type="text/javascript">
+jQuery('#full-btm').click(function(){
+    jQuery('html, body').animate({scrollTop:jQuery(document).height()}, 'slow');
+    return false;
+});
+</script>
+
+<div id="full-top" style="position:fixed; left:50%; top:520px; margin-left:475px; z-index:100; text-align:center; cursor:pointer;">
+<a><img src="http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/img/back-top.png" width="20" border=0 alt="返回顶部" title="返回顶部"></a>
+</div>
+
+<script type="text/javascript">
+jQuery('#full-top').click(function(){
+    jQuery('html, body').animate({scrollTop:0}, 'slow');
+    return false;
+});
+</script>
+
+
+<script type="text/javascript">//<![CDATA[
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-15621043-1']);
+_gaq.push(['_setCustomVar',1,'logged-in','administrator',1],['_trackPageview']);
+(function () {
+	var ga = document.createElement('script');
+	ga.type = 'text/javascript';
+	ga.async = true;
+	ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	var s = document.getElementsByTagName('script')[0];
+	s.parentNode.insertBefore(ga, s);
+})();
+//]]></script>
+
+</body>
+<!-- END body -->
+
+</html>
+<!-- END html -->
