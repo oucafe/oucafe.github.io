@@ -35,6 +35,9 @@ config.each do |site|
   rescue Errno::ETIMEDOUT => e
     p e
     next
+  rescue OpenURI::HTTPError => e
+    p e
+    next
   end
   rows = page.css(site['list_rows_sel'])
 
