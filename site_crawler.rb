@@ -16,7 +16,7 @@ def make_absolute( href, root )
   URI.parse(root).merge(URI.parse(href)).to_s
 end
 
-config.each do |site|
+config.shuffle.each do |site|
   site_name = site['name']
   puts "===== #{site_name}"
 
