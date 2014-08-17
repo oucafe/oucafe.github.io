@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+   <meta name="apple-mobile-web-app-capable" content="yes" />
+   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+   <!-- <link rel="apple-touch-icon" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-iphone.png" /> -->
+   <link rel="apple-touch-icon-precomposed" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-iphone-precomposed.png" />
+   <link rel="apple-touch-icon" sizes="72x72" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-ipad.png" />
+   <link rel="apple-touch-icon" sizes="114x114" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-iphone-retina.png" />
+   <link rel="apple-touch-icon" sizes="144x144" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-ipad-retina.png" />
+   
+   <title>Vagrant介绍</title>
+   <meta name="author" content="Jeremy Wei" />
+   <link href="http://feeds.feedburner.com/JeremyWei" rel="alternate" title="Jeremy Wei" type="application/atom+xml" />
+   <link rel="shortcut icon" type="image/x-icon" href="http://s0-weizhifeng-net.b0.upaiyun.com/favicon.ico">
+      
+   <!-- Homepage CSS -->
+   <link rel="stylesheet" href="http://s0-weizhifeng-net.b0.upaiyun.com/css/screen.css?1123" type="text/css" media="screen, projection" />
+   <!-- <link rel="stylesheet" href="/css/screen.css?0831" type="text/css" media="screen, projection" /> -->
+   
+   <script type="text/javascript" charset="utf-8">
+   // Mobile Safari in standalone mode
+   if(("standalone" in window.navigator) && window.navigator.standalone){
+	   
+   	// If you want to prevent remote links in standalone web apps opening Mobile Safari, change 'remotes' to true
+   	var noddy, remotes = true;
+	
+   	document.addEventListener('click', function(event) {
+		
+   		noddy = event.target;
+		
+   		// Bubble up until we hit link or top HTML element. Warning: BODY element is not compulsory so better to stop on HTML
+   		while(noddy.nodeName !== "A" && noddy.nodeName !== "HTML") {
+   	        noddy = noddy.parentNode;
+   	    }
+		
+   		if('href' in noddy && noddy.href.indexOf('http') !== -1 && (noddy.href.indexOf(document.location.host) !== -1 || remotes))
+   		{
+   			event.preventDefault();
+   			document.location.href = noddy.href;
+   		}
+	
+   	},false);
+   }
+   </script>
+</head>
+<body>
+	
+<div class="site">
+  <pre class="nav margin-for-mobile">["<a href='/tech.html'>文</a>", "<a href='/translate.html'>譯</a>", "<a href='/poem.html'>詩</a>", "<a href='/5000years.html'>史</a>", "<a href='/resume.html'>己</a>"]</pre>
+  <br />
+  <div id="post">
+	<h1>Vagrant介绍</h1>
+	<div class="copyright">
+	作者: JeremyWei | 可以转载, 但必须以超链接形式标明文章原始出处和作者信息及版权声明<br />
+	网址: http://weizhifeng.net/learn-vagrant-01.html
+	</div>
+
+	<p><img src="http://s0-weizhifeng-net.b0.upaiyun.com/images/tech/vagrant.png" title="Vagrant" alt="Vagrant" /></p>
+
+<h1>介绍</h1>
+
+<p>Vagrant可以为你提供可配置、可再生、便携的工作环境，它主要是一个中间层技术，它的下层是VirtualBox, VMware, AWS或者其他<a href="http://docs.vagrantup.com/v2/providers/">provider</a>，它的上层是<a href="http://docs.vagrantup.com/v2/provisioning/">provisioning工具</a>，比如shell scripts, Chef, or Puppet等可以自动化安装和配置软件的工具。</p>
+
+<h1>对你有什么用</h1>
+
+<ul>
+<li><p>对于开发人员来说，Vagrant可以帮你统一团队成员的开发环境。如果你或者你的伙伴创建了一个<a href="http://docs.vagrantup.com/v2/vagrantfile/">Vagrantfile</a>，那么你只需要执行<code>vagrant up</code>就行了，所有的软件都会安装并且配置好。团队成员可以通过相同的Vagrantfile来创建他们的开发环境，无论他们是在Linux, Mac OS X, 或者Windows下，这样就可以保证你团队成员的代码是跑在相同的环境中，从而避免令人烦躁的【在我的机器上是可以的】问题。</p></li>
+<li><p>对于运维人员来说，Vagrant可以给你提供一次性，并且与线上一致的服务器环境，你可以利用VirtualBox或者VMware来测试你的shell scripts, Chef cookbooks, Puppet modules等管理脚本。你不需要再苦逼的登录到线上服务器提心吊胆的测试了，Vagrant可以解救你。</p></li>
+<li><p>对于设计人员来说，Vagrant可以帮你处理一切，你只需要专注在设计上就好了。一旦开发人员帮你配置好了Vagrant之后，你只需要执行<code>vagrant up</code>，然后开始设计。</p></li>
+</ul>
+
+
+<h1>安装</h1>
+
+<p>Vagrant的安装非常简单，直接<a href="http://www.vagrantup.com/downloads">下载</a>对应操作系统的版本就可以了。</p>
+
+<h1>第一印象</h1>
+
+<pre><code>$ vagrant init hashicorp/precise32
+$ vagrant up
+</code></pre>
+
+<p>执行以上命令之后，你已经拥有了一个Ubuntu 12.04 LTS 32-bit系统运行在VirtualBox中。
+你可以通过<code>vagrant ssh</code>登录到这个虚拟机中，如果你不需要它了，可以通过<code>vagrant destroy</code>来销毁。</p>
+
+<h1>建立项目</h1>
+
+<p>建立Vagrant项目的第一步是配置Vagrantfile。执行如下命令</p>
+
+<pre><code>$ mkdir my_vagrant
+$ cd my_vagrant
+$ vagrant init
+</code></pre>
+
+<p>这会在当前目录下生成一个Vagrantfile文件，这个文件就是一切的开始，对了，你最好把它添加到版本库中，这样你的小伙伴也可以通过它来初始化开发环境了。</p>
+
+<h1>Box</h1>
+
+<p>Vagrant使用的image叫做box，如果你执行过上面的命令，那么你已经在本地拥有了一个box。如果没有执行，那么你需要执行</p>
+
+<pre><code>$ vagrant box add hashicorp/precise32
+</code></pre>
+
+<p>这会从<a href="https://vagrantcloud.com/">Vagrant Cloud</a>中下载hashicorp/precise32。
+我们接下来需要配置我们的项目来使用这个box，编辑Vagrantfile文件并修改为：</p>
+
+<pre><code>Vagrant.configure("2") do |config|
+  config.vm.box = "hashicorp/precise32"
+end
+</code></pre>
+
+<p>除了hashicorp/precise32，你可以在Vagrant Cloud找到更多适合你的box。</p>
+
+<h1>启动</h1>
+
+<pre><code>$ vagrant up
+</code></pre>
+
+<p>就这么简单。完成之后，你就拥有了一个Ubuntu系统，你可以通过</p>
+
+<pre><code>$ vagrant ssh
+</code></pre>
+
+<p>登录它，然后随意执行任何命令，除了<code>rm -rf /</code>，原因接下来说明。</p>
+
+<h1>目录同步</h1>
+
+<p>虽说如此容易的启动一个虚拟机的确很酷，但不是所有人都喜欢通过终端来编辑文件（Vim党和Emacs党勿喷），所以Vagrant提供了一个目录同步的功能。默认情况下Vagrant会把你的项目目录（存储Vagrantfile的那个）与虚拟机中的<code>/vagrant</code>进行同步（这就是为什么你不要执行<code>rm -rf /</code>的原因，否则你会把项目目录删掉）。我们可以登录到虚拟机上验证一下。</p>
+
+<pre><code>$ vagrant up
+...
+$ vagrant ssh
+...
+vagrant@precise32:~$ ls /vagrant
+Vagrantfile
+</code></pre>
+
+<p>如果你不确信，可以创建一个文件看看：</p>
+
+<pre><code>vagrant@precise32:~$ touch /vagrant/foo
+vagrant@precise32:~$ exit
+$ ls
+foo Vagrantfile
+</code></pre>
+
+<p>怎么样？没骗你吧。通过目录同步功能，你还可以继续使用最爱的编辑器来修改虚拟机中的文件。</p>
+
+<h1>配置</h1>
+
+<p>假设我们的业务需要安装Apache，传统的做法是在虚拟机上手动安装并配置，如果这样那么使用Vagrant的人都需要重复一遍。幸好Vagrant提供了自动配置（automated provisioning）的功能。通过这个特性，Vagrant会在你执行<code>vagrant up</code>的时候自动安装所需的软件。</p>
+
+<p>在你的项目目录（即包含Vagrantfile的目录）下创建Bash脚本bootstrap.sh，内容如下：</p>
+
+<pre><code>#!/usr/bin/env bash
+
+apt-get update
+apt-get install -y apache2
+rm -rf /var/www
+ln -fs /vagrant /var/www
+</code></pre>
+
+<p>接下来，我们来配置让Vagrant在启动虚拟机的时候自动执行以上脚本，在Vagrantfile中添加如下内容：</p>
+
+<pre><code>Vagrant.configure("2") do |config|
+  config.vm.box = "hashicorp/precise32"
+  config.vm.provision :shell, path: "bootstrap.sh"
+end
+</code></pre>
+
+<p>provision这一行告诉Vagrant使用shell provisioner来配置虚拟机，要执行的脚本是bootstrap.sh。</p>
+
+<p>接下来执行<code>vagrant up</code>来启动虚拟机，之后你可以登录到虚拟机来验证Apache时候已经安装成功：</p>
+
+<pre><code>$ vagrant ssh
+...
+vagrant@precise32:~$ wget -qO- 127.0.0.1
+</code></pre>
+
+<h1>网络</h1>
+
+<p>总是在终端里边访问Apache不是什么好的主意，所以这个部分我们会对Vagrant的网络进行配置，让它可以通过宿主机器（Host machine）来访问。</p>
+
+<p>我们用端口映射来实现对Apache服务的访问，编辑Vagrantfile文件如下：</p>
+
+<pre><code>Vagrant.configure("2") do |config|
+  config.vm.box = "hashicorp/precise32"
+  config.vm.provision :shell, path: "bootstrap.sh"
+  config.vm.network :forwarded_port, host: 4567, guest: 80
+end
+</code></pre>
+
+<p><code>forwarded_port</code>这一行把宿主机器的4567端口映射到了客户机器（Guest machine）的80端口。然后通过<code>vagrant reload</code>重启虚拟机，重启完成之后你用浏览器打开
+http://127.0.0.1:4567就可以访问到WEB页面了。</p>
+
+<h1>参考</h1>
+
+<ul>
+<li><a href="http://docs.vagrantup.com/v2/getting-started/index.html">http://docs.vagrantup.com/v2/getting-started/index.html</a></li>
+<li><a href="http://docs.vagrantup.com/v2/getting-started/project_setup.html">http://docs.vagrantup.com/v2/getting-started/project_setup.html</a></li>
+<li><a href="http://docs.vagrantup.com/v2/getting-started/boxes.html">http://docs.vagrantup.com/v2/getting-started/boxes.html</a></li>
+<li><a href="http://docs.vagrantup.com/v2/getting-started/up.html">http://docs.vagrantup.com/v2/getting-started/up.html</a></li>
+<li><a href="http://docs.vagrantup.com/v2/getting-started/provisioning.html">http://docs.vagrantup.com/v2/getting-started/provisioning.html</a></li>
+</ul>
+
+
+	(完)
+
+	<div class="post-info">
+		17 Aug 2014  
+	
+		
+	
+		
+	</div>
+	
+	<!-- disqus start -->
+	<div id="disqus_thread"></div>
+	<script type="text/javascript">
+	    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+	    var disqus_shortname = 'jeremywei'; // required: replace example with your forum shortname
+
+	    /* * * DON'T EDIT BELOW THIS LINE * * */
+	    (function() {
+	        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+	        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+	        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	    })();
+	</script>
+	<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+	<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+	<!-- disqus end -->
+
+	<!-- related start -->
+	<div id="related">
+	  <h2>相关内容</h2>
+	  <ul class="posts">
+	    
+	      <li><span>10 Aug 2014</span> &raquo; <a href="/zhongyuanjie.html">中元節</a></li>
+	    
+	      <li><span>26 Jul 2014</span> &raquo; <a href="/learn-chef-02.html">Chef入门（二）</a></li>
+	    
+	      <li><span>19 Jul 2014</span> &raquo; <a href="/learn-chef-01.html">Chef入门（一）</a></li>
+	    
+	      <li><span>29 Jun 2014</span> &raquo; <a href="/backup-and-restore-data-of-mongodb.html">Mongodb数据的备份与恢复</a></li>
+	    
+	      <li><span>02 May 2014</span> &raquo; <a href="/build-private-npm-registry-with-npmjs-and-kappa.html">利用kappa搭建私有NPM仓库</a></li>
+	    
+	  </ul>
+	</div>
+	<!-- related end -->
+</div>
+  
+<div class="footer"></div>
+<div class="power">  
+  Powered by <a href="http://github.com/" targe="_blank">Github</a> &nbsp;&amp;&amp;&nbsp; <a href="http://jekyllrb.com/" target="_blank">Jekyll</a> 
+</div>
+</div>
+
+<a href="http://github.com/jeremywei" target="_blank">
+	<img class="right-banner first" src="http://s0-weizhifeng-net.b0.upaiyun.com/images/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" />
+</a>
+
+<a href="http://www.phptherightway.com" target="_blank">
+    <img class="right-banner second" src="http://s0-weizhifeng-net.b0.upaiyun.com/images/php-the-right-way-120x60.png" alt="PHP: The Right Way"/>
+</a>
+</body>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-5179718-7']);
+  _gaq.push(['_setDomainName', 'weizhifeng.net']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</html>
