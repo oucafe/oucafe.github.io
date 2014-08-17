@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
+<head>
+
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="Author" content="Apple Inc." />
+<meta name="viewport" content="width=device-width" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="icon" href="/favicon.ico" />
+<link rel="stylesheet" href="https://devimages.apple.com.edgekey.net/assets/core/styles/base.css" type="text/css" />
+<link rel="stylesheet" href="/assets/core/styles/templates.css" type="text/css" />
+<link rel="stylesheet" href="/assets/core/styles/responsify.css" type="text/css" />
+<script src="https://devimages.apple.com.edgekey.net/assets/core/scripts/lib/prototype.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/core/scripts/lib/scriptaculous.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/core/scripts/browserdetect.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/core/scripts/apple_core.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/core/scripts/search_decorator.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/core/scripts/adc_core.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/scripts/ac_retina.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+	document.write('<link rel="stylesheet" type="text/css" href="https://devimages.apple.com.edgekey.net/assets/styles/script.css" media="screen">');
+</script>
+<!-- Augmented Search -->
+<link rel="stylesheet" href="https://devimages.apple.com.edgekey.net/assets/styles/augmented_search.css" type="text/css">
+<script src="https://devimages.apple.com.edgekey.net/assets/scripts/lib/jquery/jquery-1.11.0.min.js"></script>
+<script>jQuery.noConflict();</script>
+<script src="https://devimages.apple.com.edgekey.net/assets/scripts/augmented_search.js"></script>
+	<title>Value and Reference Types - Swift Blog - Apple Developer</title>
+	<meta name="omni-page" content="Value and Reference Types - Swift Blog - Apple Developer" />
+	<meta name="Description" content="Get the latest news and helpful tips on the Swift programming language from the engineers who created it.">
+	<link href="/swift/styles/swift.css" rel="stylesheet" type="text/css">
+</head>
+<body class="white responsify swift-blog">
+
+	<div id="globalheader-wrapper">
+<nav id="globalheader" data-hires="true">
+	
+	<h1 data-hires="true"><a href="/">Apple Developer</a></h1>
+	<ul id="gh-nav">
+		<li id="gh-nav-technologies"><a href="/technologies/">Technologies</a></li>
+		<li id="gh-nav-resources"><a href="/resources/">Resources</a></li>
+		<li id="gh-nav-programs"><a href="/programs/">Programs</a></li>
+		<li id="gh-nav-support"><a href="/support/">Support</a></li>
+		<li id="gh-nav-membercenter"><a href="/membercenter/">Member Center</a></li>
+	</ul>
+
+	<div id="gh-search" data-hires="true">
+		<form action="/search/index.php" method="get" accept-charset="utf-8"><div>
+			<label for="gh-adcsearch">
+				<span class="prettyplaceholder"></span>
+				<input type="text" name="q" id="gh-adcsearch" class="adcsearch prettysearch augmented">
+			</label>
+		</div></form>
+	</div>
+
+	<script type="text/javascript">
+		Event.onDOMReady(function() {
+			// Get root path for Global Header Active class
+			ghLocation = location.pathname.split('/')[1];
+			// Make sure it doesn't try to add a file extension to the css class
+			if(ghLocation.include('.')) ghLocation = ghLocation.split('.')[0];
+			// Add Global Header Active State Class
+			$$('body')[0].addClassName('gh-nav-'+location.pathname.split('/')[1]+'-active');
+		});
+	</script>
+</nav>
+</div>
+	<div id="top">
+<!-- SiteCatalyst code version: H.8. Copyright 1997-2006 Omniture, Inc. -->
+<script type="text/javascript">
+/* RSID: */
+var s_account="appleglobal,appleusdeveloper"
+</script>
+
+<script type="text/javascript" src="https://www.apple.com/metrics/scripts/s_code_h.js"></script>
+<script type="text/javascript">
+s.pageName=AC.Tracking.pageName();
+s.channel="www.us.developer"
+
+/************* DO NOT ALTER ANYTHING BELOW THIS LINE ! **************/
+var s_code=s.t();if(s_code)document.write(s_code)</script>
+<!-- End SiteCatalyst code version: H.8. -->
+</div>	<!-- - -->
+<div class="swift-header-container" data-hires="true">
+    <div class="swift-header">
+        <p class="imagereplace">Swift: A new programming language for iOS and OS X.</p>
+    </div>
+</div>
+<!-- - -->
+
+	<div id="content" class="content responsify" data-hires="true">
+		<section class="layout-tabs">
+			<div class="tab-wrapper">
+				<div class="divider"></div>
+				<div class="grid3col tabs">
+					<div class="column one"><a href="/swift/">Overview</a></div>
+					<div class="column two active"><a href="/swift/blog/">Blog</a></div>
+					<div class="column three"><a href="/swift/resources/">Resources</a></div>
+				</div>
+			</div>
+		</section>
+
+		<section class="blog-articles padding-bottom-40">
+						<ul class="article-list">
+													<li id="article-10" class="article padding-top-50 padding-bottom-50 ">
+						<p class="article-date lighter">Aug 15, 2014</p>
+						<h2>
+														Value and Reference Types
+													</h2>
+
+						<p>Types in Swift fall into one of two categories: first, “value types”, where each instance keeps a unique copy of its data, usually defined as a <span class="keyword">struct</span>, <span class="keyword">enum</span>, or <span class="keyword">tuple</span>. The second, “reference types”, where instances share a single copy of the data, and the type is usually defined as a <span class="keyword">class</span>. In this post we explore the merits of value and reference types, and how to choose between them. </p> <h3> What’s the Difference? </h3> <p>The most basic distinguishing feature of a <em>value type</em> is that copying — the effect of assignment, initialization, and argument passing — creates an <em>independent instance</em> with its own unique copy of its data:</p> <pre><code><span class="comment">// Value type example</span>
+<span class="key">struct</span> S { <span class="key">var</span> data: <span class="title">Int</span> = <span class="number">-1</span> }
+<span class="key">var</span> a = <span class="pointer">S</span>()
+<span class="key">var</span> b = <span class="pointer">a</span>						<span class="comment">// a is copied to b</span>
+<span class="pointer">a</span>.<span class="pointer">data</span> = <span class="number">42</span>						<span class="comment">// Changes a, not b</span>
+<span class="method">println</span>(<span class="string">"</span>\(<span class="pointer">a</span>.<span class="pointer">data</span>)<span class="string">,</span> \(<span class="pointer">b</span>.<span class="pointer">data</span>)<span class="string">"</span>)	<span class="comment">// prints "42, -1"</span></code></pre> <p>Copying a reference type, on the other hand, implicitly creates a shared instance. After a copy, two variables then refer to a single instance of the data, so modifying data in the second variable also affects the original, e.g.:</p> <pre><code><span class="comment">// Reference type example</span>
+<span class="key">class</span> C { <span class="key">var</span> data: <span class="title">Int</span> = <span class="number">-1</span> }
+<span class="key">var</span> x = <span class="pointer">C</span>()
+<span class="key">var</span> y = <span class="pointer">x</span>						<span class="comment">// x is copied to y</span>
+<span class="pointer">x</span>.<span class="pointer">data</span> = <span class="number">42</span>						<span class="comment">// changes the instance referred to by x (and y)</span>
+<span class="method">println</span>(<span class="string">"</span>\(<span class="pointer">x</span>.<span class="pointer">data</span>)<span class="string">,</span> \(<span class="pointer">y</span>.<span class="pointer">data</span>)<span class="string">"</span>)	<span class="comment">// prints "42, 42"</span></code></pre> <h3>The Role of Mutation in Safety</h3> <p>One of the primary reasons to choose value types over reference types is the ability to more easily reason about your code. If you always get a unique, copied instance, you can trust that no other part of your app is changing the data under the covers. This is especially helpful in multi-threaded environments where a different thread could alter your data out from under you. This can create nasty bugs that are extremely hard to debug.</p> <p>Because the difference is defined in terms of what happens when you change data, there’s one case where value and reference types overlap: when instances have no writable data. In the absence of mutation, values and references act exactly the same way.</p> <p>You may be thinking that it could be valuable, then, to have a case where a <span class="keyword">class</span> is completely immutable. This would make it easier to use Cocoa <span class="keyword">NSObject</span> objects, while maintaining the benefits of value semantics. Today, you can write an immutable class in Swift by using only immutable stored properties and avoiding exposing any APIs that can modify state. In fact, many common Cocoa classes, such as <span class="keyword">NSURL</span>, are designed as immutable classes. However, Swift does not currently provide any language mechanism to enforce <span class="keyword">class</span> immutability (e.g. on subclasses) the way it enforces immutability for <span class="keyword">struct</span> and <span class="keyword">enum</span>.</p> <h3>How to Choose?</h3> <p>So if you want to build a new type, how do you decide which kind to make? When you’re working with Cocoa, many APIs expect subclasses of <span class="keyword">NSObject</span>, so you have to use a <span class="keyword">class</span>. For the other cases, here are some guidelines:</p> <p>Use a value type when:</p> <ul class="tight"> <li>Comparing instance data with <span class="keyword">==</span> makes sense</li> <li>You want copies to have independent state</li> <li>The data will be used in code across multiple threads</li> </ul> <p>Use a reference type (e.g. use a <span class="keyword">class</span>) when:</p> <ul class="tight"> <li>Comparing instance identity with <span class="keyword">===</span> makes sense</li> <li>You want to create shared, mutable state</li> </ul> <p>In Swift, <span class="keyword">Array</span>, <span class="keyword">String</span>, and <span class="keyword">Dictionary</span> are all value types. They behave much like a simple <span class="keyword">int</span> value in C, acting as a unique instance of that data. You don’t need to do anything special — such as making an explicit copy — to prevent other code from modifying that data behind your back. Importantly, you can safely pass variables across threads without synchronization. In the spirit of improving safety, this model will help you write more predictable code in Swift.</p>
+
+						
+												<a class="arrow arrow-left" href="http://developer.apple.com/swift/blog/#article-10">All Blog Posts</a>
+											</li>
+											</section>
+
+	</div><!-- /content -->
+
+	<div id="globalfooter-wrapper">
+		<footer id="globalfooter">
+			<div id="breadory">
+				<ol id="breadcrumbs">
+					<li class="home"><a href="/">Developer</a></li>
+					<li><a href="/swift/">Swift</a></li>
+										<li><a href="/swift/blog/">Blog</a></li>
+					<li>Value and Reference Types</li>
+									</ol>
+			</div><!--/breadory-->
+			<p class="gf-buy">Shop the <a href="http://www.apple.com/store/">Apple Online Store</a> (1-800-MY-APPLE), visit an <a href="http://www.apple.com/retail/">Apple Retail Store</a>, or find a <a href="http://www.apple.com/buy/locator/">reseller</a>.</p>
+<ul class="gf-links piped">
+	<li><a href="/news/" class="first">News</a></li>
+	<li><a href="/register/">Register</a></li>
+	<li><a href="/bug-reporting/">Report Bugs</a></li>
+	<li><a href="/contact/">Contact Us</a></li>
+</ul>
+<div class="gf-sosumi">
+	<p>Copyright © 2014 Apple Inc. All rights reserved.</p>
+	<ul class="piped">
+		<li><a href="http://www.apple.com/legal/internet-services/terms/site.html" class="first">Terms of Use</a></li>
+		<li><a href="http://www.apple.com/privacy/">Privacy Policy</a></li>
+	</ul>
+</div>
+<div id="localization-links">
+	<ul>
+		<li><a href="/cn/" title="Simplified Chinese">简体中文</a></li>
+		<li><a href="/jp/" title="Japanese">日本語</a></li>
+		<li><a href="/kr/" title="Korean">한국어</a></li>
+	</ul>
+</div>		</footer><!--/globalfooter-->
+	</div><!-- /globalfooter-wrapper -->
+</body>
+</html>
