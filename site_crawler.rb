@@ -102,7 +102,7 @@ config.shuffle.each do |site|
         File.open(meta_fname, 'w') {|file|
           file.puts("---")
           file.puts("layout: post")
-          file.puts("title: '#{post_title.text}'")
+          file.puts("title: '#{post_title.text.strip}'")
           file.puts("time: #{post_time}")
           file.puts("site_name: #{site_name}")
           file.puts("source_url: #{post_href}")
