@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>山寨一个 Splunk 的 source 上下文查看功能</title>
+    <meta name="author" content="陈子">
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!-- Le styles -->
+    <link href="/assets/themes/twitter/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/themes/twitter/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+    <link href="/assets/themes/twitter/css/pygments/default.css" rel="stylesheet" type="text/css">
+    <!-- Le fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+  </head>
+  <body>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="/">三斗室</a>
+          <ul class="nav">
+      	<li><a href="/archive.html">归档</a></li>
+      	<li><a href="/categories.html">分类</a></li>
+      	<li><a href="/errata.html">《网站运维技术与实践》勘误</a></li>
+      	<li><a href="/pages.html">Pages</a></li>
+      	<li><a href="/projects.html">学习记录</a></li>
+      	<li><a href="/tags.html">标签</a></li>
+            <li><a href="http://chenlinux.com/poetry/index.html" />诗文集</a></li>
+            <li><link title="RSS 2.0" type="application/rss+xml" href="http://chenlinux.com/feed.xml" rel="alternate" /><a href="http://chenlinux.com/feed.xml" target="_blank">RSS订阅</a></li>
+          </ul>
+          <ul class="nav pull-right"><li><a href="/about.html">有关我</a></li></ul>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+    <div class="row">
+      <div class="span7">
+<div class="row">
+  <div class="page-header">
+    <h1>山寨一个 Splunk 的 source 上下文查看功能 <small></small></h1>
+    <div class="date"><span>29 August 2014</span></div>
+    <ul class="tag_box pull-right">
+    	<li><a href="/tags.html#elasticsearch-ref">elasticsearch <span>20</span></a></li>
+    </ul>
+  </div>
+  <div style='background-color: #FFF;'>
+    <p>跟很多朋友在聊 elk stack 的时候，都会不知不觉的开始跟 Splunk 做对比。最常见的两个抱怨就是：Splunk 的搜索构建语法 比 Kibana 方便，以及 Splunk 搜索出来的消息可以通过点击 <code>Source</code> 按钮查看其原始日志中的前后几条日志。</p>
+<p><img src="/images/uploads/splunk-source-context.jpg" alt="splunk source context" /></p>
+<p>平心而论，这个上下文查找的功能确实在排错过程中非常有用。但是在 elk 里却不那么容易实现，原因是：</p>
+<p><strong>elasticsearch 是一个分布式项目，其索引的 <code>_id</code> 默认使用的是 UUID 方式生成的随机字符串，你没法根据 UUID 来判断数据的先后。</strong></p>
+<p><code>LogStash::Outputs::Elasticsearch</code> 提供了让你指定 <code>_id</code> 内容的选项，但是在集群环境下，你很难自己搞定一个全局自增 ID。</p>
+<p><em>相反，虽然我不知道 splunk 的数据存储的内部实现，但是就他昂贵的报价来说，基本只见过单机案例。就单机而言，自增 id 太轻松了</em></p>
+<p>所以，从原理上来说，就很难实现一个通用的 elk 版上下文查看功能。</p>
+<p>不过我们缩小一下使用场景，却未必不能自己山寨一个对自己可用的办法来。</p>
+<p>假设我们一个最常见的场景，就是从各 web 服务器上收集不同日志到中心。那么这时候，通过 <code>%{host}</code> 和 <code>%{path}</code> 的 &ldquo;AND&rdquo; 过滤，我们就可以把范围缩小到一个单一的文件内容里。所以，我们只需要能够搞定这个文件的自增 id 就够了！</p>
+<h2 id="logstashconf-">logstash.conf 示例</h2>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="n">input</span> <span class="p">{</span>
+    <span class="n">file</span> <span class="p">{</span>
+        <span class="n">path</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="s2">&quot;/var/log/*.log&quot;</span><span class="o">]</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="n">filter</span> <span class="p">{</span>
+    <span class="n">ruby</span> <span class="p">{</span>
+        <span class="n">init</span> <span class="o">=&gt;</span> <span class="s1">&#39;@incr={}&#39;</span>
+        <span class="n">code</span> <span class="o">=&gt;</span> <span class="s2">&quot;key = event[&#39;host&#39;]+event[&#39;path&#39;]</span>
+<span class="s2">                 if @incr.has_key?(key)</span>
+<span class="s2">                     @incr[key] += 1</span>
+<span class="s2">                 else</span>
+<span class="s2">                     @incr[key] = 1 </span>
+<span class="s2">                 end</span>
+<span class="s2">                 event[&#39;lineno&#39;] = @incr[key]&quot;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="n">output</span> <span class="p">{</span>
+    <span class="n">elasticsearch</span> <span class="p">{</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></div>
+<h2 id="curl-">上下文查询 curl 示例</h2>
+<p>使用上面的配置运行起来 logstash 之后，假设我们现在搜到一条 syslog 日志，其 <code>lineno</code> 是 20，那么查看它的前后 5 条记录的 curl 命令就是：</p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="err">curl</span> <span class="err">-XPOST</span> <span class="err">&#39;http://localhost:</span><span class="mi">9200</span><span class="err">/logstash</span><span class="mf">-2014.08</span><span class="err">.</span><span class="mi">29</span><span class="err">/_search?pretty=</span><span class="mi">1</span><span class="err">&#39;</span> <span class="err">-d</span> <span class="err">&#39;</span>
+<span class="p">{</span>
+  <span class="nt">&quot;query&quot;</span><span class="p">:{</span>
+    <span class="nt">&quot;range&quot;</span><span class="p">:{</span>
+      <span class="nt">&quot;lineno&quot;</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;gt&quot;</span><span class="p">:</span><span class="mi">15</span><span class="p">,</span>
+        <span class="nt">&quot;lte&quot;</span><span class="p">:</span><span class="mi">25</span>
+      <span class="p">}</span>
+    <span class="p">}</span>   
+  <span class="p">},</span>  
+  <span class="nt">&quot;filter&quot;</span><span class="p">:{</span>
+    <span class="nt">&quot;term&quot;</span><span class="p">:{</span>
+      <span class="nt">&quot;host.raw&quot;</span><span class="p">:</span><span class="s2">&quot;raochenlindeMacBook-Air.local&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;path.raw&quot;</span><span class="p">:</span><span class="s2">&quot;/var/log/system.log&quot;</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;sort&quot;</span><span class="p">:[{</span><span class="nt">&quot;lineno&quot;</span><span class="p">:</span><span class="s2">&quot;asc&quot;</span><span class="p">}],</span>
+  <span class="nt">&quot;fields&quot;</span><span class="p">:[</span><span class="s2">&quot;message&quot;</span><span class="p">],</span>
+  <span class="nt">&quot;size&quot;</span><span class="p">:</span><span class="mi">10</span>
+<span class="p">}</span><span class="err">&#39;</span></code></pre></div>
+<p>得到的结果是：</p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&quot;took&quot;</span> <span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+  <span class="nt">&quot;timed_out&quot;</span> <span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+  <span class="nt">&quot;_shards&quot;</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;total&quot;</span> <span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="nt">&quot;successful&quot;</span> <span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+    <span class="nt">&quot;failed&quot;</span> <span class="p">:</span> <span class="mi">0</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;hits&quot;</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;total&quot;</span> <span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="nt">&quot;max_score&quot;</span> <span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+    <span class="nt">&quot;hits&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="p">{</span>
+      <span class="nt">&quot;_index&quot;</span> <span class="p">:</span> <span class="s2">&quot;logstash-2014.08.29&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;_type&quot;</span> <span class="p">:</span> <span class="s2">&quot;logs&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;_id&quot;</span> <span class="p">:</span> <span class="s2">&quot;ILkv4oZOQRGXkH5nxjPT6Q&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;_score&quot;</span> <span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+      <span class="nt">&quot;fields&quot;</span> <span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;message&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;Aug 29 23:34:44 raochenlindeMacBook-Air.local stunnel[304]: LOG5[4391727104]: Service [sproxy] accepted connection from 127.0.0.1:52673&quot;</span> <span class="p">]</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;sort&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="mi">16</span> <span class="p">]</span>
+    <span class="p">},</span> <span class="p">{</span>
+      <span class="nt">&quot;_index&quot;</span> <span class="p">:</span> <span class="s2">&quot;logstash-2014.08.29&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;_type&quot;</span> <span class="p">:</span> <span class="s2">&quot;logs&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;_id&quot;</span> <span class="p">:</span> <span class="s2">&quot;frRzVZUDQr-dkRog9LEypQ&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;_score&quot;</span> <span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+      <span class="nt">&quot;fields&quot;</span> <span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;message&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;Aug 29 23:34:44 raochenlindeMacBook-Air.local stunnel[304]: LOG5[4391727104]: s_connect: connected 50.116.12.155:65080&quot;</span> <span class="p">]</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;sort&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="mi">17</span> <span class="p">]</span>
+    <span class="p">},</span> <span class="p">{</span>
+      <span class="nt">&quot;_index&quot;</span> <span class="p">:</span> <span class="s2">&quot;logstash-2014.08.29&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;_type&quot;</span> <span class="p">:</span> <span class="s2">&quot;logs&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;_id&quot;</span> <span class="p">:</span> <span class="s2">&quot;fQ50VrbuSfy6AmhNOaHpFg&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;_score&quot;</span> <span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+      <span class="nt">&quot;fields&quot;</span> <span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;message&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;Aug 29 23:34:44 raochenlindeMacBook-Air.local stunnel[304]: LOG5[4391727104]: Service [sproxy] connected remote server from 192.168.0.102:52674&quot;</span> <span class="p">]</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;sort&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="mi">18</span> <span class="p">]</span>
+    <span class="p">},</span> <span class="p">{</span>
+      <span class="nt">&quot;_index&quot;</span> <span class="p">:</span> <span class="s2">&quot;logstash-2014.08.29&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;_type&quot;</span> <span class="p">:</span> <span class="s2">&quot;logs&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;_id&quot;</span> <span class="p">:</span> <span class="s2">&quot;Bpza8x6gSQi3OFRfAz3vPA&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;_score&quot;</span> <span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+      <span class="nt">&quot;fields&quot;</span> <span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;message&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;Aug 29 23:35:23 raochenlindeMacBook-Air.local stunnel[304]: LOG5[4391882752]: Service [sproxy] accepted connection from 127.0.0.1:52710&quot;</span> <span class="p">]</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;sort&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="mi">19</span> <span class="p">]</span>
+    <span class="p">},</span> <span class="p">{</span>
+      <span class="nt">&quot;_index&quot;</span> <span class="p">:</span> <span class="s2">&quot;logstash-2014.08.29&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;_type&quot;</span> <span class="p">:</span> <span class="s2">&quot;logs&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;_id&quot;</span> <span class="p">:</span> <span class="s2">&quot;I7SQ4o-aSr--em1WXO0y0A&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;_score&quot;</span> <span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+      <span class="nt">&quot;fields&quot;</span> <span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;message&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;Aug 29 23:35:24 raochenlindeMacBook-Air.local stunnel[304]: LOG5[4391882752]: s_connect: connected 50.116.12.155:65080&quot;</span> <span class="p">]</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;sort&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="mi">20</span> <span class="p">]</span>
+    <span class="p">},</span> <span class="p">{</span>
+      <span class="nt">&quot;_index&quot;</span> <span class="p">:</span> <span class="s2">&quot;logstash-2014.08.29&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;_type&quot;</span> <span class="p">:</span> <span class="s2">&quot;logs&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;_id&quot;</span> <span class="p">:</span> <span class="s2">&quot;POLq7XA_QVe6E5f9cP9V-w&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;_score&quot;</span> <span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+      <span class="nt">&quot;fields&quot;</span> <span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;message&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;Aug 29 23:35:24 raochenlindeMacBook-Air.local stunnel[304]: LOG5[4391882752]: Service [sproxy] connected remote server from 192.168.0.102:52711&quot;</span> <span class="p">]</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;sort&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="mi">21</span> <span class="p">]</span>
+    <span class="p">},</span> <span class="p">{</span>
+      <span class="nt">&quot;_index&quot;</span> <span class="p">:</span> <span class="s2">&quot;logstash-2014.08.29&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;_type&quot;</span> <span class="p">:</span> <span class="s2">&quot;logs&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;_id&quot;</span> <span class="p">:</span> <span class="s2">&quot;sXCLVr7URu-2uKhcOP3wjA&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;_score&quot;</span> <span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+      <span class="nt">&quot;fields&quot;</span> <span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;message&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;Aug 29 23:35:35 raochenlindeMacBook-Air.local stunnel[304]: LOG5[4391882752]: Connection closed: 0 byte(s) sent to SSL, 0 byte(s) sent to socket&quot;</span> <span class="p">]</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;sort&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="mi">22</span> <span class="p">]</span>
+    <span class="p">},</span> <span class="p">{</span>
+      <span class="nt">&quot;_index&quot;</span> <span class="p">:</span> <span class="s2">&quot;logstash-2014.08.29&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;_type&quot;</span> <span class="p">:</span> <span class="s2">&quot;logs&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;_id&quot;</span> <span class="p">:</span> <span class="s2">&quot;3wxxElNuS7OgyvjSm8CQfg&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;_score&quot;</span> <span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+      <span class="nt">&quot;fields&quot;</span> <span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;message&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;Aug 29 23:36:25 raochenlindeMacBook-Air.local stunnel[304]: LOG5[4391571456]: Connection closed: 2825 byte(s) sent to SSL, 2407 byte(s) sent to socket&quot;</span> <span class="p">]</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;sort&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="mi">23</span> <span class="p">]</span>
+    <span class="p">},</span> <span class="p">{</span>
+      <span class="nt">&quot;_index&quot;</span> <span class="p">:</span> <span class="s2">&quot;logstash-2014.08.29&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;_type&quot;</span> <span class="p">:</span> <span class="s2">&quot;logs&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;_id&quot;</span> <span class="p">:</span> <span class="s2">&quot;xdsiB1cmRpagWiMxtAjMzQ&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;_score&quot;</span> <span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+      <span class="nt">&quot;fields&quot;</span> <span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;message&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;Aug 29 23:36:52 raochenlindeMacBook-Air.local stunnel[304]: LOG5[4391493632]: Connection closed: 1109 byte(s) sent to SSL, 583 byte(s) sent to socket&quot;</span> <span class="p">]</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;sort&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="mi">24</span> <span class="p">]</span>
+    <span class="p">},</span> <span class="p">{</span>
+      <span class="nt">&quot;_index&quot;</span> <span class="p">:</span> <span class="s2">&quot;logstash-2014.08.29&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;_type&quot;</span> <span class="p">:</span> <span class="s2">&quot;logs&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;_id&quot;</span> <span class="p">:</span> <span class="s2">&quot;mLScPMbwTzSPMz9WqOPXlw&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;_score&quot;</span> <span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+      <span class="nt">&quot;fields&quot;</span> <span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;message&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="s2">&quot;Aug 29 23:36:52 raochenlindeMacBook-Air.local stunnel[304]: LOG5[4391571456]: Service [sproxy] accepted connection from 127.0.0.1:52719&quot;</span> <span class="p">]</span>
+      <span class="p">},</span>
+      <span class="nt">&quot;sort&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="mi">25</span> <span class="p">]</span>
+    <span class="p">}</span> <span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></div>
+<p>没错，这就是我们想要的结果了！</p>
+<p><strong>注释</strong></p>
+<p>这里两个要点：</p>
+<ul>
+  <li>自增 id 为啥不用行号，因为 <code>LogStash::Inputs::File</code> 实现是通过 <code>File.seek</code> 和 <code>File.sysread(16394)</code> 完成的，这种时候 <code>File.lineno</code> 永远都是 0。获取真的行号很困难。</li>
+  <li>自增 id 为什么不指定成 <code>_id</code> 而是另外存字段，因为 <code>_id</code> 是特殊字段，要求在一个 <code>_index/_type</code> 里是唯一的。我们对 logstash 的使用一般情况下都是多个 host 内容存在同一个 <code>_index/_type</code> 下，会发生重复的(重复写入 <code>_id</code> 相同的数据等同于 <code>update</code> 操作)。</li>
+</ul>
+<h2 id="section">延伸</h2>
+<p>数据如何通过 kibana 展示，则是另外一个层面的内容。有时间可能我会也做一下。</p>
+<p>非 input/file 方式的其他场景，只要你能通过 event 中其他字段确定出来源唯一，都可以采用这个方式做。</p>
+    <hr>
+    <div class="pagination">
+      <ul>
+        <li class="prev"><a href="/2014/08/18/intro-range-facet-and-implement-panel-for-it" title="用 ES 的 RangeFacets 接口实现一个查看区间占比的 Kibana 面板">&larr; Previous</a></li>
+        <li><a href="/archive.html">Archive</a></li>
+        <li class="next disabled"><a>Next &rarr;</a>
+      </ul>
+    </div>
+    <hr>
+  <!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" id="UYScript" src="http://v1.uyan.cc/js/iframe.js?UYUserId=1589850" async=""></script>
+<!-- UY END -->
+  </div>
+</div>
+      </div>
+      <div class="span4">
+          <div class="well sidebar-nav">
+             <ul id="relate_blog" class="nav nav-list">
+               <li class="nav-header">最近文章</li>
+                 <li><a href="/2014/08/18/intro-range-facet-and-implement-panel-for-it">用 ES 的 RangeFacets 接口实现一个查看区间占比的 Kibana 面板</a></li>
+                 <li><a href="/2014/07/28/dynamic-dashboard-for-kibana">Kibana 动态仪表板的使用</a></li>
+                 <li><a href="/2014/07/27/using-pdl-on-macbook">在 MacBook 上使用 PDL 绘图</a></li>
+                 <li><a href="/2014/07/08/rex-test-spec">Rex::Test::Spec 模块</a></li>
+                 <li><a href="/2014/06/13/serverspec-intro">Serverspec 工具介绍</a></li>
+                 <li><a href="/2014/06/13/anyevent-redis-for-dns-check">用 Redis 做分布式 DNS/HTTP 检测汇总系统</a></li>
+                 <li><a href="/2014/06/12/rex-usage">Rex 简明手册</a></li>
+                 <li><a href="/2014/06/12/perldancer-tips">PerlDancer 框架笔记</a></li>
+                 <li><a href="/2014/06/12/perl-tips">Perl 编程的个人惯例</a></li>
+            </ul>
+          </div>
+        <div class="well sidebar-nav">
+          <iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=1&ptype=1&speed=0&skin=2&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=1035836154&verifier=a26926d5&dpc=1"></iframe>
+        </div>
+        <div class="well sidebar-nav">
+            <div id="uyan_list_time_frame"></div>
+            <script type="text/javascript" id="UYScriptTime" src="http://v1.uyan.cc/js/iframe_time_list.js?UYUserId=1589850&rankType=time" async=""></script>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(英文)</li>
+              <li><a href="http://codeascraft.com/" title="Etsy 运维团队博客">Code as Craft</a></li>
+              <li><a href="http://devopsanywhere.blogspot.jp/" title="">devopsanywhere</a></li>
+              <li><a href="http://www.jedi.be/blog/" title="">Jong En Dynamische Informatica</a></li>
+              <li><a href="http://www.planetdevops.net/" title="">planetdevops</a></li>
+              <li><a href="http://www.kitchensoap.com/" title="《网站运维》作者，Etsy 运维">Kitchen Soap</a></li>
+              <li><a href="http://blog.johngoulah.com" title="Musings of linux, open source, cloud computing and systems">John Goulah</a></li>
+              <li><a href="http://serverfault.com/" title="stackexchange下属的系统工程师问答网站">serverfault</a></li>
+              <li><a href="http://www.thegeekstuff.com/" title="各种超酷Linux命令用法">TheGeekStuff</a></li>
+              <li><a href="http://neilb.org/" title="The good,the bad,and the beautiful">neilb</a></li>
+              <li><a href="http://www.reddit.com/r/perl/" title="">reddit perl 频道</a></li>
+              <li><a href="http://jpetazzo.github.io/" title="">~jpetazzo</a></li>
+              <li><a href="http://www.perfplanet.com/" title="News and views from the web performance blogosphere">Performance Planet</a></li>
+              <li><a href="http://cuddletech.com/blog/" title="Use UNIX or die">Cuddle Tech</a></li>
+              <li><a href="http://showmetheco.de/" title="Viacheslav Tykhanovskyi(PocketIO/Text::Haml)">No time to wait</a></li>
+              <li><a href="http://blog.dataloop.io/" title="A new SaaS monitoring tool for DevOps & Operations">Dataloop.IO</a></li>
+              <li><a href="http://www.ducea.com/" title="">MDLog:/sysadmin</a></li>
+              <li><a href="http://planeteria.org/perl6/" title="Perl6 文集">Planet Perl 6</a></li>
+              <li><a href="http://www.metaforsoftware.com/blog/" title="">metafor</a></li>
+              <li><a href="http://blog.kablamo.org/" title="Eric Johnson，一个游走在伦敦和北京的 Perler">kablamo</a></li>
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(中文)</li>
+              <li><a href="http://www.nginxs.com/" title="">eric</a></li>
+              <li><a href="http://www.hellodb.net/" title="Ali DBA 张瑞">Hello DBA</a></li>
+              <li><a href="http://blog.nosqlfan.com/" title="not only sql信息集散地">NoSQLfan</a></li>
+              <li><a href="http://ourmysql.com/" title="">OurMySQL</a></li>
+              <li><a href="http://timo.piqiu.me/" title="TIMO IS MY OASIS">Timo</a></li>
+              <li><a href="http://www.liurongxing.com/" title="">刘荣星</a></li>
+              <li><a href="http://www.cnadn.net/" title="F5工程师">应用交付学习之路</a></li>
+              <li><a href="http://scmbob.org/" title="杭州NSN工程师，shell高人~">扛一肩记忆</a></li>
+              <li><a href="http://www.php-oa.com/" title="音悦台技术经理">扶凯</a></li>
+              <li><a href="http://www.lark.net.cn/" title="王剑">lark's cloud</a></li>
+              <li><a href="http://log.heartoutside.com/" title="HeartOutSide">HeartOutside</a></li>
+              <li><a href="http://blog.liulantao.com/" title="刘兰涛">Lax</a></li>
+              <li><a href="http://niubie.me/" title="莫言">莫言</a></li>
+              <li><a href="http://noops.me/" title="小米运维部">NoOps</a></li>
+              <li><a href="http://www.searchtech.pro/" title="">云端分布式搜索技术</a></li>
+              <li><a href="http://www.usefulshare.com" title="当当网安全运维">UsefulShare</a></li>
+              <li><a href="http://junqili.com/" title="深入研究puppet">纸飞机</a></li>
+              <li><a href="http://www.chinaxing.org/" title="">ChinaXing</a></li>
+              <li><a href="http://bubbyroom.com/" title="守住每一天">Liuyu's blog</a></li>
+              <li><a href="http://blog.aka-cool.net/" title="">Aka.Why</a></li>
+              <li><a href="http://blog.l8ii.com/" title="刘侨">LairdNote</a></li>
+              <li><a href="http://flw.tools/" title="">flw的工具箱</a></li>
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="booklists" class="nav nav-list">
+          <li class="nav-header">我写的第一本技术书籍</li>
+          <li><a href='http://product.china-pub.com/3769604'><img src='http://images.china-pub.com/ebook3765001-3770000/3769604/shupi.jpg' border='0' alt='网站运维技术与实践'/></a></li>
+        </div>
+      </div>
+    </div> <!-- row -->
+      <footer>
+        <p>&copy; 陈子 2012 
+          with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
+          and <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap</a>
+        </p>
+      </footer>
+    </div> <!-- /container -->
+    <!-- JiaThis Button BEGIN -->
+    <script type="text/javascript">var jiathis_config = {data_track_clickback:true};</script>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jiathis_r.js?move=0&amp;uid=1589850" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    <!-- UJian Button BEGIN -->
+    <script type="text/javascript" src="http://v1.ujian.cc/code/ujian.js?type=slide&uid=1589850"></script>
+    <!-- UJian Button END -->
+  </body>
+</html>
