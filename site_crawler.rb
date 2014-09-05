@@ -85,6 +85,22 @@ config.shuffle.each do |site|
             p e
           end
         end
+	post_content.css('object').each do |object|
+          data = object['data']
+          next if data =~ /^data:/
+          data_digest = Digest::MD5.hexdigest(data)
+          ext = data.split('.')[-1]
+          post_images[data_digest] = data
+          object['data'] = "/images/#{site_name}/#{data_digest}.#{ext}"
+          uri = make_absolute(data, remote_url)
+          p uri
+          begin
+            File.open("./images/#{site_name}/#{data_digest}.#{ext}", 'wb') { |f| f.write(open(uri, :read_timeout => 60, :proxy => 'http://42.120.23.151:13128').read) }
+          rescue => e
+            puts "#  ---   ./images/#{site_name}/#{data_digest}.#{ext}"
+            p e
+          end
+        end
 
         puts post_href
         puts post_title.text
