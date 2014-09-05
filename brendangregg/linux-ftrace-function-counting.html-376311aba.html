@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>Linux ftrace Function Counting</title>
+        <meta name="viewport" content="width=device-width">
+
+        <!-- syntax highlighting CSS -->
+        <link rel="stylesheet" href="/blog/css/syntax.css">
+
+        <!-- Custom CSS -->
+        <link rel="stylesheet" href="/blog/css/main.css">
+
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-7747513-3']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+    </head>
+    <body>
+
+	<div class="nav">
+	<p class="navhdr">This Site:</p>
+<a href="/index.html">Homepage</a><br>
+<a href="/blog/index.html">Blog</a><br>
+<a href="/sitemap.html">Full Site Map</a><br>
+<a href="/sysperfbook.html">Sys Perf book</a><br>
+<a href="/linuxperf.html">Linux Perf</a><br>
+<a href="/methodology.html">Perf Methods</a><br>
+<a href="/usemethod.html">USE Method</a><br>
+<a href="/tsamethod.html">TSA Method</a><br>
+<a href="/offcpuanalysis.html">Off-CPU Analysis</a><br>
+<a href="/activebenchmarking.html">Active Bench.</a><br>
+<a href="/flamegraphs.html">Flame Graphs</a><br>
+<a href="/heatmaps.html">Heat Maps</a><br>
+<a href="/frequencytrails.html">Frequency Trails</a><br>
+<a href="/colonygraphs.html">Colony Graphs</a><br>
+<a href="/perf.html">perf Examples</a><br>
+<a href="/ktap.html">ktap Examples</a><br>
+<a href="/dtrace.html">DTrace Tools</a><br>
+<a href="/dtracetoolkit.html">DTraceToolkit</a><br>
+<a href="/dtkshdemos.html">DtkshDemos</a><br>
+<a href="/guessinggame.html">Guessing Game</a><br>
+<a href="/specials.html">Specials</a><br>
+<a href="/books.html">Books</a><br>
+<a href="/sites.html">Other Sites</a><br>
+
+	</div>
+
+	<div class="recent">
+	Recent posts:<br>
+	<ul style="padding-left:18px">
+	  
+		   <li>30 Aug 2014 &raquo;<br>
+		   <a href="/blog/2014-08-30/ftrace-the-hidden-light-switch.html">  
+		   ftrace: The Hidden Light Switch</a></li>
+	  
+		   <li>23 Aug 2014 &raquo;<br>
+		   <a href="/blog/2014-08-23/linux-perf-tools-linuxcon-na-2014.html">  
+		   Linux Performance Tools at LinuxCon North America 2014</a></li>
+	  
+		   <li>28 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-28/execsnoop-for-linux.html">  
+		   execsnoop For Linux: See Short-Lived Processes</a></li>
+	  
+		   <li>25 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-25/opensnoop-for-linux.html">  
+		   opensnoop For Linux</a></li>
+	  
+		   <li>23 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-23/linux-iosnoop-latency-heat-maps.html">  
+		   Linux iosnoop Latency Heat Maps</a></li>
+	  
+		   <li>16 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-16/iosnoop-for-linux.html">  
+		   iosnoop For Linux</a></li>
+	  
+		   <li>13 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-13/linux-ftrace-function-counting.html">  
+		   Linux ftrace Function Counting</a></li>
+	  
+		   <li>10 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-10/perf-hacktogram.html">  
+		   perf Hacktogram</a></li>
+	  
+		   <li>03 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-03/perf-counting.html">  
+		   perf Counting</a></li>
+	  
+		   <li>01 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-01/perf-heat-maps.html">  
+		   perf Heat Maps</a></li>
+	  
+		   <li>29 Jun 2014 &raquo;<br>
+		   <a href="/blog/2014-06-29/perf-static-tracepoints.html">  
+		   perf Static Tracepoints</a></li>
+	  
+		   <li>22 Jun 2014 &raquo;<br>
+		   <a href="/blog/2014-06-22/perf-cpu-sample.html">  
+		   perf CPU Sampling</a></li>
+	  
+		   <li>12 Jun 2014 &raquo;<br>
+		   <a href="/blog/2014-06-12/java-flame-graphs.html">  
+		   Java Flame Graphs</a></li>
+	  
+		   <li>09 Jun 2014 &raquo;<br>
+		   <a href="/blog/2014-06-09/java-cpu-sampling-using-hprof.html">  
+		   Java CPU Sampling Using hprof</a></li>
+	  
+		   <li>23 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-23/osx-10.9.3-is-toxic.html">  
+		   OS X 10.9.3 Recurring Panics</a></li>
+	  
+		   <li>17 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-17/free-as-in-we-own-your-ip.html">  
+		   Free, as in, We Own Your IP</a></li>
+	  
+		   <li>16 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-16/LISA13-metrics-workshop.html">  
+		   LISA13 Metrics Workshop</a></li>
+	  
+		   <li>11 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-11/strace-wow-much-syscall.html">  
+		   strace Wow Much Syscall</a></li>
+	  
+		   <li>09 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-09/xen-feature-detection.html">  
+		   Xen Feature Detection</a></li>
+	  
+		   <li>07 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-07/what-color-is-your-xen.html">  
+		   What Color Is Your Xen?</a></li>
+	  
+	</ul>
+	<a href="/blog/index.html">Blog index</a><br>
+	<a href="/blog/about.html">About</a><br>
+	<a href="/blog/rss.xml">RSS</a><br>
+	</div>
+
+        <div class="site">
+          <div class="header">
+            <h1 class="title"><a href="/blog/index.html">Brendan Gregg's Blog</a></h1>
+            <a class="extra" href="/blog/index.html">home</a>
+          </div>
+
+          <h2 class="big">Linux ftrace Function Counting</h2>
+<p class="meta">13 Jul 2014</p>
+
+<div class="post">
+<p>Here&#39;s another capability I didn&#39;t think was possible. What kernel bio functions are being called?</p>
+
+<pre>
+# <b>./funccount 'bio_*'</b>
+Tracing "bio_*"... Ctrl-C to end.
+^C
+FUNC                              COUNT
+bio_attempt_back_merge               26
+bio_get_nr_vecs                     361
+bio_alloc                           536
+bio_alloc_bioset                    536
+bio_endio                           536
+bio_free                            536
+bio_fs_destructor                   536
+bio_init                            536
+bio_integrity_enabled               536
+bio_put                             729
+bio_add_page                       1004
+</pre>
+
+<p>Great! How about the top 5 functions beginning with &quot;tcp_&quot; every second?</p>
+
+<pre>
+# <b>./funccount -i 1 -t 5 'tcp_*'</b>
+Tracing "tcp_*". Top 5 only... Ctrl-C to end.
+
+FUNC                              COUNT
+tcp_cleanup_rbuf                    386
+tcp_service_net_dma                 386
+tcp_established_options             549
+tcp_v4_md5_lookup                   560
+tcp_v4_md5_do_lookup                890
+
+FUNC                              COUNT
+tcp_service_net_dma                 498
+tcp_cleanup_rbuf                    499
+tcp_established_options             664
+tcp_v4_md5_lookup                   672
+tcp_v4_md5_do_lookup               1071
+
+[...]
+</pre>
+
+<p>Awesome!</p>
+
+<p>Like my previous post on <a href="http://www.brendangregg.com/blog/2014-07-10/perf-hacktogram.html">perf Hacktograms</a>, this capability is also bread-and-butter for advanced tracers like SystemTap, ktap, and DTrace. But I&#39;m not using those. I&#39;m not even using perf_events. </p>
+
+<p>This is using <strong>dynamic tracing</strong> and <strong>by-CPU in-kernel aggregations</strong> on a standard Linux 3.2 kernel.</p>
+
+<p>It does this using ftrace, automated by my <a href="https://github.com/brendangregg/perf-tools/blob/master/kernel/funccount">funccount</a> script.</p>
+
+<p>ftrace is part of the Linux kernel, and is included at compile time by various FTRACE CONFIG options (including CONFIG_DYNAMIC_FTRACE, which on my systems is already turned on). You can operate it via control files under /sys/kernel/debug/tracing. It&#39;s a little tricky to use, but gets many jobs done. See the kernel source documentation <a href="https://www.kernel.org/doc/Documentation/trace/ftrace.txt">trace/ftrace.txt</a> for details.</p>
+
+<h2>Why</h2>
+
+<p>Understanding function call rates can be a useful tool for debugging and performance analysis. It&#39;s also part of a regular procedure I use when tracing subsystems, especially unfamiliar ones.</p>
+
+<p>Dynamic tracing is amazing, but it can be hard to know where to start, especially when faced with hundreds of functions in a subsystem of interest. By counting which functions are actually in use, you can narrow down the potential targets. So you can use funccount to find active functions, and then other tracers (including <a href="http://www.brendangregg.com/perf.html#DynamicTracing">perf_events dynamic tracing</a>) to probe them in more detail.</p>
+
+<p>Another approach for identifying active kernel functions is to create a <a href="http://www.brendangregg.com/perf.html#FlameGraphs">perf_events CPU Flame Graph</a> based on stack trace samples. I&#39;ll usually start with this, since it costs lower (fixed) overhead, relative to the sample rate, and can also solve numerous problems right off the bat. I&#39;d move onto function counts when I&#39;m digging deeper into a subsystem.</p>
+
+<h2>funccount</h2>
+
+<p>This is a simple script to automate ftrace. It does one thing: kernel function counting.</p>
+
+<pre>
+# <b>./funccount -h</b>
+USAGE: funccount [-hT] [-i secs] [-d secs] [-t top] funcstring
+                 -d seconds      # total duration of trace
+                 -h              # this usage message
+                 -i seconds      # interval summary
+                 -t top          # show top num entries only
+                 -T              # include timestamp (for -i)
+  eg,
+        funccount 'vfs*'         # trace all funcs that match "vfs*"
+        funccount -d 5 'tcp*'    # trace "tcp*" funcs for 5 seconds
+        funccount -t 10 'ext3*'  # show top 10 "ext3*" funcs
+        funccount -i 1 'ext3*'   # summary every 1 second
+        funccount -i 1 -d 5 'ext3*' # 5 x 1 second summaries
+</pre>
+
+<p>I added it to my <a href="https://github.com/brendangregg/perf-tools">perf-tools</a> collection on github.</p>
+
+<p>It works by enabling the ftrace function profiler. It creates per-CPU summaries (which are efficient &ndash; no synchronization overheads when updating counts), which funccount combines for the report. ftrace already provides the ability to match wildcards for its function filter.</p>
+
+<p>Not all functions are visible from ftrace and funccount. If you think a function should be included in the output, but is missing, check for it in /proc/kallsyms (kernel symbols) and /sys/kernel/debug/tracing/available_filter_functions (what ftrace can trace). </p>
+
+<p>Dynamic tracing of kernel functions has been problematic in the past on Linux, with the risk of kernel panics. I haven&#39;t experienced them (I&#39;ve run this script on 3.2 and 3.16), but wanted to warn you of this anyway: I&#39;d use a test machine (with load) to try this out on first.</p>
+
+<p>Thanks to Steven Rostedt and others who have been busy adding great capabilities to ftrace.</p>
+
+</div>
+
+
+
+<br><hr>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+var disqus_shortname = 'brendangregg';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+          <div class="footer">
+            <div class="contact">
+                Copyright 2014 Brendan Gregg.<br><a href="/blog/about.html">About this blog</a>
+            </div>
+          </div>
+        </div>
+
+    </body>
+</html>

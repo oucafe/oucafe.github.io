@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>perf Counting</title>
+        <meta name="viewport" content="width=device-width">
+
+        <!-- syntax highlighting CSS -->
+        <link rel="stylesheet" href="/blog/css/syntax.css">
+
+        <!-- Custom CSS -->
+        <link rel="stylesheet" href="/blog/css/main.css">
+
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-7747513-3']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+    </head>
+    <body>
+
+	<div class="nav">
+	<p class="navhdr">This Site:</p>
+<a href="/index.html">Homepage</a><br>
+<a href="/blog/index.html">Blog</a><br>
+<a href="/sitemap.html">Full Site Map</a><br>
+<a href="/sysperfbook.html">Sys Perf book</a><br>
+<a href="/linuxperf.html">Linux Perf</a><br>
+<a href="/methodology.html">Perf Methods</a><br>
+<a href="/usemethod.html">USE Method</a><br>
+<a href="/tsamethod.html">TSA Method</a><br>
+<a href="/offcpuanalysis.html">Off-CPU Analysis</a><br>
+<a href="/activebenchmarking.html">Active Bench.</a><br>
+<a href="/flamegraphs.html">Flame Graphs</a><br>
+<a href="/heatmaps.html">Heat Maps</a><br>
+<a href="/frequencytrails.html">Frequency Trails</a><br>
+<a href="/colonygraphs.html">Colony Graphs</a><br>
+<a href="/perf.html">perf Examples</a><br>
+<a href="/ktap.html">ktap Examples</a><br>
+<a href="/dtrace.html">DTrace Tools</a><br>
+<a href="/dtracetoolkit.html">DTraceToolkit</a><br>
+<a href="/dtkshdemos.html">DtkshDemos</a><br>
+<a href="/guessinggame.html">Guessing Game</a><br>
+<a href="/specials.html">Specials</a><br>
+<a href="/books.html">Books</a><br>
+<a href="/sites.html">Other Sites</a><br>
+
+	</div>
+
+	<div class="recent">
+	Recent posts:<br>
+	<ul style="padding-left:18px">
+	  
+		   <li>30 Aug 2014 &raquo;<br>
+		   <a href="/blog/2014-08-30/ftrace-the-hidden-light-switch.html">  
+		   ftrace: The Hidden Light Switch</a></li>
+	  
+		   <li>23 Aug 2014 &raquo;<br>
+		   <a href="/blog/2014-08-23/linux-perf-tools-linuxcon-na-2014.html">  
+		   Linux Performance Tools at LinuxCon North America 2014</a></li>
+	  
+		   <li>28 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-28/execsnoop-for-linux.html">  
+		   execsnoop For Linux: See Short-Lived Processes</a></li>
+	  
+		   <li>25 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-25/opensnoop-for-linux.html">  
+		   opensnoop For Linux</a></li>
+	  
+		   <li>23 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-23/linux-iosnoop-latency-heat-maps.html">  
+		   Linux iosnoop Latency Heat Maps</a></li>
+	  
+		   <li>16 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-16/iosnoop-for-linux.html">  
+		   iosnoop For Linux</a></li>
+	  
+		   <li>13 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-13/linux-ftrace-function-counting.html">  
+		   Linux ftrace Function Counting</a></li>
+	  
+		   <li>10 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-10/perf-hacktogram.html">  
+		   perf Hacktogram</a></li>
+	  
+		   <li>03 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-03/perf-counting.html">  
+		   perf Counting</a></li>
+	  
+		   <li>01 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-01/perf-heat-maps.html">  
+		   perf Heat Maps</a></li>
+	  
+		   <li>29 Jun 2014 &raquo;<br>
+		   <a href="/blog/2014-06-29/perf-static-tracepoints.html">  
+		   perf Static Tracepoints</a></li>
+	  
+		   <li>22 Jun 2014 &raquo;<br>
+		   <a href="/blog/2014-06-22/perf-cpu-sample.html">  
+		   perf CPU Sampling</a></li>
+	  
+		   <li>12 Jun 2014 &raquo;<br>
+		   <a href="/blog/2014-06-12/java-flame-graphs.html">  
+		   Java Flame Graphs</a></li>
+	  
+		   <li>09 Jun 2014 &raquo;<br>
+		   <a href="/blog/2014-06-09/java-cpu-sampling-using-hprof.html">  
+		   Java CPU Sampling Using hprof</a></li>
+	  
+		   <li>23 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-23/osx-10.9.3-is-toxic.html">  
+		   OS X 10.9.3 Recurring Panics</a></li>
+	  
+		   <li>17 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-17/free-as-in-we-own-your-ip.html">  
+		   Free, as in, We Own Your IP</a></li>
+	  
+		   <li>16 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-16/LISA13-metrics-workshop.html">  
+		   LISA13 Metrics Workshop</a></li>
+	  
+		   <li>11 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-11/strace-wow-much-syscall.html">  
+		   strace Wow Much Syscall</a></li>
+	  
+		   <li>09 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-09/xen-feature-detection.html">  
+		   Xen Feature Detection</a></li>
+	  
+		   <li>07 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-07/what-color-is-your-xen.html">  
+		   What Color Is Your Xen?</a></li>
+	  
+	</ul>
+	<a href="/blog/index.html">Blog index</a><br>
+	<a href="/blog/about.html">About</a><br>
+	<a href="/blog/rss.xml">RSS</a><br>
+	</div>
+
+        <div class="site">
+          <div class="header">
+            <h1 class="title"><a href="/blog/index.html">Brendan Gregg's Blog</a></h1>
+            <a class="extra" href="/blog/index.html">home</a>
+          </div>
+
+          <h2 class="big">perf Counting</h2>
+<p class="meta">03 Jul 2014</p>
+
+<div class="post">
+<p>&quot;I just want to know how many times this is called.&quot;... This is a question I&#39;m often asking for kernel, device, and application events, and there is an efficient way to answer them: using Linux <tt>perf</tt> <tt>stat</tt>.</p>
+
+<p>The <tt>perf</tt> tool (aka perf_events) has different modes of operation. My previous examples on <a href="http://www.brendangregg.com/blog/2014-06-22/perf-cpu-sample.html">CPU sampling</a>, <a href="http://www.brendangregg.com/blog/2014-06-29/perf-static-tracepoints.html">static tracepoints</a>, and <a href="http://www.brendangregg.com/blog/2014-07-01/perf-heat-maps.html">heat maps</a>, used a mode perf_events calls &quot;sampling&quot;, where a binary perf.data file is written containing event data. Another mode, &quot;counting&quot;, summarizes events in-kernel and passes the summary to user space. This is more efficient, costing less overhead in terms of CPU and storage.</p>
+
+<h3>Process Counts</h3>
+
+<p>How many processes are being created and destroyed? Using <tt>perf</tt> <tt>stat</tt> to <i>count</i> the sched_process tracepoints for 5 seconds:</p>
+
+<pre>
+# <b>perf stat -e 'sched:sched_process_*' -a sleep 5</b>
+
+ Performance counter stats for 'system wide':
+
+                20      sched:sched_process_free                     [100.00%]
+                21      sched:sched_process_exit                     [100.00%]
+                37      sched:sched_process_wait                     [100.00%]
+                20      sched:sched_process_fork                     [100.00%]
+                41      sched:sched_process_exec                     [100.00%]
+                 0      sched:sched_process_hang                     
+
+       5.001391328 seconds time elapsed
+</pre>
+
+<p>Neat. So there were 20 fork()s and 21 exit()s during 5 seconds. I used -a to match on all CPUs, and <tt>sleep 5</tt> as a dummy command to set the counting duration. You can use <tt>-p PID</tt> instead, to match a process, and skip the sleep command so that <tt>perf</tt> runs until Ctrl-C.</p>
+
+<p>This works for any event (see <tt>perf</tt> <tt>list</tt>) including all static and dynamic tracepoints.</p>
+
+<h3>Syscall Counts</h3>
+
+<p>Here&#39;s syscalls:</p>
+
+<pre>
+# <b>perf stat -e 'syscalls:sys_enter_*' -a sleep 5 | awk '$1'</b>
+# started on Wed Jul  2 23:39:50 2014
+ Performance counter stats for 'system wide':
+                60      syscalls:sys_enter_socket                    [99.95%]
+                68      syscalls:sys_enter_connect                    [99.95%]
+               148      syscalls:sys_enter_epoll_wait                    [99.97%]
+                 8      syscalls:sys_enter_statfs                    [99.97%]
+                18      syscalls:sys_enter_dup2                      [99.98%]
+                18      syscalls:sys_enter_getcwd                    [99.98%]
+               155      syscalls:sys_enter_select                    [99.98%]
+               226      syscalls:sys_enter_poll                      [99.98%]
+[...]
+</pre>
+
+<p>I used awk to strip out syscalls that had zero counts. If that doesn&#39;t work for you, add &quot;-o /dev/stdout&quot; to the <tt>perf</tt> command, which can be needed for older versions (eg, Linux 3.2). Another issue I&#39;ve had with older versions is the need to increase the file descriptor limit (ulimit -n), when matching this many probes.</p>
+
+<p>This one-liner can be a quick way to determine which syscalls are in use, before moving to using <tt>perf</tt> <tt>record</tt> for a closer look, eg, with arguments and stack traces.</p>
+
+<h3>Interval Summary</h3>
+
+<p><tt>perf</tt> <tt>stat</tt> can also print an interval summary in more recent versions, using <tt>-I</tt> and a duration in milliseconds. For example, showing the per-second rate of context switches:</p>
+
+<pre>
+# <b>perf stat -I 1000 -e sched:sched_switch -a sleep 5</b>
+#           time             counts unit events
+     1.000205453                314      sched:sched_switch       
+     2.000456051                290      sched:sched_switch       
+     3.000644420                322      sched:sched_switch       
+     4.000836009                305      sched:sched_switch       
+     5.001022382                198      sched:sched_switch       
+     5.001442140                  7      sched:sched_switch 
+</pre>
+
+<p>Nice. Again, this works for any event.</p>
+
+<h3>By CPU-ID</h3>
+
+<p>You can also decompose by CPU id:</p>
+
+<pre>
+# <b>perf stat -A -e sched:sched_switch -a sleep 5</b>
+
+ Performance counter stats for 'system wide':
+
+CPU0                   495      sched:sched_switch                                          
+CPU1                   632      sched:sched_switch                                          
+
+       5.001377216 seconds time elapsed
+</pre>
+
+<h3>Filtering</h3>
+
+<p>Finally, --filter can be added to only increment the counter based on a boolean test. For example, counting read() syscalls where the requested size is greater than 4 Kbytes:</p>
+
+<pre>
+# <b>perf stat -e syscalls:sys_enter_read --filter 'count > 4096' -a sleep 5</b>
+
+ Performance counter stats for 'system wide':
+
+                 1      syscalls:sys_enter_read                                     
+
+       5.001407932 seconds time elapsed
+</pre>
+
+<p>Notice that I used a &quot;count&quot; variable. Where did that come from, and what else is there?</p>
+
+<p>You can figure out many of the variables by reading the static tracepoint definitions in the kernel source (see the example in my <a href="http://www.brendangregg.com/blog/2014-06-29/perf-static-tracepoints.html">static tracepoints</a> post). Another way is to print their format files:</p>
+
+<pre>
+# <b>cat /sys/kernel/debug/tracing/events/syscalls/sys_enter_read/format</b>
+name: sys_enter_read
+ID: 509
+format:
+    field:unsigned short common_type;   offset:0;   size:2; signed:0;
+    field:unsigned char common_flags;   offset:2;   size:1; signed:0;
+    field:unsigned char common_preempt_count;   offset:3;   size:1; signed:0;
+    field:int common_pid;   offset:4;   size:4; signed:1;
+
+    field:int nr;   offset:8;   size:4; signed:1;
+    field:unsigned int fd;  offset:16;  size:8; signed:0;
+    field:char * buf;   offset:24;  size:8; signed:0;
+    field:size_t count; offset:32;  size:8; signed:0;
+
+print fmt: "fd: 0x%08lx, buf: 0x%08lx, count: 0x%08lx", ((unsigned long)(REC->fd)), ((unsigned long)(REC->buf)), ((unsigned long)(REC->count))
+</pre>
+
+<p>If it&#39;s a dynamic tracepoint, you can use <tt>perf</tt> <tt>probe</tt> <tt>-V</tt> to list available variables. I wish there was a similar option for static tracepoints, as well.</p>
+
+<p>So that&#39;s a quick tour of basic perf_events counting capabilities. More is possible; see my <a href="/perf.html">perf_events</a> page and the <a href="https://perf.wiki.kernel.org/index.php/Main_Page"</a>perf_events wiki</a>.</p>
+
+</div>
+
+
+
+<br><hr>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+var disqus_shortname = 'brendangregg';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+          <div class="footer">
+            <div class="contact">
+                Copyright 2014 Brendan Gregg.<br><a href="/blog/about.html">About this blog</a>
+            </div>
+          </div>
+        </div>
+
+    </body>
+</html>

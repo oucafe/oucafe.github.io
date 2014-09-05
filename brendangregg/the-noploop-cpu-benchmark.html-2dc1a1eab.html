@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>The noploop CPU Benchmark</title>
+        <meta name="viewport" content="width=device-width">
+
+        <!-- syntax highlighting CSS -->
+        <link rel="stylesheet" href="/blog/css/syntax.css">
+
+        <!-- Custom CSS -->
+        <link rel="stylesheet" href="/blog/css/main.css">
+
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-7747513-3']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+    </head>
+    <body>
+
+	<div class="nav">
+	<p class="navhdr">This Site:</p>
+<a href="/index.html">Homepage</a><br>
+<a href="/blog/index.html">Blog</a><br>
+<a href="/sitemap.html">Full Site Map</a><br>
+<a href="/sysperfbook.html">Sys Perf book</a><br>
+<a href="/linuxperf.html">Linux Perf</a><br>
+<a href="/methodology.html">Perf Methods</a><br>
+<a href="/usemethod.html">USE Method</a><br>
+<a href="/tsamethod.html">TSA Method</a><br>
+<a href="/offcpuanalysis.html">Off-CPU Analysis</a><br>
+<a href="/activebenchmarking.html">Active Bench.</a><br>
+<a href="/flamegraphs.html">Flame Graphs</a><br>
+<a href="/heatmaps.html">Heat Maps</a><br>
+<a href="/frequencytrails.html">Frequency Trails</a><br>
+<a href="/colonygraphs.html">Colony Graphs</a><br>
+<a href="/perf.html">perf Examples</a><br>
+<a href="/ktap.html">ktap Examples</a><br>
+<a href="/dtrace.html">DTrace Tools</a><br>
+<a href="/dtracetoolkit.html">DTraceToolkit</a><br>
+<a href="/dtkshdemos.html">DtkshDemos</a><br>
+<a href="/guessinggame.html">Guessing Game</a><br>
+<a href="/specials.html">Specials</a><br>
+<a href="/books.html">Books</a><br>
+<a href="/sites.html">Other Sites</a><br>
+
+	</div>
+
+	<div class="recent">
+	Recent posts:<br>
+	<ul style="padding-left:18px">
+	  
+		   <li>30 Aug 2014 &raquo;<br>
+		   <a href="/blog/2014-08-30/ftrace-the-hidden-light-switch.html">  
+		   ftrace: The Hidden Light Switch</a></li>
+	  
+		   <li>23 Aug 2014 &raquo;<br>
+		   <a href="/blog/2014-08-23/linux-perf-tools-linuxcon-na-2014.html">  
+		   Linux Performance Tools at LinuxCon North America 2014</a></li>
+	  
+		   <li>28 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-28/execsnoop-for-linux.html">  
+		   execsnoop For Linux: See Short-Lived Processes</a></li>
+	  
+		   <li>25 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-25/opensnoop-for-linux.html">  
+		   opensnoop For Linux</a></li>
+	  
+		   <li>23 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-23/linux-iosnoop-latency-heat-maps.html">  
+		   Linux iosnoop Latency Heat Maps</a></li>
+	  
+		   <li>16 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-16/iosnoop-for-linux.html">  
+		   iosnoop For Linux</a></li>
+	  
+		   <li>13 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-13/linux-ftrace-function-counting.html">  
+		   Linux ftrace Function Counting</a></li>
+	  
+		   <li>10 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-10/perf-hacktogram.html">  
+		   perf Hacktogram</a></li>
+	  
+		   <li>03 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-03/perf-counting.html">  
+		   perf Counting</a></li>
+	  
+		   <li>01 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-01/perf-heat-maps.html">  
+		   perf Heat Maps</a></li>
+	  
+		   <li>29 Jun 2014 &raquo;<br>
+		   <a href="/blog/2014-06-29/perf-static-tracepoints.html">  
+		   perf Static Tracepoints</a></li>
+	  
+		   <li>22 Jun 2014 &raquo;<br>
+		   <a href="/blog/2014-06-22/perf-cpu-sample.html">  
+		   perf CPU Sampling</a></li>
+	  
+		   <li>12 Jun 2014 &raquo;<br>
+		   <a href="/blog/2014-06-12/java-flame-graphs.html">  
+		   Java Flame Graphs</a></li>
+	  
+		   <li>09 Jun 2014 &raquo;<br>
+		   <a href="/blog/2014-06-09/java-cpu-sampling-using-hprof.html">  
+		   Java CPU Sampling Using hprof</a></li>
+	  
+		   <li>23 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-23/osx-10.9.3-is-toxic.html">  
+		   OS X 10.9.3 Recurring Panics</a></li>
+	  
+		   <li>17 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-17/free-as-in-we-own-your-ip.html">  
+		   Free, as in, We Own Your IP</a></li>
+	  
+		   <li>16 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-16/LISA13-metrics-workshop.html">  
+		   LISA13 Metrics Workshop</a></li>
+	  
+		   <li>11 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-11/strace-wow-much-syscall.html">  
+		   strace Wow Much Syscall</a></li>
+	  
+		   <li>09 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-09/xen-feature-detection.html">  
+		   Xen Feature Detection</a></li>
+	  
+		   <li>07 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-07/what-color-is-your-xen.html">  
+		   What Color Is Your Xen?</a></li>
+	  
+	</ul>
+	<a href="/blog/index.html">Blog index</a><br>
+	<a href="/blog/about.html">About</a><br>
+	<a href="/blog/rss.xml">RSS</a><br>
+	</div>
+
+        <div class="site">
+          <div class="header">
+            <h1 class="title"><a href="/blog/index.html">Brendan Gregg's Blog</a></h1>
+            <a class="extra" href="/blog/index.html">home</a>
+          </div>
+
+          <h2 class="big">The noploop CPU Benchmark</h2>
+<p class="meta">26 Apr 2014</p>
+
+<div class="post">
+<p>My preference is to write benchmark tools myself, in assembly, and then to dissassemble the compiled machine code for verification. How else do you know what the CPU is actually doing?</p>
+
+<p>It&#39;s usually impractical to do this, but I&#39;ll share one case where you can. This is for CPU benchmarking, and I use it along with other tools (eg, sysbench, lmbench), and an <a href="http://www.brendangregg.com/activebenchmarking.html">active benchmarking</a> approach.</p>
+
+<p>It is a procedure for measuring CPU clock speed using an unrolled No-Operation (NOP) loop. It&#39;s intended to be simple, minimizing variation caused by cache misses, stall cycles, and branch misprediction. The result provides a baseline before more complex CPU benchmarks are tried.</p>
+
+<p>Since I&#39;m running this on Linux I could just read /proc/cpuinfo, but I don&#39;t completely trust it in virtualized environments (which can fake the cpuid). An approach I trust much more is to simply read cycle counters from the CPU Performance Monitoring Unit (eg, using <a href="http://www.brendangregg.com/perf.html">perf</a>), but I have limited or no access to these in virtualized environments. This instance happens to be a Xen guest on AWS EC2.</p>
+
+<p>First, instead of writing assembly from scratch, lets take a shortcut. This C program counts to 10 million:</p>
+
+<pre>
+$ <b>vi noploop.c</b>
+int
+main() {
+    int i;
+    for (i = 0; i < 10000000; i++) { }
+    return (0);
+}
+</pre>
+
+<p>Now compile to assembly (with -O0, for fewer optimizations), and look for the loop:</p>
+
+<pre>
+$ <b>gcc -O0 -S noploop.c</b>
+$ <b>cat -n noploop.s</b>
+[...]
+    12      .cfi_def_cfa_register 6
+    13      movl    $0, -4(%rbp)
+    14      jmp .L2
+    15  .L3:
+    16      addl    $1, -4(%rbp)
+    17  .L2:
+    18      cmpl    $9999999, -4(%rbp)
+    19      jle .L3
+    20      movl    $0, %eax
+    21      popq    %rbp
+    22      .cfi_def_cfa 7, 8
+[...]
+</pre>
+
+<p>The loop became lines 15 to 19. Key lines in English:</p>
+
+<ul>
+<li>16 <tt>addl $1, -4(%rpb)</tt>: add of size long the constant 1 to the memory address pointed to by the rpb register minus 4 bytes (this will be the local variable, i).</li>
+<li>18 <tt>cmpl $999999, -4(%rbp)</tt>: compare of size long the constant 999,999 to the earlier variable.</li>
+<li>19 <tt>jle .L3</tt>: jump to the .L3 label if the compare was less-than or equal-to.</li>
+</ul>
+
+<p>Now I&#39;ll edit the assembly and insert 2,000 NOPs into the loop:</p>
+
+<pre>
+$ <b>vi +'set nu' noploop.s</b>
+[...]
+  15 .L3:
+  16         addl    $1, -4(%rbp)
+  17 .L2:
+  18         cmpl    $9999999, -4(%rbp)
+  19         <b>nop</b>
+  20         <b>nop</b>
+  21         <b>nop</b>
+<b>[... etc, 2,000 nop's in total ...]</b>
+2018         <b>nop</b>
+2019         jle     .L3
+[...]
+</pre>
+
+<p>Why 2,000 NOPs? I&#39;m picking a high number so that the CPU spends most of its time running NOP, and cycles spent on tests and branches become negligible. But I&#39;m also not making it too high: these NOPs become 2000 bytes of machine code, which should cache easily and stay within one page of memory. If I made that too high, I might start spending cycles on cache misses and memory page translation.</p>
+
+<p>Compiling to binary and verifying using objdump:</p>
+
+<pre>
+$ <b>gcc -o noploop noploop.s</b>
+$ <b>objdump -d noploop</b>
+[...]
+  4004bd:   83 45 fc 01             addl   $0x1,-0x4(%rbp)
+  4004c1:   81 7d fc 7f 96 98 00    cmpl   $0x98967f,-0x4(%rbp)
+  4004c8:   90                      nop
+  4004c9:   90                      nop
+  4004ca:   90                      nop
+  4004cb:   90                      nop
+[... etc ...]
+  400c97:   90                      nop
+  400c98:   0f 8e 1f f8 ff ff       jle    4004bd <main+0xd>
+[...]
+</pre>
+
+<p>Now running:</p>
+
+<pre>
+$ <b>time ./noploop</b>
+
+real    0m1.631s
+user    0m1.628s
+sys     0m0.000s
+</pre>
+
+<p>So we ran 20 billion NOPs (10 million x 2000) in 1.628 (user) seconds. For simplicity, I&#39;ll treat program startup and loop instructions as negligible, leaving the NOPs. NOPs are executed in a single CPU cycle, so we can calculate the cycle rate: 20 billion cycles / 1.628 seconds = 12.285 billion cycles per second. That would make this a 12.285 GHz processor. </p>
+
+<p>Modern CPUs can execute multiple instructions with each cycle, thanks to the superscalar architecture. How many depends on the instruction and CPU functional units that can operate in parallel; for NOPs it&#39;s likely to be 3 or 4 (with newer processors). In this case, it&#39;s 4, making my actual CPU clock speed 12.285 / 4 = 3.071 GHz.</p>
+
+<p>This may be higher than expected due to Intel Turbo Boost (or any similar equivalent), a processor feature that can dynamically overclock the CPUs depending on factors including temperature. For consistent benchmarking, you can turn it off in the BIOS, bearing in mind that the CPUs will now run more slowly. Linux may also mess with CPU frequencies, using a different interface (eg, Intel SpeedStep), run by cpufreqd. Remember to either turn them all off or account for the variation.</p>
+
+<p>This is just one CPU benchmark, aimed at providing supporting evidence for further study. I also like to run the mhz tool from <a href="http://www.bitmover.com/lmbench/">lmbench</a>:</p>
+
+<pre>
+$ <b>mhz</b>
+3097 MHz, 0.3229 nanosec clock
+</pre>
+
+<p>Which uses a similar approach: running some instructions with expected cycle counts, and timing them.</p>
+
+<p>So what did /proc/cpuinfo claim?</p>
+
+<pre>
+$ <b>grep model.name /proc/cpuinfo</b>
+model name  : Intel(R) Xeon(R) CPU E5-2680 v2 @ 2.80GHz
+[...]
+</pre>
+
+<p>This could well be accurate, as 3 GHz is within the Turbo Boost envelope for the <a href="http://ark.intel.com/products/75277/Intel-Xeon-Processor-E5-2680-v2-25M-Cache-2_80-GHz">E5-2680v2</a>.</p>
+
+</div>
+
+
+
+<br><hr>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+var disqus_shortname = 'brendangregg';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+          <div class="footer">
+            <div class="contact">
+                Copyright 2014 Brendan Gregg.<br><a href="/blog/about.html">About this blog</a>
+            </div>
+          </div>
+        </div>
+
+    </body>
+</html>

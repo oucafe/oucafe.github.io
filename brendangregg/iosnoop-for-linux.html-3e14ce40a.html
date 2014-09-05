@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>iosnoop For Linux</title>
+        <meta name="viewport" content="width=device-width">
+
+        <!-- syntax highlighting CSS -->
+        <link rel="stylesheet" href="/blog/css/syntax.css">
+
+        <!-- Custom CSS -->
+        <link rel="stylesheet" href="/blog/css/main.css">
+
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-7747513-3']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+    </head>
+    <body>
+
+	<div class="nav">
+	<p class="navhdr">This Site:</p>
+<a href="/index.html">Homepage</a><br>
+<a href="/blog/index.html">Blog</a><br>
+<a href="/sitemap.html">Full Site Map</a><br>
+<a href="/sysperfbook.html">Sys Perf book</a><br>
+<a href="/linuxperf.html">Linux Perf</a><br>
+<a href="/methodology.html">Perf Methods</a><br>
+<a href="/usemethod.html">USE Method</a><br>
+<a href="/tsamethod.html">TSA Method</a><br>
+<a href="/offcpuanalysis.html">Off-CPU Analysis</a><br>
+<a href="/activebenchmarking.html">Active Bench.</a><br>
+<a href="/flamegraphs.html">Flame Graphs</a><br>
+<a href="/heatmaps.html">Heat Maps</a><br>
+<a href="/frequencytrails.html">Frequency Trails</a><br>
+<a href="/colonygraphs.html">Colony Graphs</a><br>
+<a href="/perf.html">perf Examples</a><br>
+<a href="/ktap.html">ktap Examples</a><br>
+<a href="/dtrace.html">DTrace Tools</a><br>
+<a href="/dtracetoolkit.html">DTraceToolkit</a><br>
+<a href="/dtkshdemos.html">DtkshDemos</a><br>
+<a href="/guessinggame.html">Guessing Game</a><br>
+<a href="/specials.html">Specials</a><br>
+<a href="/books.html">Books</a><br>
+<a href="/sites.html">Other Sites</a><br>
+
+	</div>
+
+	<div class="recent">
+	Recent posts:<br>
+	<ul style="padding-left:18px">
+	  
+		   <li>30 Aug 2014 &raquo;<br>
+		   <a href="/blog/2014-08-30/ftrace-the-hidden-light-switch.html">  
+		   ftrace: The Hidden Light Switch</a></li>
+	  
+		   <li>23 Aug 2014 &raquo;<br>
+		   <a href="/blog/2014-08-23/linux-perf-tools-linuxcon-na-2014.html">  
+		   Linux Performance Tools at LinuxCon North America 2014</a></li>
+	  
+		   <li>28 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-28/execsnoop-for-linux.html">  
+		   execsnoop For Linux: See Short-Lived Processes</a></li>
+	  
+		   <li>25 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-25/opensnoop-for-linux.html">  
+		   opensnoop For Linux</a></li>
+	  
+		   <li>23 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-23/linux-iosnoop-latency-heat-maps.html">  
+		   Linux iosnoop Latency Heat Maps</a></li>
+	  
+		   <li>16 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-16/iosnoop-for-linux.html">  
+		   iosnoop For Linux</a></li>
+	  
+		   <li>13 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-13/linux-ftrace-function-counting.html">  
+		   Linux ftrace Function Counting</a></li>
+	  
+		   <li>10 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-10/perf-hacktogram.html">  
+		   perf Hacktogram</a></li>
+	  
+		   <li>03 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-03/perf-counting.html">  
+		   perf Counting</a></li>
+	  
+		   <li>01 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-01/perf-heat-maps.html">  
+		   perf Heat Maps</a></li>
+	  
+		   <li>29 Jun 2014 &raquo;<br>
+		   <a href="/blog/2014-06-29/perf-static-tracepoints.html">  
+		   perf Static Tracepoints</a></li>
+	  
+		   <li>22 Jun 2014 &raquo;<br>
+		   <a href="/blog/2014-06-22/perf-cpu-sample.html">  
+		   perf CPU Sampling</a></li>
+	  
+		   <li>12 Jun 2014 &raquo;<br>
+		   <a href="/blog/2014-06-12/java-flame-graphs.html">  
+		   Java Flame Graphs</a></li>
+	  
+		   <li>09 Jun 2014 &raquo;<br>
+		   <a href="/blog/2014-06-09/java-cpu-sampling-using-hprof.html">  
+		   Java CPU Sampling Using hprof</a></li>
+	  
+		   <li>23 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-23/osx-10.9.3-is-toxic.html">  
+		   OS X 10.9.3 Recurring Panics</a></li>
+	  
+		   <li>17 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-17/free-as-in-we-own-your-ip.html">  
+		   Free, as in, We Own Your IP</a></li>
+	  
+		   <li>16 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-16/LISA13-metrics-workshop.html">  
+		   LISA13 Metrics Workshop</a></li>
+	  
+		   <li>11 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-11/strace-wow-much-syscall.html">  
+		   strace Wow Much Syscall</a></li>
+	  
+		   <li>09 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-09/xen-feature-detection.html">  
+		   Xen Feature Detection</a></li>
+	  
+		   <li>07 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-07/what-color-is-your-xen.html">  
+		   What Color Is Your Xen?</a></li>
+	  
+	</ul>
+	<a href="/blog/index.html">Blog index</a><br>
+	<a href="/blog/about.html">About</a><br>
+	<a href="/blog/rss.xml">RSS</a><br>
+	</div>
+
+        <div class="site">
+          <div class="header">
+            <h1 class="title"><a href="/blog/index.html">Brendan Gregg's Blog</a></h1>
+            <a class="extra" href="/blog/index.html">home</a>
+          </div>
+
+          <h2 class="big">iosnoop For Linux</h2>
+<p class="meta">16 Jul 2014</p>
+
+<div class="post">
+<p>I&#39;m probably dreaming. I just ported my popular <a href="https://github.com/brendangregg/perf-tools/blob/master/iosnoop">iosnoop tool to Linux</a>:</p>
+
+<pre>
+# <b>./iosnoop</b>
+Tracing block I/O. Ctrl-C to end.
+COMM             PID    TYPE DEV      BLOCK        BYTES     LATms
+supervise        1689   W    202,1    17040376     4096       0.49
+supervise        1684   W    202,1    17039744     4096       0.59
+supervise        1687   W    202,1    17039752     4096       0.62
+supervise        1684   W    202,1    17039768     4096       0.59
+java             17705  R    202,1    5849560      4096      16.48
+supervise        3055   W    202,1    12862528     4096       5.56
+java             17705  R    202,1    5882792      4096       6.31
+java             17705  R    202,1    5882984      40960     17.79
+[...]
+</pre>
+
+<p>This shows a one line summary per block device I/O (disk I/O). It&#39;s like tcpdump for your disks.</p>
+
+<p>Here&#39;s a random I/O workload, on a system with rotational disks:</p>
+
+<pre>
+COMM             PID    TYPE DEV      <b>BLOCK</b>        BYTES     <b>LATms</b>
+randread         6199   R    202,16   <b>71136208</b>     8192      <b> 5.32</b>
+randread         6199   R    202,16   <b>83134400</b>     8192      <b> 9.26</b>
+randread         6199   R    202,16   <b>88477928</b>     8192      <b> 3.46</b>
+randread         6199   R    202,16   <b>66953696</b>     8192      <b>10.69</b>
+randread         6199   R    202,16   <b>87832704</b>     8192      <b> 3.68</b>
+randread         6199   R    202,16   <b>74963120</b>     8192      <b> 4.62</b>
+[...]
+</pre>
+
+<p>Notice the random disk location (BLOCK), which results in latencies (I/O time) between 3 and 10 milliseconds.</p>
+
+<p>Running the same workload on SSDs:</p>
+
+<pre>
+COMM             PID    TYPE DEV      BLOCK        BYTES     <b>LATms</b>
+randread         20125  R    202,16   24803976     8192       <b>0.15</b>
+randread         20125  R    202,32   17527272     8192       <b>0.15</b>
+randread         20125  R    202,16   13382360     8192       <b>0.15</b>
+randread         20125  R    202,32   29727160     8192       <b>0.19</b>
+randread         20125  R    202,32   26965272     8192       <b>0.18</b>
+randread         20125  R    202,32   27222376     8192       <b>0.17</b>
+[...]
+</pre>
+
+<p>Excellent, latencies are much better!</p>
+
+<p>In this post I&#39;ll summarize iosnoop(8) options and usage, provide an example of debugging a latency outlier, and discuss caveats, tool internals, overhead, and why I wrote this.</p>
+
+<h2>Options</h2>
+
+<p>These are summarized by the USAGE message (there&#39;s also a <a href="https://github.com/brendangregg/perf-tools/blob/master/man/man8/iosnoop.8">man page</a> and <a href="https://github.com/brendangregg/perf-tools/blob/master/examples/iosnoop_example.txt">examples file</a>):</p>
+
+<pre>
+# <b>./iosnoop -h</b>
+USAGE: iosnoop [-hQst] [-d device] [-i iotype] [-p PID] [-n name]
+               [duration]
+                 -d device       # device string (eg, "202,1)
+                 -i iotype       # match type (eg, '*R*' for all reads)
+                 -n name         # process name to match on I/O issue
+                 -p PID          # PID to match on I/O issue
+                 -Q              # use queue insert as start time
+                 -s              # include start time of I/O (s)
+                 -t              # include completion time of I/O (s)
+                 -h              # this usage message
+                 duration        # duration seconds, and use buffers
+  eg,
+       iosnoop                   # watch block I/O live (unbuffered)
+       iosnoop 1                 # trace 1 sec (buffered)
+       iosnoop -Q                # include queueing time in LATms
+       iosnoop -ts               # include start and end timestamps
+       iosnoop -i '*R*'          # trace reads
+       iosnoop -p 91             # show I/O issued when PID 91 is on-CPU
+       iosnoop -Qp 91            # show I/O queued by PID 91, queue time
+
+See the man page and example file for more info.
+</pre>
+
+<p>I use the -s and -t options when post-processing the output in R or gnuplot, or for digging into harder issues, including latency outliers.</p>
+
+<h2>Latency Outlier</h2>
+
+<p>My randread program on an SSD server (which is an AWS EC2 instance) usually experiences about 0.15 ms I/O latency, but there are some outliers as high as 20 milliseconds. Here&#39;s an excerpt:</p>
+
+<pre>
+# <b>./iosnoop -ts > out</b>
+# <b>more out</b>
+Tracing block I/O. Ctrl-C to end.
+STARTs         ENDs           COMM         PID    TYPE DEV      BLOCK      BYTES   LATms
+6037559.121523 6037559.121685 randread     22341  R    202,32   29295416   8192     0.16
+6037559.121719 6037559.121874 randread     22341  R    202,16   27515304   8192     0.16
+[...]
+6037595.999508 6037596.000051 supervise    1692   W    202,1    12862968   4096     0.54
+6037595.999513 6037596.000144 supervise    1687   W    202,1    17040160   4096     0.63
+6037595.999634 6037596.000309 supervise    1693   W    202,1    17040168   4096     0.68
+6037595.999937 6037596.000440 supervise    1693   W    202,1    17040176   4096     0.50
+6037596.000579 6037596.001192 supervise    1689   W    202,1    17040184   4096     0.61
+6037596.000826 6037596.001360 supervise    1689   W    202,1    17040192   4096     0.53
+<b>6037595.998302</b> 6037596.018133 randread     22341  R    202,32   954168     8192    <b>20.03</b>
+<b>6037595.998303</b> 6037596.018150 randread     22341  R    202,32   954200     8192    <b>20.05</b>
+6037596.018182 6037596.018347 randread     22341  R    202,32   18836600   8192     0.16
+[...]
+</pre>
+
+<p>It&#39;s important to sort on the I/O completion time (ENDs). In this case it&#39;s already in the correct order.</p>
+
+<p>So my 20 ms reads happened after a large group of supervise writes were completed (I truncated dozens of supervise write lines to keep this example short). Other latency outliers in this output file showed the same sequence: slow reads after a batch of writes.</p>
+
+<p>Note the I/O request timestamp (STARTs), which shows that these 20 ms reads were issued <em>before</em> the supervise writes &ndash; so they had been sitting on a queue. I&#39;ve debugged this type of issue many times before, but this one is different: those writes were to a different device (202,1), so I would have assumed they would be on different queues, and wouldn&#39;t interfere with each other. Somewhere in this system (Xen guest) it looks like there is a shared queue. (Having <em>just</em> discovered this using iosnoop, I can&#39;t yet tell you which queue, but I&#39;d hope that after identifying it there would be a way to tune its queueing behavior, so that we can eliminate or reduce the severity of these outliers. UPDATE: See comments.)</p>
+
+<p>While the output contains COMM and PID columns, as explained in the man page, you should treat these (and the -p and -n options) as best-effort.</p>
+
+<h2>COMMs and PIDs</h2>
+
+<p>Like my original iosnoop tool, the COMM and PID columns show who is on-CPU when the I/O was issued, which is usually the task who issued it, but it could be unrelated. I had driven a system under high write load, and started seeing entries like these:</p>
+
+<pre>
+<b>COMM</b>             PID    TYPE DEV      BLOCK        BYTES     LATms
+<b>awk</b>              6179   W    202,16   597439928    4096      73.86
+<b>sshd</b>             2357   W    202,16   597448128    4096      73.94
+<b>awk</b>              6179   W    202,16   597456328    4096      73.94
+<b>awk</b>              6179   W    202,16   597464528    4096      74.08
+<b>awk</b>              6179   W    202,16   597472728    4096      74.30
+<b>awk</b>              6179   W    202,16   597480928    4096      74.91
+<b>sshd</b>             2357   W    202,16   597489128    4096      74.19
+<b>awk</b>              6179   W    202,16   597497328    4096      74.94
+[...]
+</pre>
+
+<p>Well, while awk and sshd were on-CPU, but aren&#39;t likely to be the origin of the I/O. This can be misleading.</p>
+
+<p>I captured stack traces when block I/O was issued (using perf_events) to find you an example. Most of the stacks showed the correct process, but here&#39;s one showing awk instead:</p>
+
+<pre>
+<b>awk</b> 11774 [000] 3495819.879203: block:block_rq_issue: 202,16 <b>W</b> 0 () 19337224 + 256 [awk]
+        ffffffff8133c980 blk_peek_request ([kernel.kallsyms])
+        ffffffff8149d114 do_blkif_request ([kernel.kallsyms])
+        ffffffff81336377 __blk_run_queue ([kernel.kallsyms])
+        ffffffff813364ad blk_start_queue ([kernel.kallsyms])
+        ffffffff8149d9f5 <b>kick_pending_request_queues</b> ([kernel.kallsyms])
+        ffffffff8149dd86 blkif_interrupt ([kernel.kallsyms])
+        ffffffff810c258d handle_irq_event_percpu ([kernel.kallsyms])
+        ffffffff810c2788 handle_irq_event ([kernel.kallsyms])
+        ffffffff810c50a7 handle_edge_irq ([kernel.kallsyms])
+        ffffffff81421764 evtchn_2l_handle_events ([kernel.kallsyms])
+        ffffffff8141f210 __xen_evtchn_do_upcall ([kernel.kallsyms])
+        ffffffff81420e1f xen_evtchn_do_upcall ([kernel.kallsyms])
+        ffffffff81709f3e xen_do_hypervisor_callback ([kernel.kallsyms])
+            7f8e91ff2b1a __brk (/lib/x86_64-linux-gnu/libc-2.15.so)
+</pre>
+
+<p>awk is doing a brk() syscall, likely normal behavior as it expands its heap. Since this is an AWS EC2 Xen guest, it performs a hypercall (xen_do_hypervisor_callback) to optimize memory operations. This happens to call kick_pending_request_queues(), to issue more work that is already queued, which calls _blk_run_queue(), leading to issuing block I/O that was likely queued by another process.</p>
+
+<p>I can fetch the originating PID by tracing higher up the stack, although it may be best to keep iosnoop as a simple block device-level tracer. I could also dig out the file system pathname (if any) that this I/O is related to. My earlier iosnoop versions did this, but, (like PID and COMM) it wasn&#39;t reliable, and depended on the file system type. iosnoop with ZFS can&#39;t really get filenames at the moment, but with HFS+ on OS X it does get partial pathnames, which can be very useful.</p>
+
+<p>UPDATE: I&#39;ve added a -Q option to iosnoop, which uses block queue insertion as the starting tracepoint instead of block I/O issue. This provides times that include block I/O queueing, to analyze problems of queueing and load. But it also improves the acccuracy of the PID and COMM columns, since the originating process is much more likely to be still on-CPU at the time of queue insert. I&#39;m tempted to trace both insert and issue tracepoints at the same time so I can do it all at once &ndash; better PID and COMM, and show both I/O queued time and device time separately &ndash; but this would cost a lot more overhead. (I&#39;ll do that when the Linux kernel has an enhanced tracing framework, and I can do this all more cheaply.)</p>
+
+<h2>Why iosnoop</h2>
+
+<p>Why not use blktrace for disk I/O? I first wrote iosnoop before blktrace existed. Why port it now? Well...</p>
+
+<p>I showed the source to a colleague. He was stunned.</p>
+
+<blockquote>How does this work? This is just a shell script?!</blockquote>
+
+<p>Not only that, but it works on the large number of servers I use that are running the 3.2 kernel, without any software additions. I&#39;m not using SystemTap, ktap, dtrace4linux, or even perf_events.</p>
+
+<p>I&#39;m using the bash shell, awk, and some files under /sys. Those files control the kernel&#39;s <strong>ftrace</strong> framework.</p>
+
+<p>This was an experiment that began with <a href="http://www.brendangregg.com/perf.html">perf_events</a>, but I hit some problems with its scripting mode, since my use case is a little different to what&#39;s it&#39;s been designed for. perf_events provides the &quot;perf&quot; command, and in some ways is the nicer and safer front-end to the same frameworks (tracepoints and kprobes) that ftrace uses. iosnoop should at least be a perf_events script (after it can handle my use case), if not a script for a more advanced framework (if/when they are integrated).</p>
+
+<p>So that leaves the present. I realized I could whip up an ftrace-based iosnoop, and use it to solve real issues until the nicer future arrived. I was also curious to see what problems I&#39;d run into with the ftrace interface. It worked really well. (I had some issues with snapshots losing events, so I didn&#39;t use them, and also write errors with marker events, so I didn&#39;t use them either. I&#39;m still debugging, and I don&#39;t know if I was just using them wrong, of if there are some issues with their implementation.)</p>
+
+<p>My previous post used a lower-overhead mode of ftrace for <a href="/blog/2014-07-13/linux-ftrace-function-counting.html">function counting</a>, which does the counts in-kernel. iosnoop(8) reads individual event data from ftrace and processes it in user space, so I was particularly interested in the overhead of this approach.</p>
+
+<h2>Overhead</h2>
+
+<p>This iosnoop version will print events as they happen. This produces snappy output, but for high IOPS systems it can consume noticeable CPU resources. The duration mode uses buffering instead, which populates the buffer once, then reads it. For example, using a duration of 5 seconds:</p>
+
+<pre>
+# <b>time ./iosnoop -ts 5 > out</b>
+
+real    0m5.566s
+user    0m0.336s
+sys     0m0.140s
+# <b>wc out</b>
+  27010  243072 2619744 out
+</pre>
+
+<p>iosnoop ate half a second of CPU (all at once) to process the buffer of 27k events. That&#39;s really not bad. (I did analyze and tune awk performance for this script, and reduced CPU overhead by 3.2x.) The downside of using a buffer like this is that it has a limited size, and if you overflow it you&#39;ll lose events. With the default settings (bufsize_kb), that will happen at around 50k I/O.</p>
+
+<p>There&#39;s a lot of different ways to handle this if you need to. The easiest way is drop the duration, so that events are printed without buffering. It does cost much more CPU; here&#39;s 30 seconds:</p>
+
+<pre>
+# <b>time ./iosnoop -ts > out</b>
+^C
+real    0m33.992s
+user    0m4.704s
+sys     0m7.524s
+# <b>wc out</b>
+  169687  1527164 16459401 out
+# <b>ls -lh out</b>
+-rwxrwsr-x 1 root other 16M Jul 16 05:58 out
+</pre>
+
+<p>It captured 170k events, and wrote a 16 Mbyte output file, but did cost over 12 seconds of CPU time to do so. About 36% of one CPU, during the run. This also means we can calculate the upper bound for the unbuffered approach (on this hardware and software versions): which would be about 15k IOPS.</p>
+
+<p>But if you really want to trace more than 10k IOPS, for long durations, you&#39;re beyond the scope of this temporary tool. In the future, I imagine ditching this iosnoop implementation and rewriting it, at which point it will handle higher loads.  </p>
+
+<h2>Conclusion</h2>
+
+<p><a href="https://github.com/brendangregg/perf-tools/blob/master/iosnoop">iosnoop(8)</a> is a useful tool, and can be implemented using nothing more than Linux ftrace, which has been part of the kernel since the 2.6.x days. It should be implemented in something more robust, like perf_events or an advanced tracer (SystemTap, ktap), which can handle buffering and concurrent users more sensibly. This ftrace-based iosnoop was really an experiment to see how far I could go. I surprised myself &ndash; just dropping a shell script on different kernels and having it work has been amazing. I hope I&#39;m not dreaming.</p>
+
+<p>Warnings apply: this ftrace tool is a hack, so know what you are doing, test first, and use at your own risk. With future kernel developments it should, one day, be rewritten, and move from a hack to a stable tool.</p>
+
+</div>
+
+
+
+<br><hr>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+var disqus_shortname = 'brendangregg';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+          <div class="footer">
+            <div class="contact">
+                Copyright 2014 Brendan Gregg.<br><a href="/blog/about.html">About this blog</a>
+            </div>
+          </div>
+        </div>
+
+    </body>
+</html>

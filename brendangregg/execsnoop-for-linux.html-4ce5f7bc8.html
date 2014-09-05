@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>execsnoop For Linux: See Short-Lived Processes</title>
+        <meta name="viewport" content="width=device-width">
+
+        <!-- syntax highlighting CSS -->
+        <link rel="stylesheet" href="/blog/css/syntax.css">
+
+        <!-- Custom CSS -->
+        <link rel="stylesheet" href="/blog/css/main.css">
+
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-7747513-3']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+    </head>
+    <body>
+
+	<div class="nav">
+	<p class="navhdr">This Site:</p>
+<a href="/index.html">Homepage</a><br>
+<a href="/blog/index.html">Blog</a><br>
+<a href="/sitemap.html">Full Site Map</a><br>
+<a href="/sysperfbook.html">Sys Perf book</a><br>
+<a href="/linuxperf.html">Linux Perf</a><br>
+<a href="/methodology.html">Perf Methods</a><br>
+<a href="/usemethod.html">USE Method</a><br>
+<a href="/tsamethod.html">TSA Method</a><br>
+<a href="/offcpuanalysis.html">Off-CPU Analysis</a><br>
+<a href="/activebenchmarking.html">Active Bench.</a><br>
+<a href="/flamegraphs.html">Flame Graphs</a><br>
+<a href="/heatmaps.html">Heat Maps</a><br>
+<a href="/frequencytrails.html">Frequency Trails</a><br>
+<a href="/colonygraphs.html">Colony Graphs</a><br>
+<a href="/perf.html">perf Examples</a><br>
+<a href="/ktap.html">ktap Examples</a><br>
+<a href="/dtrace.html">DTrace Tools</a><br>
+<a href="/dtracetoolkit.html">DTraceToolkit</a><br>
+<a href="/dtkshdemos.html">DtkshDemos</a><br>
+<a href="/guessinggame.html">Guessing Game</a><br>
+<a href="/specials.html">Specials</a><br>
+<a href="/books.html">Books</a><br>
+<a href="/sites.html">Other Sites</a><br>
+
+	</div>
+
+	<div class="recent">
+	Recent posts:<br>
+	<ul style="padding-left:18px">
+	  
+		   <li>30 Aug 2014 &raquo;<br>
+		   <a href="/blog/2014-08-30/ftrace-the-hidden-light-switch.html">  
+		   ftrace: The Hidden Light Switch</a></li>
+	  
+		   <li>23 Aug 2014 &raquo;<br>
+		   <a href="/blog/2014-08-23/linux-perf-tools-linuxcon-na-2014.html">  
+		   Linux Performance Tools at LinuxCon North America 2014</a></li>
+	  
+		   <li>28 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-28/execsnoop-for-linux.html">  
+		   execsnoop For Linux: See Short-Lived Processes</a></li>
+	  
+		   <li>25 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-25/opensnoop-for-linux.html">  
+		   opensnoop For Linux</a></li>
+	  
+		   <li>23 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-23/linux-iosnoop-latency-heat-maps.html">  
+		   Linux iosnoop Latency Heat Maps</a></li>
+	  
+		   <li>16 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-16/iosnoop-for-linux.html">  
+		   iosnoop For Linux</a></li>
+	  
+		   <li>13 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-13/linux-ftrace-function-counting.html">  
+		   Linux ftrace Function Counting</a></li>
+	  
+		   <li>10 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-10/perf-hacktogram.html">  
+		   perf Hacktogram</a></li>
+	  
+		   <li>03 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-03/perf-counting.html">  
+		   perf Counting</a></li>
+	  
+		   <li>01 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-01/perf-heat-maps.html">  
+		   perf Heat Maps</a></li>
+	  
+		   <li>29 Jun 2014 &raquo;<br>
+		   <a href="/blog/2014-06-29/perf-static-tracepoints.html">  
+		   perf Static Tracepoints</a></li>
+	  
+		   <li>22 Jun 2014 &raquo;<br>
+		   <a href="/blog/2014-06-22/perf-cpu-sample.html">  
+		   perf CPU Sampling</a></li>
+	  
+		   <li>12 Jun 2014 &raquo;<br>
+		   <a href="/blog/2014-06-12/java-flame-graphs.html">  
+		   Java Flame Graphs</a></li>
+	  
+		   <li>09 Jun 2014 &raquo;<br>
+		   <a href="/blog/2014-06-09/java-cpu-sampling-using-hprof.html">  
+		   Java CPU Sampling Using hprof</a></li>
+	  
+		   <li>23 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-23/osx-10.9.3-is-toxic.html">  
+		   OS X 10.9.3 Recurring Panics</a></li>
+	  
+		   <li>17 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-17/free-as-in-we-own-your-ip.html">  
+		   Free, as in, We Own Your IP</a></li>
+	  
+		   <li>16 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-16/LISA13-metrics-workshop.html">  
+		   LISA13 Metrics Workshop</a></li>
+	  
+		   <li>11 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-11/strace-wow-much-syscall.html">  
+		   strace Wow Much Syscall</a></li>
+	  
+		   <li>09 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-09/xen-feature-detection.html">  
+		   Xen Feature Detection</a></li>
+	  
+		   <li>07 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-07/what-color-is-your-xen.html">  
+		   What Color Is Your Xen?</a></li>
+	  
+	</ul>
+	<a href="/blog/index.html">Blog index</a><br>
+	<a href="/blog/about.html">About</a><br>
+	<a href="/blog/rss.xml">RSS</a><br>
+	</div>
+
+        <div class="site">
+          <div class="header">
+            <h1 class="title"><a href="/blog/index.html">Brendan Gregg's Blog</a></h1>
+            <a class="extra" href="/blog/index.html">home</a>
+          </div>
+
+          <h2 class="big">execsnoop For Linux: See Short-Lived Processes</h2>
+<p class="meta">28 Jul 2014</p>
+
+<div class="post">
+<p>Every time I can&#39;t immediately explain CPU usage, I wonder if short-lived processes are to blame. On Linux systems I can debug this using <a href="http://lwn.net/Articles/387202/">atop</a>, which uses process accounting to catch these fleeting processes. But I wish I had my execsnoop tool, which creates a live log of each process for later study.</p>
+
+<p>I just ported it to Linux. Here&#39;s an example, where &quot;man ls&quot; is run in another window:</p>
+
+<pre>
+# <b>./execsnoop</b>
+Tracing exec()s. Ctrl-C to end.
+   PID   PPID ARGS
+ 20139  20135 mawk -W interactive -v o=1 -v opt_name=0 -v name= [...]
+ 20140  20138 cat -v trace_pipe
+ 20171  16743 man ls
+ 20178  20171 preconv -e UTF-8
+ 20181  20171 pager -s
+ 20180  20171 nroff -mandoc -rLL=173n -rLT=173n -Tutf8
+ 20179  20171 tbl
+ 20184  20183 locale charmap
+ 20185  20180 groff -mtty-char -Tutf8 -mandoc -rLL=173n -rLT=173n
+ 20186  20185 troff -mtty-char -mandoc -rLL=173n -rLT=173n -Tutf8
+ 20187  20185 grotty
+</pre>
+
+<p>Great! The first two lines, showing mawk and cat, are from execsnoop initializing. The remaining show the arcane workings of the man command.</p>
+
+<p>Here&#39;s catching part of a Linux build:</p>
+
+<pre>
+# <b>./execsnoop</b>
+Tracing exec()s. Ctrl-C to end.
+   PID   PPID ARGS
+ 25753  25588 /bin/sh -c echo 'python' | grep ^/ -q && echo y
+ 25755  25753 grep ^/ -q
+ 25756  25588 sh -c command -v 'python' | awk 'NR==1 {t=$0} NR>1 {t=t "m822df3020w6a44id34bt574ctac44eb9f4n" $0} END {printf t}'
+ 25758  25756 awk NR==1 {t=$0} NR>1 {t=t "m822df3020w6a44id34bt574ctac44eb9f4n" $0} END {printf t}
+ 25759  25588 /bin/sh -c echo 'python' | grep ^/ -q && echo y
+ 25761  25759 grep ^/ -q
+ 25762  25588 sh -c command -v 'python' | awk 'NR==1 {t=$0} NR>1 {t=t "m822df3020w6a44id34bt574ctac44eb9f4n" $0} END {printf t}'
+ 25764  25762 awk NR==1 {t=$0} NR>1 {t=t "m822df3020w6a44id34bt574ctac44eb9f4n" $0} END {printf t}
+ 25765  25588 /bin/sh -c echo '/usr/bin/python-config' | grep ^/ -q && echo y
+ 25767  25765 grep ^/ -q
+ 25768  25588 sh -c test -f '/usr/bin/python-config' -a -x '/usr/bin/python-config' && echo y
+ 25769  25588 /bin/sh -c echo '/usr/bin/python-config' | grep ^/ -q && echo y
+ 25771  25769 grep ^/ -q
+ 25772  25588 sh -c test -f '/usr/bin/python-config' -a -x '/usr/bin/python-config' && echo y
+ 25773  25588 /bin/sh -c '/usr/bin/python-config' --ldflags 2>/dev/null
+ 25774  25773 /usr/bin/python-config --ldflags
+ 25775  25588 /bin/sh -c '/usr/bin/python-config' --cflags 2>/dev/null
+ 25776  25775 /usr/bin/python-config --cflags
+ 25777  25588 /bin/sh -c touch PERF-FEATURES; cat PERF-FEATURES
+ 25778  25777 touch PERF-FEATURES
+ 25779  25777 cat PERF-FEATURES
+ 25780  25588 printf ...%30s: [ \033[32mon\033[m  ] dwarf
+ 25781  25588 printf ...%30s: [ \033[31mOFF\033[m ] dwarf
+ 25782  25588 printf ...%30s: [ \033[32mon\033[m  ] glibc
+ 25783  25588 printf ...%30s: [ \033[31mOFF\033[m ] glibc
+ 25784  25588 printf ...%30s: [ \033[32mon\033[m  ] gtk2
+[...]
+</pre>
+
+<p>Wow. Application startups can also run a surprising number of processes. execsnoop can help you identify areas for performance improvement: excessive sh/grep/sed/awk invocations, that can often be rewritten to use more advanced shell or awk features.</p>
+
+<p>You can also use execsnoop to catch unexpected behavior. Running it with -t for timestamps:</p>
+
+<pre>
+# <b>./execsnoop -t</b>
+Tracing exec()s. Ctrl-C to end.
+TIMEs               PID   PPID ARGS
+[...]
+3799932.757407    29403  29390 hostname
+3799932.763324    29405  29404 cat /sys/class/net/eth0/address
+3799932.768432    29407  29406 grep -l ^[[:space:]]*EC2SYNC=no\([[:space:]#]\|$\) /etc/sysconfig/network-scripts/ifcfg-eth0
+3799932.778556    29412  29411 curl -s -f http://169.254.169.254/latest/meta-data/network/interfaces/macs/0a:8b:c3:b8:9d:21/local-ipv4s
+3799932.796555    29415  29413 grep inet .* secondary eth0
+3799932.798570    29416  29413 awk {print $2}
+3799932.801021    29414  29413 /sbin/ip addr list dev eth0 secondary
+3799932.802559    29417  29413 cut -d/ -f1
+3800159.574170    29419  29418 /bin/sh -c /usr/lib64/sa/sa1 1 1
+</pre>
+
+<p>Why is my system running curl on that address? Hm.</p>
+
+<h2>Options</h2>
+
+<p><a href="https://github.com/brendangregg/perf-tools/blob/master/execsnoop">execsnoop</a> options are summarized by the USAGE message (there&#39;s also a <a href="https://github.com/brendangregg/perf-tools/blob/master/man/man8/execsnoop.8">man page</a> and <a href="https://github.com/brendangregg/perf-tools/blob/master/examples/execsnoop_example.txt">examples file</a>):</p>
+
+<pre>
+# <b>./execsnoop -h</b>
+USAGE: execsnoop [-hrt] [-a argc] [-d secs] [name]
+                 -d seconds      # trace duration, and use buffers
+                 -a argc         # max args to show (default 8)
+                 -r              # include re-execs
+                 -t              # include time (seconds)
+                 -h              # this usage message
+                 name            # process name to match (REs allowed)
+  eg,
+       execsnoop                 # watch exec()s live (unbuffered)
+       execsnoop -d 1            # trace 1 sec (buffered)
+       execsnoop grep            # trace process names containing grep
+       execsnoop 'log$'          # filenames ending in "log"
+</pre>
+
+<p>execsnoop traces events as they happen, unless the -d option is used, which uses in-kernel buffering.</p>
+
+<h2>What, Why, and How</h2>
+
+<p>This is another ftrace-based hack for my <a href="https://github.com/brendangregg/perf-tools">perf-tools</a> collection. These are designed to work with fewest dependencies (including no kernel debuginfo, if possible), and on older Linux kernel versions, particularly my Linux 3.2 systems. I expect to rewrite them when new tracing features are added to Linux in the future.</p>
+
+<p>This turned out to be difficult, and a number of times it I thought it might be impossible in this environment.</p>
+
+<p>My first attempt, <a href="https://github.com/brendangregg/perf-tools/blob/master/deprecated/execsnoop-proc">execsnoop-proc</a>, traced sched:sched_process_exec with process arguments from /proc/PID/cmdline. This worked on many systems, but not all, as I don&#39;t think /proc could always be read quickly enough for some processes. The sched:sched_process_exec tracepoint was missing on some systems as well.</p>
+
+<p>The version I&#39;m now using dynamically traces either stub_execve() or do_execve(), and walks the %si register as an array of strings using an unrolled loop. This is an enormous hack that I can hardly believe works, but it does work on all the systems I need it to.</p>
+
+<p>Here&#39;s the essence of what I&#39;m doing, using the perf(1) command (<a href="/perf.html">perf_events</a>):</p>
+
+<pre>
+# <b>perf probe --add 'do_execve +0(+0(%si)):string +0(+8(%si)):string +0(+16(%si)):string +0(+24(%si)):string'</b>
+# <b>perf record --no-buffering -e probe:do_execve -a -o - | PAGER="cat -v" stdbuf -oL perf script -i -</b>
+  :10007 10007 [000] 557516.214765: probe:do_execve: (ffffffff811cccb0) arg1="ls" arg2="--color=auto" arg3="-l" arg4="^\"
+  :10008 10008 [000] 557516.219168: probe:do_execve: (ffffffff811cccb0) arg1="sleep" arg2="1" arg3="^X" arg4=""
+# <b>perf probe --del do_execve</b>
+</pre>
+
+<p>In that case, I only included three arguments, but you can see how the unrolled loop works. The first one-liner is for a specific kernel version and platform, and may not work for you for many reasons, without first adjusting it to match what you have.</p>
+
+<p>If you want to analyze at this level, you might find my <a href="https://github.com/brendangregg/perf-tools/blob/master/kernel/kprobe">kprobe</a> tool easier to work with. Compare the above to:</p>
+
+<pre>
+# <b>./kprobe 'p:do_execve +0(+0(%si)):string +0(+8(%si)):string +0(+16(%si)):string +0(+24(%si)):string'</b>
+Tracing kprobe do_execve. Ctrl-C to end.
+  kprobe-12484 [000] d... 7149163.889695: do_execve: (do_execve+0x0/0x20) arg1="cat" arg2="trace_pipe" arg3=(fault) arg4=""
+    bash-12499 [001] d... 7149164.593106: do_execve: (do_execve+0x0/0x20) arg1="ls" arg2="--color=auto" arg3="-l" arg4=(fault)
+    bash-12500 [001] d... 7149164.597399: do_execve: (do_execve+0x0/0x20) arg1="sleep" arg2="1" arg3=(fault) arg4=""
+^C
+Ending tracing...
+</pre>
+
+<p>kprobe(8) is nice. It automatically adds and removes kprobes, and has options for showing stacks (-s) and column headers (-H).</p>
+
+<p>Were I to use SystemTap, I&#39;d do something like this:</p>
+
+<pre>
+# <b>stap -ve 'probe process.begin { printf("%6d %6d %s\n", pid(), ppid(), cmdline_str()); }'</b>
+</pre>
+
+<p>(When I run this, for some reason it begins by listing all the current processes, followed by the new ones. I don&#39;t know if it&#39;s a feature or a bug.)</p>
+
+<p>The future of Linux should support a tracer that does a one-liner like this. In the meantime, I can use this hacked version of execsnoop to solve performance issues on older systems.</p>
+
+<h2>Conclusion</h2>
+
+<p>Short-lived processes can cause performance problems, and aren&#39;t visible from interval-sampling tools like top(1). In this post I described a Linux port of my popular execsnoop tool, which I&#39;ve used for many years to identify and study short-lived processes, and solve the performance problems they can cause.</p>
+
+<p>This is also another proof of concept for older Linux kernels, like <a href="/blog/2014-07-25/opensnoop-for-linux.html">opensnoop</a> and <a href="/blog/2014-07-16/iosnoop-for-linux.html">iosnoop</a>, using the existing ftrace and kprobes tracing frameworks. There are other ways to do this: you might have kernel debuginfo and SystemTap available, or auditing enabled. This implementation is handy for my basic Linux 3.2 cloud instances, that don&#39;t have kernel debuginfo installed.</p>
+
+<p>Warnings apply: execsnoop and these one-liners use dynamic tracing on Linux, which has had kernel panic bugs in the past, so know what you are doing, test first, and use at your own risk. </p>
+
+</div>
+
+
+
+<br><hr>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+var disqus_shortname = 'brendangregg';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+          <div class="footer">
+            <div class="contact">
+                Copyright 2014 Brendan Gregg.<br><a href="/blog/about.html">About this blog</a>
+            </div>
+          </div>
+        </div>
+
+    </body>
+</html>

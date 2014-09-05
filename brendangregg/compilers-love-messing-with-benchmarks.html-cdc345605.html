@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>Compilers Love Messing With Benchmarks</title>
+        <meta name="viewport" content="width=device-width">
+
+        <!-- syntax highlighting CSS -->
+        <link rel="stylesheet" href="/blog/css/syntax.css">
+
+        <!-- Custom CSS -->
+        <link rel="stylesheet" href="/blog/css/main.css">
+
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-7747513-3']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+    </head>
+    <body>
+
+	<div class="nav">
+	<p class="navhdr">This Site:</p>
+<a href="/index.html">Homepage</a><br>
+<a href="/blog/index.html">Blog</a><br>
+<a href="/sitemap.html">Full Site Map</a><br>
+<a href="/sysperfbook.html">Sys Perf book</a><br>
+<a href="/linuxperf.html">Linux Perf</a><br>
+<a href="/methodology.html">Perf Methods</a><br>
+<a href="/usemethod.html">USE Method</a><br>
+<a href="/tsamethod.html">TSA Method</a><br>
+<a href="/offcpuanalysis.html">Off-CPU Analysis</a><br>
+<a href="/activebenchmarking.html">Active Bench.</a><br>
+<a href="/flamegraphs.html">Flame Graphs</a><br>
+<a href="/heatmaps.html">Heat Maps</a><br>
+<a href="/frequencytrails.html">Frequency Trails</a><br>
+<a href="/colonygraphs.html">Colony Graphs</a><br>
+<a href="/perf.html">perf Examples</a><br>
+<a href="/ktap.html">ktap Examples</a><br>
+<a href="/dtrace.html">DTrace Tools</a><br>
+<a href="/dtracetoolkit.html">DTraceToolkit</a><br>
+<a href="/dtkshdemos.html">DtkshDemos</a><br>
+<a href="/guessinggame.html">Guessing Game</a><br>
+<a href="/specials.html">Specials</a><br>
+<a href="/books.html">Books</a><br>
+<a href="/sites.html">Other Sites</a><br>
+
+	</div>
+
+	<div class="recent">
+	Recent posts:<br>
+	<ul style="padding-left:18px">
+	  
+		   <li>30 Aug 2014 &raquo;<br>
+		   <a href="/blog/2014-08-30/ftrace-the-hidden-light-switch.html">  
+		   ftrace: The Hidden Light Switch</a></li>
+	  
+		   <li>23 Aug 2014 &raquo;<br>
+		   <a href="/blog/2014-08-23/linux-perf-tools-linuxcon-na-2014.html">  
+		   Linux Performance Tools at LinuxCon North America 2014</a></li>
+	  
+		   <li>28 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-28/execsnoop-for-linux.html">  
+		   execsnoop For Linux: See Short-Lived Processes</a></li>
+	  
+		   <li>25 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-25/opensnoop-for-linux.html">  
+		   opensnoop For Linux</a></li>
+	  
+		   <li>23 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-23/linux-iosnoop-latency-heat-maps.html">  
+		   Linux iosnoop Latency Heat Maps</a></li>
+	  
+		   <li>16 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-16/iosnoop-for-linux.html">  
+		   iosnoop For Linux</a></li>
+	  
+		   <li>13 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-13/linux-ftrace-function-counting.html">  
+		   Linux ftrace Function Counting</a></li>
+	  
+		   <li>10 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-10/perf-hacktogram.html">  
+		   perf Hacktogram</a></li>
+	  
+		   <li>03 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-03/perf-counting.html">  
+		   perf Counting</a></li>
+	  
+		   <li>01 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-01/perf-heat-maps.html">  
+		   perf Heat Maps</a></li>
+	  
+		   <li>29 Jun 2014 &raquo;<br>
+		   <a href="/blog/2014-06-29/perf-static-tracepoints.html">  
+		   perf Static Tracepoints</a></li>
+	  
+		   <li>22 Jun 2014 &raquo;<br>
+		   <a href="/blog/2014-06-22/perf-cpu-sample.html">  
+		   perf CPU Sampling</a></li>
+	  
+		   <li>12 Jun 2014 &raquo;<br>
+		   <a href="/blog/2014-06-12/java-flame-graphs.html">  
+		   Java Flame Graphs</a></li>
+	  
+		   <li>09 Jun 2014 &raquo;<br>
+		   <a href="/blog/2014-06-09/java-cpu-sampling-using-hprof.html">  
+		   Java CPU Sampling Using hprof</a></li>
+	  
+		   <li>23 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-23/osx-10.9.3-is-toxic.html">  
+		   OS X 10.9.3 Recurring Panics</a></li>
+	  
+		   <li>17 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-17/free-as-in-we-own-your-ip.html">  
+		   Free, as in, We Own Your IP</a></li>
+	  
+		   <li>16 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-16/LISA13-metrics-workshop.html">  
+		   LISA13 Metrics Workshop</a></li>
+	  
+		   <li>11 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-11/strace-wow-much-syscall.html">  
+		   strace Wow Much Syscall</a></li>
+	  
+		   <li>09 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-09/xen-feature-detection.html">  
+		   Xen Feature Detection</a></li>
+	  
+		   <li>07 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-07/what-color-is-your-xen.html">  
+		   What Color Is Your Xen?</a></li>
+	  
+	</ul>
+	<a href="/blog/index.html">Blog index</a><br>
+	<a href="/blog/about.html">About</a><br>
+	<a href="/blog/rss.xml">RSS</a><br>
+	</div>
+
+        <div class="site">
+          <div class="header">
+            <h1 class="title"><a href="/blog/index.html">Brendan Gregg's Blog</a></h1>
+            <a class="extra" href="/blog/index.html">home</a>
+          </div>
+
+          <h2 class="big">Compilers Love Messing With Benchmarks</h2>
+<p class="meta">02 May 2014</p>
+
+<div class="post">
+<p>If you want accurate and trustworthy benchmarks, you need to perform <a href="http://www.brendangregg.com/activebenchmarking.html">active benchmarking</a>, as everything, <strong>including compilers</strong>, can mess with your benchmark. In this post I&#39;ll describe a common example.</p>
+
+<p>There seems to be a trend, especially in cloud computing, for evaluating server instances using kitchen-sink benchmarks. These drag together old and new benchmark tools and automates their execution. UnixBench is a common inclusion &ndash; the original kitchen-sink micro-benchmark from 1984 &ndash; which is nowadays <a href="http://blog.serverbear.com/tutorials/unixbench-ubuntu/">trivial to run</a>:</p>
+
+<pre>
+wget http://byte-unixbench.googlecode.com/files/UnixBench5.1.3.tgz 
+tar xvf UnixBench5.1.3.tar.gz 
+cd UnixBench5.1.3 
+./Run
+</pre>
+
+<p>The &quot;./Run&quot; command will compile and launch UnixBench using its default Makefile, which includes:</p>
+
+<div class="highlight"><pre><code class="ruby"><span class="c1">## Very generic</span>
+<span class="c1">#OPTON = -O</span>
+
+<span class="c1">## For Linux 486/Pentium, GCC 2.7.x and 2.8.x</span>
+<span class="c1">#OPTON = -O2 -fomit-frame-pointer -fforce-addr -fforce-mem -ffast-math \</span>
+<span class="c1">#  -m486 -malign-loops=2 -malign-jumps=2 -malign-functions=2</span>
+
+<span class="c1">## For Linux, GCC previous to 2.7.0</span>
+<span class="c1">#OPTON = -O2 -fomit-frame-pointer -fforce-addr -fforce-mem -ffast-math -m486</span>
+
+<span class="c1">#OPTON = -O2 -fomit-frame-pointer -fforce-addr -fforce-mem -ffast-math \</span>
+<span class="c1">#  -m386 -malign-loops=1 -malign-jumps=1 -malign-functions=1</span>
+
+<span class="c1">## For Solaris 2, or general-purpose GCC 2.7.x</span>
+<span class="no">OPTON</span> <span class="o">=</span> <span class="o">-</span><span class="no">O2</span> <span class="o">-</span><span class="n">fomit</span><span class="o">-</span><span class="n">frame</span><span class="o">-</span><span class="n">pointer</span> <span class="o">-</span><span class="n">fforce</span><span class="o">-</span><span class="n">addr</span> <span class="o">-</span><span class="n">ffast</span><span class="o">-</span><span class="n">math</span> <span class="o">-</span><span class="no">Wall</span>
+
+<span class="c1">## For Digital Unix v4.x, with DEC cc v5.x</span>
+<span class="c1">#OPTON = -O4</span>
+<span class="c1">#CFLAGS = -DTIME -std1 -verbose -w0</span></code></pre></div>
+
+<p>I didn&#39;t edit this. That&#39;s what you get in version 5.1.3, the version everyone is using. Take a closer look.</p>
+
+<h2>Makefiles</h2>
+
+<p>The UnixBench Makefile sets OPTON: a list of compiler options. (I&#39;m happier if I assume that OPTON is short for Option-ON, and isn&#39;t an egregious typo.)</p>
+
+<p>The default OPTON is for Solaris 2 (the last release of which was 1997). How many users don&#39;t realize this and let UnixBench use these defaults, vs, how many choose &quot;Very generic&quot; or one of the Linux options?</p>
+
+<p>The problem is that people may end up using different compiler options, which can massively change the benchmark results. If you try and compare your UnixBench results with others found online, without realizing that these were compiled differently, you may be seriously misled. That is, if this even makes a difference...</p>
+
+<h2>Optimizations</h2>
+
+<p>Consider the following two Linux servers, and the first UnixBench result, Dhrystone 2 (more is better):</p>
+
+<ul>
+server A: 21775273<br>
+server B: 35773059
+</ul>
+
+<p>Server B is 64% faster, I bet you&#39;d rather buy that! ... Except that these are the <em>same server</em>: B is compiled with the default OPTON (Solaris 2) and A is &quot;Very generic&quot; (a lower optimization level).</p>
+
+<p>Fortunately this Dhrystone 2 result was the largest difference from the 24 benchmarks from UnixBench, and the difference to the final UnixBench &quot;Index Score&quot; summary was less than 5% (at least, in my case, this could be higher for you). Unfortunately, Dhrystone 2 is listed first in the UnixBench report, so it can be eye-catching.</p>
+
+<p>What&#39;s happened is that UnixBench has benchmarked GCC (specifically, compiler options), as well as the target of the study. Mistakes like this are very common.</p>
+
+<p>Perhaps, for UnixBench, it&#39;s not so bad. Perhaps everyone uses &quot;./Run&quot; and compiles with the Solaris 2 OPTON, so that even the Dhrystone 2 results can be compared accurately.</p>
+
+<h2>Versions</h2>
+
+<p>Now consider the following two servers, this time compiled with the same default OPTON (Solaris 2):</p>
+
+<ul>
+server A: 24932516<br>
+server B: 35773059
+</ul>
+
+<p>So I bet you&#39;d like to buy... ok, yes, they are the same server again. The difference this time is the GCC version: Server A is gcc 4.1.2, and B is gcc 4.6.3. I suppose I owe a GCC developer a beer or some other gesture of thanks, at least for when they aren&#39;t <a href="http://www.brendangregg.com/blog/2014-04-27/let-me-obfuscate-that-for-you.html">obfuscating my assembly</a>.</p>
+
+<p>Wouldn&#39;t everyone generally be running the same GCC version? Absolutely not. Right now I happen to be testing the performance of different server instances on AWS EC2, and a quick check shows I have:</p>
+
+<pre>
+gcc (GCC) 4.8.2 20131212 (Red Hat 4.8.2-7)
+gcc (Ubuntu/Linaro 4.6.3-1ubuntu5) 4.6.3
+gcc (GCC) 4.1.2 20080704 (Red Hat 4.1.2-54)
+</pre>
+
+<p>So if I didn&#39;t pay attention to the compiler, any results comparing systems would be bogus and misleading. Short of running the exact same binary, you need the compilers to match, or, you need to treat the compiler as part of the tested target.</p>
+
+<blockquote>To compare system benchmarks, you need the same compiler options and compiler version.</blockquote>
+
+<p>A workaround for this is to ship and test binaries (although this approach may miss out on new processor instructions). For example, as was done with these <a href="http://www.roylongbottom.org.uk/dhrystone%20results.htm">dhrystone results</a>. Interestingly, they also share non-optimized Dhrystone results, to better understand compiler differences.</p>
+
+<h2>Index Score</h2>
+
+<p>The final report from UnixBench has a &quot;System Benchmarks Index Score&quot;: a single number to summarize the system&#39;s performance. The USAGE file describes it as:</p>
+
+<pre>
+The BYTE Index
+==============
+
+The purpose of this test is to provide a basic indicator of the performance
+of a Unix-like system; hence, multiple tests are used to test various
+aspects of the system's performance.  These test results are then compared
+to the scores from a baseline system to produce an index value, which is
+generally easier to handle than the raw sores.  The entire set of index
+values is then combined to make an overall index for the system.
+
+Since 1995, the baseline system has been "George", a SPARCstation 20-61
+with 128 MB RAM, a SPARC Storage Array, and Solaris 2.3, whose ratings
+were set at 10.0. 
+</pre>
+
+<p>Yes, it&#39;s old, but that&#39;s not a problem (eg, <a href="http://dictionary.reference.com/browse/vax+mips">VAX MIPS</a>). A problem, again, is that the compiler options and version are part of the score, and yet, this score is used to compare servers &ndash; not compilers.</p>
+
+<p>For example (and there are many I could pick from), <a href="http://serverbear.com">ServerBear</a> have a <a href="http://serverbear.com/benchmarks/vps">VPS UnixBench Leaderboard</a> for these Index Scores, stating:</p>
+
+<blockquote>If you're in the market for a VPS with a high system performance then the UnixBench score is one of the metrics you should be paying attention to.</blockquote>
+
+<p>They are nice enough to share their <a href="https://github.com/Crowd9/Benchmark">source code</a> that gathers these UnixBench scores (much more trustworthy than vendors who don&#39;t!). It looks like UnixBench is executed via &quot;./Run&quot;, which compiles using whatever gcc version the system has already or is added from its default package repository. Which for the systems I&#39;m testing right now, means three different versions of gcc.</p>
+
+<h2>Improving UnixBench</h2>
+
+<p>So while this is a neat example of compiler differences, how do we actually fix UnixBench? Well, I&#39;m not sure it&#39;s really a problem with UnixBench. The project <a href="https://code.google.com/p/byte-unixbench/">website</a> does warn you about this:</p>
+
+<blockquote>The results will depend not only on your hardware, but on your operating system, libraries, and even compiler.</blockquote>
+
+<p>As does the USAGE file under the &quot;Interpreting the Results&quot; section, which even suggests:</p>
+
+<blockquote>So you may want to make sure that all your test systems are running the same version of the OS; or at least publish the OS and compuiler versions with your results. </blockquote>
+
+<p>Good advice, but I frequently see UnixBench results used without this information.</p>
+
+<p>I think the biggest problem is how people are using UnixBench and other benchmarks: fire-and-forget, hoping for a quick result. And doing so without reading the documentation, or performing <a href="http://www.brendangregg.com/activebenchmarking.html">active benchmarking</a> to confirm what was measured.</p>
+
+<p>UnixBench could help by making <tt>-O0</tt> the default OPTON, reducing compiler differences. This does not &ndash; as is commonly believed &ndash; turn off all optimizations (zero optimizations). It uses fewer of them. The optimization I described in my <a href="http://www.brendangregg.com/blog/2014-04-27/let-me-obfuscate-that-for-you.html">let me obfuscate that for you</a> post was still enabled at -O0, for example. Even so, -O0 may make the differences negligible.</p>
+
+<h2>Avoiding Trouble</h2>
+
+<p>If you want to compare different servers using benchmarks that you compile, you need the compilers to match, or you need to take that into consideration. This should be something you unearth by following an <a href="http://www.brendangregg.com/activebenchmarking.html">active benchmarking</a> approach, where you study and understand what the benchmark really does.</p>
+
+<p>As for UnixBench: if it does encourage you to switch to a new system because it has a higher UnixBench Index Score, you might want to try upgrading your compiler first!</p>
+
+<p>(I never discussed problems with the UnixBench micro-benchmarks themselves &ndash; maybe next time.)</p>
+
+</div>
+
+
+
+<br><hr>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+var disqus_shortname = 'brendangregg';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+          <div class="footer">
+            <div class="contact">
+                Copyright 2014 Brendan Gregg.<br><a href="/blog/about.html">About this blog</a>
+            </div>
+          </div>
+        </div>
+
+    </body>
+</html>
