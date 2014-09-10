@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+   <meta name="apple-mobile-web-app-capable" content="yes" />
+   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+   <!-- <link rel="apple-touch-icon" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-iphone.png" /> -->
+   <link rel="apple-touch-icon-precomposed" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-iphone-precomposed.png" />
+   <link rel="apple-touch-icon" sizes="72x72" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-ipad.png" />
+   <link rel="apple-touch-icon" sizes="114x114" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-iphone-retina.png" />
+   <link rel="apple-touch-icon" sizes="144x144" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-ipad-retina.png" />
+   
+   <title>移动开发需要知道的像素知识『多图』</title>
+   <meta name="author" content="Jeremy Wei" />
+   <link href="http://feeds.feedburner.com/JeremyWei" rel="alternate" title="Jeremy Wei" type="application/atom+xml" />
+   <link rel="shortcut icon" type="image/x-icon" href="http://s0-weizhifeng-net.b0.upaiyun.com/favicon.ico">
+      
+   <!-- Homepage CSS -->
+   <link rel="stylesheet" href="http://s0-weizhifeng-net.b0.upaiyun.com/css/screen.css?0904" type="text/css" media="screen, projection" />
+   <!-- <link rel="stylesheet" href="/css/screen.css?0904" type="text/css" media="screen, projection" /> -->
+   
+   <script type="text/javascript" charset="utf-8">
+   // Mobile Safari in standalone mode
+   if(("standalone" in window.navigator) && window.navigator.standalone){
+	   
+   	// If you want to prevent remote links in standalone web apps opening Mobile Safari, change 'remotes' to true
+   	var noddy, remotes = true;
+	
+   	document.addEventListener('click', function(event) {
+		
+   		noddy = event.target;
+		
+   		// Bubble up until we hit link or top HTML element. Warning: BODY element is not compulsory so better to stop on HTML
+   		while(noddy.nodeName !== "A" && noddy.nodeName !== "HTML") {
+   	        noddy = noddy.parentNode;
+   	    }
+		
+   		if('href' in noddy && noddy.href.indexOf('http') !== -1 && (noddy.href.indexOf(document.location.host) !== -1 || remotes))
+   		{
+   			event.preventDefault();
+   			document.location.href = noddy.href;
+   		}
+	
+   	},false);
+   }
+   </script>
+</head>
+<body>
+	
+<div class="site">
+  <pre class="nav margin-for-mobile">["<a href='/tech.html'>文</a>", "<a href='/translate.html'>譯</a>", "<a href='/poem.html'>詩</a>", "<a href='/5000years.html'>史</a>", "<a href='/resume.html'>己</a>"]</pre>
+  <br />
+  <div id="post">
+	<h1>移动开发需要知道的像素知识『多图』</h1>
+	<div class="copyright">
+	作者: JeremyWei | 可以转载, 但必须以超链接形式标明文章原始出处和作者信息及版权声明<br />
+	网址: http://weizhifeng.net/you-should-know-about-dpi.html
+	</div>
+
+	<p><img src="http://s0-weizhifeng-net.b0.upaiyun.com/images/dpi/title.png" title="title" alt="title" /></p>
+
+<p>像素（Pixel）对于WEB开发者来说很是熟悉，在PC互联网时代没少与其打交道。进入移动互联网之后，随着移动设备屏幕的解析度越来越高，衍生了一些关于屏幕和像素的一些新概念，比如DPI，DP，PT，Retina，4K等等，本文对这些概念做一个简单的介绍。</p>
+
+<h2>DPI与PPI</h2>
+
+<p>DPI（Dots Per Inch）是印刷行业中用来度量空间点密度用的，这个值是打印机每英寸可以喷的墨汁点数。计算机显示设备从打印机中借鉴了DPI的概念，由于计算机显示设备中的原子单位不是墨汁点而是像素，所以就创造了PPI（Pixels Per Inch），这个值是屏幕每英寸的像素数量，即像素密度（Screen density）。由于各种原因，目前PPI(主要是iOS)和DPI(比如在<a href="http://developer.android.com/guide/practices/screens_support.html#terms">Android</a>中)都会用在计算机显示设备的参数描述中，不过二者的意思是一样的，都是代表像素密度。</p>
+
+<p>高PPI屏幕显示的元素会比较精细（看起来会比较小），低PPI屏幕显示的元素相对来说就比粗糙（看起来会比较大），我们通过一幅图来看看在不同PPI下元素显示的区别：</p>
+
+<p><img src="http://s0-weizhifeng-net.b0.upaiyun.com/images/dpi/blue-square-01.png" title="PPI" alt="PPI" /></p>
+
+<h2>HD与4K</h2>
+
+<p>现在移动设备、智能电视宣传最多的两个关键词估计就是HD、4K，这二者都是用来描述显示设备分辨率的标准，到底二者之间有什么区别？</p>
+
+<p>HD(High-Definition)的分辨率要高于1280x720px或者720p。</p>
+
+<p>Full HD的分辨率要高于1920x1080px，目前是主流电视以及高端手机（比如Galaxy SIV, HTC one, Sony Xperia Z, Nexus5等）采用的是这个分辨率。</p>
+
+<p>4K（也叫做Quad HD或者Ultra HD）的分辨率从3840x2160起步，主要是现在高端电视的分辨率；其还有一个更高的4096x2160的标准，主要用于电影放映机或者专业相机。</p>
+
+<p><img src="http://s0-weizhifeng-net.b0.upaiyun.com/images/dpi/4k-01.png" title="4k" alt="4k" /></p>
+
+<h2>Retina</h2>
+
+<p><a href="http://en.wikipedia.org/wiki/Retina_Display">Retina display</a>即视网膜屏幕，是苹果发布iPhone 4时候提出的，之所以叫做视网膜屏幕，是因为屏幕的PPI太高，人的视网膜无法分辨出屏幕上的像素点。iPhone 4/S的PPI为326，是iPhone 3G/S的两倍，如下图：</p>
+
+<p><img src="http://s0-weizhifeng-net.b0.upaiyun.com/images/dpi/retina-01.png" title="retina-01" alt="retina-01" /></p>
+
+<p>由于屏幕在宽和高的像素数量提高了整整一倍，所以之前非Retina屏幕上的一个像素渲染的内容在Retina屏幕上会用4个像素去渲染：<code>1x1px(non Retina) = 2x2px(Retina)</code>，这样元素的内容就会变得精细，比如：</p>
+
+<p><img src="http://s0-weizhifeng-net.b0.upaiyun.com/images/dpi/retina-02.png" title="retina-02" alt="retina-02" /></p>
+
+<p>注意，<code>Retina display</code>是苹果注册的命名方式，其他厂商只能使用<code>HI-DPI</code>或者其他的命名方式，不过意思都是一样的，就是屏幕的PPI非常高。</p>
+
+<h2>DP/PT/SP</h2>
+
+<p>随着移动设备屏幕PPI的不断提高，对于开发者来说以前用物理像素(Physical Pixel)来度量显示元素的方法已经不奏效了。为了解决这个问题，两大平台都提出了抽象像素的概念：iOS叫做PT（Point，显示点），Android中叫做DP/DiP（Device independent Pixel，设备无关像素），如果没有特殊说明，以下统一用DP来进行描述。</p>
+
+<p>举个例子，44x44dp的元素在非Retina屏幕中等于44x44px，在Retina屏幕中等于88x88px（变为4倍）。</p>
+
+<p><img src="http://s0-weizhifeng-net.b0.upaiyun.com/images/dpi/dp-01.png" title="dp-01" alt="dp-01" /></p>
+
+<p>SP（Scale-independent pixel）是缩放无关的像素，与DP和PT一样都是抽象像素，只不过用于描述字体的大小。</p>
+
+<h2>iOS中处理PPI</h2>
+
+<p>iOS中处理不同PPI显示的方法很简单：首先规定在多高的PPI下1DP等于1px，并以这个PPI作为基准（1x multiplier），如果显示设备的PPI是基准PPI的2倍，那么1DP等于2px（2x multiplier），其实就是简单的小学乘法。</p>
+
+<p>在iPhone系列中，3G/S为1x multiplier，其他为2x multiplier：</p>
+
+<p><img src="http://s0-weizhifeng-net.b0.upaiyun.com/images/dpi/ios-01.png" title="ios-01" alt="ios-01" /></p>
+
+<p>在iPad系列中，iPad 1代和2代为1x multiplier，其他为2x multiplier：</p>
+
+<p><img src="http://s0-weizhifeng-net.b0.upaiyun.com/images/dpi/ios-02.png" title="ios-02" alt="ios-02" /></p>
+
+<p>在iPad Mini系列中，iPad Mini一代为1x multiplier，其他为2x multiplier：</p>
+
+<p><img src="http://s0-weizhifeng-net.b0.upaiyun.com/images/dpi/ios-03.png" title="ios-03" alt="ios-03" /></p>
+
+<p>在iOS中，同一个应用在非Retina屏幕和Retina屏幕显示的资源是不同的，其规则是：
+<code>name.png</code>为非Retina资源，<code>name@2x.png</code>为Retina资源，所以对于设计人员来说，在你设计的时候需要考虑到Retina屏幕和非Retina屏幕，看下面这个例子：</p>
+
+<p><img src="http://s0-weizhifeng-net.b0.upaiyun.com/images/dpi/ios-04.png" title="ios-04" alt="ios-04" /></p>
+
+<h2>Android中处理PPI</h2>
+
+<p>由于Android系统是开放的系统，要适配的PPI非常多，所以它对PPI划分的非常细：</p>
+
+<ul>
+<li>ldpi (low) ~120dpi</li>
+<li>mdpi (medium) ~160dpi</li>
+<li>hdpi (high) ~240dpi</li>
+<li>xhdpi (extra-high) ~320dpi</li>
+<li>xxhdpi (extra-extra-high) ~480dpi</li>
+<li>xxxhdpi (extra-extra-extra-high) ~640dpi</li>
+</ul>
+
+
+<p>你需要把对应dpi的资源放到对应的目录就可以了，Android会根据dpi自动选择资源，目录规则如下：</p>
+
+<ul>
+<li>drawable-mdpi/asset.png</li>
+<li>drawable-hdpi/asset.png</li>
+<li>drawable-xhdpi/asset.png</li>
+<li>...</li>
+</ul>
+
+
+<p>可以看出Android中mdpi与iOS中的1x multiplier所代表的PPI是一样的，xhdpi与iOS的2x multiplier所代表的PPI一样，如图：</p>
+
+<p><img src="http://s0-weizhifeng-net.b0.upaiyun.com/images/dpi/android-01.png" title="android-01" alt="android-01" /></p>
+
+<p><img src="http://s0-weizhifeng-net.b0.upaiyun.com/images/dpi/android-02.png" title="android-02" alt="android-02" /></p>
+
+<h2>参考</h2>
+
+<ul>
+<li><a href="http://sebastien-gabriel.com/designers-guide-to-dpi/home">http://sebastien-gabriel.com/designers-guide-to-dpi/home</a></li>
+<li><a href="http://developer.android.com/guide/practices/screens_support.html">http://developer.android.com/guide/practices/screens_support.html</a></li>
+</ul>
+
+
+	(完)
+
+	<div class="post-info">
+		07 Sep 2014  
+	
+		
+	
+		
+	</div>
+	
+	<!-- disqus start -->
+	<div id="disqus_thread"></div>
+	<script type="text/javascript">
+	    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+	    var disqus_shortname = 'jeremywei'; // required: replace example with your forum shortname
+
+	    /* * * DON'T EDIT BELOW THIS LINE * * */
+	    (function() {
+	        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+	        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+	        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	    })();
+	</script>
+	<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+	<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+	<!-- disqus end -->
+
+	<!-- related start -->
+	<div id="related">
+	  <h2>相关内容</h2>
+	  <ul class="posts">
+	    
+	      <li><span>17 Aug 2014</span> &raquo; <a href="/learn-vagrant-01.html">Vagrant介绍</a></li>
+	    
+	      <li><span>10 Aug 2014</span> &raquo; <a href="/zhongyuanjie.html">中元節</a></li>
+	    
+	      <li><span>26 Jul 2014</span> &raquo; <a href="/learn-chef-02.html">Chef入门（二）</a></li>
+	    
+	      <li><span>19 Jul 2014</span> &raquo; <a href="/learn-chef-01.html">Chef入门（一）</a></li>
+	    
+	      <li><span>29 Jun 2014</span> &raquo; <a href="/backup-and-restore-data-of-mongodb.html">Mongodb数据的备份与恢复</a></li>
+	    
+	  </ul>
+	</div>
+	<!-- related end -->
+</div>
+  
+<div class="footer"></div>
+<div class="power">  
+  Powered by <a href="http://github.com/" targe="_blank">Github</a> &nbsp;&amp;&amp;&nbsp; <a href="http://jekyllrb.com/" target="_blank">Jekyll</a> 
+</div>
+</div>
+
+<a href="http://github.com/jeremywei" target="_blank">
+	<img class="right-banner first" src="http://s0-weizhifeng-net.b0.upaiyun.com/images/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" />
+</a>
+
+<a href="http://www.phptherightway.com" target="_blank">
+    <img class="right-banner second" src="http://s0-weizhifeng-net.b0.upaiyun.com/images/php-the-right-way-120x60.png" alt="PHP: The Right Way"/>
+</a>
+</body>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-5179718-7']);
+  _gaq.push(['_setDomainName', 'weizhifeng.net']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</html>
