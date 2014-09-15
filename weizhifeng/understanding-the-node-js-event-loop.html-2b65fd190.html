@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+   <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+   <meta name="apple-mobile-web-app-capable" content="yes" />
+   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+   <!-- <link rel="apple-touch-icon" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-iphone.png" /> -->
+   <link rel="apple-touch-icon-precomposed" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-iphone-precomposed.png" />
+   <link rel="apple-touch-icon" sizes="72x72" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-ipad.png" />
+   <link rel="apple-touch-icon" sizes="114x114" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-iphone-retina.png" />
+   <link rel="apple-touch-icon" sizes="144x144" href="http://s0-weizhifeng-net.b0.upaiyun.com/touch-icon-ipad-retina.png" />
+   
+   <title>理解Node.js中的Event Loop</title>
+   <meta name="author" content="Jeremy Wei" />
+   <link href="http://feeds.feedburner.com/JeremyWei" rel="alternate" title="Jeremy Wei" type="application/atom+xml" />
+   <link rel="shortcut icon" type="image/x-icon" href="http://s0-weizhifeng-net.b0.upaiyun.com/favicon.ico">
+      
+   <!-- Homepage CSS -->
+   <link rel="stylesheet" href="http://s0-weizhifeng-net.b0.upaiyun.com/css/screen.css?0904" type="text/css" media="screen, projection" />
+   <!-- <link rel="stylesheet" href="/css/screen.css?0904" type="text/css" media="screen, projection" /> -->
+   
+   <script type="text/javascript" charset="utf-8">
+   // Mobile Safari in standalone mode
+   if(("standalone" in window.navigator) && window.navigator.standalone){
+	   
+   	// If you want to prevent remote links in standalone web apps opening Mobile Safari, change 'remotes' to true
+   	var noddy, remotes = true;
+	
+   	document.addEventListener('click', function(event) {
+		
+   		noddy = event.target;
+		
+   		// Bubble up until we hit link or top HTML element. Warning: BODY element is not compulsory so better to stop on HTML
+   		while(noddy.nodeName !== "A" && noddy.nodeName !== "HTML") {
+   	        noddy = noddy.parentNode;
+   	    }
+		
+   		if('href' in noddy && noddy.href.indexOf('http') !== -1 && (noddy.href.indexOf(document.location.host) !== -1 || remotes))
+   		{
+   			event.preventDefault();
+   			document.location.href = noddy.href;
+   		}
+	
+   	},false);
+   }
+   </script>
+</head>
+<body>
+	
+<div class="site">
+  <pre class="nav margin-for-mobile">["<a href='/tech.html'>编程</a>", "<a href='/design.html'>设计</a>", "<a href='/poem.html'>诗词</a>", "<a href='/5000years.html'>历史</a>", "<a href='/resume.html'>关于</a>"]</pre>
+  <br />
+  <div id="post">
+	<h1>理解Node.js中的Event Loop</h1>
+	<div class="copyright">
+	作者: JeremyWei | 可以转载, 但必须以超链接形式标明文章原始出处和作者信息及版权声明<br />
+	网址: http://weizhifeng.net/understanding-the-node-js-event-loop.html
+	</div>
+
+	<p>原文：<a href="http://blog.mixu.net/2011/02/01/understanding-the-node-js-event-loop/">http://blog.mixu.net/2011/02/01/understanding-the-node-js-event-loop/</a></p>
+
+<p>node.js中的第一个基本论点是I/O是昂贵的：</p>
+
+<p><img src="http://s0-weizhifeng-net.b0.upaiyun.com/images/tech/io-cost.png" title="io-cost" alt="io-cost" /></p>
+
+<p>所以当前编程技术中最大的浪费是等待I/O的完成。这里有几种用来处理这个性能影响的方法（来自Sam Rushing）：</p>
+
+<ul>
+<li>同步：你同一时间只处理一个请求，每次一个。优点：简单；缺点：任何一个请求都可以挂起所有其他请求。</li>
+<li><p>fork新进程：你启动一个新进程来处理每个请求。优点：简单；缺点：无法很好的扩展，大量的连接意味着大量的进程。<code>fork()</code>是Unix程序员的锤子。因为它可用，所以每个问题看起来都像一个钉子。但是通常情况下都是大炮打蚊子。</p></li>
+<li><p>线程：启动新的线程来处理每个请求。优点：简单，比使用<code>fork</code>对内核更加友好，因为线程占用更少的系统开销；缺点：你的机器可能没有线程，而且面向线程的编程由于担心对共享资源的访问控制，可能会很快地变得非常复杂。</p></li>
+</ul>
+
+
+<p>第二个基本的论点是「每个连接一个线程」的模式是很耗内存的：[比如每个人都展示过的关于Apache与Nginx对比过的内存消耗图]</p>
+
+<p>Apache是多线程的：它的一个请求产生一个<a href="http://httpd.apache.org/docs/2.0/mod/worker.html">线程</a>（或者<a href="http://httpd.apache.org/docs/2.0/mod/prefork.html">进程</a>，取决于配置文件）。随着并发连接数的增加以及为了服务更多的并发客户端而对更多线程的需求，你可以看见系统统开销是如何吃掉内存的。Nginx和Node.js不是多线程，因为多个线程和多个进程会需要大量的内存。它们都是单线程的，但是是事件驱动。通过在一个线程中处理多个连接，这消除了由上千个线程/进程所产生的系统消耗。</p>
+
+<h1>Node.js为你的代码保持一个独立的线程...</h1>
+
+<p>它真的是以一个独立线程在运行：你不能做任何并行的代码执行；举个「休眠」的例子，这将会阻塞服务器1秒钟：</p>
+
+<pre><code>while(new Date().getTime() &lt; now + 1000) {
+   // do nothing
+}
+</code></pre>
+
+<p>所以当代码运行的时候，node.js将不会对任何来自客户端的其他请求进行响应，因为它只有一个线程用来执行你的代码。或者如果你有一些耗CPU的代码，比如说，图片缩放，那将会仍然阻塞所有其他请求。</p>
+
+<h1>…一切都是并行的除了你的代码</h1>
+
+<p>没有办法在一个单独的请求中让代码以并行的方式运行。因为所有的I/O是事件驱动和异步的，所以如下代码不会阻塞服务器：</p>
+
+<pre><code>c.query(
+   'SELECT SLEEP(20);',
+   function (err, results, fields) {
+     if (err) {
+       throw err;
+     }
+     res.writeHead(200, {'Content-Type': 'text/html'});
+     res.end('&lt;html&gt;&lt;head&gt;&lt;title&gt;Hello&lt;/title&gt;&lt;/head&gt;&lt;body&gt;&lt;h1&gt;Return from async DB query&lt;/h1&gt;&lt;/body&gt;&lt;/html&gt;');
+     c.end();
+    }
+);
+</code></pre>
+
+<p>如果你在一个请求中执行它，其他请求可以被很好的处理，而与此同时数据库在执行它的休眠操作。</p>
+
+<h1>为什么这很棒？我们什么时候从同步转换到异步/并行执行。</h1>
+
+<p>同步执行是好的，因为它简化了写代码的过程（对比线程，并发问题已经有变成WTF的趋势）。</p>
+
+<p>在node.js中，你不需要担心背后发生了什么：当你进行I/O操作的时候去用回调吧；并且你的代码永远不会被中断同时那些I/O操作在不需要承受「每个请求一个线程/进程」模式所耗费的资源的情况下（比如Apache中的内存消耗），将不会阻塞其他请求。</p>
+
+<p>拥有异步I/O是很好的，因为I/O比大部分代码都昂贵并且我们应该做些比傻等I/O更有意义的事情。</p>
+
+<p><img src="http://s0-weizhifeng-net.b0.upaiyun.com/images/tech/bucket_3.gif" title="bucket_3" alt="bucket_3" /></p>
+
+<p>event loop指的是「一个用来处理外部事件并且把它们转换成对回调的调用的实体。」所以I/O调用是Node.js可以从一个请求切换到另一个请求的关键点。在一次I/O调用中，你的代码保存了回调然后把控制权返回给node.js运行时环境。回调将会在之后数据可用的时候被调用。</p>
+
+<p>当然，在后台，那里会有<a href="http://stackoverflow.com/questions/3629784/how-is-node-js-inherently-faster-when-it-still-relies-on-threads-internally">DB访问和执行进程所需的线程和进程</a>。但是，这些都不会明确的暴露在你的代码里边，所以你不需要担心它们，但是需要知道I/O的相互影响，比如，在每个请求看来，数据库操作或者其他进程将会是异步的，因为这些线程的执行结果是通过event loop返回到你的代码的。对比Apache模型，这种方式会需要更少的线程和线程开销，因为每个连接不需要一个线程了；只当你需要一些其他的东西需要绝对的以并行方式执行的时候，尽管那样这个管理也是由Node.js来执行的。</p>
+
+<p>除了I/O调用之外，Node.js期望所有请求都快速返回；比如<a href="http://stackoverflow.com/questions/3491811/node-js-and-cpu-intensive-requests">CPU密集的工作应该被分开给另一个进程</a>，你可以通过事件与这个进程进行交互，或者使用一个抽象层次比如<a href="http://blog.std.in/2010/07/08/nodejs-webworker-design/">WebWorkers</a>。这（显然）意味着你不能使你的代码并行化除非你在后台使用另一个线程，你通过事件和这个线程交互。基本上，所有发出事件（比如EventEmitter的实例）的对象都支持异步的基于事件的交互，并且你可以通过这个方式来和阻塞代码进行交互，比如使用的文件，套接字或者子进程等在Node.js中是EventEmitter实例的对象。<a href="http://developer.yahoo.com/blogs/ydn/posts/2010/07/multicore_http_server_with_nodejs/">多核心</a>可以通过这个方案来实现；看一下：node-http-proxy。</p>
+
+<h1>内部实现</h1>
+
+<p>node.js的内部实现依赖<a href="http://software.schmorp.de/pkg/libev.html">libev</a>来提供event loop，并用<a href="http://software.schmorp.de/pkg/libeio.html">libeio</a>来补libev的不足，用线程池来提供异步I/O。想了解更多，可以看一下<a href="http://pod.tst.eu/http://cvs.schmorp.de/libev/ev.pod">libev</a>文档。（注：joyent现在把libev和libeio已经合并成为<a href="https://github.com/joyent/libuv">libuv</a>，现在node使用的是libuv）</p>
+
+<h1>我们在Node.js该如何使用异步编程</h1>
+
+<p>Tim Caswell在他优秀的<a href="http://creationix.com/jsconf.pdf">PPT</a>中描述了这个模式：</p>
+
+<ul>
+<li><p>第一级函数（<a href="http://en.wikipedia.org/wiki/First-class_function">First-class functions</a>）。比如说，我们把函数做为数据进行传递，打乱它们的顺序并且在需要的时候执行它们。</p></li>
+<li><p>函数组合(<a href="http://en.wikipedia.org/wiki/Function_composition_(computer_science">Function composition</a>))。即在事件触发的I/O中，在一些事情发生之后调用匿名函数或者闭包。</p></li>
+<li><p>回调计数器。对于基于事件的回调，你不能保证I/O事件以任何特定的顺序触发。所以如果你需要多个查询都执行完成，通常情况下你只需要对任何并行的I/O操作进行计数，并且检查所有必须的操作都已经完成当你必须等待这个结果的时候；比如，在事件回调中<a href="http://stackoverflow.com/questions/4631774/coordinating-parallel-execution-in-node-js">记录已经返回了的数据库查询的数量</a>，并且当你拥有了所有的数据才继续执行。这些查询将会以并行的方式运行如果I/O库支持的话（比如，通过连接池）。</p></li>
+<li><p>Event loop。像之前提到的，你可以把阻塞代码包装到一个基于事件的抽象（evented abstraction）之中。比如，运行一个子进程并且在它执行完成的时候返回数据。</p></li>
+</ul>
+
+
+<p>它真的如此简单！</p>
+
+	(完)
+
+	<div class="post-info">
+		28 Oct 2013  
+	
+		
+	
+		
+	</div>
+	
+	<!-- disqus start -->
+	<div id="disqus_thread"></div>
+	<script type="text/javascript">
+	    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+	    var disqus_shortname = 'jeremywei'; // required: replace example with your forum shortname
+
+	    /* * * DON'T EDIT BELOW THIS LINE * * */
+	    (function() {
+	        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+	        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+	        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	    })();
+	</script>
+	<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+	<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+	<!-- disqus end -->
+
+	<!-- related start -->
+	<div id="related">
+	  <h2>相关内容</h2>
+	  <ul class="posts">
+	    
+	      <li><span>14 Sep 2014</span> &raquo; <a href="/basic-color-theory.html">基础颜色理论（一）</a></li>
+	    
+	      <li><span>07 Sep 2014</span> &raquo; <a href="/you-should-know-about-dpi.html">移动开发需要知道的像素知识『多图』</a></li>
+	    
+	      <li><span>17 Aug 2014</span> &raquo; <a href="/learn-vagrant-01.html">Vagrant介绍</a></li>
+	    
+	      <li><span>10 Aug 2014</span> &raquo; <a href="/zhongyuanjie.html">中元節</a></li>
+	    
+	      <li><span>26 Jul 2014</span> &raquo; <a href="/learn-chef-02.html">Chef入门（二）</a></li>
+	    
+	  </ul>
+	</div>
+	<!-- related end -->
+</div>
+  
+<div class="footer"></div>
+<div class="power">  
+  Powered by <a href="http://github.com/" targe="_blank">Github</a> &nbsp;&amp;&amp;&nbsp; <a href="http://jekyllrb.com/" target="_blank">Jekyll</a> 
+</div>
+</div>
+
+<a href="http://github.com/jeremywei" target="_blank">
+	<img class="right-banner first" src="http://s0-weizhifeng-net.b0.upaiyun.com/images/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub" />
+</a>
+
+<a href="http://www.phptherightway.com" target="_blank">
+    <img class="right-banner second" src="http://s0-weizhifeng-net.b0.upaiyun.com/images/php-the-right-way-120x60.png" alt="PHP: The Right Way"/>
+</a>
+</body>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-5179718-7']);
+  _gaq.push(['_setDomainName', 'weizhifeng.net']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+</html>
