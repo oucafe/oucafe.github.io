@@ -1,0 +1,686 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<title>Python自然语言处理实践: 在NLTK中使用斯坦福中文分词器 | 我爱自然语言处理</title>
+<link rel="profile" href="http://gmpg.org/xfn/11" />
+<link rel="stylesheet" type="text/css" media="all" href="http://www.52nlp.cn/wp-content/themes/twentytenorg/style.css" />
+<link rel="pingback" href="http://www.52nlp.cn/xmlrpc.php" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; Feed" href="http://www.52nlp.cn/feed" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; 评论Feed" href="http://www.52nlp.cn/comments/feed" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; Python自然语言处理实践: 在NLTK中使用斯坦福中文分词器评论Feed" href="http://www.52nlp.cn/python%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86%e5%ae%9e%e8%b7%b5-%e5%9c%a8nltk%e4%b8%ad%e4%bd%bf%e7%94%a8%e6%96%af%e5%9d%a6%e7%a6%8f%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%99%a8/feed" />
+<link rel='stylesheet' id='yarppWidgetCss-css'  href='http://www.52nlp.cn/wp-content/plugins/yet-another-related-posts-plugin/style/widget.css?ver=4.0' type='text/css' media='all' />
+<link rel='stylesheet' id='codecolorer-css'  href='http://www.52nlp.cn/wp-content/plugins/codecolorer/codecolorer.css?ver=0.9.9' type='text/css' media='screen' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.52nlp.cn/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.52nlp.cn/wp-includes/wlwmanifest.xml" /> 
+<link rel='prev' title='翻译技术沙龙第17次活动——“翻译质量评估及控制技术与工具”活动通知' href='http://www.52nlp.cn/%e7%bf%bb%e8%af%91%e6%8a%80%e6%9c%af%e6%b2%99%e9%be%99%e7%ac%ac17%e6%ac%a1%e6%b4%bb%e5%8a%a8-%e7%bf%bb%e8%af%91%e8%b4%a8%e9%87%8f%e8%af%84%e4%bc%b0%e5%8f%8a%e6%8e%a7%e5%88%b6' />
+<meta name="generator" content="WordPress 4.0" />
+<link rel='canonical' href='http://www.52nlp.cn/python%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86%e5%ae%9e%e8%b7%b5-%e5%9c%a8nltk%e4%b8%ad%e4%bd%bf%e7%94%a8%e6%96%af%e5%9d%a6%e7%a6%8f%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%99%a8' />
+<link rel='shortlink' href='http://www.52nlp.cn/?p=6763' />
+<!-- wp thread comment 1.4.9.4.002 -->
+<style type="text/css" media="screen">
+.editComment, .editableComment, .textComment{
+	display: inline;
+}
+.comment-childs{
+	border: 1px solid #999;
+	margin: 5px 2px 2px 4px;
+	padding: 4px 2px 2px 4px;
+	background-color: white;
+}
+.chalt{
+	background-color: #E2E2E2;
+}
+#newcomment{
+	border:1px dashed #777;width:90%;
+}
+#newcommentsubmit{
+	color:red;
+}
+.adminreplycomment{
+	border:1px dashed #777;
+	width:99%;
+	margin:4px;
+	padding:4px;
+}
+.mvccls{
+	color: #999;
+}
+			
+</style>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: { equationNumbers: { autoNumber: "AMS" } },
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+    inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+    displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+    processEscapes: true
+  },
+  "HTML-CSS": { availableFonts: ["TeX"] }
+});
+</script><script type="text/javascript" src="http://www.52nlp.cn/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</head>
+
+<body class="single single-post postid-6763 single-format-standard">
+<div id="wrapper" class="hfeed">
+	<div id="header">
+		<div id="masthead">
+			<div id="branding" role="banner">
+								<div id="site-title">
+					<span>
+						<a href="http://www.52nlp.cn/" title="我爱自然语言处理" rel="home">我爱自然语言处理</a>
+					</span>
+				</div>
+				<div id="site-description">I Love Natural Language Processing</div>
+
+										<img src="http://www.52nlp.cn/wp-content/themes/twentytenorg/images/headers/path.jpg" width="940" height="198" alt="" />
+								</div><!-- #branding -->
+
+			<div id="access" role="navigation">
+			  				<div class="skip-link screen-reader-text"><a href="#content" title="跳至正文">跳至正文</a></div>
+								<div class="menu"><ul><li ><a href="http://www.52nlp.cn/">首页</a></li><li class="page_item page-item-2"><a href="http://www.52nlp.cn/about">关于</a></li><li class="page_item page-item-2557 page_item_has_children"><a href="http://www.52nlp.cn/resources">资源</a><ul class='children'><li class="page_item page-item-1271"><a href="http://www.52nlp.cn/resources/wpmatheditor">WpMathEditor</a></li></ul></li></ul></div>
+ 
+				<div class="menu"><ul><li class="page_item page-item-2"></li><li class="page_item page-item-2"><a href="http://coursegraph.com" title="课程图谱" target="_blank">课程图谱</a></li><li class="page_item page-item-2"><a href="http://www.nlpjob.com" title="求职" target="_blank">求职招聘</a></li></ul></div>
+			</div><!-- #access -->
+		</div><!-- #masthead -->
+	</div><!-- #header -->
+
+	<div id="main">
+
+		<div id="container">
+			<div id="content" role="main">
+
+			
+
+				<div id="nav-above" class="navigation">
+					<div class="nav-previous"><a href="http://www.52nlp.cn/%e7%bf%bb%e8%af%91%e6%8a%80%e6%9c%af%e6%b2%99%e9%be%99%e7%ac%ac17%e6%ac%a1%e6%b4%bb%e5%8a%a8-%e7%bf%bb%e8%af%91%e8%b4%a8%e9%87%8f%e8%af%84%e4%bc%b0%e5%8f%8a%e6%8e%a7%e5%88%b6" rel="prev"><span class="meta-nav">&larr;</span> 翻译技术沙龙第17次活动——“翻译质量评估及控制技术与工具”活动通知</a></div>
+					<div class="nav-next"></div>
+				</div><!-- #nav-above -->
+
+				<div id="post-6763" class="post-6763 post type-post status-publish format-standard hentry category-chinese-information-processing category-word-segmentation category-nlp tag-java tag-nltk tag-python tag-85 tag-82 tag-909 tag-910 tag-216 tag-918 tag-913 tag-914 tag-912 tag-911 tag-922 tag-920 tag-921 tag-919 tag-915 tag-53 tag-63">
+					<h1 class="entry-title">Python自然语言处理实践: 在NLTK中使用斯坦福中文分词器</h1>
+
+					<div class="entry-meta">
+						<span class="meta-prep meta-prep-author">发表于</span> <a href="http://www.52nlp.cn/python%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86%e5%ae%9e%e8%b7%b5-%e5%9c%a8nltk%e4%b8%ad%e4%bd%bf%e7%94%a8%e6%96%af%e5%9d%a6%e7%a6%8f%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%99%a8" title="15:28" rel="bookmark"><span class="entry-date">2014年09月24号</span></a> <span class="meta-sep">由</span> <span class="author vcard"><a class="url fn n" href="http://www.52nlp.cn/author/admin" title="查看所有由 52nlp 发布的文章">52nlp</a></span>					</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+						<p>斯坦福大学自然语言处理组是世界知名的NLP研究小组，他们提供了一系列开源的Java文本分析工具，包括分词器(<a href="http://nlp.stanford.edu/software/segmenter.shtml">Word Segmenter</a>)，词性标注工具（<a href="http://nlp.stanford.edu/software/tagger.shtml">Part-Of-Speech Tagger</a>），命名实体识别工具（<a href="http://nlp.stanford.edu/software/CRF-NER.shtml">Named Entity Recognizer</a>），句法分析器（<a href="http://nlp.stanford.edu/software/lex-parser.shtml">Parser</a>）等，可喜的事，他们还为这些工具训练了相应的中文模型，支持中文文本处理。在使用NLTK的过程中，发现当前版本的<a href="https://github.com/nltk/nltk">NLTK</a>已经提供了相应的斯坦福文本处理工具接口，包括词性标注，命名实体识别和句法分析器的接口，不过可惜的是，没有提供<a href="http://www.52nlp.cn/category/word-segmentation">分词</a>器的接口。在google无果和阅读了相应的代码后，我决定照猫画虎为NLTK写一个斯坦福<a href="http://www.52nlp.cn/category/word-segmentation">中文分词</a>器接口，这样可以方便的在Python中调用斯坦福文本处理工具。</p>
+<p>首先需要做一些准备工作，第一步当然是安装NLTK，这个可以参考我们在gensim的相关文章中的介绍《<a href="http://www.52nlp.cn/%E5%A6%82%E4%BD%95%E8%AE%A1%E7%AE%97%E4%B8%A4%E4%B8%AA%E6%96%87%E6%A1%A3%E7%9A%84%E7%9B%B8%E4%BC%BC%E5%BA%A6%E4%B8%89">如何计算两个文档的相似度</a>》，不过这里建议check github上最新的NLTK源代码并用“python setup.py install”的方式安装这个版本：<a href="https://github.com/nltk/nltk">https://github.com/nltk/nltk</a>。这个版本新增了对于斯坦福句法分析器的接口，一些老的版本并没有，这个之后我们也许还会用来介绍。而我们也是在这个版本中添加的斯坦福分词器接口，其他版本也许会存在一些小问题。其次是安装Java运行环境，以Ubuntu 12.04为例，安装Java运行环境仅需要两步：</p>
+<blockquote><p>sudo apt-get install default-jre<br />
+sudo apt-get install default-jdk</p></blockquote>
+<p>最后，当然是最重要的，你需要下载<a href="http://nlp.stanford.edu/software/segmenter.shtml">斯坦福分词器</a>的相应文件，包括源代码，模型文件，词典文件等。注意斯坦福分词器并不仅仅支持中文分词，还支持阿拉伯语的分词，需要下载的zip打包文件是这个: <a href="http://nlp.stanford.edu/software/stanford-segmenter-2014-08-27.zip">Download Stanford Word Segmenter version 2014-08-27</a>，下载后解压。</p>
+<p>准备工作就绪后，我们首先考虑的是在nltk源代码里的什么地方来添加这个接口文件。在nltk源代码包下，斯坦福词性标注器和命名实体识别工具的接口文件是这个：nltk/tag/stanford.py ，而句法分析器的接口文件是这个：nltk/parse/stanford.py , 虽然在nltk/tokenize/目录下有一个stanford.py文件，但是仅仅提供了一个针对英文的tokenizer工具PTBTokenizer的接口，没有针对斯坦福分词器的接口，于是我决定在nltk/tokenize下添加一个stanford_segmenter.py文件，作为nltk斯坦福中文分词器的接口文件。NLTK中的这些接口利用了Linux 下的管道（PIPE）机制和subprocess模块，这里直接贴源代码了，感兴趣的同学可以自行阅读:<br />
+<span id="more-6763"></span></p>
+<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:620px;height:450px;"><table cellspacing="0" cellpadding="0"><tbody><tr><td class="line-numbers"><div>1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br />9<br />10<br />11<br />12<br />13<br />14<br />15<br />16<br />17<br />18<br />19<br />20<br />21<br />22<br />23<br />24<br />25<br />26<br />27<br />28<br />29<br />30<br />31<br />32<br />33<br />34<br />35<br />36<br />37<br />38<br />39<br />40<br />41<br />42<br />43<br />44<br />45<br />46<br />47<br />48<br />49<br />50<br />51<br />52<br />53<br />54<br />55<br />56<br />57<br />58<br />59<br />60<br />61<br />62<br />63<br />64<br />65<br />66<br />67<br />68<br />69<br />70<br />71<br />72<br />73<br />74<br />75<br />76<br />77<br />78<br />79<br />80<br />81<br />82<br />83<br />84<br />85<br />86<br />87<br />88<br />89<br />90<br />91<br />92<br />93<br />94<br />95<br />96<br />97<br />98<br />99<br />100<br />101<br />102<br />103<br />104<br />105<br />106<br />107<br />108<br />109<br />110<br />111<br />112<br />113<br />114<br />115<br />116<br />117<br />118<br />119<br />120<br />121<br />122<br />123<br />124<br />125<br />126<br />127<br />128<br />129<br />130<br />131<br />132<br />133<br />134<br />135<br />136<br /></div></td><td><div class="text codecolorer">#!/usr/bin/env python<br />
+# -*- coding: utf-8 -*-<br />
+# Natural Language Toolkit: Interface to the Stanford Chinese Segmenter<br />
+#<br />
+# Copyright (C) 2001-2014 NLTK Project<br />
+# Author: 52nlp &lt;52nlpcn@gmail.com&gt;<br />
+#<br />
+# URL: &lt;http://nltk.org/&gt;<br />
+# For license information, see LICENSE.TXT<br />
+<br />
+from __future__ import unicode_literals, print_function<br />
+<br />
+import tempfile<br />
+import os<br />
+import json<br />
+from subprocess import PIPE<br />
+<br />
+from nltk import compat<br />
+from nltk.internals import find_jar, config_java, java, _java_options<br />
+<br />
+from nltk.tokenize.api import TokenizerI<br />
+<br />
+class StanfordSegmenter(TokenizerI):<br />
+&nbsp; &nbsp; r&quot;&quot;&quot;<br />
+&nbsp; &nbsp; Interface to the Stanford Segmenter<br />
+<br />
+&nbsp; &nbsp; &gt;&gt;&gt; from nltk.tokenize.stanford_segmenter import StanfordSegmenter<br />
+&nbsp; &nbsp; &gt;&gt;&gt; segmenter = StanfordSegmenter(path_to_jar=&quot;stanford-segmenter-3.4.1.jar&quot;, path_to_sihan_corpora_dict=&quot;./data&quot;, path_to_model=&quot;./data/pku.gz&quot;, path_to_dict=&quot;./data/dict-chris6.ser.gz&quot;)<br />
+&nbsp; &nbsp; &gt;&gt;&gt; sentence = u&quot;这是斯坦福中文分词器测试&quot;<br />
+&nbsp; &nbsp; &gt;&gt;&gt; segmenter.segment(sentence)<br />
+&nbsp; &nbsp; &gt;&gt;&gt; u'\u8fd9 \u662f \u65af\u5766\u798f \u4e2d\u6587 \u5206\u8bcd\u5668 \u6d4b\u8bd5\n'<br />
+&nbsp; &nbsp; &gt;&gt;&gt; segmenter.segment_file(&quot;test.simp.utf8&quot;)<br />
+&nbsp; &nbsp; &gt;&gt;&gt; u'\u9762\u5bf9 \u65b0 \u4e16\u7eaa \uff0c \u4e16\u754c \u5404\u56fd ...<br />
+&nbsp; &nbsp; &quot;&quot;&quot;<br />
+<br />
+&nbsp; &nbsp; _JAR = 'stanford-segmenter.jar'<br />
+<br />
+&nbsp; &nbsp; def __init__(self, path_to_jar=None,<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; path_to_sihan_corpora_dict=None,<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; path_to_model=None, path_to_dict=None,<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; encoding='UTF-8', options=None,<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; verbose=False, java_options='-mx2g'):<br />
+&nbsp; &nbsp; &nbsp; &nbsp; self._stanford_jar = find_jar(<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; self._JAR, path_to_jar,<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; env_vars=('STANFORD_SEGMENTER',),<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; searchpath=(),<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; verbose=verbose<br />
+&nbsp; &nbsp; &nbsp; &nbsp; )<br />
+&nbsp; &nbsp; &nbsp; &nbsp; self._sihan_corpora_dict = path_to_sihan_corpora_dict<br />
+&nbsp; &nbsp; &nbsp; &nbsp; self._model = path_to_model<br />
+&nbsp; &nbsp; &nbsp; &nbsp; self._dict = path_to_dict<br />
+<br />
+&nbsp; &nbsp; &nbsp; &nbsp; self._encoding = encoding<br />
+&nbsp; &nbsp; &nbsp; &nbsp; self.java_options = java_options<br />
+&nbsp; &nbsp; &nbsp; &nbsp; options = {} if options is None else options<br />
+&nbsp; &nbsp; &nbsp; &nbsp; self._options_cmd = ','.join('{0}={1}'.format(key, json.dumps(val)) for key, val in options.items())<br />
+<br />
+&nbsp; &nbsp; def segment_file(self, input_file_path):<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; cmd = [<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 'edu.stanford.nlp.ie.crf.CRFClassifier',<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; '-sighanCorporaDict', self._sihan_corpora_dict,<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; '-textFile', input_file_path,<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; '-sighanPostProcessing', 'true',<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; '-keepAllWhitespaces', 'false',<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; '-loadClassifier', self._model,<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; '-serDictionary', self._dict<br />
+&nbsp; &nbsp; &nbsp; &nbsp; ]<br />
+<br />
+&nbsp; &nbsp; &nbsp; &nbsp; stdout = self._execute(cmd)<br />
+<br />
+&nbsp; &nbsp; &nbsp; &nbsp; return stdout<br />
+<br />
+&nbsp; &nbsp; def segment(self, tokens):<br />
+&nbsp; &nbsp; &nbsp; &nbsp; return self.segment_sents([tokens])<br />
+<br />
+&nbsp; &nbsp; def segment_sents(self, sentences):<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &quot;&quot;&quot;<br />
+&nbsp; &nbsp; &nbsp; &nbsp; encoding = self._encoding<br />
+&nbsp; &nbsp; &nbsp; &nbsp; # Create a temporary input file<br />
+&nbsp; &nbsp; &nbsp; &nbsp; _input_fh, self._input_file_path = tempfile.mkstemp(text=True)<br />
+<br />
+&nbsp; &nbsp; &nbsp; &nbsp; # Write the actural sentences to the temporary input file<br />
+&nbsp; &nbsp; &nbsp; &nbsp; _input_fh = os.fdopen(_input_fh, 'wb')<br />
+&nbsp; &nbsp; &nbsp; &nbsp; _input = '\n'.join((' '.join(x) for x in sentences))<br />
+&nbsp; &nbsp; &nbsp; &nbsp; if isinstance(_input, compat.text_type) and encoding:<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; _input = _input.encode(encoding)<br />
+&nbsp; &nbsp; &nbsp; &nbsp; _input_fh.write(_input)<br />
+&nbsp; &nbsp; &nbsp; &nbsp; _input_fh.close()<br />
+<br />
+&nbsp; &nbsp; &nbsp; &nbsp; cmd = [<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 'edu.stanford.nlp.ie.crf.CRFClassifier',<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; '-sighanCorporaDict', self._sihan_corpora_dict,<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; '-textFile', self._input_file_path,<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; '-sighanPostProcessing', 'true',<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; '-keepAllWhitespaces', 'false',<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; '-loadClassifier', self._model,<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; '-serDictionary', self._dict<br />
+&nbsp; &nbsp; &nbsp; &nbsp; ]<br />
+<br />
+&nbsp; &nbsp; &nbsp; &nbsp; stdout = self._execute(cmd)<br />
+<br />
+&nbsp; &nbsp; &nbsp; &nbsp; # Delete the temporary file<br />
+&nbsp; &nbsp; &nbsp; &nbsp; os.unlink(self._input_file_path)<br />
+<br />
+&nbsp; &nbsp; &nbsp; &nbsp; return stdout<br />
+<br />
+&nbsp; &nbsp; def _execute(self, cmd, verbose=False):<br />
+&nbsp; &nbsp; &nbsp; &nbsp; encoding = self._encoding<br />
+&nbsp; &nbsp; &nbsp; &nbsp; cmd.extend(['-inputEncoding', encoding])<br />
+&nbsp; &nbsp; &nbsp; &nbsp; _options_cmd = self._options_cmd<br />
+&nbsp; &nbsp; &nbsp; &nbsp; if _options_cmd:<br />
+&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; cmd.extend(['-options', self._options_cmd])<br />
+<br />
+&nbsp; &nbsp; &nbsp; &nbsp; default_options = ' '.join(_java_options)<br />
+<br />
+&nbsp; &nbsp; &nbsp; &nbsp; # Configure java.<br />
+&nbsp; &nbsp; &nbsp; &nbsp; config_java(options=self.java_options, verbose=verbose)<br />
+<br />
+&nbsp; &nbsp; &nbsp; &nbsp; stdout, _stderr = java(cmd,classpath=self._stanford_jar, stdout=PIPE, stderr=PIPE)<br />
+&nbsp; &nbsp; &nbsp; &nbsp; stdout = stdout.decode(encoding)<br />
+<br />
+&nbsp; &nbsp; &nbsp; &nbsp; # Return java configurations to their default values.<br />
+&nbsp; &nbsp; &nbsp; &nbsp; config_java(options=default_options, verbose=False)<br />
+<br />
+&nbsp; &nbsp; &nbsp; &nbsp; return stdout<br />
+<br />
+def setup_module(module):<br />
+&nbsp; &nbsp; from nose import SkipTest<br />
+<br />
+&nbsp; &nbsp; try:<br />
+&nbsp; &nbsp; &nbsp; &nbsp; StanfordSegmenter()<br />
+&nbsp; &nbsp; except LookupError:<br />
+&nbsp; &nbsp; &nbsp; &nbsp; raise SkipTest('doctests from nltk.tokenize.stanford_segmenter are skipped because the stanford segmenter jar doesn\'t exist')</div></td></tr></tbody></table></div>
+<p>我在github上fork了一个最新的NLTK版本，然后在这个版本中添加了<a href="https://github.com/panyang/nltk/blob/develop/nltk/tokenize/stanford_segmenter.py">stanford_segmenter.py</a>，感兴趣的同学可以自行下载这个代码，放到nltk/tokenize/目录下，然后重新安装NLTK：sudo python setpy.py install. 或者直接clone我们的这个<a href="https://github.com/panyang/nltk">nltk</a>版本，安装后就可以使用斯坦福中文分词器了。</p>
+<p>现在就可以在Python NLTK中调用这个斯坦福中文分词接口了。为了方便起见，建议首先进入到解压后的斯坦福分词工具目录下：cd stanford-segmenter-2014-08-27，然后在这个目录下启用ipython，当然默认python解释器也可：</p>
+<p># 初始化斯坦福中文分词器<br />
+In [1]: from nltk.tokenize.stanford_segmenter import StanfordSegmenter</p>
+<p># 注意分词模型，词典等资源在data目录下，使用的是相对路径，<br />
+# 在stanford-segmenter-2014-08-27的目录下执行有效<br />
+# 注意，斯坦福中文分词器提供了两个中文分词模型：<br />
+#     ctb.gz是基于宾州中文树库训练的模型<br />
+#     pku.gz是基于北大在2005backoof上提供的人名日报语料库<br />
+# 这里选用了pku.gz，方便最后的测试<br />
+In [2]: segmenter = StanfordSegmenter(path_to_jar=&#8221;stanford-segmenter-3.4.1.jar&#8221;, path_to_sihan_corpora_dict=&#8221;./data&#8221;, path_to_model=&#8221;./data/pku.gz&#8221;, path_to_dict=&#8221;./data/dict-chris6.ser.gz&#8221;)</p>
+<p># 测试一个中文句子，注意u<br />
+In [3]: sentence = u&#8221;这是斯坦福中文分词器测试&#8221;</p>
+<p># 调用segment方法来切分中文句子，这里隐藏了一个问题，我们最后来说明<br />
+In [4]: segmenter.segment(sentence)<br />
+Out[4]: u&#8217;\u8fd9 \u662f \u65af\u5766\u798f \u4e2d\u6587 \u5206\u8bcd\u5668 \u6d4b\u8bd5\n&#8217;</p>
+<p># 由于分词后显示的是中文编码，我们把这个结果输出到文件中<br />
+# 不知道有没有同学有在python解释器总显示中文的方法<br />
+In [5]: outfile = open(&#8216;outfile&#8217;, &#8216;w&#8217;)</p>
+<p>In [6]: result = segmenter.segment(sentence)</p>
+<p># 注意写入到文件的时候要encode 为 UTF-8编码<br />
+In [7]: outfile.write(result.encode(&#8216;UTF-8&#8242;))</p>
+<p>In [8]: outfile.close()</p>
+<p>打开这个outfile文件：</p>
+<blockquote><p>这 是 斯坦福 中文 分词器 测试</p></blockquote>
+<p>这里同时提供了一个segment_file的调用方法，方便直接对文件进行切分，让我们来测试《<a href="http://www.52nlp.cn/%E4%B8%AD%E6%96%87%E5%88%86%E8%AF%8D%E5%85%A5%E9%97%A8%E4%B9%8B%E8%B5%84%E6%BA%90">中文分词入门之资源</a>》中介绍的backoff2005的测试集pku_test.utf8，来看看斯坦福分词器的效果：</p>
+<p>In [9]: result = segmenter.segment_file(&#8216;pku_test.utf8&#8242;)</p>
+<p>In [10]: outfile = open(&#8216;pku_outfile&#8217;, &#8216;w&#8217;)</p>
+<p>In [11]: outfile.write(result.encode(&#8216;UTF-8&#8242;))</p>
+<p>In [12]: outfile.close()</p>
+<p>打开结果文件pku_outfile：</p>
+<blockquote><p>共同 创造 美好 的 新 世纪 ——二○○一年 新年 贺词<br />
+（ 二○○○年 十二月 三十一日 ） （ 附 图片 1 张 ）<br />
+女士 们 ， 先生 们 ， 同志 们 ， 朋友 们 ：<br />
+2001年 新年 钟声 即将 敲响 。 人类 社会 前进 的 航船 就要 驶入 21 世纪 的 新 航程 。 中国 人民 进入 了 向 现代化 建设 第三 步 战略 目标 迈进 的 新 征程 。<br />
+在 这个 激动人心 的 时刻 ， 我 很 高兴 通过 中国 国际 广播 电台 、 中央 人民 广播 电台 和 中央 电视台 ， 向 全国 各族 人民 ， 向 香港 特别 行政区 同胞 、 澳门 特别 行政区 同胞 和 台湾 同胞 、 海外 侨胞 ， 向 世界 各国 的 朋友 们 ， 致以 新 世纪 第一 个 新年 的 祝贺 ！<br />
+&#8230;.
+</p></blockquote>
+<p>我们用backoff2005的测试脚本来测试一下斯坦福中文分词器在这份测试语料上的效果：</p>
+<p>./icwb2-data/scripts/score ./icwb2-data/gold/pku_training_words.utf8 ./icwb2-data/gold/pku_test_gold.utf8 pku_outfile > stanford_pku_test.score</p>
+<p>结果如下：<br />
+=== SUMMARY:<br />
+=== TOTAL INSERTIONS:	1479<br />
+=== TOTAL DELETIONS:	1974<br />
+=== TOTAL SUBSTITUTIONS:	3638<br />
+=== TOTAL NCHANGE:	7091<br />
+=== TOTAL TRUE WORD COUNT:	104372<br />
+=== TOTAL TEST WORD COUNT:	103877<br />
+=== TOTAL TRUE WORDS RECALL:	0.946<br />
+=== TOTAL TEST WORDS PRECISION:	0.951<br />
+=== F MEASURE:	0.948<br />
+=== OOV Rate:	0.058<br />
+=== OOV Recall Rate:	0.769<br />
+=== IV Recall Rate:	0.957<br />
+###	pku_outfile	1479	1974	3638	7091	104372	103877	0.946	0.951	0.948	0.058	0.769	0.957</p>
+<p>准确率是95.1%， 召回率是94.6%, F值是94.8%, 相当不错。感兴趣的同学可以测试一下其他测试集，或者用宾州中文树库的模型来测试一下结果。</p>
+<p>最后我们再说明一下这个接口存在的问题，因为使用了Linux PIPE模式来调用斯坦福中文分词器，相当于在Python中执行相应的Java命令，导致每次在执行分词时会加载一遍分词所需的模型和词典，这个对文件操作时（segment_file)没有多大的问题，但是在对句子执行分词（segment)的时候会存在很大的问题，每次都加载数据，在实际产品中基本是不可用的。虽然发现斯坦福分词器提供了一个 &#8211;readStdin 的读入标准输入的参数，也尝试通过python subprocess中先load 文件，再用的communicate方法来读入标准输入，但是仍然没有解决问题，发现还是一次执行，一次结束。这个问题困扰了我很久，google了很多资料也没有解决问题，欢迎懂行的同学告知或者来解决这个问题，再此先谢过了。That&#8217;s all!</p>
+<p>注：原创文章，转载请注明出处“<a href="http://www.52nlp.cn">我爱自然语言处理</a>”：<a href="http://www.52nlp.cn">www.52nlp.cn</a></p>
+<p>本文链接地址：<a href="http://www.52nlp.cn/?p=6763">http://www.52nlp.cn/python自然语言处理实践-在nltk中使用斯坦福中文分词器</a></p>
+<div class='yarpp-related'>
+<p>相关文章:<ol>
+<li><a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e8%b5%84%e6%ba%90" rel="bookmark" title="中文分词入门之资源">中文分词入门之资源 </a></li>
+<li><a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%952" rel="bookmark" title="中文分词入门之字标注法2">中文分词入门之字标注法2 </a></li>
+<li><a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e6%9c%80%e5%a4%a7%e5%8c%b9%e9%85%8d%e6%b3%95%e6%89%a9%e5%b1%952" rel="bookmark" title="中文分词入门之最大匹配法扩展2">中文分词入门之最大匹配法扩展2 </a></li>
+<li><a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%953" rel="bookmark" title="中文分词入门之字标注法3">中文分词入门之字标注法3 </a></li>
+<li><a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%954" rel="bookmark" title="中文分词入门之字标注法4">中文分词入门之字标注法4 </a></li>
+<li><a href="http://www.52nlp.cn/itenyh%e7%89%88-%e7%94%a8hmm%e5%81%9a%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%9b%9b%ef%bc%9aa-pure-hmm-%e5%88%86%e8%af%8d%e5%99%a8" rel="bookmark" title="Itenyh版-用HMM做中文分词四：A Pure-HMM 分词器">Itenyh版-用HMM做中文分词四：A Pure-HMM 分词器 </a></li>
+<li><a href="http://www.52nlp.cn/%e5%a6%82%e4%bd%95%e8%ae%a1%e7%ae%97%e4%b8%a4%e4%b8%aa%e6%96%87%e6%a1%a3%e7%9a%84%e7%9b%b8%e4%bc%bc%e5%ba%a6%e4%b8%89" rel="bookmark" title="如何计算两个文档的相似度（三）">如何计算两个文档的相似度（三） </a></li>
+<li><a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%951" rel="bookmark" title="中文分词入门之字标注法1">中文分词入门之字标注法1 </a></li>
+<li><a href="http://www.52nlp.cn/free-resources-of-chinese-information-processing-in-ldc" rel="bookmark" title="LDC上免费的中文信息处理资源">LDC上免费的中文信息处理资源 </a></li>
+<li><a href="http://www.52nlp.cn/%e6%8e%a8%e8%8d%90%ef%bc%8d%e7%94%a8python%e8%bf%9b%e8%a1%8c%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86%ef%bc%8d%e4%b8%ad%e6%96%87%e7%bf%bb%e8%af%91-nltk%e9%85%8d%e5%a5%97%e4%b9%a6" rel="bookmark" title="推荐《用Python进行自然语言处理》中文翻译-NLTK配套书">推荐《用Python进行自然语言处理》中文翻译-NLTK配套书 </a></li>
+</ol></p>
+</div>
+											</div><!-- .entry-content -->
+
+
+					<div class="entry-utility">
+						此条目发表在 <a href="http://www.52nlp.cn/category/chinese-information-processing" rel="category tag">中文信息处理</a>, <a href="http://www.52nlp.cn/category/word-segmentation" rel="category tag">中文分词</a>, <a href="http://www.52nlp.cn/category/nlp" rel="category tag">自然语言处理</a> 分类目录，贴了 <a href="http://www.52nlp.cn/tag/java%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d" rel="tag">Java中文分词</a>, <a href="http://www.52nlp.cn/tag/java%e6%96%87%e6%9c%ac%e5%a4%84%e7%90%86" rel="tag">Java文本处理</a>, <a href="http://www.52nlp.cn/tag/nltk" rel="tag">nltk</a>, <a href="http://www.52nlp.cn/tag/nltk%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d" rel="tag">NLTK中文分词</a>, <a href="http://www.52nlp.cn/tag/nltk%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e6%8e%a5%e5%8f%a3" rel="tag">NLTK中文分词接口</a>, <a href="http://www.52nlp.cn/tag/nltk%e5%88%86%e8%af%8d" rel="tag">NLTK分词</a>, <a href="http://www.52nlp.cn/tag/nltk%e5%88%86%e8%af%8d%e6%8e%a5%e5%8f%a3" rel="tag">NLTK分词接口</a>, <a href="http://www.52nlp.cn/tag/python%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86" rel="tag">Python自然语言处理</a>, <a href="http://www.52nlp.cn/tag/%e4%b8%ad%e6%96%87%e4%bf%a1%e6%81%af%e5%a4%84%e7%90%86" rel="tag">中文信息处理</a>, <a href="http://www.52nlp.cn/tag/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d" rel="tag">中文分词</a>, <a href="http://www.52nlp.cn/tag/%e4%b8%ad%e6%96%87%e5%a4%84%e7%90%86" rel="tag">中文处理</a>, <a href="http://www.52nlp.cn/tag/%e4%b8%ad%e6%96%87%e6%96%87%e6%9c%ac%e5%a4%84%e7%90%86" rel="tag">中文文本处理</a>, <a href="http://www.52nlp.cn/tag/%e5%8f%a5%e6%b3%95%e5%88%86%e6%9e%90" rel="tag">句法分析</a>, <a href="http://www.52nlp.cn/tag/%e5%91%bd%e5%90%8d%e5%ae%9e%e4%bd%93%e8%af%86%e5%88%ab" rel="tag">命名实体识别</a>, <a href="http://www.52nlp.cn/tag/%e6%96%af%e5%9d%a6%e7%a6%8f%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d" rel="tag">斯坦福中文分词</a>, <a href="http://www.52nlp.cn/tag/%e6%96%af%e5%9d%a6%e7%a6%8f%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%99%a8" rel="tag">斯坦福中文分词器</a>, <a href="http://www.52nlp.cn/tag/%e6%96%af%e5%9d%a6%e7%a6%8f%e5%88%86%e8%af%8d" rel="tag">斯坦福分词</a>, <a href="http://www.52nlp.cn/tag/%e6%96%af%e5%9d%a6%e7%a6%8f%e5%88%86%e8%af%8d%e5%99%a8" rel="tag">斯坦福分词器</a>, <a href="http://www.52nlp.cn/tag/%e6%96%af%e5%9d%a6%e7%a6%8f%e5%8f%a5%e6%b3%95%e5%88%86%e6%9e%90" rel="tag">斯坦福句法分析</a>, <a href="http://www.52nlp.cn/tag/%e6%96%af%e5%9d%a6%e7%a6%8f%e5%91%bd%e5%90%8d%e5%ae%9e%e4%bd%93%e8%af%86%e5%88%ab" rel="tag">斯坦福命名实体识别</a>, <a href="http://www.52nlp.cn/tag/%e6%96%af%e5%9d%a6%e7%a6%8f%e6%96%87%e6%9c%ac%e5%a4%84%e7%90%86" rel="tag">斯坦福文本处理</a>, <a href="http://www.52nlp.cn/tag/%e6%96%af%e5%9d%a6%e7%a6%8f%e8%af%8d%e6%80%a7%e6%a0%87%e6%b3%a8" rel="tag">斯坦福词性标注</a>, <a href="http://www.52nlp.cn/tag/%e8%87%aa%e7%84%b6%e8%af%ad%e4%b9%89%e5%a4%84%e7%90%86" rel="tag">自然语义处理</a>, <a href="http://www.52nlp.cn/tag/%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86" rel="tag">自然语言处理</a>, <a href="http://www.52nlp.cn/tag/%e8%af%8d%e6%80%a7%e6%a0%87%e6%b3%a8" rel="tag">词性标注</a> 标签。将<a href="http://www.52nlp.cn/python%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86%e5%ae%9e%e8%b7%b5-%e5%9c%a8nltk%e4%b8%ad%e4%bd%bf%e7%94%a8%e6%96%af%e5%9d%a6%e7%a6%8f%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%99%a8" title="链向 Python自然语言处理实践: 在NLTK中使用斯坦福中文分词器 的固定链接" rel="bookmark">固定链接</a>加入收藏夹。											</div><!-- .entry-utility -->
+				</div><!-- #post-## -->
+
+				<div id="nav-below" class="navigation">
+					<div class="nav-previous"><a href="http://www.52nlp.cn/%e7%bf%bb%e8%af%91%e6%8a%80%e6%9c%af%e6%b2%99%e9%be%99%e7%ac%ac17%e6%ac%a1%e6%b4%bb%e5%8a%a8-%e7%bf%bb%e8%af%91%e8%b4%a8%e9%87%8f%e8%af%84%e4%bc%b0%e5%8f%8a%e6%8e%a7%e5%88%b6" rel="prev"><span class="meta-nav">&larr;</span> 翻译技术沙龙第17次活动——“翻译质量评估及控制技术与工具”活动通知</a></div>
+					<div class="nav-next"></div>
+				</div><!-- #nav-below -->
+
+				
+			<div id="comments">
+
+
+
+
+								<div id="respond" class="comment-respond">
+				<h3 id="reply-title" class="comment-reply-title">发表评论 <small><a rel="nofollow" id="cancel-comment-reply-link" href="/python%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86%e5%ae%9e%e8%b7%b5-%e5%9c%a8nltk%e4%b8%ad%e4%bd%bf%e7%94%a8%e6%96%af%e5%9d%a6%e7%a6%8f%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%99%a8#respond" style="display:none;">取消回复</a></small></h3>
+									<form action="http://www.52nlp.cn/wp-comments-post.php" method="post" id="commentform" class="comment-form">
+																			<p class="comment-notes">电子邮件地址不会被公开。 必填项已用<span class="required">*</span>标注</p>							<p class="comment-form-author"><label for="author">姓名 <span class="required">*</span></label> <input id="author" name="author" type="text" value="" size="30" aria-required='true' /></p>
+<p class="comment-form-email"><label for="email">电子邮件 <span class="required">*</span></label> <input id="email" name="email" type="text" value="" size="30" aria-required='true' /></p>
+<p class="comment-form-url"><label for="url">站点</label> <input id="url" name="url" type="text" value="" size="30" /></p>
+												<p class="comment-form-comment"><label for="comment">评论</label> <textarea id="comment" name="comment" cols="45" rows="8" aria-required="true"></textarea></p>						<p class="form-allowed-tags">您可以使用这些<abbr title="HyperText Markup Language">HTML</abbr>标签和属性： <code>&lt;a href=&quot;&quot; title=&quot;&quot;&gt; &lt;abbr title=&quot;&quot;&gt; &lt;acronym title=&quot;&quot;&gt; &lt;b&gt; &lt;blockquote cite=&quot;&quot;&gt; &lt;cite&gt; &lt;code&gt; &lt;del datetime=&quot;&quot;&gt; &lt;em&gt; &lt;i&gt; &lt;q cite=&quot;&quot;&gt; &lt;strike&gt; &lt;strong&gt; </code></p>						<p class="form-submit">
+							<input name="submit" type="submit" id="submit" value="发表评论" />
+							<input type='hidden' name='comment_post_ID' value='6763' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+						</p>
+						<p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="013831b6ee" /></p><p style="display: none;"><input type="hidden" id="ak_js" name="ak_js" value="151"/></p><p><input type="hidden" id="comment_reply_ID" name="comment_reply_ID" value="0" /><input type="hidden" id="comment_reply_dp" name="comment_reply_dp" value="0" /></p><div id="cancel_reply" style="display:none;"><a href="javascript:void(0)" onclick="movecfm(null,0,1,null);" style="color:red;">点击取消回复</a></div><script type="text/javascript">
+/* <![CDATA[ */
+var commentformid = "commentform";
+var USERINFO = false;
+var atreply = "none";
+/* ]]> */
+</script>
+<script type="text/javascript" src="http://www.52nlp.cn/wp-content/plugins/wp-thread-comment/wp-thread-comment.js.php?jsver=common"></script>
+					</form>
+							</div><!-- #respond -->
+			
+</div><!-- #comments -->
+
+
+			</div><!-- #content -->
+		</div><!-- #container -->
+
+﻿
+		<div id="primary" class="widget-area" role="complementary">
+			<ul class="xoxo">
+<!-- begin l_sidebar -->
+	<div id="l_sidebar">
+<p>卓越网：<a href="http://www.amazon.cn/mn/searchApp?source=garypyang-23&searchType=1&keywords=自然语言处理" title="自然语言处理书籍"target=_blank>自然语言处理书籍</a><br>
+<li id="search-3" class="widget-container widget_search"><h3 class="widget-title">站内搜索</h3><form role="search" method="get" id="searchform" class="searchform" action="http://www.52nlp.cn/">
+				<div>
+					<label class="screen-reader-text" for="s">搜索：</label>
+					<input type="text" value="" name="s" id="s" />
+					<input type="submit" id="searchsubmit" value="搜索" />
+				</div>
+			</form></li><li id="text-4" class="widget-container widget_text"><h3 class="widget-title">NLPJob新鲜职位推荐:</h3>			<div class="textwidget"><p></p>
+<script src="http://www.nlpjob.com/api/api.php?action=getJobs
+&type=0&category=0&count=8&random=1&days_behind=7&response=js" type="text/javascript"></script>
+
+<script type="text/javascript">showJobs('jobber-container', 'jobber-list');</script></div>
+		</li><li id="text-3" class="widget-container widget_text"><h3 class="widget-title">52nlp新浪微博</h3>			<div class="textwidget"><p><iframe id="sina_widget_2104931705" style="width:100%; height:500px;" frameborder="0" scrolling="no" src="http://v.t.sina.com.cn/widget/widget_blog.php?uid=2104931705&height=500&skin=wd_01&showpic=1"></iframe></p>
+<p><!-- JiaThis Button BEGIN --><br />
+<script type="text/javascript" src="http://v3.jiathis.com/code/jiathis_r.js?uid=1340292124103344&move=0&amp;btn=r3.gif" charset="utf-8"></script><br />
+<!-- JiaThis Button END --></p>
+</div>
+		</li><li id="categories-309398091" class="widget-container widget_categories"><h3 class="widget-title">分类目录</h3>		<ul>
+	<li class="cat-item cat-item-72"><a href="http://www.52nlp.cn/category/mit-nlp" title="麻省理工学院开放式课程&quot;自然语言处理“的相关翻译文章">MIT自然语言处理</a> (23)
+</li>
+	<li class="cat-item cat-item-469"><a href="http://www.52nlp.cn/category/topic-model" >Topic Model</a> (10)
+</li>
+	<li class="cat-item cat-item-87"><a href="http://www.52nlp.cn/category/wordpress" >wordpress</a> (6)
+</li>
+	<li class="cat-item cat-item-317"><a href="http://www.52nlp.cn/category/%e4%b8%93%e9%a2%98" >专题</a> (6)
+</li>
+	<li class="cat-item cat-item-263"><a href="http://www.52nlp.cn/category/chinese-information-processing" >中文信息处理</a> (18)
+</li>
+	<li class="cat-item cat-item-62"><a href="http://www.52nlp.cn/category/word-segmentation" >中文分词</a> (35)
+</li>
+	<li class="cat-item cat-item-420"><a href="http://www.52nlp.cn/category/%e5%b9%b6%e8%a1%8c%e7%ae%97%e6%b3%95" >并行算法</a> (1)
+</li>
+	<li class="cat-item cat-item-268"><a href="http://www.52nlp.cn/category/%e6%8b%9b%e8%81%98" >招聘</a> (4)
+</li>
+	<li class="cat-item cat-item-560"><a href="http://www.52nlp.cn/category/%e6%8e%a8%e8%8d%90%e7%b3%bb%e7%bb%9f" >推荐系统</a> (3)
+</li>
+	<li class="cat-item cat-item-354"><a href="http://www.52nlp.cn/category/%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98" >数据挖掘</a> (1)
+</li>
+	<li class="cat-item cat-item-241"><a href="http://www.52nlp.cn/category/text-classification" >文本分类</a> (2)
+</li>
+	<li class="cat-item cat-item-193"><a href="http://www.52nlp.cn/category/maximum-entropy-model" >最大熵模型</a> (7)
+</li>
+	<li class="cat-item cat-item-344"><a href="http://www.52nlp.cn/category/%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0" >机器学习</a> (13)
+</li>
+	<li class="cat-item cat-item-1"><a href="http://www.52nlp.cn/category/machine-translation" >机器翻译</a> (54)
+</li>
+	<li class="cat-item cat-item-195"><a href="http://www.52nlp.cn/category/%e6%9d%a1%e4%bb%b6%e9%9a%8f%e6%9c%ba%e5%9c%ba" >条件随机场</a> (3)
+</li>
+	<li class="cat-item cat-item-153"><a href="http://www.52nlp.cn/category/tagging" >标注</a> (13)
+</li>
+	<li class="cat-item cat-item-885"><a href="http://www.52nlp.cn/category/%e7%a7%91%e5%ad%a6%e8%ae%a1%e7%ae%97" >科学计算</a> (1)
+</li>
+	<li class="cat-item cat-item-538"><a href="http://www.52nlp.cn/category/%e7%bb%9f%e8%ae%a1%e5%ad%a6" >统计学</a> (10)
+</li>
+	<li class="cat-item cat-item-126"><a href="http://www.52nlp.cn/category/translation-model" >翻译模型</a> (2)
+</li>
+	<li class="cat-item cat-item-51"><a href="http://www.52nlp.cn/category/nlp" >自然语言处理</a> (225)
+</li>
+	<li class="cat-item cat-item-106"><a href="http://www.52nlp.cn/category/computational-linguistics" >计算语言学</a> (38)
+</li>
+	<li class="cat-item cat-item-22"><a href="http://www.52nlp.cn/category/dictionary" >词典</a> (8)
+</li>
+	<li class="cat-item cat-item-221"><a href="http://www.52nlp.cn/category/semantics" >语义学</a> (1)
+</li>
+	<li class="cat-item cat-item-161"><a href="http://www.52nlp.cn/category/semantic-web" >语义网</a> (3)
+</li>
+	<li class="cat-item cat-item-37"><a href="http://www.52nlp.cn/category/corpus" >语料库</a> (12)
+</li>
+	<li class="cat-item cat-item-86"><a href="http://www.52nlp.cn/category/language-model" >语言模型</a> (23)
+</li>
+	<li class="cat-item cat-item-156"><a href="http://www.52nlp.cn/category/speech-recognition" >语音识别</a> (4)
+</li>
+	<li class="cat-item cat-item-314"><a href="http://www.52nlp.cn/category/%e8%b4%9d%e5%8f%b6%e6%96%af%e6%a8%a1%e5%9e%8b" >贝叶斯模型</a> (1)
+</li>
+	<li class="cat-item cat-item-110"><a href="http://www.52nlp.cn/category/reprint" >转载</a> (28)
+</li>
+	<li class="cat-item cat-item-451"><a href="http://www.52nlp.cn/category/%e9%97%ae%e7%ad%94%e7%b3%bb%e7%bb%9f" >问答系统</a> (1)
+</li>
+	<li class="cat-item cat-item-3"><a href="http://www.52nlp.cn/category/informal-essay" >随笔</a> (61)
+</li>
+	<li class="cat-item cat-item-60"><a href="http://www.52nlp.cn/category/hidden-markov-model" >隐马尔科夫模型</a> (36)
+</li>
+		</ul>
+</li><li id="archives-2" class="widget-container widget_archive"><h3 class="widget-title">文章归档</h3>		<ul>
+	<li><a href='http://www.52nlp.cn/2014/09'>2014年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/07'>2014年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/06'>2014年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/05'>2014年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/04'>2014年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/01'>2014年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/12'>2013年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/06'>2013年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/05'>2013年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/04'>2013年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/03'>2013年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/02'>2013年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/01'>2013年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/12'>2012年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/11'>2012年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/10'>2012年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/09'>2012年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/08'>2012年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/07'>2012年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/06'>2012年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/05'>2012年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/04'>2012年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/03'>2012年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/01'>2012年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/12'>2011年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/11'>2011年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/10'>2011年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/09'>2011年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/08'>2011年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/07'>2011年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/06'>2011年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/05'>2011年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/04'>2011年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/03'>2011年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/02'>2011年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/01'>2011年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/12'>2010年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/11'>2010年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/10'>2010年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/09'>2010年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/08'>2010年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/07'>2010年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/06'>2010年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/05'>2010年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/04'>2010年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/03'>2010年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/02'>2010年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/01'>2010年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/12'>2009年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/11'>2009年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/10'>2009年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/09'>2009年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/08'>2009年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/07'>2009年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/06'>2009年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/05'>2009年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/04'>2009年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/03'>2009年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/02'>2009年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/01'>2009年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2008/12'>2008年十二月</a></li>
+		</ul>
+</li>		<li id="recent-posts-2" class="widget-container widget_recent_entries">		<h3 class="widget-title">最新文章</h3>		<ul>
+					<li>
+				<a href="http://www.52nlp.cn/python%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86%e5%ae%9e%e8%b7%b5-%e5%9c%a8nltk%e4%b8%ad%e4%bd%bf%e7%94%a8%e6%96%af%e5%9d%a6%e7%a6%8f%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%99%a8">Python自然语言处理实践: 在NLTK中使用斯坦福中文分词器</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e7%bf%bb%e8%af%91%e6%8a%80%e6%9c%af%e6%b2%99%e9%be%99%e7%ac%ac17%e6%ac%a1%e6%b4%bb%e5%8a%a8-%e7%bf%bb%e8%af%91%e8%b4%a8%e9%87%8f%e8%af%84%e4%bc%b0%e5%8f%8a%e6%8e%a7%e5%88%b6">翻译技术沙龙第17次活动——“翻译质量评估及控制技术与工具”活动通知</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/python-%e7%bd%91%e9%a1%b5%e7%88%ac%e8%99%ab-%e6%96%87%e6%9c%ac%e5%a4%84%e7%90%86-%e7%a7%91%e5%ad%a6%e8%ae%a1%e7%ae%97-%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0-%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98">Python 网页爬虫 &#038; 文本处理 &#038; 科学计算 &#038; 机器学习 &#038; 数据挖掘兵器谱</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e7%bf%bb%e8%af%91%e6%8a%80%e6%9c%af%e6%b2%99%e9%be%99%e7%ac%ac%e5%8d%81%e5%85%ad%e6%ac%a1%e6%b4%bb%e5%8a%a8-%e4%ba%92%e8%81%94%e7%bd%91%e6%8a%80%e6%9c%af%e9%a9%b1%e5%8a%a8">翻译技术沙龙第十六次活动——“互联网技术驱动下的语言服务众包模式” 通知</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e7%81%ab%e5%85%89%e6%91%87%e6%9b%b3%e7%a5%9e%e5%a5%87%e7%9a%84%e4%bc%bd%e7%8e%9b%e5%87%bd%e6%95%b0%e4%b8%8b">[火光摇曳]神奇的伽玛函数(下)</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e7%a5%9e%e5%a5%87%e7%9a%84%e4%bc%bd%e7%8e%9b%e5%87%bd%e6%95%b0%e4%b8%8a">[火光摇曳]神奇的伽玛函数(上)</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/nlpjob-%e4%b8%bb%e7%ab%99%e4%b8%8a%e7%ba%bf">NLPJob 主站上线</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e9%a1%ba%e4%b8%b0%e6%b5%b7%e6%b7%98sfbuy%e9%a6%96%e6%ac%a1%e4%bd%93%e9%aa%8c-%e7%be%8e%e5%9b%bd%e4%ba%9a%e9%a9%ac%e9%80%8a%e6%b5%b7%e6%b7%98kindle-dx%e8%bd%ac%e8%bf%90%e5%85%a8%e6%94%bb%e7%95%a5">顺丰海淘SFBuy首次体验-美国亚马逊海淘Kindle DX转运全攻略</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/digitalocean%e4%bd%bf%e7%94%a8%e5%b0%8f%e8%ae%b0">DigitalOcean使用小记</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%95%e5%85%a8%e6%96%87%e6%96%87%e6%a1%a3">中文分词入门之字标注法全文文档</a>
+						</li>
+				</ul>
+		</li><li id="recentcomments" class="widget-container widget_recentcomments"><h3 class="widget-title">最近评论</h3><ul><li class="rc-navi rc-clearfix"><span class="rc-loading">正在加载...</span></li><li id="rc-comment-temp" class="rc-item rc-comment rc-clearfix"><div class="rc-info"></div><div class="rc-timestamp"></div><div class="rc-excerpt"></div></li><li id="rc-ping-temp" class="rc-item rc-ping rc-clearfix"><span class="rc-label"></span></li></ul></li>			</ul>
+		</div><!-- #primary .widget-area -->
+
+
+		<div id="secondary" class="widget-area" role="complementary">
+			<ul class="xoxo">
+				<li id="linkcat-103" class="widget-container widget_links"><h3 class="widget-title">NLP相关网站</h3>
+	<ul class='xoxo blogroll'>
+<li><a href="http://www.aclweb.org/" rel="co-worker" title="The Association for Computational Linguistics" target="_blank">ACL</a></li>
+<li><a href="http://aclweb.org/anthology-new/" rel="co-worker" title="A Digital Archive of Research Papers in Computational Linguistics" target="_blank">ACL Anthology</a></li>
+<li><a href="http://belobog.si.umich.edu/clair/anthology/index.cgi" rel="colleague" target="_blank">ACL Anthology Network</a></li>
+<li><a href="http://aclweb.org/aclwiki/index.php?title=Main_Page" rel="colleague" title="the Wiki of the Association for Computational Linguistics" target="_blank">ACL Wiki</a></li>
+<li><a href="http://www.clsp.jhu.edu/" rel="colleague" target="_blank">CLSP</a></li>
+<li><a href="http://www.cwbbase.com/" rel="colleague" title="这是一个略具规模的中文语义词库, 也是稍有特色的汉语语义词典" target="_blank">CWB中文词库</a></li>
+<li><a href="http://www.euromatrix.net/" rel="colleague" target="_blank">EuroMatrix</a></li>
+<li><a href="http://www.freebase.com" rel="colleague" target="_blank">Freebase</a></li>
+<li><a href="http://www.clsp.jhu.edu/workshops/" rel="colleague" target="_blank">JHU Workshop</a></li>
+<li><a href="http://www.ldc.upenn.edu/" rel="colleague" title="Linguistic Data Consortium" target="_blank">LDC</a></li>
+<li><a href="http://www.statmt.org/moses/" rel="colleague" title="A factored phrase-based beam-search decoder for machine translation" target="_blank">Moses</a></li>
+<li><a href="http://nlpers.blogspot.com/" rel="colleague" title="国外一个非常不错的自然语言处理博客" target="_blank">nlper</a></li>
+<li><a href="http://www.powerset.com/" rel="colleague" target="_blank">Powerset</a></li>
+<li><a href="http://www.speech.sri.com/projects/srilm/" rel="colleague" title="- The SRI Language Modeling Toolkit" target="_blank">SRILM</a></li>
+<li><a href="http://www.statmt.org/" rel="colleague" title="This website is dedicated to research in statistical machine translation" target="_blank">Statistical Machine Translation</a></li>
+<li><a href="http://textanalysisonline.com/" target="_blank">Text Analysis</a></li>
+<li><a href="http://textminingonline.com/" target="_blank">Text Mining</a></li>
+<li><a href="http://textsummarization.net/" target="_blank">Text Summarization</a></li>
+<li><a href="http://w3china.org/index.htm" rel="friend" title="致力于促进W3C技术的广泛应用, 传播关于未来Web的知识与技术" target="_blank">中国万维网联盟</a></li>
+<li><a href="http://www.cipsc.org.cn/" rel="co-worker" title="Chinese Information Processing Society of China" target="_blank">中国中文信息学会</a></li>
+<li><a href="http://www.nlp.org.cn/" rel="colleague" title="中文自然语言处理开放平台" target="_blank">中文自然语言处理开放平台</a></li>
+<li><a href="http://www.mt-archive.info/" rel="colleague" title="Repository and bibliography of articles, books and papers on topics" target="_blank">机器翻译档案计划</a></li>
+<li><a href="http://www.statmt.org/europarl/" rel="colleague" target="_blank">欧洲议会平行语料库</a></li>
+<li><a href="http://www.keenage.com/" title="HowNet" target="_blank">知网</a></li>
+<li><a href="http://www.nlpir.org/" rel="friend" title="由张华平博士发起，由北京理工大学网络搜索与挖掘实验室运营，旨在推动NLP(自然语言处理)与IR(信息检索)领域的共享与共赢" target="_blank">自然语言处理与信息检索共享平台</a></li>
+<li><a href="http://mitel.ict.ac.cn/" rel="co-worker" title="中科院计算所多语言交互技术实验室" target="_blank">计算所多语言交互技术实验室</a></li>
+
+	</ul>
+</li>
+<li id="linkcat-2" class="widget-container widget_links"><h3 class="widget-title">友情链接</h3>
+	<ul class='xoxo blogroll'>
+<li><a href="http://blog.youxu.info/" title="一个计算机专业的 Ph.D. 学生徐宥的个人博客" target="_blank">4G spaces</a></li>
+<li><a href="http://blog.52nlp.org" rel="me" title="我爱自然语言处理完全镜像" target="_blank">52nlpblog</a></li>
+<li><a href="http://www.52nlp.com" rel="me" title="52nlp的英文站" target="_blank">52nlpcom</a></li>
+<li><a href="http://hi.baidu.com/drkevinzhang" rel="friend" title="ICTCLAS 张华平博士的空间" target="_blank">ICTCLAS 张华平博士的空间</a></li>
+<li><a href="http://blog.so8848.com/" rel="friend" title="信息检索博客" target="_blank">Information Retrieval Blog</a></li>
+<li><a href="http://interop123.com/default.aspx" rel="friend" title="崔晓源师兄关于NET技术的站点" target="_blank">NET互操作技术社区</a></li>
+<li><a href="http://bbs.w3china.org/" rel="friend" title="中国万维网联盟讨论区" target="_blank">W3CHINA讨论区</a></li>
+<li><a href="http://www.ailab.cn/" rel="friend" target="_blank">人工智能网</a></li>
+<li><a href="http://mindhacks.cn/" rel="friend" title="一个很有思想的价值博客!" target="_blank">刘未鹏之Mind Hacks</a></li>
+<li><a href="http://www.cnblogs.com/finallyliuyu/" rel="friend" target="_blank">原地转圈的驴子</a></li>
+<li><a href="http://xunren.thuir.org/" target="_blank">微博寻人（梁博）</a></li>
+<li><a href="http://52opencourse.com" rel="friend" title="我爱公开课，高质量公开课交流平台" target="_blank">我爱公开课</a></li>
+<li><a href="http://iregex.org/" rel="friend" target="_blank">我爱正则表达式</a></li>
+<li><a href="http://courseminer.com" target="_blank">挖课</a></li>
+<li><a href="http://www.sciencenet.cn/u/timy/" rel="friend" title="章成志老师的博客" target="_blank">章成志的博客</a></li>
+<li><a href="http://blog.csdn.net/v_JULY_v/" target="_blank">结构之法 算法之道</a></li>
+<li><a href="http://www.lingcc.com/" rel="friend" title="关注编译器,虚拟机,编程语言及技术,IT职业和程序员生活" target="_blank">编译点滴</a></li>
+<li><a href="http://www.52nlp.org" rel="me" title="52nlp的官方网站" target="_blank">自然语言处理</a></li>
+<li><a href="http://www.ieee.org.cn/" rel="friend" title="计算机科学论坛" target="_blank">计算机科学论坛</a></li>
+<li><a href="http://coursegraph.com/">课程图谱</a></li>
+<li><a href="http://blog.coursegraph.com" rel="friend">课程图谱博客</a></li>
+
+	</ul>
+</li>
+<li id="meta-4" class="widget-container widget_meta"><h3 class="widget-title">功能</h3>			<ul>
+						<li><a href="http://www.52nlp.cn/wp-login.php">登录</a></li>
+			<li><a href="http://www.52nlp.cn/feed">文章<abbr title="Really Simple Syndication">RSS</abbr></a></li>
+			<li><a href="http://www.52nlp.cn/comments/feed">评论<abbr title="Really Simple Syndication">RSS</abbr></a></li>
+<li><a href="https://cn.wordpress.org/" title="基于WordPress，一个优美、先进的个人信息发布平台。">WordPress.org</a></li>			</ul>
+</li>			</ul>
+		</div><!-- #secondary .widget-area -->
+
+	</div><!-- #main -->
+
+	<div id="footer" role="contentinfo">
+		<div id="colophon">
+
+
+
+			<div id="site-info">
+				<a href="http://www.52nlp.cn/" title="我爱自然语言处理" rel="home">
+					我爱自然语言处理				</a>
+			</div><!-- #site-info -->
+
+			<div id="site-generator">
+								<a href="http://cn.wordpress.org/"
+						title="优雅的个人发布平台" rel="generator">
+					自豪地采用 WordPress。				</a>
+			</div><!-- #site-generator -->
+
+		</div><!-- #colophon -->
+	</div><!-- #footer -->
+
+</div><!-- #wrapper -->
+
+<script>
+/* <![CDATA[ */
+var rcGlobal = {
+	serverUrl		:'http://www.52nlp.cn',
+	infoTemp		:'%REVIEWER% 在 %POST%',
+	loadingText		:'正在加载',
+	noCommentsText	:'没有任何评论',
+	newestText		:'&laquo; 最新的',
+	newerText		:'&laquo; 上一页',
+	olderText		:'下一页 &raquo;',
+	showContent		:'',
+	external		:'',
+	avatarSize		:'0',
+	avatarPosition	:'left',
+	anonymous		:'匿名'
+};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://www.52nlp.cn/wp-content/plugins/akismet/_inc/form.js?ver=3.0.2'></script>
+<link rel='stylesheet' id='yarppRelatedCss-css'  href='http://www.52nlp.cn/wp-content/plugins/yet-another-related-posts-plugin/style/related.css?ver=4.0' type='text/css' media='all' />
+<script type='text/javascript' src='http://www.52nlp.cn/wp-content/plugins/wp-recentcomments/js/wp-recentcomments.js?ver=2.2.7'></script>
+	<p align="center"> 本站架设在 <a href="http://www.52nlp.cn/digitalocean%E4%BD%BF%E7%94%A8%E5%B0%8F%E8%AE%B0">DigitalOcean</a> 上, 采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本站内容必须也遵循“署名-非商业用途-保持一致”的创作共用协议.</p>
+<!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(["trackPageView"]);
+  _paq.push(["enableLinkTracking"]);
+
+  (function() {
+    var u=(("https:" == document.location.protocol) ? "https" : "http") + "://162.243.252.121/piwik/";
+    _paq.push(["setTrackerUrl", u+"piwik.php"]);
+    _paq.push(["setSiteId", "5"]);
+    var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0]; g.type="text/javascript";
+    g.defer=true; g.async=true; g.src=u+"piwik.js"; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Piwik Code -->
+</body>
+</html>

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Kibana 认证鉴权方案</title>
+    <meta name="author" content="陈子">
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!-- Le styles -->
+    <link href="/assets/themes/twitter/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/themes/twitter/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+    <link href="/assets/themes/twitter/css/pygments/default.css" rel="stylesheet" type="text/css">
+    <!-- Le fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+  </head>
+  <body>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="/">三斗室</a>
+          <ul class="nav">
+      	<li><a href="/archive.html">归档</a></li>
+      	<li><a href="/categories.html">分类</a></li>
+      	<li><a href="/errata.html">《网站运维技术与实践》勘误</a></li>
+      	<li><a href="/pages.html">Pages</a></li>
+      	<li><a href="/projects.html">学习记录</a></li>
+      	<li><a href="/tags.html">标签</a></li>
+            <li><a href="http://chenlinux.com/poetry/index.html" />诗文集</a></li>
+            <li><link title="RSS 2.0" type="application/rss+xml" href="http://chenlinux.com/feed.xml" rel="alternate" /><a href="http://chenlinux.com/feed.xml" target="_blank">RSS订阅</a></li>
+          </ul>
+          <ul class="nav pull-right"><li><a href="/about.html">有关我</a></li></ul>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+    <div class="row">
+      <div class="span7">
+<div class="row">
+  <div class="page-header">
+    <h1>Kibana 认证鉴权方案 <small></small></h1>
+    <div class="date"><span>23 September 2014</span></div>
+    <ul class="tag_box pull-right">
+    	<li><a href="/tags.html#perl-ref">perl <span>68</span></a></li>
+    	<li><a href="/tags.html#kibana-ref">kibana <span>9</span></a></li>
+    	<li><a href="/tags.html#elasticsearch-ref">elasticsearch <span>22</span></a></li>
+    	<li><a href="/tags.html#mojolicious-ref">mojolicious <span>3</span></a></li>
+    </ul>
+  </div>
+  <div style='background-color: #FFF;'>
+    <p>Kibana 作为一个纯 JS 项目，一直都没有提供完整的权限控制方面的功能。只是附带了一个 <code>nginx.conf</code> 做基本的 Basic Auth。社区另外有在 nodejs 上实现的方案，则使用了 CAS 方式做认证。</p>
+<p>不过我对这两种方案都不太满意。</p>
+<ol>
+  <li>认证方式太单一，适应性不强；</li>
+  <li>权限隔离不明确，只是通过修改 <code>kibana-int</code> 成 <code>kiban-int-user</code> 来区分不同用户的 dashboard，并不能限制用户对 ES 索引的访问。</li>
+</ol>
+<p>加上 nodejs 我也不熟，最终在多番考虑后，决定抽一个晚上自己写一版。</p>
+<p>最终代码见 <a href="https://github.com/chenryn/kibana">https://github.com/chenryn/kibana</a>。</p>
+<h2 id="section">原理和实现</h2>
+<ol>
+  <li>
+    <p>全站代理和虚拟响应</p>
+    <p>这里不单通过 config.js 限定了 kibana 默认连接的 Elasticsearch 服务器地址和端口，还拦截伪造了 <code>/_nodes</code> 请求的 JSON 响应体。伪造的响应中也只包含自己这个带认证的 web 服务器地址和端口。</p>
+    <p><em>这么做是因为我的 kibana 版本使用的 elasticjs 库比官方新增了 sniff 功能，默认会自动轮训所有 nodes 发送请求。</em></p>
+  </li>
+  <li>
+    <p>新增 <code>kibana-auth</code> 鉴权索引</p>
+    <p>在通常的 <code>kibana-int-user</code> 区分 dashboard 基础上，我新增加 <code>kibana-auth</code> 索引，专门记录每个用户可以访问的 ES 集群地址和索引前缀。请求会固定代理到指定的 ES 集群上，并且确认是被允许访问的索引。</p>
+    <p>这样，多个用户通过一个 kibana auth 服务器网址，可以访问多个不同的 ES 集群后端。而同一个 ES 集群后端的索引，也不用担心被其他人访问到。</p>
+  </li>
+  <li>
+    <p><a href="https://metacpan.org/pod/Authen::Simple">Authen::Simple</a> 认证框架</p>
+    <p>这是 Perl 一个认证框架，支持十多种不同的认证方式。项目里默认采用最简单的 htpasswd 文件记录方式，实际我线上是使用了 LDAP 方式，都没问题。</p>
+  </li>
+</ol>
+<h2 id="section-1">部署</h2>
+<p>方案采用了 Mojolicious 框架开发，代码少不说，最关键的是 Mojolicious 无额外的 CPAN 模块依赖，这对于不了解 Perl 但是又有 Kibana 权限控制需求的人来说，大大减少了部署方面的麻烦。</p>
+<p><code>
+curl http://xrl.us/cpanm -o /usr/local/bin/cpanm
+chmod +x /usr/local/bin/cpanm
+cpanm Mojolicious Authen::Simple::Passwd
+</code></p>
+<p>三行命令，就可以完成整个项目的安装需求了。然后运行目录下的:</p>
+<p><code>
+hypnotoad script/kbnauth
+</code></p>
+<p>就可以通过 80 端口访问这个带有权限控制的 kibana 了。</p>
+<h2 id="section-2">权限赋值</h2>
+<p>因为 <code>kibana-auth</code> 结构很简单，kibana 一般又都是内部使用，所以暂时还没做权限控制的管理页面。直接通过命令行方式即可赋权：</p>
+<p><code>
+curl  -XPOST http://127.0.0.1:9200/kibana-auth/indices/sri -d '{
+  "prefix":["logstash-sri","logstash-ops"],
+  "server":"192.168.0.2:9200"
+}'
+</code></p>
+<p>这样，sri 用户，就只能访问 192.168.0.2 集群上的 logstash-sri 或 logstash-ops 开头的日期型索引(即后面可以-YYYY, -YYYY.MM, -YYYY.MM.dd 三种格式)了。</p>
+<h2 id="section-3">下一步</h2>
+<p>考虑到新方案下各用户都有自己的 <code>kibana-int-user</code> 索引，已经用着官方 kibana 的用户大批量的 dashboard 有迁移成本，找个时间可能做一个迁移脚本辅助这个事情。</p>
+<p>开发完成后，得到了 <a href="http://weibo.com/u/1808998161">@高伟</a> 童鞋的主动尝试和各种 bug 反馈支持，在此表示感谢~也希望我这个方案能帮到更多 kibana 用户。</p>
+<p><strong>注：我的 kibana 仓库除了新增的这个 kbnauth 代理认证鉴权功能外，本身在 kibana 分析统计功能上也有一些改进，这方面已经得到多个小伙伴的试用和好评，自认在官方 Kibana v4 版本出来之前，应该会是最好用的版本。欢迎大家下载使用！</strong></p>
+<p>新增功能包括：</p>
+<ol>
+  <li>仿 stats 的百分比统计面板(利用 PercentileAggr 接口)</li>
+  <li>仿 terms 的区间比面板(利用 RangeFacets 接口)</li>
+  <li>给 bettermap 增强的高德地图支持(利用 leaflet provider 扩展)</li>
+  <li>给 map 增强的中国地图支持(利用 jvectormap 文件)</li>
+  <li>给 map 增强的 <code>term_stats</code> 数据显示(利用 TermStatsFacets 接口)</li>
+  <li>给 query 增强的请求生成器(利用 getMapping/getFieldMapping 接口和 jQuery.multiSelect 扩展)</li>
+  <li>仿 terms 的 statisticstrend 面板(利用 TermStatsFacets 接口)</li>
+  <li>仿 histogram 增强的 multifieldhistogram 面板(可以给不同query定制不同的panel setting，比如设置某个抽样数据 * 1000 倍和另一个全量数据做对比)</li>
+  <li>仿 histogram 的 valuehistogram 面板(去除了 histogram 面板的 X 轴时间类型数据限制，可以用于做数据概率分布分析)</li>
+  <li>给 histogram 增强的 threshold 变色功能(利用了 <code>jquery.flot.threshold</code> 扩展)</li>
+  <li>单个面板自己的刷新按钮(避免调试的时候全页面刷新的麻烦)</li>
+</ol>
+<p>效果截图同样在 <a href="https://github.com/chenryn/kibana/blob/master/README.md">README</a> 里贴出。欢迎试用和反馈！</p>
+    <hr>
+    <div class="pagination">
+      <ul>
+        <li class="prev"><a href="/2014/09/04/spark-to-elasticsearch" title="用 Spark 处理数据导入 Elasticsearch">&larr; Previous</a></li>
+        <li><a href="/archive.html">Archive</a></li>
+        <li class="next"><a href="/2014/09/24/howto-use-custom-rubygem-in-logstash" title="在 logstash 里使用其他 RubyGems 模块">Next &rarr;</a></li>
+      </ul>
+    </div>
+    <hr>
+  <!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" id="UYScript" src="http://v1.uyan.cc/js/iframe.js?UYUserId=1589850" async=""></script>
+<!-- UY END -->
+  </div>
+</div>
+      </div>
+      <div class="span4">
+          <div class="well sidebar-nav">
+             <ul id="relate_blog" class="nav nav-list">
+               <li class="nav-header">最近文章</li>
+                 <li><a href="/2014/09/24/howto-use-custom-rubygem-in-logstash">在 logstash 里使用其他 RubyGems 模块</a></li>
+                 <li><a href="/2014/09/04/spark-to-elasticsearch">用 Spark 处理数据导入 Elasticsearch</a></li>
+                 <li><a href="/2014/08/29/implement-source-context-function-for-elk">山寨一个 Splunk 的 source 上下文查看功能</a></li>
+                 <li><a href="/2014/08/18/intro-range-facet-and-implement-panel-for-it">用 ES 的 RangeFacets 接口实现一个查看区间占比的 Kibana 面板</a></li>
+                 <li><a href="/2014/07/28/dynamic-dashboard-for-kibana">Kibana 动态仪表板的使用</a></li>
+                 <li><a href="/2014/07/27/using-pdl-on-macbook">在 MacBook 上使用 PDL 绘图</a></li>
+                 <li><a href="/2014/07/08/rex-test-spec">Rex::Test::Spec 模块</a></li>
+                 <li><a href="/2014/06/13/serverspec-intro">Serverspec 工具介绍</a></li>
+                 <li><a href="/2014/06/13/anyevent-redis-for-dns-check">用 Redis 做分布式 DNS/HTTP 检测汇总系统</a></li>
+            </ul>
+          </div>
+        <div class="well sidebar-nav">
+          <iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=1&ptype=1&speed=0&skin=2&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=1035836154&verifier=a26926d5&dpc=1"></iframe>
+        </div>
+        <div class="well sidebar-nav">
+            <div id="uyan_list_time_frame"></div>
+            <script type="text/javascript" id="UYScriptTime" src="http://v1.uyan.cc/js/iframe_time_list.js?UYUserId=1589850&rankType=time" async=""></script>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(英文)</li>
+              <li><a href="http://codeascraft.com/" title="Etsy 运维团队博客">Code as Craft</a></li>
+              <li><a href="http://devopsanywhere.blogspot.jp/" title="">devopsanywhere</a></li>
+              <li><a href="http://www.jedi.be/blog/" title="">Jong En Dynamische Informatica</a></li>
+              <li><a href="http://www.planetdevops.net/" title="">planetdevops</a></li>
+              <li><a href="http://www.kitchensoap.com/" title="《网站运维》作者，Etsy 运维">Kitchen Soap</a></li>
+              <li><a href="http://blog.johngoulah.com" title="Musings of linux, open source, cloud computing and systems">John Goulah</a></li>
+              <li><a href="http://serverfault.com/" title="stackexchange下属的系统工程师问答网站">serverfault</a></li>
+              <li><a href="http://www.thegeekstuff.com/" title="各种超酷Linux命令用法">TheGeekStuff</a></li>
+              <li><a href="http://neilb.org/" title="The good,the bad,and the beautiful">neilb</a></li>
+              <li><a href="http://www.reddit.com/r/perl/" title="">reddit perl 频道</a></li>
+              <li><a href="http://jpetazzo.github.io/" title="">~jpetazzo</a></li>
+              <li><a href="http://www.perfplanet.com/" title="News and views from the web performance blogosphere">Performance Planet</a></li>
+              <li><a href="http://cuddletech.com/blog/" title="Use UNIX or die">Cuddle Tech</a></li>
+              <li><a href="http://showmetheco.de/" title="Viacheslav Tykhanovskyi(PocketIO/Text::Haml)">No time to wait</a></li>
+              <li><a href="http://blog.dataloop.io/" title="A new SaaS monitoring tool for DevOps & Operations">Dataloop.IO</a></li>
+              <li><a href="http://www.ducea.com/" title="">MDLog:/sysadmin</a></li>
+              <li><a href="http://planeteria.org/perl6/" title="Perl6 文集">Planet Perl 6</a></li>
+              <li><a href="http://www.metaforsoftware.com/blog/" title="">metafor</a></li>
+              <li><a href="http://blog.kablamo.org/" title="Eric Johnson，一个游走在伦敦和北京的 Perler">kablamo</a></li>
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(中文)</li>
+              <li><a href="http://www.nginxs.com/" title="">eric</a></li>
+              <li><a href="http://www.hellodb.net/" title="Ali DBA 张瑞">Hello DBA</a></li>
+              <li><a href="http://blog.nosqlfan.com/" title="not only sql信息集散地">NoSQLfan</a></li>
+              <li><a href="http://ourmysql.com/" title="">OurMySQL</a></li>
+              <li><a href="http://timo.piqiu.me/" title="TIMO IS MY OASIS">Timo</a></li>
+              <li><a href="http://www.liurongxing.com/" title="">刘荣星</a></li>
+              <li><a href="http://www.cnadn.net/" title="F5工程师">应用交付学习之路</a></li>
+              <li><a href="http://scmbob.org/" title="杭州NSN工程师，shell高人~">扛一肩记忆</a></li>
+              <li><a href="http://www.php-oa.com/" title="音悦台技术经理">扶凯</a></li>
+              <li><a href="http://www.lark.net.cn/" title="王剑">lark's cloud</a></li>
+              <li><a href="http://log.heartoutside.com/" title="HeartOutSide">HeartOutside</a></li>
+              <li><a href="http://blog.liulantao.com/" title="刘兰涛">Lax</a></li>
+              <li><a href="http://niubie.me/" title="莫言">莫言</a></li>
+              <li><a href="http://noops.me/" title="小米运维部">NoOps</a></li>
+              <li><a href="http://www.searchtech.pro/" title="">云端分布式搜索技术</a></li>
+              <li><a href="http://www.usefulshare.com" title="当当网安全运维">UsefulShare</a></li>
+              <li><a href="http://junqili.com/" title="深入研究puppet">纸飞机</a></li>
+              <li><a href="http://www.chinaxing.org/" title="">ChinaXing</a></li>
+              <li><a href="http://bubbyroom.com/" title="守住每一天">Liuyu's blog</a></li>
+              <li><a href="http://blog.aka-cool.net/" title="">Aka.Why</a></li>
+              <li><a href="http://blog.l8ii.com/" title="刘侨">LairdNote</a></li>
+              <li><a href="http://flw.tools/" title="">flw的工具箱</a></li>
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="booklists" class="nav nav-list">
+          <li class="nav-header">我写的第一本技术书籍</li>
+          <li><a href='http://product.china-pub.com/3769604'><img src='http://images.china-pub.com/ebook3765001-3770000/3769604/shupi.jpg' border='0' alt='网站运维技术与实践'/></a></li>
+          <li class="nav-header">我写的两本电子书籍</li>
+          <li><a href='https://www.gitbook.io/book/chenryn/logstash-best-practice'><img src='https://sm3lir.cloudimage.io/s/width/313/https://www.gitbook.io/cover/book/chenryn/logstash-best-practice?build=1411488954525' border='0' alt='LogStash 最佳实践'/></a></li>
+          <li><a href='https://www.gitbook.io/book/chenryn/kibana-guide-cn'><img src='https://sm3lir.cloudimage.io/s/width/313/https://www.gitbook.io/cover/book/chenryn/kibana-guide-cn?build=1411570851764' border='0' alt='Kibana 中文指南'/></a></li>
+        </div>
+      </div>
+    </div> <!-- row -->
+      <footer>
+        <p>&copy; 陈子 2012 
+          with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
+          and <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap</a>
+        </p>
+      </footer>
+    </div> <!-- /container -->
+    <!-- JiaThis Button BEGIN -->
+    <script type="text/javascript">var jiathis_config = {data_track_clickback:true};</script>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jiathis_r.js?move=0&amp;uid=1589850" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    <!-- UJian Button BEGIN -->
+    <script type="text/javascript" src="http://v1.ujian.cc/code/ujian.js?type=slide&uid=1589850"></script>
+    <!-- UJian Button END -->
+  </body>
+</html>
