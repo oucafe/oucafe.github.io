@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
+<head>
+
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="Author" content="Apple Inc." />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="icon" href="/favicon.ico" />
+<link rel="stylesheet" href="http://www.apple.com/wss/fonts?family=Myriad+Set+Pro&v=1" type="text/css" />
+
+<link rel="stylesheet" href="https://devimages.apple.com.edgekey.net/assets/core/styles/base.css" type="text/css" />
+<link rel="stylesheet" href="/assets/core/styles/templates.css" type="text/css" />
+<link rel="stylesheet" href="/assets/core/styles/responsify.css" type="text/css" />
+<script src="https://devimages.apple.com.edgekey.net/assets/core/scripts/lib/prototype.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/core/scripts/lib/scriptaculous.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/core/scripts/browserdetect.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/core/scripts/apple_core.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/core/scripts/search_decorator.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/core/scripts/adc_core.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/scripts/ac_retina.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+	document.write('<link rel="stylesheet" type="text/css" href="https://devimages.apple.com.edgekey.net/assets/styles/script.css" media="screen">');
+</script>
+<!-- Augmented Search -->
+<link rel="stylesheet" href="https://devimages.apple.com.edgekey.net/assets/styles/augmented_search.css" type="text/css">
+<script src="https://devimages.apple.com.edgekey.net/assets/scripts/lib/jquery/jquery-1.11.0.min.js"></script>
+<script>jQuery.noConflict();</script>
+<script src="https://devimages.apple.com.edgekey.net/assets/scripts/augmented_search.js"></script>
+
+	<title>Building  assert()  in Swift, Part 2:  __FILE__  and  __LINE__  - Swift Blog - Apple Developer</title>
+	<meta name="omni-page" content="Building  assert()  in Swift, Part 2:  __FILE__  and  __LINE__  - Swift Blog - Apple Developer" />
+	<meta name="Description" content="Get the latest news and helpful tips on the Swift programming language from the engineers who created it.">
+	<link href="/swift/styles/swift.css" rel="stylesheet" type="text/css">
+</head>
+<body class="white responsify swift-blog">
+
+	<div id="globalheader-wrapper">
+<nav id="globalheader" data-hires="true">
+	
+	<h1 data-hires="true"><a href="/">Apple Developer</a></h1>
+	<ul id="gh-nav">
+		<li id="gh-nav-technologies"><a href="/technologies/">Technologies</a></li>
+		<li id="gh-nav-resources"><a href="/resources/">Resources</a></li>
+		<li id="gh-nav-programs"><a href="/programs/">Programs</a></li>
+		<li id="gh-nav-support"><a href="/support/">Support</a></li>
+		<li id="gh-nav-membercenter"><a href="/membercenter/">Member Center</a></li>
+	</ul>
+
+	<div id="gh-search" data-hires="true">
+		<form action="/search/index.php" method="get" accept-charset="utf-8"><div>
+			<label for="gh-adcsearch">
+				<span class="prettyplaceholder"></span>
+				<input type="text" name="q" id="gh-adcsearch" class="adcsearch prettysearch augmented">
+			</label>
+		</div></form>
+	</div>
+
+	<script type="text/javascript">
+		Event.onDOMReady(function() {
+			// Get root path for Global Header Active class
+			ghLocation = location.pathname.split('/')[1];
+			// Make sure it doesn't try to add a file extension to the css class
+			if(ghLocation.include('.')) ghLocation = ghLocation.split('.')[0];
+			// Add Global Header Active State Class
+			$$('body')[0].addClassName('gh-nav-'+location.pathname.split('/')[1]+'-active');
+		});
+	</script>
+</nav>
+</div>
+	<div id="top">
+<!-- SiteCatalyst code version: H.8. Copyright 1997-2006 Omniture, Inc. -->
+<script type="text/javascript">
+/* RSID: */
+var s_account="appleglobal,appleusdeveloper"
+</script>
+
+<script type="text/javascript" src="https://www.apple.com/metrics/scripts/s_code_h.js"></script>
+<script type="text/javascript">
+s.pageName=AC.Tracking.pageName();
+s.channel="www.us.developer"
+
+/************* DO NOT ALTER ANYTHING BELOW THIS LINE ! **************/
+var s_code=s.t();if(s_code)document.write(s_code)</script>
+<!-- End SiteCatalyst code version: H.8. -->
+</div>	<!-- - -->
+<div class="swift-header-container" data-hires="true">
+    <div class="swift-header">
+        <p class="imagereplace">Swift: A new programming language for iOS and OS X.</p>
+    </div>
+</div>
+<!-- - -->
+
+	<div id="content" class="content responsify" data-hires="true">
+		<section class="layout-tabs">
+			<div class="tab-wrapper">
+				<div class="divider"></div>
+				<div class="grid3col tabs">
+					<div class="column one"><a href="/swift/">Overview</a></div>
+					<div class="column two active"><a href="/swift/blog/">Blog</a></div>
+					<div class="column three"><a href="/swift/resources/">Resources</a></div>
+				</div>
+			</div>
+		</section>
+
+		<section class="blog-articles padding-bottom-40">
+						<ul class="article-list">
+													<li id="article-15" class="article padding-top-50 padding-bottom-50 ">
+						<p class="article-date lighter">Sep 25, 2014</p>
+						<h2>
+														Building <span class="menlo">assert()</span> in Swift, Part 2: <span class="menlo">__FILE__</span> and <span class="menlo">__LINE__</span>
+													</h2>
+
+						<p>Two occasionally useful features of C are the <span class="keyword">__FILE__</span> and <span class="keyword">__LINE__</span> magic macros. These are built into the preprocessor, and expanded out before the C parser is run. Despite not having a preprocessor, Swift provides very similar functionality with similar names, but Swift works quite differently under the covers.</p><h3>Built-In Identifiers</h3><p>As described in <a href="http://developer.apple.com/library/prerelease/ios/documentation/swift/conceptual/swift_programming_language/LexicalStructure.html">the Swift programming guide</a>, Swift has a number of built-in identifiers, including  <span class="keyword">__FILE__</span>, <span class="keyword">__LINE__</span>, <span class="keyword">__COLUMN__</span>, and <span class="keyword">__FUNCTION__</span>. These expressions can be used anywhere and are expanded by the parser to string or integer literals that correspond to the current location in the source code. This is incredibly useful for manual logging, e.g. to print out the current position before quitting.</p><p>However, this doesn’t help us in our quest to implement <span class="keyword">assert()</span>.  If we defined assert like this:</p><pre><code><span class="key">func</span> assert(predicate : <span class="key">@autoclosure</span> () -&gt; <span class="title">Bool</span>) { 
+	<span class="preprocessor">#if DEBUG</span>
+		<span class="key">if</span> !predicate() {
+			<span class="method">println</span>(<span class="string">"assertion failed at</span> \(<span class="key">__FILE__</span>)<span class="string">:</span>\(<span class="key">__LINE__</span>)<span class="string">"</span>)
+			abort()
+		}
+	<span class="preprocessor">#endif</span>
+}</code></pre><p>The above code would print out of the file/line location that implements <span class="keyword">assert()</span> itself, not the location from the caller. That isn’t helpful.</p><h3>Getting the location of a caller</h3><p>Swift borrows a clever feature from the D language: these identifiers expand to the location of the caller <em>when evaluated in a default argument list</em>.  To enable this behavior, the <span class="keyword">assert()</span> function is defined something like this:</p><pre><code><span class="key">func</span> assert(condition: <span class="key">@autoclosure</span> () -&gt; <span class="title">Bool</span>, <span class="key">_</span> message: <span class="title">String</span> =<span class="string"> ""</span>,
+	file: <span class="title">String</span> = <span class="key">__FILE__</span>, line: <span class="title">Int</span> = <span class="key">__LINE__</span>) {
+		<span class="preprocessor">#if DEBUG</span>
+			<span class="key">if</span> !condition() {
+				println(<span class="string">"assertion failed at</span> \(file)<span class="string">:</span>\(line)<span class="string">:</span> \(message)<span class="string">"</span>)
+				abort()
+			}
+		<span class="preprocessor">#endif</span>
+}</code></pre><p>The second parameter to the Swift <span class="keyword">assert()</span> function is an optional string that you can specify, and the third and forth arguments are defaulted to be the position in the caller’s context.  This allows <span class="keyword">assert()</span> to pick up the source location of the caller by default, and if you want to define your own abstractions on top of assert, you can pass down locations from its caller.  As a trivial example, you could define a function that logs and asserts like this:</p><pre><code><span class="key">func</span> logAndAssert(condition: <span class="key">@autoclosure</span> () -&gt; <span class="title">Bool</span>, <span class="key">_</span> message: <span class="title">StaticString</span> = <span class="string">""</span>,
+	file: <span class="title">StaticString</span> = <span class="key">__FILE__</span>, line: <span class="title">UWord</span> = <span class="key">__LINE__</span>) {
+
+	logMessage(message)
+	<span class="method">assert</span>(condition, message, file: file, line: line)
+}</code></pre><p>This properly propagates the file/line location of the <span class="keyword">logAndAssert()</span> caller down to the implementation of <span class="keyword">assert()</span>. Note that <span class="keyword">StaticString</span>, as shown in the code above, is a simple <span class="nowrap">String-like</span> type used to store a string literal, such as one produced by <span class="keyword">__FILE__</span>, with no <span class="nowrap">memory-management</span> overhead.</p><p>In addition to being useful for <span class="keyword">assert()</span>, this functionality is used in the Swift implementation of the higher-level XCTest framework, and may be useful for your own libraries as well.</p>
+
+						
+												<a class="arrow arrow-left" href="http://developer.apple.com/swift/blog/#article-15">All Blog Posts</a>
+											</li>
+											</section>
+
+	</div><!-- /content -->
+
+	<div id="globalfooter-wrapper">
+		<footer id="globalfooter">
+			<div id="breadory">
+				<ol id="breadcrumbs">
+					<li class="home"><a href="/">Developer</a></li>
+					<li><a href="/swift/">Swift</a></li>
+										<li><a href="/swift/blog/">Blog</a></li>
+					<li>Building <span class="menlo">assert()</span> in Swift, Part 2: <span class="menlo">__FILE__</span> and <span class="menlo">__LINE__</span></li>
+									</ol>
+			</div><!--/breadory-->
+			<p class="gf-buy">Shop the <a href="http://www.apple.com/store/">Apple Online Store</a> (1-800-MY-APPLE), visit an <a href="http://www.apple.com/retail/">Apple Retail Store</a>, or find a <a href="http://www.apple.com/buy/locator/">reseller</a>.</p>
+<ul class="gf-links piped">
+	<li><a href="/news/" class="first">News</a></li>
+	<li><a href="/register/">Register</a></li>
+	<li><a href="/bug-reporting/">Report Bugs</a></li>
+	<li><a href="/contact/">Contact Us</a></li>
+</ul>
+<div class="gf-sosumi">
+	<p>Copyright © 2014 Apple Inc. All rights reserved.</p>
+	<ul class="piped">
+		<li><a href="http://www.apple.com/legal/internet-services/terms/site.html" class="first">Terms of Use</a></li>
+		<li><a href="http://www.apple.com/privacy/">Privacy Policy</a></li>
+	</ul>
+</div>
+<div id="localization-links">
+	<ul>
+		<li><a href="/cn/" title="Simplified Chinese">简体中文</a></li>
+		<li><a href="/jp/" title="Japanese">日本語</a></li>
+		<li><a href="/kr/" title="Korean">한국어</a></li>
+	</ul>
+</div>		</footer><!--/globalfooter-->
+	</div><!-- /globalfooter-wrapper -->
+</body>
+</html>
