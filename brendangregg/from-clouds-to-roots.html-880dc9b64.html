@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>From Clouds to Roots: Performance Analysis at Netflix</title>
+        <meta name="viewport" content="width=device-width">
+
+        <!-- syntax highlighting CSS -->
+        <link rel="stylesheet" href="/blog/css/syntax.css">
+
+        <!-- Custom CSS -->
+        <link rel="stylesheet" href="/blog/css/main.css">
+
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-7747513-3']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+    </head>
+    <body>
+
+	<div class="nav">
+	<p class="navhdr">This Site:</p>
+<a href="/index.html">Homepage</a><br>
+<a href="/blog/index.html">Blog</a><br>
+<a href="/sitemap.html">Full Site Map</a><br>
+<a href="/sysperfbook.html">Sys Perf book</a><br>
+<a href="/linuxperf.html">Linux Perf</a><br>
+<a href="/methodology.html">Perf Methods</a><br>
+<a href="/usemethod.html">USE Method</a><br>
+<a href="/tsamethod.html">TSA Method</a><br>
+<a href="/offcpuanalysis.html">Off-CPU Analysis</a><br>
+<a href="/activebenchmarking.html">Active Bench.</a><br>
+<a href="/flamegraphs.html">Flame Graphs</a><br>
+<a href="/heatmaps.html">Heat Maps</a><br>
+<a href="/frequencytrails.html">Frequency Trails</a><br>
+<a href="/colonygraphs.html">Colony Graphs</a><br>
+<a href="/perf.html">perf Examples</a><br>
+<a href="/ktap.html">ktap Examples</a><br>
+<a href="/dtrace.html">DTrace Tools</a><br>
+<a href="/dtracetoolkit.html">DTraceToolkit</a><br>
+<a href="/dtkshdemos.html">DtkshDemos</a><br>
+<a href="/guessinggame.html">Guessing Game</a><br>
+<a href="/specials.html">Specials</a><br>
+<a href="/books.html">Books</a><br>
+<a href="/sites.html">Other Sites</a><br>
+
+	</div>
+
+	<div class="recent">
+	Recent posts:<br>
+	<ul style="padding-left:18px">
+	  
+		   <li>27 Sep 2014 &raquo;<br>
+		   <a href="/blog/2014-09-27/from-clouds-to-roots.html">  
+		   From Clouds to Roots: Performance Analysis at Netflix</a></li>
+	  
+		   <li>17 Sep 2014 &raquo;<br>
+		   <a href="/blog/2014-09-17/node-flame-graphs-on-linux.html">  
+		   node.js Flame Graphs on Linux</a></li>
+	  
+		   <li>15 Sep 2014 &raquo;<br>
+		   <a href="/blog/2014-09-15/the-msrs-of-ec2.html">  
+		   The MSRs of EC2</a></li>
+	  
+		   <li>11 Sep 2014 &raquo;<br>
+		   <a href="/blog/2014-09-11/perf-kernel-line-tracing.html">  
+		   Linux perf Rides the Rocket</a></li>
+	  
+		   <li>06 Sep 2014 &raquo;<br>
+		   <a href="/blog/2014-09-06/linux-ftrace-tcp-retransmit-tracing.html">  
+		   Linux ftrace TCP Retransmit Tracing</a></li>
+	  
+		   <li>30 Aug 2014 &raquo;<br>
+		   <a href="/blog/2014-08-30/ftrace-the-hidden-light-switch.html">  
+		   ftrace: The Hidden Light Switch</a></li>
+	  
+		   <li>23 Aug 2014 &raquo;<br>
+		   <a href="/blog/2014-08-23/linux-perf-tools-linuxcon-na-2014.html">  
+		   Linux Performance Tools at LinuxCon North America 2014</a></li>
+	  
+		   <li>28 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-28/execsnoop-for-linux.html">  
+		   execsnoop For Linux: See Short-Lived Processes</a></li>
+	  
+		   <li>25 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-25/opensnoop-for-linux.html">  
+		   opensnoop For Linux</a></li>
+	  
+		   <li>23 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-23/linux-iosnoop-latency-heat-maps.html">  
+		   Linux iosnoop Latency Heat Maps</a></li>
+	  
+		   <li>16 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-16/iosnoop-for-linux.html">  
+		   iosnoop For Linux</a></li>
+	  
+		   <li>13 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-13/linux-ftrace-function-counting.html">  
+		   Linux ftrace Function Counting</a></li>
+	  
+		   <li>10 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-10/perf-hacktogram.html">  
+		   perf Hacktogram</a></li>
+	  
+		   <li>03 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-03/perf-counting.html">  
+		   perf Counting</a></li>
+	  
+		   <li>01 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-01/perf-heat-maps.html">  
+		   perf Heat Maps</a></li>
+	  
+		   <li>29 Jun 2014 &raquo;<br>
+		   <a href="/blog/2014-06-29/perf-static-tracepoints.html">  
+		   perf Static Tracepoints</a></li>
+	  
+		   <li>22 Jun 2014 &raquo;<br>
+		   <a href="/blog/2014-06-22/perf-cpu-sample.html">  
+		   perf CPU Sampling</a></li>
+	  
+		   <li>12 Jun 2014 &raquo;<br>
+		   <a href="/blog/2014-06-12/java-flame-graphs.html">  
+		   Java Flame Graphs</a></li>
+	  
+		   <li>09 Jun 2014 &raquo;<br>
+		   <a href="/blog/2014-06-09/java-cpu-sampling-using-hprof.html">  
+		   Java CPU Sampling Using hprof</a></li>
+	  
+		   <li>23 May 2014 &raquo;<br>
+		   <a href="/blog/2014-05-23/osx-10.9.3-is-toxic.html">  
+		   OS X 10.9.3 Recurring Panics</a></li>
+	  
+	</ul>
+	<a href="/blog/index.html">Blog index</a><br>
+	<a href="/blog/about.html">About</a><br>
+	<a href="/blog/rss.xml">RSS</a><br>
+	</div>
+
+        <div class="site">
+          <div class="header">
+            <h1 class="title"><a href="/blog/index.html">Brendan Gregg's Blog</a></h1>
+            <a class="extra" href="/blog/index.html">home</a>
+          </div>
+
+          <h2 class="big">From Clouds to Roots: Performance Analysis at Netflix</h2>
+<p class="meta">27 Sep 2014</p>
+
+<div class="post">
+<p>How do companies like Netflix, Google, and Facebook do root cause performance analysis in their cloud environments? These companies use Linux heavily, so are they using SystemTap or another tracer? Netflix is hosted on EC2, how do they do low level CPU profiling, if Xen guests can&#39;t access the CPU counters? ... And if these companies don&#39;t do these kinds of profiling, aren&#39;t they losing millions because of it?</p>
+
+<p>On Thursday it was my privilege to speak again at <a href="http://surge.omniti.com/2014">Surge</a>, the scalability and performance conference. My talk was titled <a href="http://surge.omniti.com/2014/speakers/speakers.html?gregg-brendan%5D">From Clouds to Roots</a>, and showed how Neflix does root cause performance analysis, and answers these questions and more. The slides are on <a href="http://www.slideshare.net/brendangregg/netflix-from-clouds-to-roots">slideshare</a>:</p>
+
+<p><center><iframe src="//www.slideshare.net/slideshow/embed_code/39526755" width="425" height="355" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:1px solid #CCC; border-width:1px; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe> </center></p>
+
+<p>It was also videoed; I&#39;ll update this post when the video is available.</p>
+
+<p>For background, I began by explaining the Netflix fault-tolerant architecture: how this can automatically work around performance issues, and what kinds of new issues this can introduce. Then I summarized key cloud-wide performance tools, and how we use these to isolate issues to an instance. And finally instance analysis, with the low-level tools we run to find the root cause.</p>
+
+<p>Summary of cloud-wide performance tools:</p>
+
+<p><center><a href="/blog/images/2014/netflix_cloud_perf_analysis.png"><img src="/blog/images/2014/netflix_cloud_perf_analysis.png" width=500></a></center></p>
+
+<p>Summary of instance performance tools:</p>
+
+<p><center><a href="/blog/images/2014/linux_EC2_perf_tools.png"><img src="/blog/images/2014/linux_EC2_perf_tools.png" width=500></a></center></p>
+
+<p>People liked the talk, although it surprised some. One comment was &quot;it didn&#39;t feel like a Brendan talk&quot;. Yes, I&#39;ve expanded my scope at Netflix, and I&#39;m working on higher-level analysis now, not just low-level performance tools. It&#39;s exciting for me, and I feel I have a better and more balanced view of performance analysis, which I captured in this talk.</p>
+
+<p>Keep in mind that you aren&#39;t necessarily expected to do the low-level performance analysis yourself. I summarized the likely real scenarios at the end of the talk:</p>
+
+<ul>
+<li>A. Your company has one or more people who do advanced perf analysis (perf team). Ask them to do it.</li>
+<li>B. You actually are that person. Do it.</li>
+<li>C. You buy a product that does it. Ask them to add low-level capabilities.</li>
+</ul>
+
+<p>Perhaps the most valuable take-away of this talk is that you be aware that such low-level analysis is possible, so that if you are in situation (A) or (C), you can ask for it. I&#39;ve found that performance monitoring companies often build products based on what customers think they want. However, what customers think they want is bounded by what they know is possible. You really want products that make low-level analysis easy, including flame graphs and latency heat maps. Some monitoring products already provide these (eg, Circonus, AppNeta), and at Netflix we&#39;re building Vector.</p>
+
+<p>Last year at Surge, I saw a great talk by <a href="http://twitter.com/coburnw">Coburn Watson</a> titled <a href="http://www.youtube.com/watch?v=7-13wV3WO8Q">How Netflix Maximizes Scalability, Resilience, and Engineering Velocity in the Cloud</a>, which I recommend. His relaxed style threw me at first: he&#39;s able to talk very casually about complex performance issues in distributed environments, because he actually understands them extremely well. This year, he&#39;s now my manager at Netflix, and he&#39;s also still hiring. Great at performance and want to work with both Coburn and myself? Let him <a href="mailto:cwatson@netflix.com">know</a>. :-)</p>
+
+<p>For more about low level performance analysis tools, see my <a href="/blog">previous blog posts</a>, and my <a href="https://github.com/brendangregg/perf-tools">perf-tools</a> and <a href="https://github.com/brendangregg/msr-cloud-tools">msr-cloud-tools</a> collections on github.</p>
+
+</div>
+
+
+
+<br><hr>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+var disqus_shortname = 'brendangregg';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+          <div class="footer">
+            <div class="contact">
+                Copyright 2014 Brendan Gregg.<br><a href="/blog/about.html">About this blog</a>
+            </div>
+          </div>
+        </div>
+
+    </body>
+</html>

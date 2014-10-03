@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Mojolicious 应用的自定义子命令</title>
+    <meta name="author" content="陈子">
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!-- Le styles -->
+    <link href="/assets/themes/twitter/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/themes/twitter/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+    <link href="/assets/themes/twitter/css/pygments/default.css" rel="stylesheet" type="text/css">
+    <!-- Le fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+  </head>
+  <body>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="/">三斗室</a>
+          <ul class="nav">
+      	<li><a href="/archive.html">归档</a></li>
+      	<li><a href="/categories.html">分类</a></li>
+      	<li><a href="/errata.html">《网站运维技术与实践》勘误</a></li>
+      	<li><a href="/pages.html">Pages</a></li>
+      	<li><a href="/projects.html">学习记录</a></li>
+      	<li><a href="/tags.html">标签</a></li>
+            <li><a href="http://chenlinux.com/poetry/index.html" />诗文集</a></li>
+            <li><link title="RSS 2.0" type="application/rss+xml" href="http://chenlinux.com/feed.xml" rel="alternate" /><a href="http://chenlinux.com/feed.xml" target="_blank">RSS订阅</a></li>
+          </ul>
+          <ul class="nav pull-right"><li><a href="/about.html">有关我</a></li></ul>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+    <div class="row">
+      <div class="span7">
+<div class="row">
+  <div class="page-header">
+    <h1>Mojolicious 应用的自定义子命令 <small></small></h1>
+    <div class="date"><span>01 October 2014</span></div>
+    <ul class="tag_box pull-right">
+    	<li><a href="/tags.html#mojolicious-ref">mojolicious <span>4</span></a></li>
+    </ul>
+  </div>
+  <div style='background-color: #FFF;'>
+    <p>Mojolicious 框架开发应用的时候，可以跟 RoR 一样通过一系列子命令简化很多复杂操作。最简单的来说，就是快速生成整个 web 项目目录：<code>mojo generate youapp</code>。更多子命令见：<a href="http://cpan.php-oa.com/perldoc/Mojolicious/Commands">http://cpan.php-oa.com/perldoc/Mojolicious/Commands</a></p>
+<p>其实我们还可以自己扩展这个子命令方式，实现自己的子命令。如果打算继续使用 <code>mojo subcommand</code> 的方式，那就把自己的子命令模块叫做 <code>Mojolicious::Command::yourcommand</code>，而如果打算在自己的名字空间下使用，比如叫 <code>MyApp::Command::mycommand</code>，那么需要在 <code>MyApp.pm</code> 里加一行代码，设置一下名字空间：</p>
+<div class="highlight"><pre><code class="language-perl" data-lang="perl"><span class="k">sub </span><span class="nf">startup</span> <span class="p">{</span>
+        <span class="k">my</span> <span class="nv">$self</span> <span class="o">=</span> <span class="nb">shift</span><span class="p">;</span>
+        <span class="nb">push</span> <span class="nv">@</span><span class="p">{</span><span class="nv">$self</span><span class="o">-&gt;</span><span class="n">commands</span><span class="o">-&gt;</span><span class="n">namespaces</span><span class="p">},</span> <span class="s">&#39;MyApp::Command&#39;</span><span class="p">;</span>
+        <span class="o">...</span>
+    <span class="p">};</span></code></pre></div>
+<p>然后就可以写自己的 <code>MyApp::Command::mycommand</code> 了：</p>
+<div class="highlight"><pre><code class="language-perl" data-lang="perl"><span class="nb">package</span> <span class="nn">MyApp::Command::</span><span class="n">mycommand</span><span class="p">;</span>
+<span class="k">use</span> <span class="n">strict</span><span class="p">;</span>
+<span class="k">use</span> <span class="n">warnings</span><span class="p">;</span>
+<span class="k">use</span> <span class="nn">Mojo::</span><span class="n">Base</span> <span class="s">&#39;Mojolicious::Command&#39;</span><span class="p">;</span>
+<span class="k">use</span> <span class="nn">Mojo::</span><span class="n">UserAgent</span><span class="p">;</span>
+<span class="n">has</span> <span class="n">usage</span>       <span class="o">=&gt;</span> <span class="s">&quot;usage: $0 migratint [username] [dashboards...]\n&quot;</span><span class="p">;</span>
+<span class="n">has</span> <span class="n">description</span> <span class="o">=&gt;</span> <span class="s">&quot;kibana-int index migration for auth users\n&quot;</span><span class="p">;</span>
+<span class="n">has</span> <span class="n">ua</span>          <span class="o">=&gt;</span> <span class="k">sub </span><span class="p">{</span> <span class="nn">Mojo::</span><span class="n">UserAgent</span><span class="o">-&gt;</span><span class="k">new</span> <span class="p">};</span>
+<span class="k">sub </span><span class="nf">run</span> <span class="p">{</span>
+    <span class="k">my</span> <span class="p">(</span> <span class="nv">$self</span><span class="p">,</span> <span class="nv">$user</span><span class="p">)</span> <span class="o">=</span> <span class="nv">@_</span><span class="p">;</span>
+    <span class="k">my</span> <span class="nv">$config</span> <span class="o">=</span> <span class="nv">$self</span><span class="o">-&gt;</span><span class="n">app</span><span class="o">-&gt;</span><span class="n">config</span><span class="p">;</span>
+    <span class="k">my</span> <span class="nv">$ua</span> <span class="o">=</span> <span class="nv">$self</span><span class="o">-&gt;</span><span class="n">ua</span><span class="p">;</span>
+    <span class="o">...</span>
+<span class="p">}</span>
+<span class="mi">1</span><span class="p">;</span></code></pre></div>
+<p>大致就是这样：</p>
+<p>继承 <strong>Mojolicious::Command</strong> 类。这样就会有 usage 和 description 两个属性和 run 方法。</p>
+<ul>
+  <li>usage 属性用来在你执行 <code>script/myapp help mycommand</code> 的时候输出信息；</li>
+  <li>description 属性用来在你执行 <code>script/myapp help</code> 罗列全部可用子命令的时候描述该命令的作用；</li>
+  <li>run 方法是命令的入口函数。命令行后面的参数都会传递给 run 方法。如果你的子命令需要复杂处理，这里依然可以用 <a href="https://metacpan.org/pod/Getopt::Long#Parsing-options-from-an-arbitrary-array">GetOpt::Long</a> 模块中的 <code>GetOptionsFromArray</code> 函数处理。</li>
+</ul>
+    <hr>
+    <div class="pagination">
+      <ul>
+        <li class="prev"><a href="/2014/09/24/howto-use-custom-rubygem-in-logstash" title="在 logstash 里使用其他 RubyGems 模块">&larr; Previous</a></li>
+        <li><a href="/archive.html">Archive</a></li>
+        <li class="next disabled"><a>Next &rarr;</a>
+      </ul>
+    </div>
+    <hr>
+  <!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" id="UYScript" src="http://v1.uyan.cc/js/iframe.js?UYUserId=1589850" async=""></script>
+<!-- UY END -->
+  </div>
+</div>
+      </div>
+      <div class="span4">
+          <div class="well sidebar-nav">
+             <ul id="relate_blog" class="nav nav-list">
+               <li class="nav-header">最近文章</li>
+                 <li><a href="/2014/09/24/howto-use-custom-rubygem-in-logstash">在 logstash 里使用其他 RubyGems 模块</a></li>
+                 <li><a href="/2014/09/23/kibana-auth">Kibana 认证鉴权方案</a></li>
+                 <li><a href="/2014/09/04/spark-to-elasticsearch">用 Spark 处理数据导入 Elasticsearch</a></li>
+                 <li><a href="/2014/08/29/implement-source-context-function-for-elk">山寨一个 Splunk 的 source 上下文查看功能</a></li>
+                 <li><a href="/2014/08/18/intro-range-facet-and-implement-panel-for-it">用 ES 的 RangeFacets 接口实现一个查看区间占比的 Kibana 面板</a></li>
+                 <li><a href="/2014/07/28/dynamic-dashboard-for-kibana">Kibana 动态仪表板的使用</a></li>
+                 <li><a href="/2014/07/27/using-pdl-on-macbook">在 MacBook 上使用 PDL 绘图</a></li>
+                 <li><a href="/2014/07/08/rex-test-spec">Rex::Test::Spec 模块</a></li>
+                 <li><a href="/2014/06/13/serverspec-intro">Serverspec 工具介绍</a></li>
+            </ul>
+          </div>
+        <div class="well sidebar-nav">
+          <iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=1&ptype=1&speed=0&skin=2&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=1035836154&verifier=a26926d5&dpc=1"></iframe>
+        </div>
+        <div class="well sidebar-nav">
+            <div id="uyan_list_time_frame"></div>
+            <script type="text/javascript" id="UYScriptTime" src="http://v1.uyan.cc/js/iframe_time_list.js?UYUserId=1589850&rankType=time" async=""></script>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(英文)</li>
+              <li><a href="http://codeascraft.com/" title="Etsy 运维团队博客">Code as Craft</a></li>
+              <li><a href="http://devopsanywhere.blogspot.jp/" title="">devopsanywhere</a></li>
+              <li><a href="http://www.jedi.be/blog/" title="">Jong En Dynamische Informatica</a></li>
+              <li><a href="http://www.planetdevops.net/" title="">planetdevops</a></li>
+              <li><a href="http://www.kitchensoap.com/" title="《网站运维》作者，Etsy 运维">Kitchen Soap</a></li>
+              <li><a href="http://blog.johngoulah.com" title="Musings of linux, open source, cloud computing and systems">John Goulah</a></li>
+              <li><a href="http://serverfault.com/" title="stackexchange下属的系统工程师问答网站">serverfault</a></li>
+              <li><a href="http://www.thegeekstuff.com/" title="各种超酷Linux命令用法">TheGeekStuff</a></li>
+              <li><a href="http://neilb.org/" title="The good,the bad,and the beautiful">neilb</a></li>
+              <li><a href="http://www.reddit.com/r/perl/" title="">reddit perl 频道</a></li>
+              <li><a href="http://jpetazzo.github.io/" title="">~jpetazzo</a></li>
+              <li><a href="http://www.perfplanet.com/" title="News and views from the web performance blogosphere">Performance Planet</a></li>
+              <li><a href="http://cuddletech.com/blog/" title="Use UNIX or die">Cuddle Tech</a></li>
+              <li><a href="http://showmetheco.de/" title="Viacheslav Tykhanovskyi(PocketIO/Text::Haml)">No time to wait</a></li>
+              <li><a href="http://blog.dataloop.io/" title="A new SaaS monitoring tool for DevOps & Operations">Dataloop.IO</a></li>
+              <li><a href="http://www.ducea.com/" title="">MDLog:/sysadmin</a></li>
+              <li><a href="http://planeteria.org/perl6/" title="Perl6 文集">Planet Perl 6</a></li>
+              <li><a href="http://www.metaforsoftware.com/blog/" title="">metafor</a></li>
+              <li><a href="http://blog.kablamo.org/" title="Eric Johnson，一个游走在伦敦和北京的 Perler">kablamo</a></li>
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(中文)</li>
+              <li><a href="http://www.nginxs.com/" title="">eric</a></li>
+              <li><a href="http://www.hellodb.net/" title="Ali DBA 张瑞">Hello DBA</a></li>
+              <li><a href="http://blog.nosqlfan.com/" title="not only sql信息集散地">NoSQLfan</a></li>
+              <li><a href="http://ourmysql.com/" title="">OurMySQL</a></li>
+              <li><a href="http://timo.piqiu.me/" title="TIMO IS MY OASIS">Timo</a></li>
+              <li><a href="http://www.liurongxing.com/" title="">刘荣星</a></li>
+              <li><a href="http://www.cnadn.net/" title="F5工程师">应用交付学习之路</a></li>
+              <li><a href="http://scmbob.org/" title="杭州NSN工程师，shell高人~">扛一肩记忆</a></li>
+              <li><a href="http://www.php-oa.com/" title="音悦台技术经理">扶凯</a></li>
+              <li><a href="http://www.lark.net.cn/" title="王剑">lark's cloud</a></li>
+              <li><a href="http://log.heartoutside.com/" title="HeartOutSide">HeartOutside</a></li>
+              <li><a href="http://blog.liulantao.com/" title="刘兰涛">Lax</a></li>
+              <li><a href="http://niubie.me/" title="莫言">莫言</a></li>
+              <li><a href="http://noops.me/" title="小米运维部">NoOps</a></li>
+              <li><a href="http://www.searchtech.pro/" title="">云端分布式搜索技术</a></li>
+              <li><a href="http://www.usefulshare.com" title="当当网安全运维">UsefulShare</a></li>
+              <li><a href="http://junqili.com/" title="深入研究puppet">纸飞机</a></li>
+              <li><a href="http://www.chinaxing.org/" title="">ChinaXing</a></li>
+              <li><a href="http://bubbyroom.com/" title="守住每一天">Liuyu's blog</a></li>
+              <li><a href="http://blog.aka-cool.net/" title="">Aka.Why</a></li>
+              <li><a href="http://blog.l8ii.com/" title="刘侨">LairdNote</a></li>
+              <li><a href="http://flw.tools/" title="">flw的工具箱</a></li>
+              <li><a href="http://blog.mcshell.org/" title="">mcshell</a></li>
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="booklists" class="nav nav-list">
+          <li class="nav-header">我写的第一本技术书籍</li>
+          <li><a href='http://product.china-pub.com/3769604'><img src='http://images.china-pub.com/ebook3765001-3770000/3769604/shupi.jpg' border='0' alt='网站运维技术与实践'/></a></li>
+          <li class="nav-header">我写的两本电子书籍</li>
+          <li><a href='https://www.gitbook.io/book/chenryn/logstash-best-practice'><img src='https://sm3lir.cloudimage.io/s/width/313/https://www.gitbook.io/cover/book/chenryn/logstash-best-practice?build=1411488954525' border='0' alt='LogStash 最佳实践'/></a></li>
+          <li><a href='https://www.gitbook.io/book/chenryn/kibana-guide-cn'><img src='https://sm3lir.cloudimage.io/s/width/313/https://www.gitbook.io/cover/book/chenryn/kibana-guide-cn?build=1411570851764' border='0' alt='Kibana 中文指南'/></a></li>
+        </div>
+      </div>
+    </div> <!-- row -->
+      <footer>
+        <p>&copy; 陈子 2012 
+          with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
+          and <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap</a>
+        </p>
+      </footer>
+    </div> <!-- /container -->
+    <!-- JiaThis Button BEGIN -->
+    <script type="text/javascript">var jiathis_config = {data_track_clickback:true};</script>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jiathis_r.js?move=0&amp;uid=1589850" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    <!-- UJian Button BEGIN -->
+    <script type="text/javascript" src="http://v1.ujian.cc/code/ujian.js?type=slide&uid=1589850"></script>
+    <!-- UJian Button END -->
+  </body>
+</html>
