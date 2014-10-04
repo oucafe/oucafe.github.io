@@ -1,0 +1,364 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>开源一个Key-Value存储工具类 - 唐巧的技术博客</title>
+  <meta name="author" content="唐巧">
+
+  
+  <meta name="description" content="前言 还记得大学刚学数据库那会儿，天真地以为世界上所有的存储都需要用数据库来做。后来毕业后，正值NOSQL流行，那时我在网易参与了网易微博的开发，我们当时使用了有道自己做的“BigTable”— OMAP来存储微博数据，那个时候才发现，其实Key- &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.devtang.com/blog/2014/10/03/opensouce-a-key-value-storage-tool">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="唐巧的技术博客" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <!-- googleapis is fucked by gfw -->
+  <script src="http://cdn.staticfile.org/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-28029597-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">唐巧的技术博客</a></h1>
+  
+    <h2>记录下自己学习的点滴</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.devtang.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">所有文章</a></li>
+  <li><a href="/blog/categories/ios/">iOS开发专题</a></li>
+  <li><a href="http://weibo.com/tangqiaoboy" target="_blank">我的微博</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">开源一个Key-Value存储工具类</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-03T22:06:18+08:00" pubdate data-updated="true">Oct 3<span>rd</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h2>前言</h2>
+
+<p>还记得大学刚学数据库那会儿，天真地以为世界上所有的存储都需要用数据库来做。后来毕业后，正值NOSQL流行，那时我在网易参与了网易微博的开发，我们当时使用了有道自己做的“BigTable”— OMAP来存储微博数据，那个时候才发现，其实Key-Value这种简单的存储也能搞定微博这类不太简单的存储逻辑。</p>
+
+<p>相比MYSQL，当数据量上千万后，NOSQL的优势体现出来了：对于海量数据，NOSQL在存取速度上没有任何影响，另外，天生的多备份和分布式，也说数据安全和扩容变得异常容易。</p>
+
+<h2>iOS端的尝试</h2>
+
+<p>后来我从后台转做iOS端的开发，我就尝试了在iOS端直接使用Key-Value式的存储。经过在粉笔网、猿题库、小猿搜题三个客户端中的尝试后，我发现Key-Value式的存储不但完全能够满足大多数移动端开发的需求，而且非常适合移动端采用。主要原因是：移动端存储的数据量不会很大：</p>
+
+<ul>
+<li>如果是单机的应用（例如效率工具Clear），用户自己一个人创建的数据最多也就上万条。</li>
+<li>如果是有服务端的应用（例如网易新闻，微博），那移动端通常不会保存全量的数据，每次会从服务器上获取数据，本地只是做一些内容的缓存而已，所以也不会有很大的数据量。</li>
+</ul>
+
+
+<p>如果数据量不大的话，那么在iOS端使用最简单直接的Key-Value存储就能带来开发上的效率优势。它能保证：</p>
+
+<ol>
+<li>Model层的代码编写简单，易于测试。</li>
+<li>由于Value是JSON格式，所以在做Model字段更改时，易于扩展和兼容。</li>
+</ol>
+
+
+<h2>实现方案</h2>
+
+<p>在存储引擎上，2年前我直接选择了Sqlite当做存储引擎，相当于每个数据库表只有Key，Value两个字段。后来，随着LevelDB的流行，业界也有一些应用采用了LevelDB来做iOS端的Key-Value存储引擎，例如开源的<a href="https://github.com/viewfinderco/viewfinder">ViewFinder</a>。</p>
+
+<p>因为LevelDB本身并不是为移动端设计的，我担心它过于占用内存，我自己也没有看到业界有在移动端针对LevelDB做很详细的测试，连LevelDB的iOS端移植都不是官方做的。加上我自己写的基于Sqlite的Key-Value存储用着也没有什么问题，所以我也就一直没有更换成LevelDB。</p>
+
+<h2>开源</h2>
+
+<p>经过两年的使用和测试，我认为它非常好用，而且代码也非常简单，只有不到400行。所以现在开源分享给大家，这个项目叫<code>YTKKeyValueStore</code>，项目在<a href="https://github.com/yuantiku/YTKKeyValueStore">这里</a>。以下是一个简单的使用示例：</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>YTKKeyValueStore *store = [[YTKKeyValueStore alloc] initDBWithName:@"test.db"];
+</span><span class='line'>NSString *tableName = @"user_table";
+</span><span class='line'>[store createTableWithName:tableName];
+</span><span class='line'>// 保存
+</span><span class='line'>NSString *key = @"1";
+</span><span class='line'>NSDictionary *user = @{@"id": @1, @"name": @"tangqiao", @"age": @30};
+</span><span class='line'>[store putObject:user withId:key intoTable:tableName];
+</span><span class='line'>// 查询
+</span><span class='line'>NSDictionary *queryUser = [store getObjectById:key fromTable:tableName];
+</span><span class='line'>NSLog(@"query data result: %@", queryUser);</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>其它</h2>
+
+<p>两年前写过不少测试用例，后来给弄丢了，所以现在开项项目中还没有测试用例。由于时间关系，更详细的使用说明稍后会更新到项目中。</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">唐巧</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-10-03T22:06:18+08:00" pubdate data-updated="true">Oct 3<span>rd</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ios/'>iOS</a>
+  
+</span>
+
+
+    </p>
+    <p class="meta">
+      原创文章，版权声明：自由转载-非商用-非衍生-保持署名 | <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh" id="">Creative Commons BY-NC-ND 3.0</a>
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+    <style>
+    .flash-video{display:none;}
+</style>
+<!-- JiaThis Button BEGIN -->
+<div id="ckepop">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_tsina">新浪微博</a>
+<a class="jiathis_button_t163">网易微博</a>
+<a class="jiathis_button_tqq">腾讯微博</a>
+<a class="jiathis_button_renren">人人网</a>
+<a class="jiathis_button_douban">豆瓣</a>
+
+<a href="http://www.jiathis.com/share?uid=1574434" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+var jiathis_config={
+    data_track_clickback:true,
+    sm:"t163,tsina,tqq,renren,douban",
+    summary:"",
+    hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v2.jiathis.com/code_mini/jia.js?uid=1574434" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+<br />
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" id="UYScript" src="http://v1.uyan.cc/js/iframe.js?UYUserId=89581" async=""></script>
+<!-- UY END -->
+
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/10/01/startup-2nd-year-summary/" title="Previous Post: 写在创业两周年">&laquo; 写在创业两周年</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>赞助商</h1>
+  <p>
+     <a href="http://click.bmob.cn/?sid=f92455fa76a5829eb031" target="_blank"><img width="260px" src="/images/ad_bmob.gif" /></a>
+  </p>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/10/03/opensouce-a-key-value-storage-tool/">开源一个Key-Value存储工具类</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/01/startup-2nd-year-summary/">写在创业两周年</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/24/ios-weekly-26/">iOS移动开发周报-第26期</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/14/ios-weekly-25/">iOS移动开发周报-第25期</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/13/scrum-introduction/">适合码农工作时玩的游戏：Scrum</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/09/ios-weekly-24/">iOS移动开发周报-第24期</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/01/ios-weekly-23/">iOS移动开发周报-第23期</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/24/ios-weekly-22/">iOS移动开发周报-第22期</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/18/ios-weekly-21/">iOS移动开发周报-第21期</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/12/ios-weekly-20/">iOS移动开发周报-第20期</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/30/ios-weekly-19/">iOS移动开发周报-第19期</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/07/27/ios-levelup-tips/">iOS开发如何提高</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>About Me</h1>
+  <p> Blogger, InfoQ编辑, iOS开发, 创业者。<br/>
+      <br/>Java开发工程师，曾开发网易微博后台。
+      <br/>iOS开发工程师，曾开发有道云笔记、粉笔网、猿题库。
+      <br/>
+      <br/>新浪微博: <a href='http://weibo.com/tangqiaoboy' target='_blank'>唐巧_boy</a>
+      <span id="wb_follow_btn"></span>
+      <br />我的<strong>"iOSDevTips"</strong>微信公众账号:
+      <br/><img width="220px" src="/images/weixin-qr.jpg" />
+  </p>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  &copy; 2014 - 唐巧 -
+  <span class="credit">基于 <a href="http://octopress.org" target="_blank">Octopress</a></span>
+  <span class="credit">, 感谢 <a href="http://gitcafe.com/signup?invited_by=tangqiaoboy" target="_blank">GitCafe</a> 为本站提供存储空间</span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+<script src=" http://tjs.sjs.sinajs.cn/open/api/js/wb.js?appkey=2351546126" type="text/javascript" charset="utf-8"></script>
+<script>
+WB2.anyWhere(function(W){
+W.widget.followButton({
+    uid: 1708947107,
+    id: "wb_follow_btn"
+    });
+});
+</script>
+
+
+</body>
+</html>
