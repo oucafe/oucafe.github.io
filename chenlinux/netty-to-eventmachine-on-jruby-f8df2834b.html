@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>在 JRuby 上用 netty 模拟 eventmachine</title>
+    <meta name="author" content="陈子">
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!-- Le styles -->
+    <link href="/assets/themes/twitter/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/themes/twitter/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+    <link href="/assets/themes/twitter/css/pygments/default.css" rel="stylesheet" type="text/css">
+    <!-- Le fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+  </head>
+  <body>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="/">三斗室</a>
+          <ul class="nav">
+      	<li><a href="/archive.html">归档</a></li>
+      	<li><a href="/categories.html">分类</a></li>
+      	<li><a href="/errata.html">《网站运维技术与实践》勘误</a></li>
+      	<li><a href="/pages.html">Pages</a></li>
+      	<li><a href="/projects.html">学习记录</a></li>
+      	<li><a href="/tags.html">标签</a></li>
+            <li><a href="http://chenlinux.com/poetry/index.html" />诗文集</a></li>
+            <li><link title="RSS 2.0" type="application/rss+xml" href="http://chenlinux.com/feed.xml" rel="alternate" /><a href="http://chenlinux.com/feed.xml" target="_blank">RSS订阅</a></li>
+          </ul>
+          <ul class="nav pull-right"><li><a href="/about.html">有关我</a></li></ul>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+    <div class="row">
+      <div class="span7">
+<div class="row">
+  <div class="page-header">
+    <h1>在 JRuby 上用 netty 模拟 eventmachine <small></small></h1>
+    <div class="date"><span>17 October 2014</span></div>
+    <ul class="tag_box pull-right">
+    	<li><a href="/tags.html#java-ref">java <span>2</span></a></li>
+    </ul>
+  </div>
+  <div style='background-color: #FFF;'>
+    <p>上一篇说到在 JRuby 上利用 netty 库实现事件驱动。事实上，为了让 Ruby 程序员更习惯，foxbat 模块是把 netty 库封装成 eventmachine 的接口来提供给用户使用的。所以，我们可以把程序写得更通用一些：</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">if</span> <span class="n">defined?</span><span class="p">(</span><span class="no">JRUBY_VERSION</span><span class="p">)</span>
+    <span class="nb">require</span> <span class="s1">&#39;foxbat&#39;</span>
+  <span class="k">end</span>
+  <span class="nb">require</span> <span class="s1">&#39;eventmachine&#39;</span>
+  <span class="nb">require</span> <span class="s1">&#39;socket&#39;</span>
+  <span class="k">module</span> <span class="nn">SyslogRecv</span>
+    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+      <span class="vi">@output_queue</span> <span class="o">=</span> <span class="n">options</span><span class="o">[</span><span class="ss">:queue</span><span class="o">]</span>
+      <span class="vi">@codec</span> <span class="o">=</span> <span class="n">options</span><span class="o">[</span><span class="ss">:codec</span><span class="o">]</span>
+      <span class="vi">@grok_filter</span> <span class="o">=</span> <span class="n">options</span><span class="o">[</span><span class="ss">:grok_filter</span><span class="o">]</span>
+      <span class="vi">@date_filter</span> <span class="o">=</span> <span class="n">options</span><span class="o">[</span><span class="ss">:date_filter</span><span class="o">]</span>
+    <span class="k">end</span>
+    <span class="k">def</span> <span class="nf">syslog_relay</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+      <span class="vi">@grok_filter</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+      <span class="k">if</span> <span class="n">event</span><span class="o">[</span><span class="s2">&quot;tags&quot;</span><span class="o">].</span><span class="n">nil?</span> <span class="o">||</span> <span class="o">!</span><span class="n">event</span><span class="o">[</span><span class="s2">&quot;tags&quot;</span><span class="o">].</span><span class="n">include?</span><span class="p">(</span><span class="s2">&quot;_grokparsefailure&quot;</span><span class="p">)</span>
+        <span class="n">event</span><span class="o">[</span><span class="s2">&quot;timestamp&quot;</span><span class="o">]</span> <span class="o">=</span> <span class="n">event</span><span class="o">[</span><span class="s2">&quot;timestamp8601&quot;</span><span class="o">]</span> <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">include?</span><span class="p">(</span><span class="s2">&quot;timestamp8601&quot;</span><span class="p">)</span>
+        <span class="vi">@date_filter</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+      <span class="k">else</span>
+        <span class="vi">@logger</span><span class="o">.</span><span class="n">info?</span> <span class="o">&amp;&amp;</span> <span class="vi">@logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;NOT SYSLOG&quot;</span><span class="p">,</span> <span class="ss">:message</span> <span class="o">=&gt;</span> <span class="n">event</span><span class="o">[</span><span class="s2">&quot;message&quot;</span><span class="o">]</span><span class="p">)</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+    <span class="k">def</span> <span class="nf">post_init</span>
+      <span class="p">(</span><span class="vc">@@connections</span> <span class="o">||=</span> <span class="o">[]</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span>
+    <span class="k">end</span>
+    <span class="k">def</span> <span class="nf">receive_data</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+      <span class="vc">@@connections</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">client</span><span class="o">|</span>
+        <span class="k">if</span> <span class="n">defined?</span><span class="p">(</span><span class="no">JRUBY_VERSION</span><span class="p">)</span>
+          <span class="n">ip</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_peername</span><span class="o">.</span><span class="n">getAddress</span><span class="o">.</span><span class="n">getHostAddress</span>
+          <span class="n">port</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_peername</span><span class="o">.</span><span class="n">getPort</span>
+        <span class="k">else</span>
+          <span class="n">port</span><span class="p">,</span> <span class="n">ip</span> <span class="o">=</span> <span class="no">Socket</span><span class="o">.</span><span class="n">unpack_sockaddr_in</span><span class="p">(</span><span class="n">client</span><span class="o">.</span><span class="n">get_peername</span><span class="p">)</span>
+        <span class="k">end</span>
+        <span class="o">::</span><span class="no">LogStash</span><span class="o">::</span><span class="no">Util</span><span class="o">::</span><span class="n">set_thread_name</span><span class="p">(</span><span class="s2">&quot;input|syslog|tcp|</span><span class="si">#{</span><span class="n">ip</span><span class="si">}</span><span class="s2">:</span><span class="si">#{</span><span class="n">port</span><span class="si">}</span><span class="s2">}&quot;</span><span class="p">)</span>
+        <span class="vi">@codec</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">event</span><span class="o">|</span>
+          <span class="n">event</span><span class="o">[</span><span class="s2">&quot;host&quot;</span><span class="o">]</span> <span class="o">=</span> <span class="n">ip</span>
+          <span class="n">syslog_relay</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+          <span class="vi">@output_queue</span> <span class="o">&lt;&lt;</span> <span class="n">event</span>
+          <span class="k">end</span>
+        <span class="k">end</span>
+      <span class="k">end</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+  <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">output_queue</span><span class="p">)</span>
+    <span class="vi">@logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Starting syslog tcp listener&quot;</span><span class="p">,</span> <span class="ss">:address</span> <span class="o">=&gt;</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="vi">@host</span><span class="si">}</span><span class="s2">:</span><span class="si">#{</span><span class="vi">@port</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="no">EventMachine</span><span class="o">::</span><span class="n">run</span> <span class="k">do</span>
+      <span class="no">EventMachine</span><span class="o">::</span><span class="n">start_server</span> <span class="vi">@host</span><span class="p">,</span> <span class="vi">@port</span><span class="p">,</span> <span class="no">SyslogRecv</span><span class="p">,</span> <span class="p">{</span>
+        <span class="ss">:queue</span> <span class="o">=&gt;</span> <span class="n">output_queue</span><span class="p">,</span>
+        <span class="ss">:codec</span> <span class="o">=&gt;</span> <span class="vi">@codec</span><span class="p">,</span>
+        <span class="ss">:grok_filter</span> <span class="o">=&gt;</span> <span class="vi">@grok_filter</span><span class="p">,</span>
+        <span class="ss">:date_filter</span> <span class="o">=&gt;</span> <span class="vi">@date_filter</span>
+      <span class="p">}</span>
+    <span class="k">end</span>
+  <span class="k">end</span></code></pre></div>
+<p>初次用 EventMachine，发现写法还蛮奇怪的。<code>start_server</code> 传递参数必须是 module 或者 class，然后变量只能随后通过额外的哈希传递进去。</p>
+<p>木有看 CPP 的 EM 实现，看这里 foxbat 的实现，发现在 JRuby 里使用 Java 还真是简单啊：</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#!/usr/bin/env ruby</span>
+<span class="nb">require</span> <span class="s2">&quot;java&quot;</span>
+<span class="nb">require</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="no">File</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">__FILE__</span><span class="p">),</span> <span class="s2">&quot;netty-3.2.4.Final.jar&quot;</span><span class="p">)</span>
+<span class="nb">require</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="no">File</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="bp">__FILE__</span><span class="p">),</span> <span class="s2">&quot;syslogdecoder.jar&quot;</span><span class="p">)</span>
+<span class="n">java_import</span> <span class="s2">&quot;com.loggly.syslog.SyslogDecoder&quot;</span>
+<span class="n">java_import</span> <span class="s2">&quot;org.jboss.netty.channel.SimpleChannelHandler&quot;</span>
+<span class="n">java_import</span> <span class="s2">&quot;org.jboss.netty.channel.ChannelPipelineFactory&quot;</span>
+<span class="n">java_import</span> <span class="s2">&quot;org.jboss.netty.channel.Channels&quot;</span>
+<span class="n">java_import</span> <span class="s2">&quot;org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory&quot;</span>
+<span class="n">java_import</span> <span class="s2">&quot;org.jboss.netty.bootstrap.ServerBootstrap&quot;</span>
+<span class="k">class</span> <span class="nc">SyslogServerHandler</span> <span class="o">&lt;</span> <span class="no">SimpleChannelHandler</span>
+  <span class="k">class</span> <span class="o">&lt;&lt;</span> <span class="nb">self</span>
+    <span class="kp">include</span> <span class="no">ChannelPipelineFactory</span>
+    <span class="k">def</span> <span class="nf">getPipeline</span>
+      <span class="k">return</span> <span class="no">Channels</span><span class="o">.</span><span class="n">pipeline</span><span class="p">(</span><span class="no">SyslogDecoder</span><span class="o">.</span><span class="n">new</span><span class="p">,</span> <span class="nb">self</span><span class="o">.</span><span class="n">new</span><span class="p">)</span>
+    <span class="k">end</span> <span class="c1"># def getPipeline</span>
+  <span class="k">end</span> <span class="c1"># class &lt;&lt; self</span>
+  <span class="k">def</span> <span class="nf">initialize</span>
+    <span class="k">super</span>
+  <span class="k">end</span> <span class="c1"># def initialize</span>
+  <span class="k">def</span> <span class="nf">messageReceived</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">getMessage</span><span class="o">.</span><span class="n">toString</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)</span>
+  <span class="k">end</span> <span class="c1"># def messageReceived</span>
+  <span class="k">def</span> <span class="nf">exceptionCaught</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">exception</span><span class="p">)</span>
+    <span class="n">exception</span><span class="o">.</span><span class="n">getCause</span><span class="o">.</span><span class="n">printStackTrace</span>
+    <span class="n">exception</span><span class="o">.</span><span class="n">getChannel</span><span class="o">.</span><span class="n">close</span>
+  <span class="k">end</span> <span class="c1"># def exceptionCaught</span>
+<span class="k">end</span> <span class="c1"># class SyslogServerHandler</span>
+<span class="k">class</span> <span class="nc">RubySyslogServer</span>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span>
+    <span class="vi">@factory</span> <span class="o">=</span> <span class="no">NioServerSocketChannelFactory</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
+      <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">concurrent</span><span class="o">.</span><span class="n">Executors</span><span class="o">.</span><span class="n">newCachedThreadPool</span><span class="p">(),</span>
+      <span class="n">java</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">concurrent</span><span class="o">.</span><span class="n">Executors</span><span class="o">.</span><span class="n">newCachedThreadPool</span><span class="p">()</span>
+    <span class="p">)</span>
+    <span class="vi">@bootstrap</span> <span class="o">=</span> <span class="no">ServerBootstrap</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="vi">@factory</span><span class="p">)</span>
+    <span class="vi">@bootstrap</span><span class="o">.</span><span class="n">setPipelineFactory</span><span class="p">(</span><span class="no">SyslogServerHandler</span><span class="p">)</span>
+    <span class="vi">@bootstrap</span><span class="o">.</span><span class="n">setOption</span><span class="p">(</span><span class="s2">&quot;child.tcpNoDelay&quot;</span><span class="p">,</span> <span class="kp">true</span><span class="p">);</span>
+    <span class="vi">@bootstrap</span><span class="o">.</span><span class="n">setOption</span><span class="p">(</span><span class="s2">&quot;child.keepAlive&quot;</span><span class="p">,</span> <span class="kp">true</span><span class="p">);</span>
+    <span class="vi">@host</span> <span class="o">=</span> <span class="n">host</span>
+    <span class="vi">@port</span> <span class="o">=</span> <span class="n">port</span>
+  <span class="k">end</span> <span class="c1"># def initialize</span>
+  <span class="k">def</span> <span class="nf">start</span>
+    <span class="n">address</span> <span class="o">=</span> <span class="n">java</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">InetSocketAddress</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="vi">@host</span><span class="p">,</span> <span class="vi">@port</span><span class="p">)</span>
+    <span class="k">return</span> <span class="vi">@bootstrap</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+  <span class="k">end</span> <span class="c1"># def start</span>
+<span class="k">end</span> <span class="c1"># class SyslogServer</span>
+<span class="k">if</span> <span class="bp">__FILE__</span> <span class="o">==</span> <span class="vg">$0</span>
+  <span class="n">host</span> <span class="o">=</span> <span class="no">ARGV</span><span class="o">[</span><span class="mi">0</span><span class="o">]</span>
+  <span class="n">port</span> <span class="o">=</span> <span class="no">ARGV</span><span class="o">[</span><span class="mi">1</span><span class="o">].</span><span class="n">to_i</span>
+  <span class="no">RubySyslogServer</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">)</span><span class="o">.</span><span class="n">start</span>
+<span class="k">end</span></code></pre></div>
+<p>直接加载 jar 包，导入各种类。然后就能照样用了。</p>
+    <hr>
+    <div class="pagination">
+      <ul>
+        <li class="prev"><a href="/2014/10/11/perlapi-magic-intro" title="PerlAPI 里的 Magic 简介">&larr; Previous</a></li>
+        <li><a href="/archive.html">Archive</a></li>
+        <li class="next"><a href="/2014/10/18/grokdebug-commandline" title="在终端命令行上调试 grok 表达式">Next &rarr;</a></li>
+      </ul>
+    </div>
+    <hr>
+  <!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" id="UYScript" src="http://v1.uyan.cc/js/iframe.js?UYUserId=1589850" async=""></script>
+<!-- UY END -->
+  </div>
+</div>
+      </div>
+      <div class="span4">
+          <div class="well sidebar-nav">
+             <ul id="relate_blog" class="nav nav-list">
+               <li class="nav-header">最近文章</li>
+                 <li><a href="/2014/10/18/rsyslog-impstats-elasticsearch">Rsyslog 性能数据 impstats 直接写入 Elasticsearch</a></li>
+                 <li><a href="/2014/10/18/performance-testing-tunning-for-logstash-inputs-syslog">LogStash::Inputs::Syslog 性能测试与优化</a></li>
+                 <li><a href="/2014/10/18/grokdebug-commandline">在终端命令行上调试 grok 表达式</a></li>
+                 <li><a href="/2014/10/11/perlapi-magic-intro">PerlAPI 里的 Magic 简介</a></li>
+                 <li><a href="/2014/10/10/run-kibana4-without-jar">从源代码运行 Kibana 4</a></li>
+                 <li><a href="/2014/10/10/elasticsearch-1-4-beta-1-released">【翻译】Elasticsearch 1.4.0 beta 1 发版日志</a></li>
+                 <li><a href="/2014/10/07/kibana-4-beta-1-released">【翻译】Kibana 4 beta 1 发版日志</a></li>
+                 <li><a href="/2014/10/07/kibana-3-migration-faq">【翻译】Kibana 3 升级到 4 的常见问答</a></li>
+                 <li><a href="/2014/10/01/custom-mojolicious-app-command">Mojolicious 应用的自定义子命令</a></li>
+            </ul>
+          </div>
+        <div class="well sidebar-nav">
+          <iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=1&ptype=1&speed=0&skin=2&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=1035836154&verifier=a26926d5&dpc=1"></iframe>
+        </div>
+        <div class="well sidebar-nav">
+            <div id="uyan_list_time_frame"></div>
+            <script type="text/javascript" id="UYScriptTime" src="http://v1.uyan.cc/js/iframe_time_list.js?UYUserId=1589850&rankType=time" async=""></script>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(英文)</li>
+              <li><a href="http://codeascraft.com/" title="Etsy 运维团队博客">Code as Craft</a></li>
+              <li><a href="http://devopsanywhere.blogspot.jp/" title="">devopsanywhere</a></li>
+              <li><a href="http://www.jedi.be/blog/" title="">Jong En Dynamische Informatica</a></li>
+              <li><a href="http://www.planetdevops.net/" title="">planetdevops</a></li>
+              <li><a href="http://www.kitchensoap.com/" title="《网站运维》作者，Etsy 运维">Kitchen Soap</a></li>
+              <li><a href="http://blog.johngoulah.com" title="Musings of linux, open source, cloud computing and systems">John Goulah</a></li>
+              <li><a href="http://serverfault.com/" title="stackexchange下属的系统工程师问答网站">serverfault</a></li>
+              <li><a href="http://www.thegeekstuff.com/" title="各种超酷Linux命令用法">TheGeekStuff</a></li>
+              <li><a href="http://neilb.org/" title="The good,the bad,and the beautiful">neilb</a></li>
+              <li><a href="http://www.reddit.com/r/perl/" title="">reddit perl 频道</a></li>
+              <li><a href="http://jpetazzo.github.io/" title="">~jpetazzo</a></li>
+              <li><a href="http://www.perfplanet.com/" title="News and views from the web performance blogosphere">Performance Planet</a></li>
+              <li><a href="http://cuddletech.com/blog/" title="Use UNIX or die">Cuddle Tech</a></li>
+              <li><a href="http://showmetheco.de/" title="Viacheslav Tykhanovskyi(PocketIO/Text::Haml)">No time to wait</a></li>
+              <li><a href="http://blog.dataloop.io/" title="A new SaaS monitoring tool for DevOps & Operations">Dataloop.IO</a></li>
+              <li><a href="http://www.ducea.com/" title="">MDLog:/sysadmin</a></li>
+              <li><a href="http://planeteria.org/perl6/" title="Perl6 文集">Planet Perl 6</a></li>
+              <li><a href="http://www.metaforsoftware.com/blog/" title="">metafor</a></li>
+              <li><a href="http://blog.kablamo.org/" title="Eric Johnson，一个游走在伦敦和北京的 Perler">kablamo</a></li>
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(中文)</li>
+              <li><a href="http://www.nginxs.com/" title="">eric</a></li>
+              <li><a href="http://www.hellodb.net/" title="Ali DBA 张瑞">Hello DBA</a></li>
+              <li><a href="http://blog.nosqlfan.com/" title="not only sql信息集散地">NoSQLfan</a></li>
+              <li><a href="http://ourmysql.com/" title="">OurMySQL</a></li>
+              <li><a href="http://timo.piqiu.me/" title="TIMO IS MY OASIS">Timo</a></li>
+              <li><a href="http://www.liurongxing.com/" title="">刘荣星</a></li>
+              <li><a href="http://www.cnadn.net/" title="F5工程师">应用交付学习之路</a></li>
+              <li><a href="http://scmbob.org/" title="杭州NSN工程师，shell高人~">扛一肩记忆</a></li>
+              <li><a href="http://www.php-oa.com/" title="音悦台技术经理">扶凯</a></li>
+              <li><a href="http://www.lark.net.cn/" title="王剑">lark's cloud</a></li>
+              <li><a href="http://log.heartoutside.com/" title="HeartOutSide">HeartOutside</a></li>
+              <li><a href="http://blog.liulantao.com/" title="刘兰涛">Lax</a></li>
+              <li><a href="http://niubie.me/" title="莫言">莫言</a></li>
+              <li><a href="http://noops.me/" title="小米运维部">NoOps</a></li>
+              <li><a href="http://www.searchtech.pro/" title="">云端分布式搜索技术</a></li>
+              <li><a href="http://www.usefulshare.com" title="当当网安全运维">UsefulShare</a></li>
+              <li><a href="http://junqili.com/" title="深入研究puppet">纸飞机</a></li>
+              <li><a href="http://www.chinaxing.org/" title="">ChinaXing</a></li>
+              <li><a href="http://bubbyroom.com/" title="守住每一天">Liuyu's blog</a></li>
+              <li><a href="http://blog.aka-cool.net/" title="">Aka.Why</a></li>
+              <li><a href="http://blog.l8ii.com/" title="刘侨">LairdNote</a></li>
+              <li><a href="http://flw.tools/" title="">flw的工具箱</a></li>
+              <li><a href="http://blog.mcshell.org/" title="">mcshell</a></li>
+              <li><a href="http://novoland.github.io/" title="">克鲁斯卡尔的博客</a></li>
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="booklists" class="nav nav-list">
+          <li class="nav-header">我写的第一本技术书籍</li>
+          <li><a href='http://product.china-pub.com/3769604'><img src='http://images.china-pub.com/ebook3765001-3770000/3769604/shupi.jpg' border='0' alt='网站运维技术与实践'/></a></li>
+          <li class="nav-header">我写的两本电子书籍</li>
+          <li><a href='https://www.gitbook.io/book/chenryn/logstash-best-practice'><img src='https://sm3lir.cloudimage.io/s/width/313/https://www.gitbook.io/cover/book/chenryn/logstash-best-practice?build=1411488954525' border='0' alt='LogStash 最佳实践'/></a></li>
+          <li><a href='https://www.gitbook.io/book/chenryn/kibana-guide-cn'><img src='https://sm3lir.cloudimage.io/s/width/313/https://www.gitbook.io/cover/book/chenryn/kibana-guide-cn?build=1411570851764' border='0' alt='Kibana 中文指南'/></a></li>
+        </div>
+      </div>
+    </div> <!-- row -->
+      <footer>
+        <p>&copy; 陈子 2012 
+          with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
+          and <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap</a>
+        </p>
+      </footer>
+    </div> <!-- /container -->
+    <!-- JiaThis Button BEGIN -->
+    <script type="text/javascript">var jiathis_config = {data_track_clickback:true};</script>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jiathis_r.js?move=0&amp;uid=1589850" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    <!-- UJian Button BEGIN -->
+    <script type="text/javascript" src="http://v1.ujian.cc/code/ujian.js?type=slide&uid=1589850"></script>
+    <!-- UJian Button END -->
+  </body>
+</html>
