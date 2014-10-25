@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>在终端命令行上调试 grok 表达式</title>
+    <meta name="author" content="陈子">
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!-- Le styles -->
+    <link href="/assets/themes/twitter/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/themes/twitter/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+    <link href="/assets/themes/twitter/css/pygments/default.css" rel="stylesheet" type="text/css">
+    <!-- Le fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+  </head>
+  <body>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="/">三斗室</a>
+          <ul class="nav">
+      	<li><a href="/archive.html">归档</a></li>
+      	<li><a href="/categories.html">分类</a></li>
+      	<li><a href="/errata.html">《网站运维技术与实践》勘误</a></li>
+      	<li><a href="/pages.html">Pages</a></li>
+      	<li><a href="/projects.html">学习记录</a></li>
+      	<li><a href="/tags.html">标签</a></li>
+            <li><a href="http://chenlinux.com/poetry/index.html" />诗文集</a></li>
+            <li><link title="RSS 2.0" type="application/rss+xml" href="http://chenlinux.com/feed.xml" rel="alternate" /><a href="http://chenlinux.com/feed.xml" target="_blank">RSS订阅</a></li>
+          </ul>
+          <ul class="nav pull-right"><li><a href="/about.html">有关我</a></li></ul>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+    <div class="row">
+      <div class="span7">
+<div class="row">
+  <div class="page-header">
+    <h1>在终端命令行上调试 grok 表达式 <small></small></h1>
+    <div class="date"><span>19 October 2014</span></div>
+    <ul class="tag_box pull-right">
+    	<li><a href="/tags.html#ruby-ref">ruby <span>19</span></a></li>
+    </ul>
+  </div>
+  <div style='background-color: #FFF;'>
+    <p>用 logstash 的人都知道在 <a href="http://grokdebug.herokuapp.com">http://grokdebug.herokuapp.com</a> 上面调试 grok 正则表达式。现在问题来了：<del>翻墙技术哪家强?</del> 页面中用到了来自 google 域名的 js 文件，所以访问经常性失败。所以，在终端上通过命令行方式快速调试成了必需品。</p>
+<p>其实在 logstash 还在 1.1 的年代的时候，官方 wiki 上是有一批专门教大家怎么通过 irb 交互式测试 grok 表达式的。但不知道为什么后来 wiki 这页没了…… 好在代码本身不复杂，稍微写几行脚本，就可以达到目的了：</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#!/usr/bin/env ruby</span>
+<span class="nb">require</span> <span class="s1">&#39;rubygems&#39;</span>
+<span class="n">gem</span> <span class="s1">&#39;jls-grok&#39;</span><span class="p">,</span> <span class="s1">&#39;=0.11.0&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;grok-pure&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;optparse&#39;</span>
+<span class="nb">require</span> <span class="s1">&#39;ap&#39;</span>
+<span class="n">options</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="no">ARGV</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="s1">&#39;-h&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="no">ARGV</span><span class="o">.</span><span class="n">size</span> <span class="o">===</span> <span class="mi">0</span>
+<span class="no">OptionParser</span><span class="o">.</span><span class="n">new</span> <span class="k">do</span> <span class="o">|</span><span class="n">opts</span><span class="o">|</span>
+  <span class="n">opts</span><span class="o">.</span><span class="n">banner</span> <span class="o">=</span> <span class="s1">&#39;Run grokdebug at your terminal.&#39;</span>
+  <span class="n">options</span><span class="o">[</span><span class="ss">:dirs</span><span class="o">]</span> <span class="o">=</span> <span class="sx">%w(patterns)</span>
+  <span class="n">options</span><span class="o">[</span><span class="ss">:named</span><span class="o">]</span> <span class="o">=</span> <span class="kp">false</span>
+  <span class="n">opts</span><span class="o">.</span><span class="n">on</span><span class="p">(</span><span class="s1">&#39;-d DIR1,DIR2&#39;</span><span class="p">,</span> <span class="s1">&#39;--dirs DIR1,DIR2&#39;</span><span class="p">,</span> <span class="nb">Array</span><span class="p">,</span> <span class="s1">&#39;Set grok patterns directories. Default: &quot;./patterns&quot;&#39;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">value</span><span class="o">|</span>
+    <span class="n">options</span><span class="o">[</span><span class="ss">:dirs</span><span class="o">]</span> <span class="o">=</span> <span class="n">value</span>
+  <span class="k">end</span>
+  <span class="n">opts</span><span class="o">.</span><span class="n">on</span><span class="p">(</span><span class="s1">&#39;-m MESSAGE&#39;</span><span class="p">,</span> <span class="s1">&#39;--msg MESSAGE&#39;</span><span class="p">,</span> <span class="s1">&#39;Your raw message to be matched&#39;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">value</span><span class="o">|</span>
+    <span class="n">options</span><span class="o">[</span><span class="ss">:message</span><span class="o">]</span> <span class="o">=</span> <span class="n">value</span>
+  <span class="k">end</span>
+  <span class="n">opts</span><span class="o">.</span><span class="n">on</span><span class="p">(</span><span class="s1">&#39;-p PATTERN&#39;</span><span class="p">,</span> <span class="s1">&#39;--pattern PATTERN&#39;</span><span class="p">,</span> <span class="s1">&#39;Your grok pattern to be compiled&#39;</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">value</span><span class="o">|</span>
+    <span class="n">options</span><span class="o">[</span><span class="ss">:pattern</span><span class="o">]</span> <span class="o">=</span> <span class="n">value</span>
+  <span class="k">end</span>
+  <span class="n">opts</span><span class="o">.</span><span class="n">on</span><span class="p">(</span><span class="s1">&#39;-n&#39;</span><span class="p">,</span> <span class="s1">&#39;--named&#39;</span><span class="p">,</span> <span class="s1">&#39;Named captures only&#39;</span><span class="p">)</span> <span class="k">do</span>
+    <span class="n">options</span><span class="o">[</span><span class="ss">:named</span><span class="o">]</span> <span class="o">=</span> <span class="kp">true</span>
+  <span class="k">end</span>
+<span class="k">end</span><span class="o">.</span><span class="n">parse!</span>
+<span class="n">grok</span> <span class="o">=</span> <span class="no">Grok</span><span class="o">.</span><span class="n">new</span>
+<span class="n">options</span><span class="o">[</span><span class="ss">:dirs</span><span class="o">].</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">dir</span><span class="o">|</span>
+  <span class="k">if</span> <span class="no">File</span><span class="o">.</span><span class="n">directory?</span><span class="p">(</span><span class="n">dir</span><span class="p">)</span>
+    <span class="n">dir</span> <span class="o">=</span> <span class="no">File</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dir</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">)</span>
+  <span class="k">end</span>
+  <span class="no">Dir</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">dir</span><span class="p">)</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">file</span><span class="o">|</span>
+    <span class="n">grok</span><span class="o">.</span><span class="n">add_patterns_from_file</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+<span class="n">grok</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">options</span><span class="o">[</span><span class="ss">:pattern</span><span class="o">]</span><span class="p">,</span> <span class="n">options</span><span class="o">[</span><span class="ss">:named</span><span class="o">]</span><span class="p">)</span>
+<span class="n">ap</span> <span class="n">grok</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">options</span><span class="o">[</span><span class="ss">:message</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">captures</span><span class="p">()</span></code></pre></div>
+<p>测试一下：</p>
+<pre><code>$ sudo gem install jls-grok awesome_print
+$ ruby grokdebug.rb
+Run grokdebug at your terminal.
+    -d, --dirs DIR1,DIR2             Set grok patterns directories. Default: "./patterns"
+    -m, --msg MESSAGE                Your raw message to be matched
+    -p, --pattern PATTERN            Your grok pattern to be compiled
+    -n, --named                      Named captures only
+$ ruby grokdebug.rb -m 'abc123' -p '%{NUMBER:test}'
+{
+         "test" =&gt; [
+        [0] "123"
+    ],
+    "BASE10NUM" =&gt; [
+        [0] "123"
+    ]
+}
+$ ruby grokdebug.rb -m 'abc123' -p '%{NUMBER:test:float}' -n
+{
+    "test" =&gt; [
+        [0] 123.0
+    ]
+}
+</code></pre>
+<p>没错，我这比 grokdebug 网站还多了类型转换的功能。它用的 jls-grok 是 0.10.10 版，而我用的是最新的 0.11.0 版。 </p>
+    <hr>
+    <div class="pagination">
+      <ul>
+        <li class="prev"><a href="/2014/10/19/rsyslog-impstats-elasticsearch" title="Rsyslog 性能数据 impstats 直接写入 Elasticsearch">&larr; Previous</a></li>
+        <li><a href="/archive.html">Archive</a></li>
+        <li class="next disabled"><a>Next &rarr;</a>
+      </ul>
+    </div>
+    <hr>
+  <!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" id="UYScript" src="http://v1.uyan.cc/js/iframe.js?UYUserId=1589850" async=""></script>
+<!-- UY END -->
+  </div>
+</div>
+      </div>
+      <div class="span4">
+          <div class="well sidebar-nav">
+             <ul id="relate_blog" class="nav nav-list">
+               <li class="nav-header">最近文章</li>
+                 <li><a href="/2014/10/19/rsyslog-impstats-elasticsearch">Rsyslog 性能数据 impstats 直接写入 Elasticsearch</a></li>
+                 <li><a href="/2014/10/18/performance-testing-tunning-for-logstash-inputs-syslog">LogStash::Inputs::Syslog 性能测试与优化</a></li>
+                 <li><a href="/2014/10/17/netty-to-eventmachine-on-jruby">在 JRuby 上用 netty 模拟 eventmachine</a></li>
+                 <li><a href="/2014/10/11/perlapi-magic-intro">PerlAPI 里的 Magic 简介</a></li>
+                 <li><a href="/2014/10/10/run-kibana4-without-jar">从源代码运行 Kibana 4</a></li>
+                 <li><a href="/2014/10/10/elasticsearch-1-4-beta-1-released">【翻译】Elasticsearch 1.4.0 beta 1 发版日志</a></li>
+                 <li><a href="/2014/10/07/kibana-4-beta-1-released">【翻译】Kibana 4 beta 1 发版日志</a></li>
+                 <li><a href="/2014/10/07/kibana-3-migration-faq">【翻译】Kibana 3 升级到 4 的常见问答</a></li>
+                 <li><a href="/2014/10/01/custom-mojolicious-app-command">Mojolicious 应用的自定义子命令</a></li>
+            </ul>
+          </div>
+        <div class="well sidebar-nav">
+          <iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=1&ptype=1&speed=0&skin=2&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=1035836154&verifier=a26926d5&dpc=1"></iframe>
+        </div>
+        <div class="well sidebar-nav">
+            <div id="uyan_list_time_frame"></div>
+            <script type="text/javascript" id="UYScriptTime" src="http://v1.uyan.cc/js/iframe_time_list.js?UYUserId=1589850&rankType=time" async=""></script>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(英文)</li>
+              <li><a href="http://codeascraft.com/" title="Etsy 运维团队博客">Code as Craft</a></li>
+              <li><a href="http://devopsanywhere.blogspot.jp/" title="">devopsanywhere</a></li>
+              <li><a href="http://www.jedi.be/blog/" title="">Jong En Dynamische Informatica</a></li>
+              <li><a href="http://www.planetdevops.net/" title="">planetdevops</a></li>
+              <li><a href="http://www.kitchensoap.com/" title="《网站运维》作者，Etsy 运维">Kitchen Soap</a></li>
+              <li><a href="http://blog.johngoulah.com" title="Musings of linux, open source, cloud computing and systems">John Goulah</a></li>
+              <li><a href="http://serverfault.com/" title="stackexchange下属的系统工程师问答网站">serverfault</a></li>
+              <li><a href="http://www.thegeekstuff.com/" title="各种超酷Linux命令用法">TheGeekStuff</a></li>
+              <li><a href="http://neilb.org/" title="The good,the bad,and the beautiful">neilb</a></li>
+              <li><a href="http://www.reddit.com/r/perl/" title="">reddit perl 频道</a></li>
+              <li><a href="http://jpetazzo.github.io/" title="">~jpetazzo</a></li>
+              <li><a href="http://www.perfplanet.com/" title="News and views from the web performance blogosphere">Performance Planet</a></li>
+              <li><a href="http://cuddletech.com/blog/" title="Use UNIX or die">Cuddle Tech</a></li>
+              <li><a href="http://showmetheco.de/" title="Viacheslav Tykhanovskyi(PocketIO/Text::Haml)">No time to wait</a></li>
+              <li><a href="http://blog.dataloop.io/" title="A new SaaS monitoring tool for DevOps & Operations">Dataloop.IO</a></li>
+              <li><a href="http://www.ducea.com/" title="">MDLog:/sysadmin</a></li>
+              <li><a href="http://planeteria.org/perl6/" title="Perl6 文集">Planet Perl 6</a></li>
+              <li><a href="http://www.metaforsoftware.com/blog/" title="">metafor</a></li>
+              <li><a href="http://blog.kablamo.org/" title="Eric Johnson，一个游走在伦敦和北京的 Perler">kablamo</a></li>
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(中文)</li>
+              <li><a href="http://www.nginxs.com/" title="">eric</a></li>
+              <li><a href="http://www.hellodb.net/" title="Ali DBA 张瑞">Hello DBA</a></li>
+              <li><a href="http://blog.nosqlfan.com/" title="not only sql信息集散地">NoSQLfan</a></li>
+              <li><a href="http://ourmysql.com/" title="">OurMySQL</a></li>
+              <li><a href="http://timo.piqiu.me/" title="TIMO IS MY OASIS">Timo</a></li>
+              <li><a href="http://www.liurongxing.com/" title="">刘荣星</a></li>
+              <li><a href="http://www.cnadn.net/" title="F5工程师">应用交付学习之路</a></li>
+              <li><a href="http://scmbob.org/" title="杭州NSN工程师，shell高人~">扛一肩记忆</a></li>
+              <li><a href="http://www.php-oa.com/" title="音悦台技术经理">扶凯</a></li>
+              <li><a href="http://www.lark.net.cn/" title="王剑">lark's cloud</a></li>
+              <li><a href="http://log.heartoutside.com/" title="HeartOutSide">HeartOutside</a></li>
+              <li><a href="http://blog.liulantao.com/" title="刘兰涛">Lax</a></li>
+              <li><a href="http://niubie.me/" title="莫言">莫言</a></li>
+              <li><a href="http://noops.me/" title="小米运维部">NoOps</a></li>
+              <li><a href="http://www.searchtech.pro/" title="">云端分布式搜索技术</a></li>
+              <li><a href="http://www.usefulshare.com" title="当当网安全运维">UsefulShare</a></li>
+              <li><a href="http://junqili.com/" title="深入研究puppet">纸飞机</a></li>
+              <li><a href="http://www.chinaxing.org/" title="">ChinaXing</a></li>
+              <li><a href="http://bubbyroom.com/" title="守住每一天">Liuyu's blog</a></li>
+              <li><a href="http://blog.aka-cool.net/" title="">Aka.Why</a></li>
+              <li><a href="http://blog.l8ii.com/" title="刘侨">LairdNote</a></li>
+              <li><a href="http://flw.tools/" title="">flw的工具箱</a></li>
+              <li><a href="http://blog.mcshell.org/" title="">mcshell</a></li>
+              <li><a href="http://novoland.github.io/" title="">克鲁斯卡尔的博客</a></li>
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="booklists" class="nav nav-list">
+          <li class="nav-header">我写的第一本技术书籍</li>
+          <li><a href='http://product.china-pub.com/3769604'><img src='http://images.china-pub.com/ebook3765001-3770000/3769604/shupi.jpg' border='0' alt='网站运维技术与实践'/></a></li>
+          <li class="nav-header">我写的两本电子书籍</li>
+          <li><a href='https://www.gitbook.io/book/chenryn/logstash-best-practice'><img src='https://sm3lir.cloudimage.io/s/width/313/https://www.gitbook.io/cover/book/chenryn/logstash-best-practice?build=1411488954525' border='0' alt='LogStash 最佳实践'/></a></li>
+          <li><a href='https://www.gitbook.io/book/chenryn/kibana-guide-cn'><img src='https://sm3lir.cloudimage.io/s/width/313/https://www.gitbook.io/cover/book/chenryn/kibana-guide-cn?build=1411570851764' border='0' alt='Kibana 中文指南'/></a></li>
+        </div>
+      </div>
+    </div> <!-- row -->
+      <footer>
+        <p>&copy; 陈子 2012 
+          with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
+          and <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap</a>
+        </p>
+      </footer>
+    </div> <!-- /container -->
+    <!-- JiaThis Button BEGIN -->
+    <script type="text/javascript">var jiathis_config = {data_track_clickback:true};</script>
+    <script type="text/javascript" src="http://v3.jiathis.com/code/jiathis_r.js?move=0&amp;uid=1589850" charset="utf-8"></script>
+    <!-- JiaThis Button END -->
+    <!-- UJian Button BEGIN -->
+    <script type="text/javascript" src="http://v1.ujian.cc/code/ujian.js?type=slide&uid=1589850"></script>
+    <!-- UJian Button END -->
+  </body>
+</html>
