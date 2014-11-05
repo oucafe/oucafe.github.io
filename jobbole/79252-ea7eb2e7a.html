@@ -1,0 +1,2306 @@
+<!DOCTYPE html>   
+<!--[if lt IE 7 ]> <html lang="en" class="no-js ie6"> <![endif]-->
+<!--[if IE 7 ]> <html lang="en" class="no-js ie7"> <![endif]-->
+<!--[if IE 8 ]> <html lang="en" class="no-js ie8"> <![endif]-->
+<!--[if IE 9 ]> <html lang="en" class="no-js ie9"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html lang="zh-CN" prefix="og: http://ogp.me/ns#" xmlns:wb="http://open.weibo.com/wb" class="no-js"> <!--<![endif]-->
+
+
+<!-- BEGIN head -->
+<head>
+
+	<!-- Title -->
+	<title>10分钟掌握XML、JSON及其解析 - 博客 - 伯乐在线</title>
+	
+	<!-- Meta Tags -->
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	
+	<!-- Favicon & Mobileicon -->
+	<link rel="shortcut icon" href="http://jbcdn2.b0.upaiyun.com/2013/12/favicon.png" />
+	<link rel="apple-touch-icon" href="http://jbcdn2.b0.upaiyun.com/2013/12/jobbole-blog-logo-mobile.png" />
+	
+	<!-- RSS, Atom & Pingbacks -->
+		<link rel="alternate" title="博客 &#8211; 伯乐在线 RSS Feed" href="http://blog.jobbole.com/feed/" />
+		<link rel="alternate" title="RSS .92" href="http://blog.jobbole.com/feed/rss/" />
+	<link rel="alternate" title="Atom 0.3" href="http://blog.jobbole.com/feed/atom/" />
+	<link rel="pingback" href="http://blog.jobbole.com/xmlrpc.php" />
+	
+	<!-- Theme Hook -->
+	
+<!-- This site is optimized with the Yoast WordPress SEO plugin v1.4.13 - http://yoast.com/wordpress/seo/ -->
+<meta name="description" content="随着移动互联网时代的大潮，越来越多的App不光是需要和网络服务器进行数据传输和交互，也需要和其他 App 进行数据传递。承担App与网络来进行传输和存储数据的一般是XML或者JSON。在移动互联网时代，XML和JSON很重要。"/>
+<link rel="canonical" href="http://blog.jobbole.com/79252/" />
+<meta property='og:locale' content='zh_CN'/>
+<meta property='og:type' content='article'/>
+<meta property='og:title' content='10分钟掌握XML、JSON及其解析 - 博客 - 伯乐在线'/>
+<meta property='og:description' content='随着移动互联网时代的大潮，越来越多的App不光是需要和网络服务器进行数据传输和交互，也需要和其他 App 进行数据传递。承担App与网络来进行传输和存储数据的一般是XML或者JSON。在移动互联网时代，XML和JSON很重要。'/>
+<meta property='og:url' content='http://blog.jobbole.com/79252/'/>
+<meta property='og:site_name' content='博客 - 伯乐在线'/>
+<meta property='og:image' content='http://www.json.org/object.gif'/>
+<meta property='og:image' content='http://www.json.org/array.gif'/>
+<meta property='og:image' content='http://www.json.org/value.gif'/>
+<meta property='og:image' content='http://www.json.org/string.gif'/>
+<meta property='og:image' content='http://www.json.org/number.gif'/>
+<!-- / Yoast WordPress SEO plugin. -->
+
+<link rel='stylesheet' id='v48fv_images-css'  href='http://blog.jobbole.com/wp-content/plugins/mu-widgets/library/base/public/css/images.css?ver=1.2.v48fv' type='text/css' media='all' />
+<link rel='stylesheet' id='v48fv_front-css'  href='http://blog.jobbole.com/wp-content/plugins/mu-widgets/library/base/public/css/front.css?ver=1.2.v48fv' type='text/css' media='all' />
+<link rel='stylesheet' id='v48fv_common-css'  href='http://blog.jobbole.com/wp-content/plugins/mu-widgets/library/base/public/css/common.css?ver=1.2.v48fv' type='text/css' media='all' />
+<link rel='stylesheet' id='bbp-default-bbpress-css'  href='http://blog.jobbole.com/wp-content/plugins/bbpress/templates/default/css/bbpress.css?ver=2.3.2' type='text/css' media='screen' />
+<link rel='stylesheet' id='bp-legacy-css-css'  href='http://blog.jobbole.com/wp-content/plugins/buddypress/bp-templates/bp-legacy/css/buddypress.css?ver=1.7.2' type='text/css' media='screen' />
+<link rel='stylesheet' id='wp-polls-css'  href='http://blog.jobbole.com/wp-content/plugins/wp-polls/polls-css.css?ver=2.63' type='text/css' media='all' />
+<link rel='stylesheet' id='bpbbpst-bbpress-widget-css-css'  href='http://blog.jobbole.com/wp-content/plugins/buddy-bbpress-support-topic/css/bpbbpst-bbpress-widget.css?ver=3.5.2' type='text/css' media='all' />
+<link rel='stylesheet' id='core3.0-css'  href='http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/styles/shCore.css?ver=3.0' type='text/css' media='all' />
+<link rel='stylesheet' id='core-Default3.0-css'  href='http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/styles/shCoreDefault.css?ver=3.0' type='text/css' media='all' />
+<link rel='stylesheet' id='theme-Default3.0-css'  href='http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/styles/shThemeDefault.css?ver=3.0' type='text/css' media='all' />
+<link rel='stylesheet' id='lightboxStyle-css'  href='http://blog.jobbole.com/wp-content/plugins/lightbox-plus/css/shadowed/colorbox.css?ver=2.6' type='text/css' media='screen' />
+<script type='text/javascript' src='http://blog.jobbole.com/wp-includes/js/jquery/jquery.js?ver=1.8.3'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var BP_DTheme = {"my_favs":"\u6211\u7684\u6536\u85cf","accepted":"\u5df2\u63a5\u53d7","rejected":"\u5df2\u62d2\u7edd","show_all_comments":"\u663e\u793a\u8be5\u8bdd\u9898\u6240\u6709\u8bc4\u8bba","show_all":"\u663e\u793a\u5168\u90e8","comments":"\u8bc4\u8bba","close":"\u5173\u95ed","view":"\u67e5\u770b","mark_as_fav":"\u6536\u85cf","remove_fav":"\u79fb\u9664\u6536\u85cf"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/plugins/buddypress/bp-templates/bp-legacy/js/buddypress.js?ver=1.7.2'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-includes/js/comment-reply.min.js?ver=3.5.2'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/modernizr.js?ver=2.5.3'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/js/rc-textarea-hl.js?ver=1.3'></script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://blog.jobbole.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://blog.jobbole.com/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='http://blog.jobbole.com/?p=79252' />
+
+		<script type="text/javascript">
+			/* <![CDATA[ */
+			
+						jQuery(document).ready( function() {
+
+				/* Use backticks instead of <code> for the Code button in the editor */
+				if ( typeof( edButtons ) !== 'undefined' ) {
+					edButtons[110] = new QTags.TagButton( 'code', 'code', '`', '`', 'c' );
+					QTags._buttonsInit();
+				}
+
+				/* Tab from topic title */
+				jQuery( '#bbp_topic_title' ).bind( 'keydown.editor-focus', function(e) {
+					if ( e.which !== 9 )
+						return;
+
+					if ( !e.ctrlKey && !e.altKey && !e.shiftKey ) {
+						if ( typeof( tinymce ) !== 'undefined' ) {
+							if ( ! tinymce.activeEditor.isHidden() ) {
+								var editor = tinymce.activeEditor.editorContainer;
+								jQuery( '#' + editor + ' td.mceToolbar > a' ).focus();
+							} else {
+								jQuery( 'textarea.bbp-the-content' ).focus();
+							}
+						} else {
+							jQuery( 'textarea.bbp-the-content' ).focus();
+						}
+
+						e.preventDefault();
+					}
+				});
+
+				/* Shift + tab from topic tags */
+				jQuery( '#bbp_topic_tags' ).bind( 'keydown.editor-focus', function(e) {
+					if ( e.which !== 9 )
+						return;
+
+					if ( e.shiftKey && !e.ctrlKey && !e.altKey ) {
+						if ( typeof( tinymce ) !== 'undefined' ) {
+							if ( ! tinymce.activeEditor.isHidden() ) {
+								var editor = tinymce.activeEditor.editorContainer;
+								jQuery( '#' + editor + ' td.mceToolbar > a' ).focus();
+							} else {
+								jQuery( 'textarea.bbp-the-content' ).focus();
+							}
+						} else {
+							jQuery( 'textarea.bbp-the-content' ).focus();
+						}
+
+						e.preventDefault();
+					}
+				});
+			});
+						/* ]]> */
+		</script>
+
+	
+	<script type="text/javascript">var ajaxurl = 'http://blog.jobbole.com/wp-admin/admin-ajax.php';</script>
+
+
+<!-- Comment Rating plugin Version: 2.9.32 by Bob King, http://wealthynetizen.com/, dynamic comment voting & styling. --> 
+<style type="text/css" media="screen">
+   .ckrating_highly_rated {background-color:#FFFFCC !important;}
+   .ckrating_poorly_rated {opacity:0.6;filter:alpha(opacity=60) !important;}
+   .ckrating_hotly_debated {background-color:#FFF0F5 !important;}
+</style>
+
+<script type="text/javascript">
+	window._wp_rp_static_base_url = 'http://dtmvdvtzf8rz0.cloudfront.net/static/';
+	window._wp_rp_wp_ajax_url = "http://blog.jobbole.com/wp-admin/admin-ajax.php";
+	window._wp_rp_plugin_version = '2.8';
+	window._wp_rp_post_id = '79252';
+	window._wp_rp_num_rel_posts = '10';
+</script>
+<style type="text/css">
+.wp-polls .pollbar {
+	margin: 1px;
+	font-size: 6px;
+	line-height: 8px;
+	height: 8px;
+	background: #0CA3C4;
+	border: 1px solid #fff;
+}
+</style>
+
+<!-- WP SyntaxHighlighter Ver.1.7.3 CSS for code Begin -->
+<style type='text/css'>
+.syntaxhighlighter,
+.syntaxhighlighter a,
+.syntaxhighlighter div,
+.syntaxhighlighter code,
+.syntaxhighlighter table,
+.syntaxhighlighter table td,
+.syntaxhighlighter table tr,
+.syntaxhighlighter table tbody,
+.syntaxhighlighter table thead,
+.syntaxhighlighter table caption,
+.syntaxhighlighter textarea {
+font-size: 12px !important; /* Set the font size in pixels */  
+font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace !important; /* Set the font type */  
+}
+.syntaxhighlighter table caption {
+/* For Title(Caption) */  
+font-size: 14px !important; /* Set the font size in pixels */  
+font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace !important; /* Set the font type */  
+}
+.syntaxhighlighter.nogutter td.code .line {
+/* Set the left padding space when no-gutter in ver. 3.0 */  
+padding-left: 3px !important;
+}
+.syntaxhighlighter {
+/* For Chrome/Safari(WebKit) */  
+/* Hide the superfluous vertical scrollbar in ver. 3.0 */  
+overflow-y: hidden !important;
+padding: 1px !important;
+}
+.widget-area.syntaxhighlighter a,
+.widget-area.syntaxhighlighter div,
+.widget-area.syntaxhighlighter code,
+.widget-area.syntaxhighlighter table,
+.widget-area.syntaxhighlighter table td,
+.widget-area.syntaxhighlighter table tr,
+.widget-area.syntaxhighlighter table tbody,
+.widget-area.syntaxhighlighter table thead,
+.widget-area.syntaxhighlighter table caption,
+.widget-area.syntaxhighlighter textarea {
+/* For Widget */  
+font-size: 14px !important; /* Set the font size in pixels */  
+font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace !important; /* Set the font type */  
+}
+.widget-area table caption {
+/* For Widget */  
+/* For Title(Caption) */  
+font-size: 10px !important; /* Set the font size in pixels */  
+font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace !important; /* Set the font type */  
+}
+</style>
+<!-- WP SyntaxHighlighter Ver.1.7.3 CSS for code End -->
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="http://blog.jobbole.com/wp-content/themes/jobboleblogv3/style.css" media="screen" />
+	<!-- link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Noticia+Text:400,700italic,700,400italic" media="screen" / -->
+	<style>
+				*::selection { background: #0099cc; }
+		*::-moz-selection { background: #0099cc; }
+		body { background: #ffffff  }
+		a, .tabs ul.nav li a:hover, .tabs ul.nav li.active a, .dropcap, .toggle.hover .toggle-title, li.comment cite a:hover, h3.widget-title, .post-meta .meta-title:hover, .the-latest a:hover h4, .aw_socialcounter_widget li a:hover, .aw_tabbed_widget #tab-latest-comments a:hover { color: #0099cc; }
+		a:hover { color: #b30000; }
+		input:focus, textarea:focus { border-color: #0099cc; }
+		#searchsubmit, .highlight, .aw_tabbed_widget .tabs ul.nav li.active a, footer .aw_tabbed_widget .tabs ul.nav li.active a, #top .aw_tabbed_widget .tabs ul.nav li.active a, .aw_tabbed_widget .tabs ul.nav li a:hover, footer .aw_tabbed_widget .tabs ul.nav li a:hover, #top .aw_tabbed_widget .tabs ul.nav li a:hover, .aw_twitter_widget .twitter-icon, .testimonial-icon, #top-closed:hover, .flex-control-nav a:hover, .flex-control-nav a.flex-active { background-color: #0099cc; }
+		.submit { background-color: #0099cc; border-color: #007399; }
+		.submit:hover { background-color: #b30000; border-color: #860000; }
+		#searchsubmit:hover { background-color: #b30000; }
+		.toggle.hover .toggle-icon { border-top-color: #0099cc; }
+		.toggle.hover.active .toggle-icon { border-bottom-color: #0099cc; }
+		.flex-direction-nav li .flex-prev:hover { border-right-color: #0099cc; }
+		.flex-direction-nav li .flex-next:hover { border-left-color: #0099cc; }
+		@media only screen and (min-width: 768px) and (max-width: 959px) {
+			.aw_tabbed_widget .tabs ul.nav li a:hover, .tabs ul.nav li.active a { color: #0099cc; }
+		}
+		@media screen and (max-width: 767px) {
+			.tabs ul.nav li a:hover, .tabs ul.nav li.active a { color: #0099cc; }
+		}
+	</style>
+		
+	<!--[if IE 8]>
+		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<script src="http://ie7-js.googlecode.com/svn/version/2.1(beta4)/IE9.js"></script>
+    <![endif]-->
+
+	<!-- Links: RSS + Atom Syndication + Pingback etc. -->
+	<link rel="alternate" type="application/rss+xml" title="博客 &#8211; 伯乐在线 RSS Feed" href="http://blog.jobbole.com/feed/" />
+	<link rel="alternate" type="text/xml" title="RSS .92" href="http://blog.jobbole.com/feed/rss/" />
+	<link rel="alternate" type="application/atom+xml" title="Atom 0.3" href="http://blog.jobbole.com/feed/atom/" />
+	<link rel="pingback" href="http://blog.jobbole.com/xmlrpc.php" />
+    <script src="http://tjs.sjs.sinajs.cn/open/api/js/wb.js?appkey=2606191112" type="text/javascript" charset="utf-8"></script>
+
+<!-- END head -->
+</head>
+
+<!-- BEGIN body -->
+<body class="single single-post postid-79252 single-format-standard unknown no-js">
+
+		
+	
+	<!-- BEGIN #top-nav -->
+	<nav id="top-nav" class="menu-nav">
+		
+		<!-- BEGIN .container -->
+		<div class="container">
+
+			            <div class="grid-12">
+                <ul id="menu-main-menu" class="menu">
+                    <li id="menu-item-46856" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-46856"><a href="http://top.jobbole.com/?utm_source=jobboleblog-top-nav">头条</a></li>
+                    <li id="menu-item-46860" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-46860"><a href="http://hao.jobbole.com/?utm_source=jobboleblog-top-nav">资源</a></li>
+                    <li id="menu-item-74449" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-74449"><a href="http://fanyi.jobbole.com/?utm_source=jobboleblog-top-nav">翻译</a></li>
+                    <li id="menu-item-46858" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-46858"><a href="http://www.jobbole.com/groups?utm_source=jobboleblog-top-nav">小组</a></li>
+                    <li id="menu-item-46858" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-46858"><a href="http://blog.jobbole.com/?utm_source=jobboleblog-top-nav">博客</a></li>
+                                        <li id="menu-item-46861" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-46861"><a href="http://www.jobbole.com/register/?utm_source=jobboleblog-top-nav">注册</a></li>
+                    <li id="menu-item-46862" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-46862"><a href="http://www.jobbole.com/wp-login.php">登录</a></li>
+                                    </ul>
+            </div>
+			<div class="clear"></div>
+		
+		</div>
+		<!-- END .container -->
+    
+	</nav>
+	<!-- END #top-nav -->
+	
+	  	
+	<!-- BEGIN #wrapper -->
+	<div id="wrapper" class="container">
+
+		<!-- BEGIN header -->
+		<header>
+		
+						
+			<div class="header-wrapper">
+								
+				<!-- BEGIN #logo -->
+				<div id="logo" class="leaderboard-true">
+				
+										<a href="http://blog.jobbole.com"><img src="http://jbcdn2.b0.upaiyun.com/2013/12/jbblog-logo.png" width="137" height="85" alt="博客 &#8211; 伯乐在线"/></a>
+									
+				</div>
+				<!-- END #logo -->
+				
+				<!-- BEGIN #leaderboard -->
+				<div id="leaderboard">
+				
+					<script language=javascript> 
+var randomNumTop = Math.round(Math.random()*7);
+var imageTop=new Array(8);
+imageTop[0]="http://top.jobbole.com/wp-content/uploads/sites/8/2014/11/c31b32364ce19ca8fcd150a417ecce58.jpg";
+imageTop[1]="http://top.jobbole.com/wp-content/uploads/sites/8/2014/11/fc35fdc70d5fc69d269883a822c7a53e.jpg";
+imageTop[2]="http://top.jobbole.com/wp-content/uploads/sites/8/2014/11/7fe3b773e6bf4f0e75b757adb0a60f90.jpg";
+imageTop[3]="http://top.jobbole.com/wp-content/uploads/sites/8/2014/11/93f725a07423fe1c889f448b33d21f46.jpg";
+imageTop[4]="http://top.jobbole.com/wp-content/uploads/sites/8/2014/11/0f64764c62b29a7d7182d0b143121550.jpg";
+imageTop[5]="http://top.jobbole.com/wp-content/uploads/sites/8/2014/11/802a181dcf3e7ceb6b1a44c3775d64b5.jpg";
+imageTop[6]="http://top.jobbole.com/wp-content/uploads/sites/8/2014/11/8d8c03a0af30f1d76b5fb5139b141d0b.jpg";
+imageTop[7]="http://top.jobbole.com/wp-content/uploads/sites/8/2014/11/f5430db2b57d4b7ffee1680e3465fd8a.jpg";
+var imageUrlTop=imageTop[randomNumTop];
+var urlsTop=new Array(8);
+urlsTop[0]="http://www.imooc.com/view/96?utm_source=jobboleblog";
+urlsTop[1]="http://www.imooc.com/view/9?utm_source=jobboleblog";
+urlsTop[2]="http://www.imooc.com/view/149?utm_source=jobboleblog";
+urlsTop[3]="http://www.imooc.com/view/85?utm_source=jobboleblog";
+urlsTop[4]="http://www.imooc.com/view/175?utm_source=jobboleblog";
+urlsTop[5]="http://www.imooc.com/view/100?utm_source=jobboleblog";
+urlsTop[6]="http://www.imooc.com/view/40?utm_source=jobboleblog";
+urlsTop[7]="http://www.imooc.com/view/75?utm_source=jobboleblog";
+var urlTop = urlsTop[randomNumTop];
+var adHTML = "<a href='"+urlTop+"' target='_blank'><img src='"+imageUrlTop+"' border='0'></a>";
+document.write(adHTML);
+</script>				
+				</div>
+				<!-- END #leaderboard -->
+				
+				<div class="clear"></div>
+			
+			</div>
+			
+						
+			<div class="clear"></div>
+			
+			<!-- BEGIN #main-nav -->
+			<nav id="main-nav" class="grid-12 menu-nav">
+
+				<div class="menu-sub-menu-container"><ul id="main-nav-menu" class="menu"><li id="menu-item-33290" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-33290"><a href="http://blog.jobbole.com/">首页</a></li>
+<li id="menu-item-33406" class="menu-item menu-item-type-post_type menu-item-object-page current_page_parent menu-item-33406"><a href="http://blog.jobbole.com/all-posts/">最新文章</a></li>
+<li id="menu-item-70342" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-70342"><a href="http://blog.jobbole.com/category/online-courses/">在线课程</a></li>
+<li id="menu-item-33325" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33325"><a href="http://blog.jobbole.com/category/news/">业界</a></li>
+<li id="menu-item-33319" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33319"><a href="http://blog.jobbole.com/category/programmer/">开发</a></li>
+<li id="menu-item-33313" class="menu-item menu-item-type-taxonomy menu-item-object-category current-post-ancestor current-menu-parent current-post-parent menu-item-33313"><a href="http://blog.jobbole.com/category/it-tech/">IT技术</a>
+<ul class="sub-menu">
+	<li id="menu-item-55604" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55604"><a href="http://blog.jobbole.com/tag/linux/">Linux</a></li>
+	<li id="menu-item-55607" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55607"><a href="http://blog.jobbole.com/tag/unix/">UNIX</a></li>
+	<li id="menu-item-55605" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55605"><a href="http://blog.jobbole.com/tag/mysql/">MySQL</a></li>
+	<li id="menu-item-55621" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55621"><a href="http://blog.jobbole.com/tag/nosql/">NoSQL</a></li>
+	<li id="menu-item-55622" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55622"><a href="http://blog.jobbole.com/tag/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a></li>
+	<li id="menu-item-55606" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55606"><a href="http://blog.jobbole.com/tag/git/">Git</a></li>
+	<li id="menu-item-55635" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55635"><a href="http://blog.jobbole.com/tag/%E7%AE%97%E6%B3%95/">算法</a></li>
+	<li id="menu-item-55612" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55612"><a href="http://blog.jobbole.com/tag/%e6%b5%8b%e8%af%95/">测试</a></li>
+	<li id="menu-item-55618" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55618"><a href="http://blog.jobbole.com/tag/%e5%ae%89%e5%85%a8/">信息安全</a></li>
+	<li id="menu-item-55636" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55636"><a href="http://blog.jobbole.com/tag/vim/">Vim</a></li>
+</ul>
+</li>
+<li id="menu-item-33323" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33323"><a href="http://blog.jobbole.com/category/design/">设计</a>
+<ul class="sub-menu">
+	<li id="menu-item-55610" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55610"><a href="http://blog.jobbole.com/tag/%e7%bd%91%e9%a1%b5%e8%ae%be%e8%ae%a1/">网页设计</a></li>
+	<li id="menu-item-55608" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55608"><a href="http://blog.jobbole.com/tag/ui/">UI设计</a></li>
+	<li id="menu-item-55609" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55609"><a href="http://blog.jobbole.com/tag/%e4%ba%a4%e4%ba%92%e8%ae%be%e8%ae%a1/">交互设计</a></li>
+	<li id="menu-item-55611" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55611"><a href="http://blog.jobbole.com/tag/%e7%94%a8%e6%88%b7%e4%bd%93%e9%aa%8c/">用户体验</a></li>
+</ul>
+</li>
+<li id="menu-item-33317" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33317"><a href="http://blog.jobbole.com/category/startup/">创业</a></li>
+<li id="menu-item-33390" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33390"><a href="http://blog.jobbole.com/category/career/">IT职场</a></li>
+<li id="menu-item-56110" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-56110"><a href="http://blog.jobbole.com/category/overseas/">在国外</a></li>
+<li id="menu-item-59536" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-59536"><a href="#">频道</a>
+<ul class="sub-menu">
+	<li id="menu-item-57230" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-57230"><a href="http://blog.jobbole.com/category/webfront/">Web前端</a></li>
+	<li id="menu-item-56557" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-56557"><a href="http://blog.jobbole.com/category/ios/">iOS</a></li>
+	<li id="menu-item-59344" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-59344"><a href="http://blog.jobbole.com/category/android/">Android</a></li>
+	<li id="menu-item-56965" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-56965"><a href="http://blog.jobbole.com/category/python/">Python</a></li>
+	<li id="menu-item-53194" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-53194"><a href="http://www.importnew.com">Java</a></li>
+	<li id="menu-item-57616" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-57616"><a href="http://blog.jobbole.com/category/c-cpp/">C/C++</a></li>
+	<li id="menu-item-57003" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-57003"><a href="http://blog.jobbole.com/category/php-programmer/">PHP</a></li>
+	<li id="menu-item-55603" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55603"><a href="http://blog.jobbole.com/tag/ruby/">Ruby</a></li>
+	<li id="menu-item-70347" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-70347"><a href="http://blog.jobbole.com/tag/go/">Go</a></li>
+</ul>
+</li>
+<li id="menu-item-33388" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33388"><a href="http://blog.jobbole.com/category/other/">更多 ></a>
+<ul class="sub-menu">
+	<li id="menu-item-56094" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-56094"><a href="http://blog.jobbole.com/category/interview/">访谈</a></li>
+	<li id="menu-item-56111" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-56111"><a href="http://blog.jobbole.com/tag/featuredpost/">经典回顾</a></li>
+	<li id="menu-item-33665" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33665"><a href="http://blog.jobbole.com/category/humor-comic/">趣文</a></li>
+	<li id="menu-item-33321" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33321"><a href="http://blog.jobbole.com/category/freelance/">自由职业</a></li>
+	<li id="menu-item-33408" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33408"><a href="http://blog.jobbole.com/category/resources/">工具与资源</a></li>
+	<li id="menu-item-33407" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33407"><a href="http://blog.jobbole.com/category/books/">书籍与教程</a></li>
+</ul>
+</li>
+</ul></div>				
+				<div class="clear"></div>
+            
+			</nav>
+			<!-- END #main-nav -->
+			
+			<div class="clear"></div>
+		
+		</header>
+		<!-- END header -->
+		
+		<div id="breadcrumb" class="grid-12 margin-20"><div class="breadcrumb-wrapper"><!-- Breadcrumb NavXT 4.4.0 -->
+<a title="Go to 伯乐在线." href="http://www.jobbole.com" class="main-home">伯乐在线</a> &gt; <a href="http://blog.jobbole.com" class="home">首页</a> &gt; <a href="http://blog.jobbole.com/all-posts/" class="post-root post-post">所有文章</a> &gt; <a href="http://blog.jobbole.com/category/it-tech/" class="category">IT技术</a> &gt; 10分钟掌握XML、JSON及其解析</div></div><div class="clear"></div>
+
+<!-- BEGIN .grid-8 -->
+<div class="grid-8">
+
+		
+	<!-- BEGIN .post -->
+<div class="post-79252 post type-post status-publish format-standard hentry category-it-tech tag-json tag-xml odd" id="post-79252">
+	
+	<!-- BEGIN .entry-header -->
+	<div class="entry-header">
+	
+				
+		<h1>10分钟掌握XML、JSON及其解析</h1>
+		
+							
+	</div>
+	<!-- BEGIN .entry-header -->
+	
+	<!-- BEGIN .entry-meta -->
+	<div class="entry-meta">
+	
+		<p class="entry-meta-hide-on-mobile">2014/11/03 | 分类： <a href="http://blog.jobbole.com/category/it-tech/" title="查看 IT技术 中的全部文章" rel="category tag">IT技术</a> | <a href="http://blog.jobbole.com/79252/#respond" title="《10分钟掌握XML、JSON及其解析》上的评论">0 条评论</a>
+
+		 | 标签： <a href="http://blog.jobbole.com/tag/json/">JSON</a>, <a href="http://blog.jobbole.com/tag/xml/">XML</a></p>
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style" style="display: block; margin: 0 0px; clear: both;"><span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_tsina"></a>
+<a class="jiathis_button_weixin"></a>
+<a class="jiathis_button_qzone"></a>
+<a class="jiathis_button_fb"></a>
+<a class="jiathis_button_renren"></a>
+<a class="jiathis_button_douban"></a>
+<a class="jiathis_button_readitlater"></a>
+<a class="jiathis_button_evernote"></a>
+<a class="jiathis_button_ydnote"></a>
+<a href="http://www.jiathis.com/share?uid=1745061" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+<a class="jiathis_counter_style"></a>
+</div>
+<!-- JiaThis Button END -->
+
+
+	</div>
+	<!-- END .entry-meta -->
+
+	<!-- BEGIN .entry -->
+	<div class="entry">
+					
+		<p class='copyright-area'>原文出处： <a ref='nofollow' target='_blank' href='http://longluo.github.io/blog/20141031/master-XML-JSON-and-how-to-aprse-them-in-10-minutes/'>Long Luo 的博客（@Long_Luo）</a>&nbsp;&nbsp;&nbsp;欢迎分享原创到<a href='http://top.jobbole.com/?utm_source=jobboleblog-article' target='_blank'>伯乐头条</a></p>
+<!-- div id="ad1">
+<script type="text/javascript">
+google_ad_client = "ca-pub-7056282119617872";
+google_ad_slot = "6645040531";
+google_ad_width = 300;
+google_ad_height = 250;
+</script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+</div>
+<br/ -->
+
+<h1>引言</h1>
+<p>NOKIA 有句著名的广告语：“<strong><em>科技以人为本</em></strong>”。任何技术都是为了满足人的生产生活需要而产生的。具体到小小的一个手机，里面蕴含的技术也是浩如烟海，是几千年来人类科技的结晶，单个人穷其一生也未必能掌握其一角。不过个人一直认为基本的技术和思想是放之四海而皆准的，许多技术未必需要我们从头到尾再研究一遍，我们要做的就是站在巨人的肩膀上，利用其成果来为人们的需求服务。</p>
+<p>随着移动互联网时代的大潮，越来越多的App<strong>不光是需要和网络服务器进行数据传输和交互，也需要和其他 App 进行数据传递</strong>。承担App与网络来进行传输和存储数据的一般是XML或者JSON。在移动互联网时代，XML和JSON很重要。</p>
+<p>最近一段时间，个人综合了之前对XML、JSON的一些了解，参考了相关资料，再结合视频的代码，把自己的一些思考融入了这篇总结文档中，同时尝试用通俗诙谐的语言风格来阐述，期望能给感兴趣的读者带来帮助。</p>
+<p>为了不和时代落伍，我们必须要学习 XML 和 JSON，但同时它们也很容易学习，Let’s start:–)</p>
+<h1>一、XML</h1>
+<p>XML即<strong>可扩展标记语言</strong>(<strong><em>eXtensible Markup Language</em></strong>)。标记是指计算机所能理解的信息符号，通过此种标记，计算机之间可以处理包含各种信息的文章等。如何定义这些标记，既可以选择国际通用的标记语言，比如HTML，也可以使用象XML这样由相关人士自由决定的标记语言，这就是语言的可扩展性。XML是从SGML中简化修改出来的。它主要用到的有XML、XSL和XPath等。</p>
+<p>上面这段是对XML的一个基本定义，一个被广泛接受的说明。简单说，XML就是一种数据的描述语言，虽然它是语言，但是通常情况下，它并不具备常见语言的基本功能——被计算机识别并运行。只有依靠另一种语言，来解释它，使它达到你想要的效果或被计算机所接受。</p>
+<p>记住以下几点就行了：</p>
+<ul>
+<li>XML是一种标记语言，很类似HTML</li>
+<li>XML的设计宗旨是传输数据，而非显示数据</li>
+<li>XML标签没有被预定义。您需要自行定义标签。</li>
+<li>XML被设计为具有自我描述性。</li>
+<li>XML是W3C的推荐标准</li>
+</ul>
+<p>总结：</p>
+<p>XML是独立于软件和硬件的信息传输工具。 目前，XML在Web中起到的作用不会亚于一直作为 Web 基石的 HTML。 <strong>XML无所不在</strong>。XML是各种应用程序之间进行<strong>数据传输的最常用的工具</strong>，并且在信息存储和描述领域变得越来越流行。</p>
+<h2>1.1 XML属性</h2>
+<h3>1.1.1 XML与HTML的主要差异</h3>
+<ul>
+<li>XML不是HTML的替代。</li>
+<li>XML和HTML为不同的目的而设计。</li>
+<li>XML被设计为传输和存储数据，其焦点是数据的内容。</li>
+<li>HTML被设计用来显示数据，其焦点是数据的外观。</li>
+<li>HTML旨在显示信息，而 XML 旨在传输信息</li>
+</ul>
+<h3>1.1.2 XML是不作为的。</h3>
+<p>也许这有点难以理解，但是XML不会做任何事情。XML被设计用来<strong>结构化、存储以及传输信息</strong>。</p>
+<p>下面是John写给George的便签，存储为XML：</p>
+<pre class="brush: xml; gutter: true">&lt;note&gt;
+&lt;to&gt;George&lt;/to&gt;
+&lt;from&gt;John&lt;/from&gt;
+&lt;heading&gt;Reminder&lt;/heading&gt;
+&lt;body&gt;Don&#039;t forget the meeting!&lt;/body&gt;
+&lt;/note&gt;</pre>
+<p>上面的这条便签具有自我描述性。它拥有标题以及留言，同时包含了发送者和接受者的信息。但是，这个 XML 文档仍然没有做任何事情。它仅仅是包装在XML标签中的纯粹的信息。我们需要编写软件或者程序，才能传送、接收和显示出这个文档。</p>
+<h3>1.1.3 XML仅仅是纯文本</h3>
+<p>XML没什么特别的。它仅仅是纯文本而已。有能力处理纯文本的软件都可以处理XML。 不过，能够读懂 XML 的应用程序可以有针对性地处理 XML 的标签。标签的功能性意义依赖于应用程序的特性。</p>
+<h3>1.1.4 XML允许自定义标签</h3>
+<p>上例中的标签没有在任何XML标准中定义过（比如和）。这些标签是由文档的创作者发明的。这是因为XML没有预定义的标签。</p>
+<p>在HTML中使用的标签（以及HTML的结构）是预定义的。HTML文档只使用在HTML标准中定义过的标签（比如<code>&lt;p&gt;</code>，<code>&lt;h1&gt;</code> 等等）。</p>
+<p>XML允许创作者定义自己的标签和自己的文档结构。</p>
+<h3>1.1.5 XML不是对HTML的替代</h3>
+<p>XML是对HTML的补充。</p>
+<p>XML不会替代HTML，理解这一点很重要。在大多数 web 应用程序中，XML用于传输数据，而HTML用于格式化并显示数据。</p>
+<h2>1.2 XML的语法</h2>
+<p>XML的语法规则很简单，且很有逻辑。这些规则很容易学习，也很容易使用。</p>
+<h4>1.2.1 所有元素都必须有关闭标签</h4>
+<p>在XML中，省略关闭标签是非法的。所有元素都<strong>必须有关闭标签</strong>。 在HTML，经常会看到没有关闭标签的元素：</p>
+<pre class="brush: xml; gutter: true">&lt;p&gt;This is a paragraph
+&lt;p&gt;This is another paragraph</pre>
+<p>在XML中，省略关闭标签是非法的。所有元素都必须有关闭标签：</p>
+<pre class="brush: actionscript3; gutter: true">&lt;p&gt;This is a paragraph&lt;/p&gt;
+&lt;p&gt;This is another paragraph&lt;/p&gt;</pre>
+<p>注释：您也许已经注意到XML声明没有关闭标签。这不是错误。声明不属于XML本身的组成部分。它不是XML元素，也不需要关闭标签。</p>
+<h4>1.2.2 XML标签对大小写敏感</h4>
+<p>XML元素使用XML标签进行定义。</p>
+<p>XML标签对大小写敏感。在XML中，标签与标签是不同的。</p>
+<p>必须使用相同的大小写来编写打开标签和关闭标签：</p>
+<pre class="brush: xml; gutter: true">&lt;Message&gt;这是错误的。&lt;/message&gt;
+&lt;message&gt;这是正确的。&lt;/message&gt;</pre>
+<h4>1.2.3 XML标签对大小写敏感</h4>
+<p>在 HTML 中，常会看到没有正确嵌套的元素：</p>
+<pre class="brush: html; gutter: true">&lt;b&gt;&lt;i&gt;This text is bold and italic&lt;/b&gt;&lt;/i&gt;</pre>
+<p>在 XML中，所有元素都必须彼此正确地嵌套：</p>
+<pre class="brush: xml; gutter: true">&lt;b&gt;&lt;i&gt;This text is bold and italic&lt;/i&gt;&lt;/b&gt;</pre>
+<p>在上例中，正确嵌套的意思是：由于<code>&lt;i&gt;</code>元素是在<code>&lt;b&gt;</code>元素内打开的，那么它必须在<code>&lt;b&gt;</code>元素内关闭。</p>
+<h4>1.2.4 XML文档必须有根元素</h4>
+<p>XML文档必须有一个元素是所有其他元素的父元素。该元素称为根元素。</p>
+<pre class="brush: xml; gutter: true">&lt;root&gt;
+  &lt;child&gt;
+    &lt;subchild&gt;.....&lt;/subchild&gt;
+  &lt;/child&gt;
+&lt;/root&gt;</pre>
+<h4>1.2.5 XML的属性值须加引号</h4>
+<p>与 HTML 类似，XML 也可拥有属性（名称/值的对）。 在 XML 中，XML 的属性值须加引号。请研究下面的两个 XML 文档。第一个是错误的，第二个是正确的：</p>
+<pre class="brush: xml; gutter: true">&lt;note date=08/08/2008&gt;
+&lt;to&gt;George&lt;/to&gt;
+&lt;from&gt;John&lt;/from&gt;
+&lt;/note&gt; 
+
+&lt;note date=&quot;08/08/2008&quot;&gt;
+&lt;to&gt;George&lt;/to&gt;
+&lt;from&gt;John&lt;/from&gt;
+&lt;/note&gt;</pre>
+<h4>1.2.6 实体引用</h4>
+<p>在 XML 中，一些字符拥有特殊的意义。 如果你把字符 “&lt;” 放在 XML 元素中，会发生错误，这是因为解析器会把它当作新元素的开始。 这样会产生 XML 错误：</p>
+<pre class="brush: xml; gutter: true">&lt;message&gt;if salary &lt; 1000 then&lt;/message&gt;</pre>
+<p>为了避免这个错误，请用实体引用来代替 “&lt;” 字符：</p>
+<pre class="brush: xml; gutter: true">&lt;message&gt;if salary &amp;lt; 1000 then&lt;/message&gt;</pre>
+<p>在 XML 中，有 5 个预定义的实体引用：</p>
+<pre class="brush: xml; gutter: true">&amp;lt;    &lt;   小于
+&amp;gt;    &gt;   大于
+&amp;amp;   &amp;   和号
+&#039;  &#039;   单引号
+&amp;quot;  &quot;   引号</pre>
+<p>注释：在 XML 中，只有字符 “&lt;” 和 “&amp;” 确实是非法的。大于号是合法的，但是用实体引用来代替它是一个好习惯。</p>
+<h4>1.2.7 XML中的注释</h4>
+<p>在 XML 中编写注释的语法与 HTML 的语法很相似：</p>
+<pre class="brush: xml; gutter: true">&lt;!-- This is a comment --&gt;</pre>
+<p>在 XML 中，空格会被保留 HTML 会把多个连续的空格字符裁减（合并）为一个：</p>
+<pre class="brush: xml; gutter: true">HTML:   Hello           my name is David.</pre>
+<p>输出: Hello my name is David. 在 XML 中，文档中的空格不会被删节。</p>
+<h4>1.2.8 以 LF 存储换行</h4>
+<p>在 Windows 应用程序中，换行通常以一对字符来存储：回车符 (CR) 和换行符 (LF)。这对字符与打字机设置新行的动作有相似之处。在 Unix 应用程序中，新行以 LF 字符存储。而 Macintosh 应用程序使用CR来存储新行。</p>
+<h3>1.3 XML CDATA</h3>
+<p>所有XML文档中的文本均会被解析器解析。</p>
+<p>只有CDATA区段（CDATA section）中的文本会被解析器忽略。</p>
+<h4>1.3.1 PCDATA</h4>
+<p>PCDATA指的是被解析的字符数据（Parsed Character Data）。</p>
+<p>XML解析器通常会解析XML文档中所有的文本。 当某个XML元素被解析时，其标签之间的文本也会被解析：</p>
+<pre class="brush: xml; gutter: true">&lt;message&gt;此文本也会被解析&lt;/message&gt;</pre>
+<p>解析器之所以这么做是因为 XML 元素可包含其他元素，就像这个例子中，其中的元素包含着另外的两个元素(first和last)：</p>
+<pre class="brush: actionscript3; gutter: true">&lt;name&gt;&lt;first&gt;Bill&lt;/first&gt;&lt;last&gt;Gates&lt;/last&gt;&lt;/name&gt;</pre>
+<p>而解析器会把它分解为像这样的子元素：</p>
+<pre class="brush: actionscript3; gutter: true">&lt;name&gt;
+   &lt;first&gt;Bill&lt;/first&gt;
+   &lt;last&gt;Gates&lt;/last&gt;
+&lt;/name&gt;</pre>
+<h4>1.3.2 转义字符</h4>
+<p>非法的XML字符必须被替换为实体引用（entity reference）。</p>
+<p>假如您在XML文档中放置了一个类似 “&lt;” 字符，那么这个文档会产生一个错误，这是因为解析器会把它解释为新元素的开始。因此你不能这样写：</p>
+<pre class="brush: xml; gutter: true">&lt;message&gt;if salary &lt; 1000 then&lt;/message&gt;</pre>
+<p>为了避免此类错误，需要把字符 “&lt;” 替换为实体引用，就像这样：</p>
+<pre class="brush: xml; gutter: true">&lt;message&gt;if salary &amp;lt; 1000 then&lt;/message&gt;</pre>
+<p>在 XML 中有 5 个预定义的实体引用：</p>
+<pre class="brush: xml; gutter: true">&amp;lt;    &lt;   小于
+&amp;gt;    &gt;   大于
+&amp;amp;   &amp;   和号
+&#039;  &#039;   省略号
+&amp;quot;  &quot;   引号</pre>
+<p>注释：严格地讲，在XML中仅有字符”&lt;“和”&amp;“是非法的。省略号、引号和大于号是合法的，但是把它们替换为实体引用是个好的习惯。</p>
+<h4>1.3.3 CDATA</h4>
+<p>术语CDATA指的是不应由XML解析器进行解析的文本数据（Unparsed Character Data）。</p>
+<p>在 XML 元素中，”&lt;“ 和 ”&amp;“ 是非法的。</p>
+<p>“&lt;” 会产生错误，因为解析器会把该字符解释为新元素的开始。 “&amp;” 也会产生错误，因为解析器会把该字符解释为字符实体的开始。</p>
+<p>某些文本，比如 JavaScript 代码，包含大量 “&lt;” 或 “&amp;” 字符。为了避免错误，可以将脚本代码定义为 CDATA。 CDATA 部分中的所有内容都会被解析器忽略。 CDATA 部分由 “&lt;![CDATA[” 开始，由 “]]&gt;” 结束：</p>
+<pre class="brush: xml; gutter: true">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;response&gt; 
+  &lt;header&gt; 
+    &lt;respcode&gt;0&lt;/respcode&gt;  
+    &lt;total&gt;1736&lt;/total&gt; 
+  &lt;/header&gt;  
+  &lt;result&gt; 
+    &lt;album&gt; 
+      &lt;album_id&gt;320305900&lt;/album_id&gt;  
+      &lt;title&gt; &lt;![CDATA[ 电影侃侃之初恋永不早 ]]&gt; &lt;/title&gt;  
+      &lt;tag&gt; &lt;![CDATA[ 18岁以上 当代 暧昧 华语 ]]&gt; &lt;/tag&gt;  
+      &lt;img&gt;http://pic9.qiyipic.com/image/20141016/ec/e0/v_108639906_m_601_120_160.jpg&lt;/img&gt;  
+      &lt;img180236&gt;http://pic9.qiyipic.com/image/20141016/ec/e0/v_108639906_m_601_180_236.jpg&lt;/img180236&gt;  
+      &lt;img11577&gt;http://pic9.qiyipic.com/image/20141016/ec/e0/v_108639906_m_601_115_77.jpg&lt;/img11577&gt;  
+      &lt;img220124&gt;http://pic9.qiyipic.com/image/20141016/ec/e0/v_108639906_m_601_284_160.jpg&lt;/img220124&gt;  
+      &lt;category_id&gt;1&lt;/category_id&gt;  
+      &lt;score&gt;0.0&lt;/score&gt;  
+      &lt;voters&gt;0&lt;/voters&gt;  
+      &lt;tv_sets&gt;0&lt;/tv_sets&gt;  
+      &lt;duration&gt;00:38:57&lt;/duration&gt;  
+      &lt;year&gt; &lt;![CDATA[ 2014 ]]&gt; &lt;/year&gt;  
+      &lt;tv_focus&gt;跟爱情片学把妹心经&lt;/tv_focus&gt;  
+      &lt;episode_count&gt;1&lt;/episode_count&gt;  
+      &lt;directors&gt; &lt;![CDATA[ 关雅荻 ]]&gt; &lt;/directors&gt;  
+      &lt;mainactors&gt; &lt;![CDATA[ 关雅荻 ]]&gt; &lt;/mainactors&gt;  
+      &lt;actors&gt; &lt;![CDATA[ ]]&gt; &lt;/actors&gt;  
+      &lt;vv2&gt; &lt;![CDATA[ 15 ]]&gt; &lt;/vv2&gt;  
+      &lt;timeText&gt; &lt;![CDATA[ 今天 ]]&gt; &lt;/timeText&gt;  
+      &lt;first_issue_time&gt; &lt;![CDATA[ 2014-10-16 ]]&gt; &lt;/first_issue_time&gt;  
+      &lt;up&gt;0&lt;/up&gt;  
+      &lt;down&gt;0&lt;/down&gt;  
+      &lt;download&gt;1&lt;/download&gt;  
+      &lt;purchase_type&gt;0&lt;/purchase_type&gt;  
+      &lt;hot_or_new&gt;0&lt;/hot_or_new&gt;  
+      &lt;createtime&gt;2014-10-16 12:25:08&lt;/createtime&gt;  
+      &lt;purchase&gt;0&lt;/purchase&gt;  
+      &lt;desc&gt; &lt;![CDATA[
+本期节目主持人介绍新近上映的口碑爱情片，。主持人轻松幽默的罗列出胡鳄鱼导演拍摄的爱情片越来越接地气，博得观众的认同和追捧，更提出“初恋永远不嫌早”的口号。观众可以跟着爱情片学习把妹心经。
+]]&gt; &lt;/desc&gt;  
+      &lt;ip_limit&gt;1&lt;/ip_limit&gt;  
+      &lt;episodes/&gt; 
+    &lt;/album&gt; 
+  &lt;/result&gt; 
+&lt;/response&gt;</pre>
+<h6>这是展示一部电影的具体数据，包括标题、介绍、内容、导演、演员、时长、上映年份等很多内容。</h6>
+<h2>1.5 XML树结构</h2>
+<p><strong>XML文档形成了一种树结构，它从“根部”开始，然后扩展到“枝叶”。</strong></p>
+<h3>1.5.1 一个XML文档实例</h3>
+<p>XML使用简单的具有自我描述性的语法：</p>
+<pre class="brush: xml; gutter: true">&lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;
+&lt;note&gt;
+&lt;to&gt;George&lt;/to&gt;
+&lt;from&gt;John&lt;/from&gt;
+&lt;heading&gt;Reminder&lt;/heading&gt;
+&lt;body&gt;Don&#039;t forget the meeting!&lt;/body&gt;
+&lt;/note&gt;</pre>
+<p>第一行是XML声明。它定义XML的版本(1.0)和所使用的编码(ISO-8859-1=Latin-1/西欧字符集)。</p>
+<p>下一行描述文档的根元素（像在说：“本文档是一个便签”）：</p>
+<pre class="brush: xml; gutter: true">&lt;note&gt;</pre>
+<p>接下来 4 行描述根的 4 个子元素（to, from, heading 以及 body）：</p>
+<pre class="brush: xml; gutter: true">&lt;to&gt;George&lt;/to&gt;
+&lt;from&gt;John&lt;/from&gt;
+&lt;heading&gt;Reminder&lt;/heading&gt;
+&lt;body&gt;Don&#039;t forget the meeting!&lt;/body&gt;</pre>
+<p>最后一行定义根元素的结尾：</p>
+<pre class="brush: xml; gutter: true">&lt;/note&gt;</pre>
+<p>从本例可以设想，该XML文档包含了John给George的一张便签。</p>
+<ul>
+<li>XML具有出色的自我描述性，你同意吗？</li>
+<li>XML文档形成一种树结构</li>
+<li>XML文档必须包含根元素。该元素是所有其他元素的父元素。</li>
+<li>XML文档中的元素形成了一棵文档树。这棵树从根部开始，并扩展到树的最底端。</li>
+</ul>
+<p>所有元素均可拥有子元素：</p>
+<pre class="brush: xml; gutter: true">&lt;root&gt;
+  &lt;child&gt;
+    &lt;subchild&gt;.....&lt;/subchild&gt;
+  &lt;/child&gt;
+&lt;/root&gt;</pre>
+<p>父、子以及同胞等术语用于描述元素之间的关系。父元素拥有子元素。相同层级上的子元素成为同胞（兄弟或姐妹）。</p>
+<p>所有元素均可拥有文本内容和属性（类似HTML中）。</p>
+<h2>1.6 XML DOM</h2>
+<p>想到这里，大家都有点迫不及待了，XML 文件到底如何解析呢？</p>
+<p>但是，别急，让子弹先飞会儿:–)</p>
+<p>在XML解析之前，我们必须系统性的学习一下 XML DOM 知识：</p>
+<h3>1.6.1 定义</h3>
+<p>XML DOM(<strong>XML Document Object Model</strong>) 定义了访问和操作XML文档的标准方法。</p>
+<p>DOM把XML文档作为树结构来查看。能够通过DOM树来访问所有元素。可以修改或删除它们的内容，并创建新的元素。元素，它们的文本，以及它们的属性，都被认为是节点。</p>
+<p>XML DOM是：</p>
+<ul>
+<li>用于XML的标准对象模型</li>
+<li>用于XML的标准编程接口</li>
+<li>中立于平台和语言</li>
+<li>W3C的标准</li>
+</ul>
+<p>XML DOM定义了所有XML元素的对象和属性，以及访问它们的方法（接口）。</p>
+<p>换句话说：</p>
+<pre class="brush: xml; gutter: true">XML DOM是用于获取、更改、添加或删除XML元素的标准</pre>
+<h5>DOM将XML文档作为一个树形结构，而树叶被定义为节点。</h5>
+<h3>1.6.2 总结</h3>
+<p>XML DOM其实比较复杂，在这么短的篇幅里也无法一一进行讲解。想详细了解XML DOM可以好好去学习下</p>
+<h2>1.7 XML如何解析？</h2>
+<p>上面讲了这么多关于XML的东西，那么XML文件应该如何解析呢？</p>
+<p>终于到了我们的重头戏了</p>
+<p>下面以视频项目为例，展示如何解析XML文件：</p>
+<h3>1.7.1 Step 1</h3>
+<h5>XML文件是一棵树，首先需要找到对应的节点，然后从节点开始解析，比如搜索找到的就是result/weights/weight 和result/weights/weight 2个节点，分别从这个开始解析：</h5>
+<pre class="brush: xml; gutter: true">public ResultInfo onParser(Element rootElement) {
+    int resp = -1;
+    try {
+        String elName = &quot;header/respcode&quot;;
+        resp = Integer.parseInt(selectNodeString(rootElement, elName));
+    } catch (NumberFormatException e) {
+        e.printStackTrace();
+    }
+
+    Log.d(TAG, &quot;resp= &quot; + resp);
+
+    if (resp != 0) {
+        return null;
+    }
+
+    ResultInfo searchResultInfo = new ResultInfo();
+
+    // Parse Search Weight
+    @SuppressWarnings(&quot;rawtypes&quot;)
+    final List weights = rootElement.selectNodes(rootElement.getPath() + &quot;/&quot;
+            + &quot;result/weights/weight&quot;);
+
+    ResultInfo[] resultFilterInfos = parseVideos(weights);
+    if (resultFilterInfos != null) {
+        ResultInfo weight = new ResultInfo();
+        weight.putResultInfoArray(ResultInfo.KEY_VIDEOS, resultFilterInfos);
+        searchResultInfo.putResultInfo(ResultInfo.KEY_WEIGHT, weight);
+    }
+
+    // Parse Albums
+    @SuppressWarnings(&quot;rawtypes&quot;)
+    final List albums = rootElement.selectNodes(rootElement.getPath() + &quot;/&quot;
+            + &quot;result/albums/album&quot;);
+
+    ResultInfo[] resultInfos = parseVideos(albums);
+    if (resultInfos != null) {
+        ResultInfo album = new ResultInfo();
+        album.putResultInfoArray(ResultInfo.KEY_VIDEOS, resultInfos);
+        searchResultInfo.putResultInfo(ResultInfo.KEY_SEARCH, album);
+    }
+
+    return searchResultInfo;
+}</pre>
+<h3>1.7.2 Step 2</h3>
+<h5>　找到了对应的Node，即从对应的Node开始递归的查找，直到找到最小的节点，也就是最基本的单元Element。再对每一个Element进行解析：</h5>
+<pre class="brush: xml; gutter: true">private ResultInfo[] parseVideos(final List nodes) {
+    if (nodes != null &amp;&amp; nodes.size() &gt; 0) {
+        final int size = nodes.size();
+        final ResultInfo[] vis = new ResultInfo[size];
+        int i = 0;
+        for (Object o : nodes) {
+            if (o instanceof Element) {
+                final Element videoElement = (Element) o;
+                ResultInfo vi = parseVideo(videoElement);
+                vis[i] = vi;
+            }
+            i++;
+        }
+        return vis;
+    }
+    return null;
+}</pre>
+<h3>1.7.3 Step 3</h3>
+<h5>　针对获取到的Element，解析出对应的String将数据传递给VideoInfo这个类：</h5>
+<pre class="brush: actionscript3; gutter: true">private ResultInfo parseVideo(final Element videoElement) {
+    final String id = videoElement.elementText(&quot;album_id&quot;);
+    final String title = videoElement.elementText(&quot;title&quot;);
+    final String categoryId = videoElement.elementText(&quot;category_id&quot;);
+    final String categoryName = videoElement.elementText(&quot;category_name&quot;);
+    final String count = videoElement.elementText(&quot;count&quot;);
+    final String imgUrl = videoElement.elementText(&quot;img180236&quot;);
+    final String duration = videoElement.elementText(&quot;duration&quot;);
+    final String mainactors = videoElement.elementText(&quot;mainactors&quot;);
+    final String sitename = videoElement.elementText(&quot;site_name&quot;);
+    final String videourl = videoElement.elementText(&quot;vedio_url&quot;);
+    final String sort = videoElement.elementText(&quot;sort&quot;);
+    final String tv_id = videoElement.elementText(&quot;tv_id&quot;);
+    ResultInfo vi = new ResultInfo();
+    vi.putString(VideoInfo.ID, id);
+    vi.putString(VideoInfo.TITLE, title);
+    vi.putString(VideoInfo.CATEGORY_ID, categoryId);
+    vi.putString(VideoInfo.CATEGORY_NAME, categoryName);
+    vi.putString(VideoInfo.COUNT, count);
+    vi.putString(VideoInfo.IMG_URL, imgUrl);
+    vi.putString(VideoInfo.DURATION, duration);
+    vi.putString(VideoInfo.MAINACTORS, mainactors);
+    vi.putString(VideoInfo.SITENAME, sitename);
+    vi.putString(VideoInfo.VIDEOURL, videourl);
+    vi.putString(VideoInfo.SORT, sort);
+    vi.putString(VideoInfo.TV_ID, tv_id);
+    return vi;
+}</pre>
+<h3>1.7.4 Step 4</h3>
+<h5>　当使用XML解析器将XML数据解析出来之后。需要将这些数据提取出来，也是通过连续2层提取，将数据定位到每个video， 将每个video里的数据传递给SearchVideoInfo这个ArrayList，然后将ArrayList中的数据和对应的Adapter数据关联起来：</h5>
+<pre class="brush: xml; gutter: true">public static ArrayList&lt;SearchVideoInfo&gt; getSearchVideoInfo(ResultInfo searchResultInfo) {
+
+    ResultInfo resultInfo = null;
+    ResultInfo[] videos = null;
+    ArrayList&lt;SearchVideoInfo&gt; searchVideoInfos = null;
+
+    if (searchResultInfo != null) {
+        resultInfo = searchResultInfo.getResultInfo(ResultInfo.KEY_SEARCH);
+    }
+
+    if (resultInfo != null) {
+        videos = resultInfo.getResultInfoArray(ResultInfo.KEY_VIDEOS);
+    }
+
+    if (videos != null &amp;&amp; videos.length &gt; 0) {
+
+        searchVideoInfos = new ArrayList&lt;SearchVideoInfo&gt;(videos.length);
+
+        for (ResultInfo video : videos) {
+            SearchVideoInfo searchInfo = new SearchVideoInfo();
+
+            searchInfo.setAlbum_id(video.getString(VideoInfo.ID));
+            searchInfo.setTitle(video.getString(VideoInfo.TITLE));
+            searchInfo.setChannel_id(video.getString(VideoInfo.CATEGORY_ID));
+            searchInfo.setImgUrl(video.getString(VideoInfo.IMG_URL));
+            searchInfo.setDuration(video.getString(VideoInfo.DURATION));
+            searchInfo.setMainActors(video.getString(VideoInfo.MAINACTORS));
+            searchInfo.setSiteName(video.getString(VideoInfo.SITENAME));
+            searchInfo.setVideo_url(video.getString(VideoInfo.VIDEOURL));
+            searchInfo.setOrder(video.getString(VideoInfo.SORT));
+            searchInfo.setTv_id(video.getString(VideoInfo.TV_ID));
+            // searchInfo.setContinueType(video.getString(VideoInfo.CONTINUETYPE));
+
+            searchVideoInfos.add(searchInfo);
+        }
+    }
+
+    if (searchVideoInfos == null) {
+        MyLog.e(TAG, &quot;error, getSearchVideoInfo, can not get info&quot;);
+    }
+
+    return searchVideoInfos;
+}</pre>
+<h5>以上就是搜索数据的XML的解析和数据展示过程。</h5>
+<h1>二、JSON</h1>
+<p>XML很好很强大，但是最近有另外一个时代弄潮儿，这就是JSON。现在JSON的光环已经逐渐超越了XML，各大网站提供的数据接口一般都是JSON。下面我们就来学习下JSON。</p>
+<h2>2.1 JSON是什么？</h2>
+<p>JSON：JavaScript对象表示法(<strong><em>JavaScript Object Notation</em></strong>）, 是一种轻量级的数据交换格式, 易于人阅读和编写, 同时也易于机器解析和生成。</p>
+<p>JSON是存储和交换文本信息的语法，类似XML。</p>
+<p>JSON采用完全独立于语言的文本格式，但是也使用了类似于C语言家族的习惯（包括C, C++, C#, Java, JavaScript, Perl, Python等）。 这些特性使JSON成为理想的数据交换语言</p>
+<h2>2.2 JSON格式</h2>
+<h4><strong><em>JSON</em></strong>构建于两种结构：</h4>
+<ol>
+<li><strong>“名称/值”对的集合</strong>(A collection of name/value pairs)。不同的语言中，它被理解为对象（object），纪录（record），结构(struct)，字典(dictionary)，哈希表（hash table），有键列表(keyed list)，或者关联数组(associative array)。</li>
+<li><strong>值的有序列表</strong>(An ordered list of values)。在大多数语言中，它被理解为数组(array)、矢量(vector), 列表(list)或者是序列(sequence)。</li>
+</ol>
+<h4><strong><em>JSON</em></strong>具有以下这些形式：</h4>
+<ul>
+<li>对象是一个无序的“’名称/值’对”集合。一个对象以“{”（左括号）开始，“}”（右括号）结束。每个“名称”后跟一个“:”（冒号）；“‘名称/值’ 对”之间使用“,”（逗号）分隔。</li>
+</ul>
+<p><img alt="JSON Object" src="http://www.json.org/object.gif" /></p>
+<ul>
+<li>数组是值(value)的有序集合。一个数组以“[”（左中括号）开始，“]”（右中括号）结束。值之间使用“,”（逗号）分隔。</li>
+<li><img alt="JSON Array" src="http://www.json.org/array.gif" />
+<ul>
+<li>值(value)可以是双引号括起来的字符串（string）、数值(number)、true、false、 null、对象（object）或者数组（array）。这些结构可以嵌套。</li>
+</ul>
+<p><img alt="JSON Value" src="http://www.json.org/value.gif" /></p>
+<ul>
+<li>字符串（string）是由0到多个Unicode字符组成的序列，封装在双引号（”“）中, 可以使用反斜杠（‘\’）来进行转义。一个字符可以表示为一个单一字符的字符串。</li>
+</ul>
+<p><img alt="JSON String" src="http://www.json.org/string.gif" /></p>
+<ul>
+<li>数字(number)类似C或者Java里面的数，没有用到的8进制和16进制数除外。</li>
+</ul>
+<p><img alt="JSON Number" src="http://www.json.org/number.gif" /></p>
+<h2>2.3 举个栗子</h2>
+<p>上面关于JSON讲了这么多，大家都表示一头雾水了吧？</p>
+<p>没关系，我们来举个栗子，让大家有个直观的感受:–)</p>
+<p>以目前视频使用的iQiyi提供的频道接口为例：</p>
+<h5>iQiyi提供的电影频道的JSON电影数据如下：</h5>
+</li>
+</ul>
+<pre class="brush: text; gutter: true">&quot;code&quot;: 1, 
+    &quot;data&quot;: 0, 
+    &quot;albumIdList&quot;: [
+            {
+                    &quot;totalidnum&quot;: 2000, 
+                    &quot;idlist&quot;: [
+                            &quot;319281600&quot;
+                    ]
+            }
+    ], 
+    &quot;albumArray&quot;: {
+            &quot;319281600&quot;: {
+                    &quot;_as&quot;: &quot;&quot;, 
+                    &quot;_blk&quot;: 0, 
+                    &quot;_cid&quot;: 1, 
+                    &quot;_ct&quot;: &quot;2014-10-10 17:55:06&quot;, 
+                    &quot;_da&quot;: &quot;&quot;, 
+                    &quot;_dl&quot;: 0, 
+                    &quot;_dn&quot;: &quot;7296&quot;, 
+                    &quot;_id&quot;: 319281600, 
+                    &quot;_img&quot;: &quot;http://pic2.qiyipic.com/image/20141016/19/ca/v_108628048_m_601_m1_120_160.jpg&quot;, 
+                    &quot;_ip&quot;: 1, 
+                    &quot;_ma&quot;: &quot;&quot;, 
+                    &quot;_pc&quot;: 2, 
+                    &quot;_pid&quot;: 0, 
+                    &quot;_reseftv&quot;: 959, 
+                    &quot;_t&quot;: &quot;末代独裁&quot;, 
+                    &quot;_tvct&quot;: 1, 
+                    &quot;_tvs&quot;: 1, 
+                    &quot;_vt&quot;: 0, 
+                    &quot;a_av&quot;: 1, 
+                    &quot;a_pro&quot;: &quot;&quot;, 
+                    &quot;bpt&quot;: &quot;0&quot;, 
+                    &quot;clm&quot;: &quot;&quot;, 
+                    &quot;cn_year&quot;: &quot;0&quot;, 
+                    &quot;co_album_id&quot;: &quot;0&quot;, 
+                    &quot;ctype&quot;: 0, 
+                    &quot;desc&quot;: &quot;&quot;, 
+                    &quot;down&quot;: 0, 
+                    &quot;down2&quot;: &quot;0&quot;, 
+                    &quot;drm&quot;: 0, 
+                    &quot;fst_time&quot;: &quot;2014-10-16&quot;, 
+                    &quot;h1_img&quot;: &quot;http://pic2.qiyipic.com/image/20141016/19/ca/v_108628048_m_601_m1_180_236.jpg&quot;, 
+                    &quot;h2_img&quot;: &quot;http://pic2.qiyipic.com/image/20141016/19/ca/v_108628048_m_601_m1_195_260.jpg&quot;, 
+                    &quot;is_h&quot;: 0, 
+                    &quot;is_n&quot;: 0, 
+                    &quot;is_zb&quot;: 0, 
+                    &quot;k_word&quot;: &quot;&quot;, 
+                    &quot;language&quot;: 0, 
+                    &quot;live_center&quot;: 0, 
+                    &quot;live_start_time&quot;: 0, 
+                    &quot;live_stop_time&quot;: 0, 
+                    &quot;logo&quot;: 1, 
+                    &quot;m_av&quot;: 1, 
+                    &quot;p_av&quot;: 1, 
+                    &quot;p_s&quot;: 0, 
+                    &quot;p_s_1&quot;: 0, 
+                    &quot;p_s_4&quot;: 0, 
+                    &quot;p_s_8&quot;: 0, 
+                    &quot;qiyi_pro&quot;: 0, 
+                    &quot;qiyi_year&quot;: &quot;0&quot;, 
+                    &quot;qt_id&quot;: &quot;1005722&quot;, 
+                    &quot;s_TT&quot;: &quot;&quot;, 
+                    &quot;songname&quot;: &quot;&quot;, 
+                    &quot;t_pc&quot;: 1, 
+                    &quot;tag&quot;: &quot;当代 美国 乡村 大片&quot;, 
+                    &quot;tv_eftv&quot;: 1, 
+                    &quot;tv_pha&quot;: &quot;&quot;, 
+                    &quot;tv_pro&quot;: &quot;&quot;, 
+                    &quot;tv_ss&quot;: &quot;&quot;, 
+                    &quot;tvfcs&quot;: &quot;雄心壮志背后的真相&quot;, 
+                    &quot;up&quot;: 0, 
+                    &quot;up2&quot;: &quot;0&quot;, 
+                    &quot;upcl&quot;: &quot;&quot;, 
+                    &quot;v2_img&quot;: &quot;http://pic2.qiyipic.com/image/20141016/19/ca/v_108628048_m_601_m1_284_160.jpg&quot;, 
+                    &quot;v3_img&quot;: &quot;http://pic2.qiyipic.com/image/20141016/19/ca/v_108628048_m_601_m1_480_270.jpg&quot;, 
+                    &quot;vv&quot;: &quot;1&quot;, 
+                    &quot;year&quot;: &quot;2007&quot;, 
+                    &quot;tv_id&quot;: &quot;0&quot;, 
+                    &quot;vv_p&quot;: 0, 
+                    &quot;vv_f&quot;: 2, 
+                    &quot;vv_m&quot;: 0, 
+                    &quot;_sc&quot;: 8
+            }
+    }, 
+    &quot;changeAlbum&quot;: null, 
+    &quot;category&quot;: null, 
+    &quot;before&quot;: &quot;2~4~1~7~3&quot;, 
+    &quot;latest_push_id&quot;: &quot;655&quot;, 
+    &quot;up_tm&quot;: &quot;1413441370874&quot;, 
+    &quot;recommend_attach&quot;: &quot;&quot;, 
+    &quot;preset_keys&quot;: null, 
+    &quot;category_group&quot;: null, 
+    &quot;exp_ts&quot;: 120, 
+    &quot;stfile_path&quot;: &quot;/data/view/online5/0/1/2.1.8.5.1.txt&quot;
+}</pre>
+<p>&nbsp;</p>
+<h6>从上面的例子可以很清晰的看出JSON是如何展示一个电影的数据的，当然这是JSON格式化之后的数据。JSON的元数据是不便于阅读的。</h6>
+<h2>2.4 如何解析JSON？</h2>
+<p>Android JSON所有相关类，都在org.json包下。</p>
+<p>包括JSONObject、JSONArray、JSONStringer、JSONTokener、JSONWriter、JSONException。</p>
+<h3>&lt;1&gt;. 常见方法</h3>
+<p>目前JSON解析有2种方法，分别是get和opt方法，可以使用JSON</p>
+<p>那么使用get方法与使用opt方法的区别是？</p>
+<p>JsonObject方法，opt与get建议使用opt方法，因为<strong>get方法如果其内容为空会直接抛出异常</strong>。不过JsonArray.opt(index)会有越界问题需要特别注意。</p>
+<p>opt、optBoolean、optDouble、optInt、optLong、optString、optJSONArray、optJSONObject get、getBoolean、getDouble、getInt、getLong、getString、getJSONArray、getJSONObject</p>
+<h3>&lt;2&gt;. Android中如何创建JSON？</h3>
+<p>在Android中应该如何创建JSON呢？</p>
+<p>下面展示了一个如何创建JSON的例子：</p>
+<pre class="brush: text; gutter: true">private String createJson() throws JSONException {
+    JSONObject jsonObject = new JSONObject();
+    jsonObject.put(&quot;intKey&quot;, 123);
+    jsonObject.put(&quot;doubleKey&quot;, 10.1);
+    jsonObject.put(&quot;longKey&quot;, 666666666);
+    jsonObject.put(&quot;stringKey&quot;, &quot;lalala&quot;);
+    jsonObject.put(&quot;booleanKey&quot;, true);
+
+    JSONArray jsonArray = new JSONArray();
+    jsonArray.put(0, 111);
+    jsonArray.put(&quot;second&quot;);
+    jsonObject.put(&quot;arrayKey&quot;, jsonArray);
+
+    JSONObject innerJsonObject = new JSONObject();
+    innerJsonObject.put(&quot;innerStr&quot;, &quot;inner&quot;);
+    jsonObject.put(&quot;innerObjectKey&quot;, innerJsonObject);
+
+    Log.e(&quot;Json&quot;, jsonObject.toString());
+
+    return jsonObject.toString();
+}</pre>
+<p>其输出结果如下所示：</p>
+<pre class="brush: text; gutter: true">{&quot;intKey&quot;:123, &quot;doubleKey&quot;:10.1, &quot;longKey&quot;:666666666, &quot;stringKey&quot;:&quot;lalala&quot;, &quot;booleanKey&quot;:true, &quot;arrayKey&quot;:[111,&quot;second&quot;], &quot;innerObjectKey&quot;:{&quot;innerStr&quot;:&quot;inner&quot;}}</pre>
+<h3>&lt;3&gt;. 如何解析JSON？</h3>
+<p>下面以视频中解析iQiyi的每个视频album数据为例来说明如何解析JSON：</p>
+<p>第一步，需要从网络服务器上发起请求，获取到JSON数据：</p>
+<pre class="brush: text; gutter: true">JsonObjectRequest jsonObjRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+        new Response.Listener&lt;JSONObject&gt;() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    MyLog.d(TAG, &quot;response=&quot; + response);
+                    parseiQiyiInterfaceResponse(response);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                /*
+                 * if (error instanceof NetworkError) { } else if (error
+                 * instanceof ClientError) { } else if (error instanceof
+                 * ServerError) { } else if (error instanceof
+                 * AuthFailureError) { } else if (error instanceof
+                 * ParseError) { } else if (error instanceof
+                 * NoConnectionError) { } else if (error instanceof
+                 * TimeoutError) { }
+                 */
+                MyLog.e(TAG, &quot;onErrorResponse, error=&quot; + error);
+            }
+        }) {
+    @Override
+    public Map&lt;String, String&gt; getHeaders() throws AuthFailureError {
+        HashMap&lt;String, String&gt; headers = new HashMap&lt;String, String&gt;();
+        headers.put(&quot;t&quot;, iQiyiInterface.getEncryptTimestamp());
+        headers.put(&quot;sign&quot;, iQiyiInterface.getSign());
+
+        return headers;
+    }
+};</pre>
+<p>第二步，获取到对应的对应的JSONObject数据：</p>
+<pre class="brush: text; gutter: true">public void getJsonObjectString(String url) {
+    mQueue = VideoApplication.getInstance().getRequestQueue();
+
+    JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+
+    new Response.Listener&lt;JSONObject&gt;() {
+
+        @Override
+        public void onResponse(JSONObject response) {
+            MyLog.e(TAG, &quot;response = &quot; + response.toString());
+
+            JSONArray jsonArray = null;
+            JSONObject jsonObject = null;
+            try {
+                jsonObject = response.getJSONObject(&quot;response&quot;);
+                jsonArray = jsonObject.getJSONObject(&quot;result&quot;).getJSONArray(&quot;album&quot;);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            if (jsonArray == null) {
+                return;
+            }
+
+            mChannelList = VideoUtils.parseVideoJsonArray(jsonArray);
+
+            if (isLoading) {
+                isLoading = false;
+                if (mIsGrid) {
+                    mChannelGridAdapter.appendChannelVideoInfo(mChannelList);
+                } else {
+                    mChannelListAdapter.appendChannelVideoInfo(mChannelList);
+                }
+
+            } else {
+                if (mIsGrid) {
+                    mChannelGridAdapter.setChannelVideoInfo(mChannelList);
+                    showOppoGrid();
+                } else {
+                    mChannelListAdapter.setChannelVideoInfo(mChannelList);
+                    showOppoList();
+                }
+            }
+        }
+    }, new Response.ErrorListener() {
+
+        @Override
+        public void onErrorResponse(VolleyError error) {
+            MyLog.e(TAG, &quot;error = &quot; + error);
+        }
+    });
+
+    jsObjRequest.setTag(TAG);
+    jsObjRequest.setShouldCache(true);
+    mQueue.add(jsObjRequest);
+    mQueue.start();
+}</pre>
+<p>获取到JSON Object之后，就对这个JSONObject进行解析：</p>
+<pre class="brush: text; gutter: true">private ArrayList&lt;VideoConstant&gt; parseVideoAlbumJsonObject(JSONObject albumJSONObject,  ArrayList&lt;Integer&gt; albumIdJSONArrayList) {
+    MyLog.d(TAG, &quot;parseVideoAlbumJsonObject, length=&quot; + albumJSONObject.length());
+    if (albumJSONObject.length() &lt; 1) {
+        return null;
+    }
+
+    ArrayList&lt;VideoConstant&gt; videos = new ArrayList&lt;VideoConstant&gt;();
+
+    try {
+        for (int index = 0; index &lt; albumJSONObject.length(); index++) {
+            VideoConstant video = new VideoConstant();
+
+            JSONObject itemJsonObject;
+
+            itemJsonObject = albumJSONObject.getJSONObject(albumIdJSONArrayList.get(index)
+                    .toString());
+
+            MyLog.d(TAG, &quot;string=&quot; + albumIdJSONArrayList.get(index).toString());
+
+            video.mAlbumId = itemJsonObject.optString(InterfaceParameterName.ID);
+            video.mAtitle = itemJsonObject.optString(InterfaceParameterName.TITLE);
+            video.mEpisodeCount = itemJsonObject.optString(InterfaceParameterName.UPDATE_SET);
+            video.mTvSets = itemJsonObject.optString(InterfaceParameterName.TV_SETS);
+            video.mDesc = itemJsonObject.optString(InterfaceParameterName.DESCRIPTION);
+            video.mCid = itemJsonObject.optString(InterfaceParameterName.CATEGORY_ID);
+
+            video.mImg = itemJsonObject.optString(InterfaceParameterName.IMG);
+            video.mHighimg = itemJsonObject
+                    .optString(InterfaceParameterName.HIGH_RESO_PORT_IMG);
+            video.mHoriImg = itemJsonObject
+                    .optString(InterfaceParameterName.HIGH_RESO_HORI_IMG);
+
+            video.mScore = itemJsonObject.optString(InterfaceParameterName.SCORE);
+            video.mMainActors = itemJsonObject.optString(InterfaceParameterName.MAIN_ACTOR);
+
+            video.mCreateTime = itemJsonObject.optString(InterfaceParameterName.CREATE_TIME);
+
+            video.mDuration = itemJsonObject.optString(InterfaceParameterName.DURATION);
+
+            video.mTag = itemJsonObject.optString(InterfaceParameterName.TAG);
+
+            MyLog.d(TAG, &quot;id=&quot; + video.mAlbumId + &quot;,title=&quot; + video.mAlbumTitle + &quot;,img=&quot;
+                    + video.mHighimg + &quot;,tvsets=&quot; + video.mTvSets);
+
+            videos.add(video);
+        }
+    } catch (JSONException e) {
+        e.printStackTrace();
+    }
+
+    return videos;
+}</pre>
+<h3>&lt;4&gt;. Android JSON解析库</h3>
+<p>上面介绍都是使用Android提供的原生类解析JSON，最大的好处是项目不需要引入第三方库，但是如果比较注重开发效率而且不在意应用大小增加几百K的话，有以下JSON可供选择：</p>
+<ol>
+<li><a href="http://jackson.codehaus.org/" target="_blank">Jackson</a></li>
+<li><a href="https://code.google.com/p/google-gson/" target="_blank">google-gson</a></li>
+<li><a href="http://sourceforge.net/projects/json-lib/" target="_blank">Json-lib</a></li>
+</ol>
+<p>大家可以去对应的官网下载并学习:)</p>
+<h1>三、 JSON vs. XML</h1>
+<p>JSON和XML就像武林界的屠龙刀和倚天剑，那么他们孰强孰弱？</p>
+<p>XML长期执数据传输界之牛耳，而JSON作为后起之秀，已经盟主发起了挑战。</p>
+<p>那就让他们来进行PK一下：</p>
+<h3>&lt;1&gt;. JSON相比XML的不同之处</h3>
+<ul>
+<li>没有结束标签</li>
+<li>更短</li>
+<li>读写的速度更快</li>
+<li>能够使用内建的 JavaScript eval() 方法进行解析</li>
+<li>使用数组</li>
+<li>不使用保留字</li>
+</ul>
+<p>总之： JSON 比 XML 更小、更快，更易解析。</p>
+<h3>&lt;2&gt;. XML和JSON的区别：</h3>
+<p>XML的主要组成成分：</p>
+<pre class="brush: text; gutter: true">XML是element、attribute和element content。</pre>
+<p>JSON的主要组成成分：</p>
+<pre class="brush: text; gutter: true">JSON是object、array、string、number、boolean(true/false)和null。</pre>
+<p>XML要表示一个object(指name-value pair的集合)，最初可能会使用element作为object，每个key-value pair 用 attribute 表示：</p>
+<pre class="brush: text; gutter: true">&lt;student name=&quot;John&quot; age=&quot;10&quot;/&gt;</pre>
+<p>但如个某个 value 也是 object，那么就不可以当作attribute:</p>
+<pre class="brush: text; gutter: true">&lt;student name=&quot;John&quot; age=&quot;10&quot;&gt;
+    &lt;address&gt;
+        &lt;country&gt;China&lt;/country&gt;
+        &lt;province&gt;Guang Dong&lt;/province&gt;
+        &lt;city&gt;...&lt;/city&gt;
+        &lt;district&gt;...&lt;/district&gt;
+        ...
+    &lt;/address&gt;
+&lt;/student&gt;</pre>
+<p>那么，什么时候用element，什么时候用attribute，就已经是一个问题了。</p>
+<p>而JSON因为有object这种类型，可以自然地映射，不需考虑上述的问题，自然地得到以下的格式。</p>
+<pre class="brush: text; gutter: true">{
+    &quot;name&quot;: &quot;John&quot;,
+    &quot;age&quot; : 10,
+    &quot;address&quot; : {
+        &quot;country&quot; : &quot;China&quot;,
+        &quot;province&quot; : &quot;Guang Dong&quot;,
+        &quot;city&quot; : &quot;..&quot;,
+        &quot;district&quot; : &quot;..&quot;,
+        ...
+    }
+}</pre>
+<h5>One More Thing…</h5>
+<p>XML需要选择怎么处理element content的换行，而JSON string则不须作这个选择。</p>
+<p>XML只有文字，没有预设的数字格式，而JSON则有明确的number格式，这样在locale上也安全。</p>
+<p>XML映射数组没大问题，就是数组元素tag比较重复冗余。JSON 比较易读。</p>
+<p>JSON的true/false/null也能容易统一至一般编程语言的对应语义。</p>
+<p>XML文档可以附上DTD、Schema，还有一堆的诸如XPath之类规范，使用自定义XML元素或属性，能很方便地给数据附加各种约束条件和关联额外信息，从数据表达能力上看，XML强于Json，但是很多场景并不需要这么复杂的重量级的东西，轻便灵活的Json就显得很受欢迎了。</p>
+<p>打个比方，如果完成某件事有两种方式：一种简单的，一个复杂的。你选哪个？</p>
+<p><strong>我只想杀只鸡罢了，用得着牛刀？</strong></p>
+<p>JSON与XML相比就是这样的。</p>
+<h1>四、总结</h1>
+<p>这篇文章只是对XML和JSON这2种目前主流使用的数据格式进行了解释，并系统的学习了其中的语法及如何进行解析，同时在最好针对XML和JSON做了对比，了解其不同点和各自的优势。</p>
+<p>期望有需要的朋友有所帮助:–)</p>
+
+
+<!-- div id="ad1">
+</div -->
+
+<p>
+    <a target="_blank" rel="nofollow" href="http://ghtools.sinaapp.com/bole.html">
+        <img src="http://ghtools.sinaapp.com/bole.png" />
+    </a>
+</p>
+	
+
+
+	</div>
+	<!-- END .entry -->
+
+
+
+
+
+
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_24x24">
+<a class="jiathis_button_tsina"></a>
+<a class="jiathis_button_weixin"></a>
+<a class="jiathis_button_qzone"></a>
+<a class="jiathis_button_fb"></a>
+<a class="jiathis_button_renren"></a>
+<a class="jiathis_button_douban"></a>
+<a class="jiathis_button_googleplus"></a>
+<a class="jiathis_button_readitlater"></a>
+<a class="jiathis_button_evernote"></a>
+<a class="jiathis_button_ydnote"></a>
+<a href="http://www.jiathis.com/share?uid=1745061" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+<a class="jiathis_counter_style"></a>
+</div>
+
+
+<script type="text/javascript" >
+var jiathis_config={
+	data_track_clickback:false,
+	title:"《10分钟掌握XML、JSON及其解析》",
+	summary:"随着移动互联网时代的大潮，越来越多的App不光是需要和网络服务器进行数据传输和交互，也需要和其他 App 进行数据传递。承担App与网络来进行传输和存储数据的一般是XML或者JSON。在移动互联网时代，XML和JSON很重要。",
+	pic:"http://jbcdn2.b0.upaiyun.com/2012/08/XML.gif",
+	appkey:{
+                "tsina":2606191112
+        },
+	ralateuid:{
+		"tsina":1670481425
+	},
+	hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1745061" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+<br/><br/>
+
+
+</div>
+<!-- END .post -->		
+	<!-- BEGIN #author-bio -->
+
+
+<!-- END #author-bio -->	
+	
+<div class="wp_rp_wrap  wp_rp_plain" id="wp_rp_first"><div class="wp_rp_content"><h3 class="related_post_title">相关文章</h3><ul class="related_post wp_rp" style="visibility: visible"><li ><a href="http://blog.jobbole.com/852/" class="wp_rp_title">理解JSON：3分钟课程</a></li><li ><a href="http://blog.jobbole.com/31166/" class="wp_rp_title">查询json数据结构的8种方式</a></li><li ><a href="http://blog.jobbole.com/25372/" class="wp_rp_title">Java 处理 XML 的三种主流技术及介绍</a></li><li ><a href="http://blog.jobbole.com/18012/" class="wp_rp_title">说说JSON和JSONP</a></li><li ><a href="http://blog.jobbole.com/70270/" class="wp_rp_title">免费课程：JSON应用场景与实战</a></li><li ><a href="http://blog.jobbole.com/42748/" class="wp_rp_title">iTunes 11 歌曲列表的着色算法是如何实现的？</a></li><li ><a href="http://blog.jobbole.com/53824/" class="wp_rp_title">Objective-C 中的 Meta-class 是什么？</a></li><li ><a href="http://blog.jobbole.com/61514/" class="wp_rp_title">HTML标签，闭合还是不闭合？</a></li><li ><a href="http://blog.jobbole.com/46839/" class="wp_rp_title">海量数据相似度计算之simhash和海明距离</a></li><li ><a href="http://blog.jobbole.com/74574/" class="wp_rp_title">算法系列：计数排序</a></li></ul></div></div>
+			
+	
+<!-- BEGIN #respond -->
+<div id="respond">
+
+	<h3 class="widget-title">发表评论</h3>
+	
+	<!-- BEGIN .cancel-comment-reply -->
+	<p class="cancel-comment-reply">
+		
+		<a rel="nofollow" id="cancel-comment-reply-link" href="/79252/#respond" style="display:none;">点击这里取消回复。</a>		
+	</p>
+	<!-- END .cancel-comment-reply -->
+
+		
+	<!-- BEGIN #comment-form -->
+	<form action="http://blog.jobbole.com/wp-comments-post.php" method="post" id="comment-form">
+		
+		<fieldset>
+		
+			<legend class="none">Comment form</legend>
+			
+			<!-- BEGIN .container -->
+			<div class="container">
+			
+							
+				<div class="grid-4 margin-20">
+					<label for="author">Name<span class="red">*</span></label>
+				</div>
+				
+				<div class="grid-4 margin-20">
+					<div class="input-wrapper"><input type="text" name="author" id="author" value="" tabindex="1" size="30" class="required" placeholder="姓名" /></div>
+				</div>
+				<div class="clear"></div>
+				
+				<div class="grid-4 margin-20">
+					<label for="email">邮箱<span class="red">*</span></label>
+				</div>
+				
+				<div class="grid-4 margin-20">
+					<div class="input-wrapper"><input type="email" name="email" id="email" value="" tabindex="2" size="30" class="required email" placeholder="请填写邮箱" /></div>
+				</div>
+				<div class="clear"></div>
+				
+				<div class="grid-4 margin-20">
+					<label for="url">网站 (请以 http://开头)</label>
+				</div>
+				
+				<div class="grid-4 margin-20">
+					<div class="input-wrapper"><input type="url" name="url" id="url" value="" tabindex="3" size="30" placeholder="请填写网站地址" /></div>
+				</div>
+				<div class="clear"></div>
+				
+								
+				<div class="grid-8 margin-20">
+					<label for="comment" class="none margin-20">评论内容<span class="red">*</span></label>
+					<div class="input-wrapper"><textarea name="comment" id="comment" rows="20" cols="30" class="required" tabindex="4" onkeydown="if(event.ctrlKey && event.keyCode==13){document.getElementById('comment-form-submit').click(); return false;}" placeholder="请填写评论内容" ></textarea></div>
+				</div>
+				<div class="clear"></div>
+				
+			</div>
+			<!-- END .container -->
+			
+			<p>(<span class="red">*</span>) 表示必填项</p>
+			<p><div class="submit-wrapper"><a id="comment-form-submit" class="submit">提交评论</a></div></p>
+			<input type='hidden' name='comment_post_ID' value='79252' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+			<p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="8129f17fb2" /></p>			
+		</fieldset>
+		
+	</form>
+	<!-- END #comment-form -->
+	
+	
+</div>
+<!-- END #respond -->
+
+
+			<p class="nocomments none">还没有评论。</p>
+	 
+<h3 id="comments-from-weibo" class="widget-title">来自微博的评论</h3>
+<wb:comments url="http://blog.jobbole.com/79252/" border="y" width="auto" color="e8e8e8,ffffff,4c4c4c,5093d5,cccccc,f0f0f0" appkey="2606191112" ralateuid="1670481425" ></wb:comments>
+
+
+
+		
+				
+	<!-- BEGIN .navigation -->
+	<div class="navigation margin-20">
+	
+		<div class="alignleft"><a href="http://blog.jobbole.com/79249/" rel="prev">&laquo; 编写最简单的内核：HelloWorld</a></div>
+		<div class="alignright"><a href="http://blog.jobbole.com/79267/" rel="next">浅谈算法和数据结构（1）：栈和队列 &raquo;</a></div>
+		<div class="clear"></div>
+
+	</div>
+	<!-- END .navigation -->
+	
+		
+</div>
+<!-- END .grid-8 -->
+
+<!-- BEGIN #sidebar -->
+<div id="sidebar" class="grid-4">
+
+	<div id="search-3" class="widget widget_search"><!-- BEGIN #searchform -->
+<form method="get" id="searchform" action="http://blog.jobbole.com/">
+
+	<label class="none" for="s">Search for:</label>
+	<div class="input-wrapper"><input type="text" value="" name="s" id="s" placeholder="Search" /></div>
+	<input type="submit" id="searchsubmit" value="Search" />
+	
+</form>
+<!-- END #searchform --></div><div id="text-34" class="widget widget_text"><h3 class="widget-title">推荐关注</h3>			<div class="textwidget"><div class="floated-thumb">
+<div class="post-thumb"><img src="http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/img/weixin-iprogrammer.jpg" width="90" height="90" class="attachment-grid-1 wp-post-image" /></div>
+<div class="post-meta">
+<p><b>微信关注: iProgrammer </b><br /> 最热门的技术类微信公共账号之一，全文推送精选技术文章。扫描加关注，碎片时间学习新技能！</p>
+</div>
+<div class="clear"></div>
+</div>
+</div>
+		</div><div id="text-43" class="widget widget_text">			<div class="textwidget"><p><script language=javascript> 
+var randomNum = Math.round(Math.random()*2);
+var image=new Array(3);
+image[0]="http://top.jobbole.com/wp-content/uploads/sites/8/2014/09/e1e4a41f1a421fd8dc1d7396e991830c.jpg";
+image[1]="http://top.jobbole.com/wp-content/uploads/sites/8/2014/09/ac2d071803e1536f0f15e90a0cd5bc2b.jpg";
+image[2]="http://top.jobbole.com/wp-content/uploads/sites/8/2014/09/ac2d071803e1536f0f15e90a0cd5bc2b.jpg";
+var imageUrl=image[randomNum];
+var urls=new Array(3);
+urls[0]="http://www.jikexueyuan.com/event/android.html?hmsr=job_blog_android";
+urls[1]="http://www.jikexueyuan.com/course/34.html?hmsr=job_blog_flappybird";
+urls[2]="http://www.jikexueyuan.com/course/34.html?hmsr=job_blog_flappybird";
+var url = urls[randomNum];
+var adHTML = "<a href='"+url+"' target='_blank'><img src='"+imageUrl+"' border='0'></a>";
+document.write(adHTML);
+</script></p>
+</div>
+		</div><div id="aw_tabbed_widget-8" class="widget aw_tabbed_widget"><div class="tabs"><ul class="nav clearfix"><li><a id="link-most-discussed" href="#tab-most-discussed" title="本周热门文章">本周热门文章</a></li><li><a id="link-latest-comments" href="#tab-latest-comments" title="本月热门文章">本月热门文章</a></li><li><a id="link-tags" href="#tab-tags" title="热门标签">热门标签</a></li></ul><div id="tab-most-discussed" class="tab"><div class="floated-thumb">							
+							
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta  no-thumb">
+							
+								<p>
+								    <span class="numb">0</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/79119/" title="Go 语言的演化历程">Go 语言的演化历程</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+							
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta  no-thumb">
+							
+								<p>
+								    <span class="numb">1</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/78859/" title="高性能的Python扩展：第一部分">高性能的Python扩展：第一部分</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+							
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta ">
+							
+								<p>
+								    <span class="numb">2</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/79266/" title="提升互联网产品开发效率的5个工具组合">提升互联网产品开发效率的5个工具组合</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+							
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta ">
+							
+								<p>
+								    <span class="numb">3</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/79113/" title="历时八年，HTML5 标准终于完工了">历时八年，HTML5 标准终于完工了</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+							
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta ">
+							
+								<p>
+								    <span class="numb">4</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/79075/" title="前端代码规范 及 最佳实践">前端代码规范 及 最佳实践</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+							
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta  no-thumb">
+							
+								<p>
+								    <span class="numb">5</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/78841/" title="超酷算法：喷泉码">超酷算法：喷泉码</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+							
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta ">
+							
+								<p>
+								    <span class="numb">6</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/78946/" title="AngularJS开发人员最常犯的10个错误">AngularJS开发人员最常犯的10个错误</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+							
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta ">
+							
+								<p>
+								    <span class="numb">7</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/79126/" title="保持斗志昂扬，有什么好技巧？">保持斗志昂扬，有什么好技巧？</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+							
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta  no-thumb">
+							
+								<p>
+								    <span class="numb">8</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/79078/" title="使用SVG中的Symbol元素制作Icon">使用SVG中的Symbol元素制作Icon</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+							
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta  no-thumb">
+							
+								<p>
+								    <span class="numb">9</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/79080/" title="currentColor-CSS3超高校级好用CSS关键字">currentColor-CSS3超高校级好用CSS关键字</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+						</div></div><div id="tab-latest-comments" class="tab"><div class="floated-thumb">							
+											
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta  no-thumb">
+							
+								<p>
+								    <span class="numb">0</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/78901/" title="推荐！国外程序员整理的 C++ 资源大全">推荐！国外程序员整理的 C++ 资源大全</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+											
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta  no-thumb">
+							
+								<p>
+								    <span class="numb">1</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/77992/" title="Github大福利：14个最佳开发工具，免费提供给学生">GitHub学生开发者工具包</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+											
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta  no-thumb">
+							
+								<p>
+								    <span class="numb">2</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/77851/" title="互联网协议入门（一）">互联网协议入门（一）</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+											
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta ">
+							
+								<p>
+								    <span class="numb">3</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/77804/" title="为什么很多人满足于此生仅拿份工资，做一份朝九晚六的工作？">为什么很多人满足于朝九晚六的工作？</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+											
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta ">
+							
+								<p>
+								    <span class="numb">4</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/78960/" title="推荐！手把手教你使用Git">推荐！手把手教你使用Git</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+											
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta ">
+							
+								<p>
+								    <span class="numb">5</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/77833/" title="Web 开发在 2015 年及未来的发展趋势">Web 开发在 2015 年及未来的发展趋势</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+											
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta ">
+							
+								<p>
+								    <span class="numb">6</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/78352/" title="动画讲解 Eclipse 常用快捷键">动画讲解 Eclipse 常用快捷键</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+											
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta ">
+							
+								<p>
+								    <span class="numb">7</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/79023/" title="最值得阅读学习的 10 个 C 语言开源项目代码">最值得阅读学习的10个C语言开源项目代码</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+											
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta ">
+							
+								<p>
+								    <span class="numb">8</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/78246/" title="许式伟：影响我一生的五个重要选择">许式伟：影响我一生的五个重要选择</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+													
+											
+							<!-- BEGIN .post-meta -->
+							<div class="post-meta  no-thumb">
+							
+								<p>
+								    <span class="numb">9</span>
+								    <a class="meta-title" target="_blank" href="http://blog.jobbole.com/77855/" title="用4K电视做显示器的程序员">用4K电视做显示器的程序员</a><br />
+								</p>
+									
+							</div>
+							<!-- END .post-meta -->
+							
+							<div class="clear"></div>
+							
+						</div></div><div id="tab-tags" class="tab"><p><a href='http://blog.jobbole.com/tag/android/' class='tag-link-467' title='121 个话题' style='font-size: 14.43795620438px;'>Android</a>
+<a href='http://blog.jobbole.com/tag/apple/' class='tag-link-180' title='33 个话题' style='font-size: 8.7153284671533px;'>apple</a>
+<a href='http://blog.jobbole.com/tag/bug/' class='tag-link-218' title='46 个话题' style='font-size: 10.14598540146px;'>Bug</a>
+<a href='http://blog.jobbole.com/tag/cpp/' class='tag-link-807' title='35 个话题' style='font-size: 9.021897810219px;'>C++</a>
+<a href='http://blog.jobbole.com/tag/chrome/' class='tag-link-527' title='31 个话题' style='font-size: 8.5109489051095px;'>Chrome</a>
+<a href='http://blog.jobbole.com/tag/c-sharp/' class='tag-link-2197' title='29 个话题' style='font-size: 8.2043795620438px;'>C sharp</a>
+<a href='http://blog.jobbole.com/tag/css/' class='tag-link-711' title='63 个话题' style='font-size: 11.576642335766px;'>CSS</a>
+<a href='http://blog.jobbole.com/tag/c/' class='tag-link-757' title='101 个话题' style='font-size: 13.620437956204px;'>C语言</a>
+<a href='http://blog.jobbole.com/tag/facebook/' class='tag-link-164' title='93 个话题' style='font-size: 13.211678832117px;'>Facebook</a>
+<a href='http://blog.jobbole.com/tag/featuredpost/' class='tag-link-2241' title='438 个话题' style='font-size: 20.058394160584px;'>featuredpost</a>
+<a href='http://blog.jobbole.com/tag/git/' class='tag-link-885' title='54 个话题' style='font-size: 10.861313868613px;'>Git</a>
+<a href='http://blog.jobbole.com/tag/github/' class='tag-link-1253' title='53 个话题' style='font-size: 10.759124087591px;'>Github</a>
+<a href='http://blog.jobbole.com/tag/google/' class='tag-link-198' title='237 个话题' style='font-size: 17.401459854015px;'>Google</a>
+<a href='http://blog.jobbole.com/tag/html5/' class='tag-link-182' title='82 个话题' style='font-size: 12.700729927007px;'>HTML5</a>
+<a href='http://blog.jobbole.com/tag/ie/' class='tag-link-1531' title='33 个话题' style='font-size: 8.7153284671533px;'>IE</a>
+<a href='http://blog.jobbole.com/tag/ie-css-bug/' class='tag-link-2785' title='31 个话题' style='font-size: 8.5109489051095px;'>IE CSS Bug</a>
+<a href='http://blog.jobbole.com/tag/ios/' class='tag-link-860' title='205 个话题' style='font-size: 16.686131386861px;'>iOS</a>
+<a href='http://blog.jobbole.com/tag/it/' class='tag-link-513' title='43 个话题' style='font-size: 9.8394160583942px;'>IT</a>
+<a href='http://blog.jobbole.com/tag/java/' class='tag-link-457' title='136 个话题' style='font-size: 14.948905109489px;'>java</a>
+<a href='http://blog.jobbole.com/tag/javascript/' class='tag-link-683' title='253 个话题' style='font-size: 17.605839416058px;'>Javascript</a>
+<a href='http://blog.jobbole.com/tag/jquery/' class='tag-link-459' title='57 个话题' style='font-size: 11.065693430657px;'>jQuery</a>
+<a href='http://blog.jobbole.com/tag/linux/' class='tag-link-190' title='129 个话题' style='font-size: 14.642335766423px;'>Linux</a>
+<a href='http://blog.jobbole.com/tag/mysql/' class='tag-link-191' title='34 个话题' style='font-size: 8.8175182481752px;'>MySQL</a>
+<a href='http://blog.jobbole.com/tag/node-js/' class='tag-link-896' title='42 个话题' style='font-size: 9.7372262773723px;'>Node.js</a>
+<a href='http://blog.jobbole.com/tag/objective-c/' class='tag-link-829' title='30 个话题' style='font-size: 8.3065693430657px;'>Objective-C</a>
+<a href='http://blog.jobbole.com/tag/php/' class='tag-link-168' title='73 个话题' style='font-size: 12.189781021898px;'>php</a>
+<a href='http://blog.jobbole.com/tag/python/' class='tag-link-663' title='149 个话题' style='font-size: 15.357664233577px;'>Python</a>
+<a href='http://blog.jobbole.com/tag/ruby/' class='tag-link-647' title='36 个话题' style='font-size: 9.1240875912409px;'>Ruby</a>
+<a href='http://blog.jobbole.com/tag/soho/' class='tag-link-153' title='39 个话题' style='font-size: 9.4306569343066px;'>soho</a>
+<a href='http://blog.jobbole.com/tag/swift/' class='tag-link-3608' title='28 个话题' style='font-size: 8px;'>swift</a>
+<a href='http://blog.jobbole.com/tag/tiobe/' class='tag-link-1493' title='31 个话题' style='font-size: 8.5109489051095px;'>TIOBE</a>
+<a href='http://blog.jobbole.com/tag/twitter/' class='tag-link-419' title='32 个话题' style='font-size: 8.6131386861314px;'>Twitter</a>
+<a href='http://blog.jobbole.com/tag/ui/' class='tag-link-1143' title='29 个话题' style='font-size: 8.2043795620438px;'>UI</a>
+<a href='http://blog.jobbole.com/tag/web-fundamentals/' class='tag-link-3560' title='38 个话题' style='font-size: 9.3284671532847px;'>web fundamentals</a>
+<a href='http://blog.jobbole.com/tag/web%e5%bc%80%e5%8f%91/' class='tag-link-493' title='116 个话题' style='font-size: 14.233576642336px;'>Web开发</a>
+<a href='http://blog.jobbole.com/tag/%e4%b9%94%e5%b8%83%e6%96%af/' class='tag-link-301' title='32 个话题' style='font-size: 8.6131386861314px;'>乔布斯</a>
+<a href='http://blog.jobbole.com/tag/%e4%b9%a6%e7%b1%8d/' class='tag-link-1022' title='41 个话题' style='font-size: 9.6350364963504px;'>书籍</a>
+<a href='http://blog.jobbole.com/tag/%e4%ba%92%e8%81%94%e7%bd%91/' class='tag-link-40' title='80 个话题' style='font-size: 12.598540145985px;'>互联网</a>
+<a href='http://blog.jobbole.com/tag/%e4%ba%a4%e4%ba%92%e8%ae%be%e8%ae%a1/' class='tag-link-648' title='63 个话题' style='font-size: 11.576642335766px;'>交互设计</a>
+<a href='http://blog.jobbole.com/tag/%e4%ba%a7%e5%93%81/' class='tag-link-522' title='58 个话题' style='font-size: 11.167883211679px;'>产品</a>
+<a href='http://blog.jobbole.com/tag/%e4%ba%a7%e5%93%81%e7%bb%8f%e7%90%86/' class='tag-link-549' title='47 个话题' style='font-size: 10.248175182482px;'>产品经理</a>
+<a href='http://blog.jobbole.com/tag/%e4%bb%a3%e7%a0%81/' class='tag-link-489' title='92 个话题' style='font-size: 13.211678832117px;'>代码</a>
+<a href='http://blog.jobbole.com/tag/%e4%bc%af%e4%b9%90%e5%91%a8%e5%88%8a/' class='tag-link-1576' title='29 个话题' style='font-size: 8.2043795620438px;'>伯乐周刊</a>
+<a href='http://blog.jobbole.com/tag/startup/' class='tag-link-4' title='194 个话题' style='font-size: 16.481751824818px;'>创业</a>
+<a href='http://blog.jobbole.com/tag/%e5%89%8d%e7%ab%af/' class='tag-link-1138' title='59 个话题' style='font-size: 11.270072992701px;'>前端</a>
+<a href='http://blog.jobbole.com/tag/%e5%89%8d%e7%ab%af%e5%bc%80%e5%8f%91/' class='tag-link-775' title='35 个话题' style='font-size: 9.021897810219px;'>前端开发</a>
+<a href='http://blog.jobbole.com/tag/%e5%9b%a2%e9%98%9f/' class='tag-link-551' title='54 个话题' style='font-size: 10.861313868613px;'>团队</a>
+<a href='http://blog.jobbole.com/tag/%e5%a4%a7%e6%95%b0%e6%8d%ae/' class='tag-link-884' title='31 个话题' style='font-size: 8.5109489051095px;'>大数据</a>
+<a href='http://blog.jobbole.com/tag/%e5%a5%b3%e7%a8%8b%e5%ba%8f%e5%91%98/' class='tag-link-1460' title='46 个话题' style='font-size: 10.14598540146px;'>女程序员</a>
+<a href='http://blog.jobbole.com/tag/%e5%a8%81%e5%ae%a2/' class='tag-link-129' title='40 个话题' style='font-size: 9.5328467153285px;'>威客</a>
+<a href='http://blog.jobbole.com/tag/%e5%ae%89%e5%85%a8/' class='tag-link-1214' title='108 个话题' style='font-size: 13.92700729927px;'>安全</a>
+<a href='http://blog.jobbole.com/tag/%e5%ae%89%e5%8d%93%e5%bc%80%e5%8f%91/' class='tag-link-3362' title='58 个话题' style='font-size: 11.167883211679px;'>安卓开发</a>
+<a href='http://blog.jobbole.com/tag/%e5%ae%a2%e6%88%b7/' class='tag-link-174' title='51 个话题' style='font-size: 10.656934306569px;'>客户</a>
+<a href='http://blog.jobbole.com/tag/%e5%b7%a5%e5%85%b7/' class='tag-link-18' title='108 个话题' style='font-size: 13.92700729927px;'>工具</a>
+<a href='http://blog.jobbole.com/tag/%e5%b7%a5%e7%a8%8b%e5%b8%88/' class='tag-link-470' title='32 个话题' style='font-size: 8.6131386861314px;'>工程师</a>
+<a href='http://blog.jobbole.com/tag/%e5%bb%ba%e8%ae%ae/' class='tag-link-512' title='31 个话题' style='font-size: 8.5109489051095px;'>建议</a>
+<a href='http://blog.jobbole.com/tag/%e5%bc%80%e5%8f%91%e4%ba%ba%e5%91%98/' class='tag-link-370' title='124 个话题' style='font-size: 14.540145985401px;'>开发人员</a>
+<a href='http://blog.jobbole.com/tag/%e5%bc%80%e6%ba%90/' class='tag-link-196' title='67 个话题' style='font-size: 11.78102189781px;'>开源</a>
+<a href='http://blog.jobbole.com/tag/%e5%be%ae%e8%bd%af/' class='tag-link-429' title='73 个话题' style='font-size: 12.189781021898px;'>微软</a>
+<a href='http://blog.jobbole.com/tag/%e6%89%8b%e6%9c%ba%e5%ba%94%e7%94%a8/' class='tag-link-556' title='28 个话题' style='font-size: 8px;'>手机应用</a>
+<a href='http://blog.jobbole.com/tag/%e6%8a%80%e6%9c%af%e9%9d%a2%e8%af%95/' class='tag-link-1876' title='32 个话题' style='font-size: 8.6131386861314px;'>技术面试</a>
+<a href='http://blog.jobbole.com/tag/%e6%8b%9b%e8%81%98/' class='tag-link-326' title='47 个话题' style='font-size: 10.248175182482px;'>招聘</a>
+<a href='http://blog.jobbole.com/tag/%e6%95%88%e7%8e%87/' class='tag-link-415' title='42 个话题' style='font-size: 9.7372262773723px;'>效率</a>
+<a href='http://blog.jobbole.com/tag/%e6%95%b0%e6%8d%ae%e5%ba%93/' class='tag-link-353' title='49 个话题' style='font-size: 10.452554744526px;'>数据库</a>
+<a href='http://blog.jobbole.com/tag/%e6%97%b6%e9%97%b4%e7%ae%a1%e7%90%86/' class='tag-link-271' title='39 个话题' style='font-size: 9.4306569343066px;'>时间管理</a>
+<a href='http://blog.jobbole.com/tag/%e6%9c%8d%e5%8a%a1%e5%99%a8/' class='tag-link-311' title='30 个话题' style='font-size: 8.3065693430657px;'>服务器</a>
+<a href='http://blog.jobbole.com/tag/%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0/' class='tag-link-1910' title='28 个话题' style='font-size: 8px;'>机器学习</a>
+<a href='http://blog.jobbole.com/tag/%e6%9e%b6%e6%9e%84/' class='tag-link-603' title='35 个话题' style='font-size: 9.021897810219px;'>架构</a>
+<a href='http://blog.jobbole.com/tag/%e6%b1%82%e8%81%8c/' class='tag-link-172' title='30 个话题' style='font-size: 8.3065693430657px;'>求职</a>
+<a href='http://blog.jobbole.com/tag/%e6%b5%8b%e8%af%95/' class='tag-link-678' title='79 个话题' style='font-size: 12.496350364964px;'>测试</a>
+<a href='http://blog.jobbole.com/tag/%e6%b5%8f%e8%a7%88%e5%99%a8/' class='tag-link-63' title='48 个话题' style='font-size: 10.350364963504px;'>浏览器</a>
+<a href='http://blog.jobbole.com/tag/%e6%b8%b8%e6%88%8f/' class='tag-link-797' title='55 个话题' style='font-size: 10.963503649635px;'>游戏</a>
+<a href='http://blog.jobbole.com/tag/%e7%94%a8%e6%88%b7/' class='tag-link-460' title='56 个话题' style='font-size: 11.065693430657px;'>用户</a>
+<a href='http://blog.jobbole.com/tag/%e7%94%a8%e6%88%b7%e4%bd%93%e9%aa%8c/' class='tag-link-580' title='96 个话题' style='font-size: 13.416058394161px;'>用户体验</a>
+<a href='http://blog.jobbole.com/tag/%e7%a0%81%e5%86%9c%e6%95%85%e4%ba%8b/' class='tag-link-2863' title='55 个话题' style='font-size: 10.963503649635px;'>码农故事</a>
+<a href='http://blog.jobbole.com/tag/%e7%a7%bb%e5%8a%a8%e5%ba%94%e7%94%a8/' class='tag-link-654' title='63 个话题' style='font-size: 11.576642335766px;'>移动应用</a>
+<a href='http://blog.jobbole.com/tag/%e7%a8%8b%e5%ba%8f%e5%91%98/' class='tag-link-368' title='682 个话题' style='font-size: 22px;'>程序员</a>
+<a href='http://blog.jobbole.com/tag/%e7%ae%97%e6%b3%95/' class='tag-link-650' title='120 个话题' style='font-size: 14.335766423358px;'>算法</a>
+<a href='http://blog.jobbole.com/tag/management/' class='tag-link-32' title='33 个话题' style='font-size: 8.7153284671533px;'>管理</a>
+<a href='http://blog.jobbole.com/tag/%e7%bc%96%e7%a8%8b/' class='tag-link-389' title='123 个话题' style='font-size: 14.43795620438px;'>编程</a>
+<a href='http://blog.jobbole.com/tag/%e7%bc%96%e7%a8%8b%e8%af%ad%e8%a8%80/' class='tag-link-596' title='112 个话题' style='font-size: 14.029197080292px;'>编程语言</a>
+<a href='http://blog.jobbole.com/tag/%e7%bc%96%e7%a8%8b%e8%af%ad%e8%a8%80%e6%8e%92%e8%a1%8c%e6%a6%9c/' class='tag-link-1621' title='35 个话题' style='font-size: 9.021897810219px;'>编程语言排行榜</a>
+<a href='http://blog.jobbole.com/tag/%e7%bd%91%e7%ab%99/' class='tag-link-150' title='30 个话题' style='font-size: 8.3065693430657px;'>网站</a>
+<a href='http://blog.jobbole.com/tag/%e7%bd%91%e9%a1%b5%e8%ae%be%e8%ae%a1/' class='tag-link-454' title='69 个话题' style='font-size: 11.985401459854px;'>网页设计</a>
+<a href='http://blog.jobbole.com/tag/%e8%81%8c%e5%9c%ba/' class='tag-link-253' title='224 个话题' style='font-size: 17.094890510949px;'>职场</a>
+<a href='http://blog.jobbole.com/tag/%e8%87%aa%e7%94%b1%e8%81%8c%e4%b8%9a/' class='tag-link-315' title='128 个话题' style='font-size: 14.642335766423px;'>自由职业</a>
+<a href='http://blog.jobbole.com/tag/translation/' class='tag-link-49' title='40 个话题' style='font-size: 9.5328467153285px;'>英语</a>
+<a href='http://blog.jobbole.com/tag/%e8%8b%b9%e6%9e%9c/' class='tag-link-183' title='47 个话题' style='font-size: 10.248175182482px;'>苹果</a>
+<a href='http://blog.jobbole.com/tag/%e8%90%a5%e9%94%80/' class='tag-link-262' title='34 个话题' style='font-size: 8.8175182481752px;'>营销</a>
+<a href='http://blog.jobbole.com/tag/%e8%a5%bf%e8%a5%bf%e5%90%b9%e9%9b%aa/' class='tag-link-2282' title='29 个话题' style='font-size: 8.2043795620438px;'>西西吹雪</a>
+<a href='http://blog.jobbole.com/tag/%e8%ae%be%e8%ae%a1/' class='tag-link-431' title='122 个话题' style='font-size: 14.43795620438px;'>设计</a>
+<a href='http://blog.jobbole.com/tag/%e8%ae%be%e8%ae%a1%e5%b8%88/' class='tag-link-436' title='100 个话题' style='font-size: 13.518248175182px;'>设计师</a>
+<a href='http://blog.jobbole.com/tag/%e8%ae%be%e8%ae%a1%e6%a8%a1%e5%bc%8f/' class='tag-link-1845' title='46 个话题' style='font-size: 10.14598540146px;'>设计模式</a>
+<a href='http://blog.jobbole.com/tag/%e8%b6%a3%e6%96%87/' class='tag-link-2105' title='39 个话题' style='font-size: 9.4306569343066px;'>趣文</a>
+<a href='http://blog.jobbole.com/tag/%e8%bd%af%e4%bb%b6%e5%b7%a5%e7%a8%8b%e5%b8%88/' class='tag-link-400' title='38 个话题' style='font-size: 9.3284671532847px;'>软件工程师</a>
+<a href='http://blog.jobbole.com/tag/%e8%bd%af%e4%bb%b6%e5%bc%80%e5%8f%91/' class='tag-link-38' title='67 个话题' style='font-size: 11.78102189781px;'>软件开发</a>
+<a href='http://blog.jobbole.com/tag/%e9%9d%a2%e8%af%95/' class='tag-link-173' title='98 个话题' style='font-size: 13.518248175182px;'>面试</a>
+<a href='http://blog.jobbole.com/tag/%e9%a1%b9%e7%9b%ae/' class='tag-link-177' title='38 个话题' style='font-size: 9.3284671532847px;'>项目</a>
+<a href='http://blog.jobbole.com/tag/%e9%a1%b9%e7%9b%ae%e7%bb%8f%e7%90%86/' class='tag-link-1049' title='38 个话题' style='font-size: 9.3284671532847px;'>项目经理</a>
+<a href='http://blog.jobbole.com/tag/%e9%bb%91%e5%ae%a2/' class='tag-link-617' title='54 个话题' style='font-size: 10.861313868613px;'>黑客</a></p></div></div></div><div id="text-19" class="widget widget_text"><h3 class="widget-title">Worktile &#8211; 团队协作利器</h3>			<div class="textwidget"><p><script language=javascript> 
+var worktileRandomNum = Math.round(Math.random()*1);
+var worktileImage=new Array(2);
+worktileImage[0]="http://top.jobbole.com/wp-content/uploads/sites/8/2014/10/9cc890c2a3e959a4011a98b831d0b589.jpg";
+worktileImage[1]="http://top.jobbole.com/wp-content/uploads/sites/8/2014/09/09ede4202ddccf008a5e8b54cd49b5b4.png";
+var worktileImageUrl=worktileImage[worktileRandomNum];
+var worktileUrls=new Array(2);
+worktileUrls[0]="https://worktile.com/?hmsr=http%3A%2F%2Fblog.jobbole.com%2F&#038;hmmd=%E5%9B%BE%E7%89%87%E5%B9%BF%E5%91%8A&#038;hmpl=&#038;hmkw=&#038;hmci=";
+worktileUrls[1]="https://worktile.com/?hmsr=http%3A%2F%2Fblog.jobbole.com%2F&#038;hmmd=%E5%9B%BE%E7%89%87%E5%B9%BF%E5%91%8A&#038;hmpl=&#038;hmkw=&#038;hmci=";
+var worktileUrl = worktileUrls[worktileRandomNum];
+var worktileAdHTML = "<a href='"+worktileUrl+"' target='_blank'><img src='"+worktileImageUrl+"' border='0'></a>";
+document.write(worktileAdHTML);
+</script></p>
+</div>
+		</div><div id="recent_comments_widget-3" class="widget recent_comments_widget">		<h3 class='widget-title'>最新评论（期待您也参与评论）</h3>
+		<ul>
+		
+					
+			<li id="rc-comment-68016" class="rc-item rc-comment rc-clearfix">
+				<img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://0.gravatar.com/avatar/e9bcc6bb421f102823b02605bbd6cebe?s=32&d=mm&r=G">
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/78960/#comment-68016" rel="nofollow">推荐！手把手教你使用Git</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				非常好。								<span class="rc-reviewer"> saturn</span>
+								</div>
+			</li>
+			
+						
+			<li id="rc-comment-67963" class="rc-item rc-comment rc-clearfix">
+				<img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://1.gravatar.com/avatar/35f8aef31ddbb12cfdb10d18857683a1?s=32&d=mm&r=G">
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/44639/#comment-67963" rel="nofollow">C语言函数指针基础</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				看你的才模糊 不要太自以为是								<span class="rc-reviewer"> 123</span>
+								</div>
+			</li>
+			
+						
+			<li id="rc-comment-67945" class="rc-item rc-comment rc-clearfix">
+				<img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://1.gravatar.com/avatar/1bd5bd3e89dfec7019004be14ec3f7a3?s=32&d=mm&r=G">
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/79119/#comment-67945" rel="nofollow">Go 语言的演化历程</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				计算机技术什么时候能跳出这些朴实的编程语言，才能实现人工智能，才会有马斯克对AI的担忧									<a class="rc-reviewer" target="_blank" href="http://applehater.cn" rel="nofollow external"> 我就看看，什么也不买</a>
+								</div>
+			</li>
+			
+						
+			<li id="rc-comment-67914" class="rc-item rc-comment rc-clearfix">
+				<img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://0.gravatar.com/avatar/cee6f154569fc81f03754b9b629f0cfe?s=32&d=mm&r=G">
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/21578/#comment-67914" rel="nofollow">设计模式已经陨落了？</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				这算是高级黑吗								<span class="rc-reviewer"> 差粒米</span>
+								</div>
+			</li>
+			
+						
+			<li id="rc-comment-67738" class="rc-item rc-comment rc-clearfix">
+				<img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://blog.jobbole.com/wp-content/uploads/avatars/13092/e9ff089eda80106d08357cc6c6240457-bpthumb.jpg">
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/77851/#comment-67738" rel="nofollow">互联网协议入门（一）</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				mark								<span class="rc-reviewer"> 陈先森</span>
+								</div>
+			</li>
+			
+						
+			<li id="rc-comment-67713" class="rc-item rc-comment rc-clearfix">
+				<img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://1.gravatar.com/avatar/5ff8143e5a63a846e0f6650f8f1a2d24?s=32&d=mm&r=G">
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/79266/#comment-67713" rel="nofollow">提升互联网产品开发效率的5个工具组合</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				VPN  ReSharper Worktile  三个都在用 表示高效必备啊.								<span class="rc-reviewer"> Monday</span>
+								</div>
+			</li>
+			
+						
+			<li id="rc-comment-67670" class="rc-item rc-comment rc-clearfix">
+				<img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://0.gravatar.com/avatar/2b13d0a06340e81133dd005eb47307f9?s=32&d=mm&r=G">
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/78424/#comment-67670" rel="nofollow">百度2015校园招聘面试题（成功拿到offer）</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				大神能否给出这些面试题的答案..或思路....还有计算机体系结构、操作系统这样的国外的书有什么推荐的...								<span class="rc-reviewer"> Lucosax</span>
+								</div>
+			</li>
+			
+						
+			<li id="rc-comment-67519" class="rc-item rc-comment rc-clearfix">
+				<img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://gravatar.com/avatar/54eae88f046cb69410e5932da7da4e37?d=mm&s=32&r=G">
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/78960/#comment-67519" rel="nofollow">推荐！手把手教你使用Git</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				windows上安装个Git太慢了吧，下载速度很低几KB，安装了快3个小时都没有安装好。。。。								<span class="rc-reviewer"> Ice Free</span>
+								</div>
+			</li>
+			
+					
+		</ul>
+        </div><div id="text-53" class="widget widget_text"><h3 class="widget-title">推荐关注</h3>			<div class="textwidget"><p><script language=javascript> 
+var maizieduRandomNum = Math.round(Math.random()*1);
+var maizieduImage=new Array(2);
+maizieduImage[0]="http://top.jobbole.com/wp-content/uploads/sites/8/2014/10/638b1b2d21119ae7d3d45040240f9906.jpg";
+maizieduImage[1]="http://top.jobbole.com/wp-content/uploads/sites/8/2014/10/283231cee6e496fb73766c9ca3fc2bfa.jpg";
+var maizieduImageUrl=maizieduImage[maizieduRandomNum];
+var maizieduUrls=new Array(2);
+maizieduUrls[0]="http://www.maiziedu.com/course/3221?utm_source=jobboleblog";
+maizieduUrls[1]="http://www.maiziedu.com/course/3391?utm_source=jobboleblog";
+var maizieduUrl = maizieduUrls[maizieduRandomNum];
+var maizieduAdHTML = "<a href='"+maizieduUrl+"' target='_blank'><img src='"+maizieduImageUrl+"' border='0'></a>";
+document.write(maizieduAdHTML);
+</script></p>
+</div>
+		</div><div id="text-9" class="widget widget_text"><h3 class="widget-title">热点话题</h3>			<div class="textwidget"><div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://top.jobbole.com/tag/open-hardware/?utm_source=jobboleblog-sidebar-topic" target="_blank"><img src="http://top.jobbole.com/wp-content/uploads/sites/8/2014/06/open-hardware.png" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://top.jobbole.com/tag/open-hardware/?utm_source=jobboleblog-sidebar-topic" target="_blank">开源硬件</a><br /> 分享树莓派、ArduinoA、开源机器人这些开源硬件方面的原创干货，包括教程、资讯和实战等。</p>
+</p></div>
+<div class="clear"></div>
+</div>
+<div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://top.jobbole.com/tag/python/?utm_source=jobboleblog-sidebar-topic" target="_blank"><img src="http://top.jobbole.com/wp-content/uploads/sites/8/2014/07/36c4ed88b6ffefc5c83fce3881952875.png" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://top.jobbole.com/tag/python/?utm_source=jobboleblog-sidebar-topic" target="_blank">Python开发</a><br /> 汇集优质的Python技术文章和资源。人生苦短，我用Python！</p>
+</p></div>
+<div class="clear"></div>
+</div>
+<div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://top.jobbole.com/tag/swift/?utm_source=jobboleblog-sidebar-topic" target="_blank"><img src="http://top.jobbole.com/wp-content/uploads/sites/8/2014/06/swift.png" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://top.jobbole.com/tag/swift/?utm_source=jobboleblog-sidebar-topic" target="_blank">Swift开发</a><br />Swift开发教程、文章、资讯和各种工具！</p>
+</p></div>
+<div class="clear"></div>
+</div>
+<div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://top.jobbole.com/tag/algorithm/?utm_source=jobboleblog-sidebar-topic" target="_blank"><img src="http://top.jobbole.com/wp-content/uploads/sites/8/2014/06/algorithm-icon.jpg" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://top.jobbole.com/tag/algorithm/?utm_source=jobboleblog-sidebar-topic" target="_blank">算法</a><br />分享各种算法教程、视频和工具。</p>
+</p></div>
+<div class="clear"></div>
+</div>
+<div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://top.jobbole.com/tag/machine-learning/?utm_source=jobboleblog-sidebar-topic" target="_blank"><img src="http://top.jobbole.com/wp-content/uploads/sites/8/2014/06/machine-learning.jpeg" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://top.jobbole.com/tag/machine-learning/?utm_source=jobboleblog-sidebar-topic" target="_blank">机器学习</a><br />持续更新的机器学习领域热门技术分享。</p>
+</p></div>
+<div class="clear"></div>
+</div>
+</div>
+		</div>	
+	<!-- BEGIN .container -->
+	<div class="container">
+	
+		<!-- BEGIN .grid-2 -->
+		<div class="grid-2">
+			
+						
+		</div>
+		<!-- END .grid-2 -->
+		
+		<!-- BEGIN .grid-2 -->
+		<div class="grid-2">
+			
+						
+		</div>
+		<!-- END .grid-2 -->
+		
+		<div class="clear"></div>
+			
+	</div>
+	<!-- END .container -->
+
+</div>
+<!-- END #sidebar -->
+<div class="clear"></div>	
+
+
+</div>
+<!-- END #wrapper -->
+
+<!-- BEGIN footer -->
+<footer>
+
+	<!-- BEGIN .container -->
+	<div class="container">
+		
+		<!-- BEGIN .grid-4 -->
+		<div class="grid-4">
+			
+			<div id="text-3" class="widget widget_text"><h3 class="widget-title">关于伯乐在线博客</h3>			<div class="textwidget"><p>在这个信息爆炸的时代，人们已然被大量、快速并且简短的信息所包围。然而，我们相信：过多“快餐”式的阅读只会令人“虚胖”，缺乏实质的内涵。伯乐在线博客团队正试图以我们微薄的力量，把优秀的原创/译文分享给读者，为“快餐”添加一些“营养”元素。</p>
+<p>伯乐在线-博客( blog.JobBole.com )专注于分享职业相关的博客文章、业界资讯和职业相关的优秀工具和资源。博文类别包括：程序员、设计、营销、互联网、IT技术、自由职业、创业、运营、管理、翻译和人力资源等等。期待您通过<a href="http://blog.jobbole.com/feed/">RSS订阅</a>和<a href="http://weibo.com/jobbole">微博</a>关注我们。如果您也愿意分享一份自己的原创/译文，可以<a target="_blank" href="http://top.jobbole.com">从这里开始</a>～</p>
+</div>
+		</div>			
+		</div>
+		<!-- END .grid-4 -->
+		
+		<!-- BEGIN .grid-4 -->
+		<div class="grid-4">
+			
+			<div id="text-7" class="widget widget_text"><h3 class="widget-title">联系我们</h3>			<div class="textwidget"><p><strong>网站合作和广告投放</strong></p>
+<p>联系邮箱：Webmaster (at) JobBole.com<br />
+QQ： 630772296  （加好友请注明来意）<br />
+交换友情链接要求：PR>=4</p>
+<p><strong>网站使用问题</strong></p>
+<p>请直接<a  href='mailto:webmaster@jobbole.com'>联系我们</a>询问或者反馈</p>
+</div>
+		</div>			
+		</div>
+		<!-- END .grid-4 -->
+		
+		<!-- BEGIN .grid-4 -->
+		<div class="grid-4">
+			
+			<div id="text-4" class="widget widget_text"><h3 class="widget-title">欢迎关注并订阅伯乐在线博客</h3>			<div class="textwidget"><div id="aw_socialcounter_widget-2" class="widget aw_socialcounter_widget">
+<ul>
+<li>
+<a target="_blank" href="http://weibo.com/jobbole"><img class="alignleft" src="http://blog.jobbole.com/common_images/sina_32.png"  alt="关注我们的新浪微博" title="关注我们的新浪微博" /></a></p>
+<div class="view-rss"><a  target="_blank"  href="http://blog.jobbole.com/feed/" class="rss-link"><img class="alignleft" src="http://blog.jobbole.com/common_images/rss_32.png"  alt="RSS订阅" title="RSS订阅" /></a></div>
+<p><a target="_blank" href="http://list.qq.com/cgi-bin/qf_invite?id=f12eb90e095ea83b9c0683e2822949378899f8628c96050b"><img class="alignleft" src="http://blog.jobbole.com/common_images/email_32.png"  alt="邮件订阅" title="邮件订阅" /></a>
+</li>
+</ul>
+</div>
+<p><br/><br />
+<script language=javascript> 
+var randomNum = Math.round(Math.random()*4);
+var image=new Array(5);
+image[0]="design-weixin-logo.jpg";
+image[1]="jobbole-weixin-logo.jpg";
+image[2]="programmer-weixin-logo.jpg";
+image[3]="geekfan-weixin.png";
+image[4]="importnew-weixin.png";
+var imageUrl="http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/img/"+image[randomNum];
+var titles=new Array(5);
+titles[0]="扫描关注设计的那些事，微信号：AboutDesigner";
+titles[1]="扫描关注伯乐在线，微信号：Jobbole";
+titles[2]="扫描关注程序员的那些事，微信号：iProgrammer";
+titles[3]="扫描关注极客范，微信号：iGeekFan";
+titles[4]="扫描关注ImportNew，微信号：importnew";
+var imageTitle = titles[randomNum];
+var adHTML = "<img src='"+imageUrl+"' title='"+imageTitle+"' alt='"+imageTitle+"' border='0'>";
+document.write(adHTML);
+</script></p>
+</div>
+		</div>			
+		</div>
+		<!-- END .grid-4 -->
+		
+		<div class="clear"></div>
+	
+	</div>
+	<!-- END .container -->
+
+	<!-- BEGIN #bottom -->
+	<div id="bottom">
+	
+		<!-- BEGIN .container -->
+		<div class="container">
+		
+			<!-- BEGIN .grid-12 -->
+			<div class="grid-12">
+	
+				<p>&copy; 2014 <a href="http://blog.jobbole.com">博客 &#8211; 伯乐在线</a>. <a href="http://www.miibeian.gov.cn" target="_blank" rel="nofollow">京ICP备10038840号</a> <span style="float:right; ">
+<a href="http://www.jobbole.com/?utm_source=jobboleblog-bottom-nav">首页</a>&nbsp;&nbsp;
+<a href="http://blog.jobbole.com/?utm_source=jobboleblog-bottom-nav">博客</a>&nbsp;&nbsp;
+<a href="http://top.jobbole.com/?utm_source=jobboleblog-bottom-nav">头条</a>&nbsp;&nbsp;
+<a href="http://hao.jobbole.com/?utm_source=jobboleblog-bottom-nav">资源导航</a>&nbsp;&nbsp;
+<a href="http://fanyi.jobbole.com/?utm_source=jobboleblog-bottom-nav">翻译</a>&nbsp;&nbsp;
+<a href="http://www.jobbole.com/groups/?utm_source=jobboleblog-bottom-nav">小组</a>
+</span> </p>
+			
+			</div>
+			<!-- END .grid-12 -->
+			
+			<div class="clear"></div>
+						
+		</div>
+		<!-- END .container -->
+		
+	</div>
+	<!-- END #bottom -->
+	
+</footer>
+<!-- END footer -->
+
+
+	
+
+<!-- Generated in 0.653 seconds. (258 q) -->
+
+	
+<!-- WP SyntaxHighlighter Ver.1.7.3 Begin -->
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shCore.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shLegacy.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shAutoloader.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushAppleScript.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushAS3.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushBash.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushColdFusion.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCpp.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCSharp.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCss.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDelphi.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDiff.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushErlang.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJava.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJavaFX.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJScript.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPerl.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPhp.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPlain.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPowerShell.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPython.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushRuby.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSass.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushScala.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSql.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushVb.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushXml.js?ver=3.0"></script>
+<script type="text/javascript">//<![CDATA[
+	SyntaxHighlighter.autoloader(
+	"applescript	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushAppleScript.js?ver=3.0"
+	,"as3 actionscript3	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushAS3.js?ver=3.0"
+	,"bash shell	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushBash.js?ver=3.0"
+	,"cf coldfusion	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushColdFusion.js?ver=3.0"
+	,"cpp c	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCpp.js?ver=3.0"
+	,"c# c-sharp csharp	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCSharp.js?ver=3.0"
+	,"css	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCss.js?ver=3.0"
+	,"delphi pas pascal	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDelphi.js?ver=3.0"
+	,"diff patch	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDiff.js?ver=3.0"
+	,"erl erlang	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushErlang.js?ver=3.0"
+	,"java	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJava.js?ver=3.0"
+	,"jfx javafx	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJavaFX.js?ver=3.0"
+	,"js jscript javascript	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJScript.js?ver=3.0"
+	,"perl pl	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPerl.js?ver=3.0"
+	,"php	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPhp.js?ver=3.0"
+	,"plain text	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPlain.js?ver=3.0"
+	,"ps powershell	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPowerShell.js?ver=3.0"
+	,"py python	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPython.js?ver=3.0"
+	,"rails ror ruby rb	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushRuby.js?ver=3.0"
+	,"sass scss	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSass.js?ver=3.0"
+	,"scala	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushScala.js?ver=3.0"
+	,"sql	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSql.js?ver=3.0"
+	,"vb vbnet	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushVb.js?ver=3.0"
+	,"xml xhtml xslt html	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushXml.js?ver=3.0"
+	);
+	SyntaxHighlighter.defaults['auto-links'] = false;
+	SyntaxHighlighter.defaults['quick-code'] = true;
+	SyntaxHighlighter.defaults['title'] = '';
+	SyntaxHighlighter.defaults['class-name'] = 'notranslate';
+	SyntaxHighlighter.defaults['collapse'] = false;
+	SyntaxHighlighter.defaults['first-line'] = 1;
+	SyntaxHighlighter.defaults['gutter'] = true;
+	SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+	SyntaxHighlighter.defaults['smart-tabs'] = true;
+	SyntaxHighlighter.defaults['tab-size'] = 4;
+	SyntaxHighlighter.defaults['toolbar'] = false;
+ SyntaxHighlighter.config.stripBrs = true;
+	SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+	SyntaxHighlighter.config.strings.help = '?';
+	SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+	SyntaxHighlighter.config.strings.noBrush = "Can't find brush for: ";
+	SyntaxHighlighter.config.strings.brushNotHtmlScript = "Brush wasn't configured for html-script option: ";
+	SyntaxHighlighter.all();
+	dp.SyntaxHighlighter.HighlightAll('code')
+//]]></script>
+<!-- WP SyntaxHighlighter Ver.1.7.3 End -->
+<!-- Lightbox Plus ColorBox v2.6/1.3.32 - 2013.01.24 - Message: 0-->
+<script type="text/javascript">
+jQuery(document).ready(function($){
+  $("a[rel*=lightbox]").colorbox({speed:450,initialWidth:"300",initialHeight:"100",opacity:0.8,loop:false,scrolling:false,escKey:false,arrowKey:false,top:false,right:false,bottom:false,left:false});
+});
+</script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/plugins/comment-rating/ck-karma.js?ver=3.5.2'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var viewsCacheL10n = {"admin_ajax_url":"http:\/\/blog.jobbole.com\/wp-admin\/admin-ajax.php","post_id":"79252"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/plugins/wp-postviews/postviews-cache.js?ver=1.64'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var pollsL10n = {"ajax_url":"http:\/\/blog.jobbole.com\/wp-admin\/admin-ajax.php","text_wait":"Your last request is still being processed. Please wait a while ...","text_valid":"Please choose a valid poll answer.","text_multiple":"\u6700\u591a\u53ea\u5141\u8bb8\u6295\u7684\u9009\u9879\uff1a","show_loading":"1","show_fading":"1"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/plugins/wp-polls/polls-js.js?ver=2.63'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/ready.js?ver=1.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/easing.js?ver=1.3'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/superfish.js?ver=1.4.8'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/validate.js?ver=1.9.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/touchwipe.js?ver=1.1.1'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/caroufredsel.js?ver=5.5.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/flexslider.js?ver=2.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/jplayer.js?ver=2.1.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/fitvids.js?ver=1.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/selectnav.js?ver=0.1'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/effects.js?ver=1.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/plugins/lightbox-plus/js/jquery.colorbox.1.3.32.js?ver=1.3.32'></script>
+
+
+<div id="full-btm" style="position:fixed; left:50%; top:550px; margin-left:425px;  z-index:100; text-align:center; cursor:pointer;">
+<a><img src="http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/img/back-btm.png" width="20" border=0 alt="跳到底部" title="跳到底部"></a>
+</div>
+
+<script type="text/javascript">
+jQuery('#full-btm').click(function(){
+    jQuery('html, body').animate({scrollTop:jQuery(document).height()}, 'slow');
+    return false;
+});
+</script>
+
+<div id="full-top" style="position:fixed; left:50%; top:520px; margin-left:475px; z-index:100; text-align:center; cursor:pointer;">
+<a><img src="http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/img/back-top.png" width="20" border=0 alt="返回顶部" title="返回顶部"></a>
+</div>
+
+<script type="text/javascript">
+jQuery('#full-top').click(function(){
+    jQuery('html, body').animate({scrollTop:0}, 'slow');
+    return false;
+});
+</script>
+
+<script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/analytics.js','ga');
+
+    ga('create', 'UA-15621043-1', 'jobbole.com');
+    ga('send', 'pageview');
+
+</script>
+
+</body>
+<!-- END body -->
+
+</html>
+<!-- END html -->
