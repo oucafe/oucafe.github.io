@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>Differential Flame Graphs</title>
+        <meta name="viewport" content="width=device-width">
+
+        <!-- syntax highlighting CSS -->
+        <link rel="stylesheet" href="/blog/css/syntax.css">
+
+        <!-- Custom CSS -->
+        <link rel="stylesheet" href="/blog/css/main.css">
+
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-7747513-3']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+    </head>
+    <body>
+
+	<div class="nav">
+	<p class="navhdr">This Site:</p>
+<a href="/index.html">Homepage</a><br>
+<a href="/blog/index.html">Blog</a><br>
+<a href="/sitemap.html">Full Site Map</a><br>
+<a href="/sysperfbook.html">Sys Perf book</a><br>
+<a href="/linuxperf.html">Linux Perf</a><br>
+<a href="/methodology.html">Perf Methods</a><br>
+<a href="/usemethod.html">USE Method</a><br>
+<a href="/tsamethod.html">TSA Method</a><br>
+<a href="/offcpuanalysis.html">Off-CPU Analysis</a><br>
+<a href="/activebenchmarking.html">Active Bench.</a><br>
+<a href="/flamegraphs.html">Flame Graphs</a><br>
+<a href="/heatmaps.html">Heat Maps</a><br>
+<a href="/frequencytrails.html">Frequency Trails</a><br>
+<a href="/colonygraphs.html">Colony Graphs</a><br>
+<a href="/perf.html">perf Examples</a><br>
+<a href="/ktap.html">ktap Examples</a><br>
+<a href="/dtrace.html">DTrace Tools</a><br>
+<a href="/dtracetoolkit.html">DTraceToolkit</a><br>
+<a href="/dtkshdemos.html">DtkshDemos</a><br>
+<a href="/guessinggame.html">Guessing Game</a><br>
+<a href="/specials.html">Specials</a><br>
+<a href="/books.html">Books</a><br>
+<a href="/sites.html">Other Sites</a><br>
+
+	</div>
+
+	<div class="recent">
+	Recent posts:<br>
+	<ul style="padding-left:18px">
+	  
+		   <li>09 Nov 2014 &raquo;<br>
+		   <a href="/blog/2014-11-09/differential-flame-graphs.html">  
+		   Differential Flame Graphs</a></li>
+	  
+		   <li>31 Oct 2014 &raquo;<br>
+		   <a href="/blog/2014-10-31/cpi-flame-graphs.html">  
+		   Catching Your CPUs Napping</a></li>
+	  
+		   <li>27 Sep 2014 &raquo;<br>
+		   <a href="/blog/2014-09-27/from-clouds-to-roots.html">  
+		   From Clouds to Roots: Performance Analysis at Netflix</a></li>
+	  
+		   <li>17 Sep 2014 &raquo;<br>
+		   <a href="/blog/2014-09-17/node-flame-graphs-on-linux.html">  
+		   node.js Flame Graphs on Linux</a></li>
+	  
+		   <li>15 Sep 2014 &raquo;<br>
+		   <a href="/blog/2014-09-15/the-msrs-of-ec2.html">  
+		   The MSRs of EC2</a></li>
+	  
+		   <li>11 Sep 2014 &raquo;<br>
+		   <a href="/blog/2014-09-11/perf-kernel-line-tracing.html">  
+		   Linux perf Rides the Rocket</a></li>
+	  
+		   <li>06 Sep 2014 &raquo;<br>
+		   <a href="/blog/2014-09-06/linux-ftrace-tcp-retransmit-tracing.html">  
+		   Linux ftrace TCP Retransmit Tracing</a></li>
+	  
+		   <li>30 Aug 2014 &raquo;<br>
+		   <a href="/blog/2014-08-30/ftrace-the-hidden-light-switch.html">  
+		   ftrace: The Hidden Light Switch</a></li>
+	  
+		   <li>23 Aug 2014 &raquo;<br>
+		   <a href="/blog/2014-08-23/linux-perf-tools-linuxcon-na-2014.html">  
+		   Linux Performance Tools at LinuxCon North America 2014</a></li>
+	  
+		   <li>28 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-28/execsnoop-for-linux.html">  
+		   execsnoop For Linux: See Short-Lived Processes</a></li>
+	  
+		   <li>25 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-25/opensnoop-for-linux.html">  
+		   opensnoop For Linux</a></li>
+	  
+		   <li>23 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-23/linux-iosnoop-latency-heat-maps.html">  
+		   Linux iosnoop Latency Heat Maps</a></li>
+	  
+		   <li>16 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-16/iosnoop-for-linux.html">  
+		   iosnoop For Linux</a></li>
+	  
+		   <li>13 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-13/linux-ftrace-function-counting.html">  
+		   Linux ftrace Function Counting</a></li>
+	  
+		   <li>10 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-10/perf-hacktogram.html">  
+		   perf Hacktogram</a></li>
+	  
+		   <li>03 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-03/perf-counting.html">  
+		   perf Counting</a></li>
+	  
+		   <li>01 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-01/perf-heat-maps.html">  
+		   perf Heat Maps</a></li>
+	  
+		   <li>29 Jun 2014 &raquo;<br>
+		   <a href="/blog/2014-06-29/perf-static-tracepoints.html">  
+		   perf Static Tracepoints</a></li>
+	  
+		   <li>22 Jun 2014 &raquo;<br>
+		   <a href="/blog/2014-06-22/perf-cpu-sample.html">  
+		   perf CPU Sampling</a></li>
+	  
+		   <li>12 Jun 2014 &raquo;<br>
+		   <a href="/blog/2014-06-12/java-flame-graphs.html">  
+		   Java Flame Graphs</a></li>
+	  
+	</ul>
+	<a href="/blog/index.html">Blog index</a><br>
+	<a href="/blog/about.html">About</a><br>
+	<a href="/blog/rss.xml">RSS</a><br>
+	</div>
+
+        <div class="site">
+          <div class="header">
+            <h1 class="title"><a href="/blog/index.html">Brendan Gregg's Blog</a></h1>
+            <a class="extra" href="/blog/index.html">home</a>
+          </div>
+
+          <h2 class="big">Differential Flame Graphs</h2>
+<p class="meta">09 Nov 2014</p>
+
+<div class="post">
+<p>How quickly can you debug a CPU performance regression? If your environment is complex and changing quickly, this becomes challenging with existing tools. If it takes a week to root cause a regression, the code may have changed multiple times, and now you have new regressions to debug.</p>
+
+<p>Debugging CPU usage is easy in most cases, thanks to <a href="/FlameGraphs/cpuflamegraphs.html">CPU flame graphs</a>. To debug regressions, I would load before and after flame graphs in separate browser tabs, and then blink between them like searching for <a href="http://en.wikipedia.org/wiki/Planets_beyond_Neptune#Discovery_of_Pluto">Pluto</a>. It got the job done, but I wondered about a better way.</p>
+
+<p>Introducing <strong>red/blue differential flame graphs</strong>:</p>
+
+<p><object data="/blog/images/2014/zfs-flamegraph-diff.svg" type="image/svg+xml" width=720 height=296>
+<img src="/blog/images/2014/zfs-flamegraph-diff.svg" width=720 />
+</object></p>
+
+<p>This is an interactive SVG (direct <a href="/blog/images/2014/zfs-flamegraph-diff.svg">link</a>). The color shows <strong>red for growth</strong>, and <strong>blue for reductions</strong>.</p>
+
+<p>The size and shape of the flame graph is the same as a CPU flame graph for the second profile (y-axis is stack depth, x-axis is population, and the width of each frame is proportional to its presence in the profile; the top edge is what&#39;s actually running on CPU, and everything beneath it is ancestry.)</p>
+
+<p>In this example, a workload saw a CPU increase after a system update. Here&#39;s the CPU flame graph (<a href="/blog/images/2014/zfs-flamegraph-after.svg">SVG</a>):</p>
+
+<p><object data="/blog/images/2014/zfs-flamegraph-after.svg" type="image/svg+xml" width=720 height=296>
+<img src="/blog/images/2014/zfs-flamegraph-after.svg" width=720 />
+</object></p>
+
+<p>Normally, the colors are picked at random to differentiate frames and towers. Red/blue differential flame graphs use color to show the difference between two profiles.</p>
+
+<p>The deflate_slow() code and children were running more in the second profile, highlighted earlier as red frames. The cause was that ZFS compression was enabled in the system update, which it wasn&#39;t previously.</p>
+
+<p>While this makes for a clear example, I didn&#39;t really need a differential flame graph for this one. Imagine tracking down subtle regressions, of less than 5%, and where the code is also more complex.</p>
+
+<h2>Red/Blue Differential Flame Graphs</h2>
+
+<p>I&#39;ve had many discussions about this for years, and finally wrote an implementation that I hope makes sense. It works like this:</p>
+
+<ol>
+<li>Take stack profile 1.</li>
+<li>Take stack profile 2.</li>
+<li>Generate a flame graph using 2. (This sets the width of all frames using profile 2.)</li>
+<li>Colorize the flame graph using the &quot;2 - 1&quot; delta. If a frame appeared more times in 2, it is red, less times, it is blue. The saturation is relative to the delta.</li>
+</ol>
+
+<p>The intent is for use with before &amp; after profiles, such as for <strong>non-regression testing</strong> or benchmarking code changes. The flame graph is drawn using the &quot;after&quot; profile (such that the frame widths show the current CPU consumption), and then colorized by the delta to show how we got there.</p>
+
+<p>The colors show the difference that function directly contributed (eg, being on-CPU), not its children.</p>
+
+<h2>Generation</h2>
+
+<p>I&#39;ve pushed a simple implementation to github (see <a href="https://github.com/brendangregg/FlameGraph">FlameGraph</a>), which includes a new program, difffolded.pl. To show how it works, here are the steps using Linux <a href="http://www.brendangregg.com/perf.html">perf_events</a> (you can use other profilers).</p>
+
+<p>Collect profile 1:</p>
+
+<pre>
+# <b>perf record -F 99 -a -g -- sleep 30</b>
+# <b>perf script > out.stacks1</b>
+</pre>
+
+<p>Some time later (or after a code change), collect profile 2:</p>
+
+<pre>
+# <b>perf record -F 99 -a -g -- sleep 30</b>
+# <b>perf script > out.stacks2</b>
+</pre>
+
+<p>Now fold these profile files, and generate a differential flame graph:</p>
+
+<pre>
+$ <b>git clone --depth 1 http://github.com/brendangregg/FlameGraph</b>
+$ <b>cd FlameGraph</b>
+$ <b>./stackcollapse-perf.pl ../out.stacks1 > out.folded1</b>
+$ <b>./stackcollapse-perf.pl ../out.stacks2 > out.folded2</b>
+$ <b>./difffolded.pl out.folded1 out.folded2 | ./flamegraph.pl > diff2.svg</b>
+</pre>
+
+<p>difffolded.pl operates on the &quot;folded&quot; style of stack profiles, which are generated by the stackcollapse collection of tools (see the files in <a href="https://github.com/brendangregg/FlameGraph">FlameGraph</a>). It emits a three column output, with the folded stack trace and two value columns, one for each profile. Eg:</p>
+
+<pre>
+func_a;func_b;func_c 31 33
+[...]
+</pre>
+
+<p>This would mean the stack composed of &quot;func_a()-&gt;func_b()-&gt;func_c()&quot; was seen 31 times in profile 1, and in 33 times in profile 2. If flamegraph.pl is handed this three column input, it will automatically generate a red/blue differential flame graph.</p>
+
+<h2>Options</h2>
+
+<p>Some options you&#39;ll want to know about:</p>
+
+<p><strong>difffolded.pl -n</strong>: This normalizes the first profile count to match the second. If you don&#39;t do this, and take profiles at different times of day, then all the stack counts will naturally differ due to varied load. Everything will look red if the load increased, or blue if load decreased. The -n option balances the first profile, so you get the full red/blue spectrum.</p>
+
+<p><strong>difffolded.pl -x</strong>: This strips hex addresses. Sometimes profilers can&#39;t translate addresses into symbols, and include raw hex addresses. If these addresses differ between profiles, then they&#39;ll be shown as differences, when in fact the executed function was the same. Fix with -x.</p>
+
+<p><strong>flamegraph.pl --negate</strong>: Inverts the red/blue scale. See the next section.</p>
+
+<h2>Negation</h2>
+
+<p>While my red/blue differential flame graphs are useful, there is a problem: if code paths vanish completely in the second profile, then there&#39;s nothing to color blue. You&#39;ll be looking at the current CPU usage, but missing information on how we got there.</p>
+
+<p>One solution is to reverse the order of the profiles and draw a negated flame graph differential. Eg:</p>
+
+<p><object data="/blog/images/2014/zfs-flamegraph-negated.svg" type="image/svg+xml" width=720 height=296>
+<img src="/blog/images/2014/zfs-flamegraph-negated.svg" width=720 />
+</object></p>
+
+<p>Now the widths show the first profile, and the colors show what <em>will</em> happen. The blue highlighting on the right shows we&#39;re about to spend a lot less time in the CPU idle path. (Note that I usually filter out cpu_idle from the folded files, by including a grep -v cpu_idle.)</p>
+
+<p>This also highlights the vanishing code problem (or rather, <em>doesn&#39;t</em> highlight), as since compression wasn&#39;t enabled in the &quot;before&quot; profile, there is nothing to color red.</p>
+
+<p>This was generated using:</p>
+
+<pre>
+$ <b>./difffolded.pl out.folded2 out.folded1 | ./flamegraph.pl --negate > diff1.svg</b>
+</pre>
+
+<p>Which, along with the earlier diff2.svg, gives us:</p>
+
+<ul>
+<li><strong>diff1.svg</strong>: widths show the before profile, colored by what WILL happen</li>
+<li><strong>diff2.svg</strong>: widths show the after profile, colored by what DID happen</li>
+</ul>
+
+<p>If I were to automate this for non-regression testing, I&#39;d generate and show both side by side.</p>
+
+<h2>CPI Flame Graphs</h2>
+
+<p>I first used this code for my <a href="/blog/2014-10-31/cpi-flame-graphs.html">CPI flame graphs</a>, where instead of doing a difference between two profiles, I showed the difference between CPU cycles and stall cycles, which highlights what the CPUs were doing.</p>
+
+<h2>Other Differential Flame Graphs</h2>
+
+<div style="float:right;padding-left:10px;padding-bottom:1px"><a href="http://www.slideshare.net/brendangregg/blazing-performance-with-flame-graphs/167"><img src="/blog/images/2014/rm-flamegraph-diff.jpg" width=250 border=0></a></div>
+
+<p>There&#39;s other ways flame graph differentials can be done. <a href="http://dtrace.org/blogs/rm">Robert Mustacchi</a> experimented with <a href="http://www.slideshare.net/brendangregg/blazing-performance-with-flame-graphs/167">differentials</a> a while ago, and used an approach similar to a colored code review: only the difference is shown, colored red for added (increased) code paths, and blue for removed (decreased) code paths. The key difference is that the frame widths are now relative to the size of the difference only. An example is on the right. It&#39;s a good idea, but in practice I found it a bit weird, and hard to follow without the bigger picture context: a standard flame graph showing the full profile.</p>
+
+<div style="float:right;padding-left:10px;padding-bottom:1px"><a href="https://github.com/corpaul/flamegraphdiff"><img src="/blog/images/2014/corpaul-flamegraph-diff.png" width=250 border=0></a></div>
+
+<p>Cor-Paul Bezemer has created <a href="http://corpaul.github.io/flamegraphdiff/">flamegraphdiff</a>, which shows the profile difference using three flame graphs at the same time: the standard before and after flame graphs, and then a differential flame graph where the widths show the difference. See the <a href="http://corpaul.github.io/flamegraphdiff/demos/dispersy/dispersy_diff.html">example</a>. You can mouse-over frames in the differential, which highlights frames in all profiles. This solves the context problem, since you can see the standard flame graph profiles.</p>
+
+<p>My red/blue flame graphs, Robert&#39;s hue differential, and Cor-Paul&#39;s triple-view, all have their strengths. These could be combined: the top two flame graphs in Cor-Paul&#39;s view could be my diff1.svg and diff2.svg. Then the bottom flame graph colored using Robert&#39;s approach. For consistency, the bottom flame graph could use the same palette range as mine: blue-&gt;white-&gt;red.</p>
+
+<p>Flame graphs are spreading, and are now used by many companies. I wouldn&#39;t be surprised if there were already other implementations of flame graph differentials I didn&#39;t know about. (Leave a comment!)</p>
+
+<h2>Conclusion</h2>
+
+<p>If you have problems with performance regressions, red/blue differential flame graphs may be the quickest way to find the root cause. These take a normal flame graph and then use colors to show the difference between two profiles: red for greater samples, and blue for fewer. The size and shape of the flame graph shows the current (&quot;after&quot;) profile, so that you can easily see where the samples are based on the widths, and then the colors show how we got there: the profile difference.</p>
+
+<p>These differential flame graphs could also be generated by a nightly non-regression test suite, so that performance regressions can be quickly debugged after the fact.</p>
+
+</div>
+
+
+
+<br><hr>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+var disqus_shortname = 'brendangregg';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+          <div class="footer">
+            <div class="contact">
+                Copyright 2014 Brendan Gregg.<br><a href="/blog/about.html">About this blog</a>
+            </div>
+          </div>
+        </div>
+
+    </body>
+</html>
