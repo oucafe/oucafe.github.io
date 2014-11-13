@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="Author" content="Apple Inc." />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="shortcut icon" href="/favicon.ico" />
+<link rel="icon" href="/favicon.ico" />
+<link rel="stylesheet" href="http://www.apple.com/wss/fonts?family=Myriad+Set+Pro&v=1" type="text/css" />
+
+<link rel="stylesheet" href="https://devimages.apple.com.edgekey.net/assets/core/styles/base.css" type="text/css" />
+<link rel="stylesheet" href="/assets/core/styles/templates.css" type="text/css" />
+<link rel="stylesheet" href="/assets/core/styles/responsify.css" type="text/css" />
+<script src="https://devimages.apple.com.edgekey.net/assets/core/scripts/lib/prototype.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/core/scripts/lib/scriptaculous.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/core/scripts/browserdetect.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/core/scripts/apple_core.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/core/scripts/search_decorator.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/core/scripts/adc_core.js" type="text/javascript" charset="utf-8"></script>
+<script src="https://devimages.apple.com.edgekey.net/assets/scripts/ac_retina.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+	document.write('<link rel="stylesheet" type="text/css" href="https://devimages.apple.com.edgekey.net/assets/styles/script.css" media="screen">');
+</script>
+<!-- Augmented Search -->
+<link rel="stylesheet" href="https://devimages.apple.com.edgekey.net/assets/styles/augmented_search.css" type="text/css">
+<script src="https://devimages.apple.com.edgekey.net/assets/scripts/lib/jquery/jquery-1.11.0.min.js"></script>
+<script>jQuery.noConflict();</script>
+<script src="https://devimages.apple.com.edgekey.net/assets/scripts/augmented_search.js"></script>
+	<title>Introduction to the Swift REPL - Swift Blog - Apple Developer</title>
+	<meta name="omni-page" content="Introduction to the Swift REPL - Swift Blog - Apple Developer" />
+	<meta name="Description" content="Get the latest news and helpful tips on the Swift programming language from the engineers who created it.">
+	<link href="/swift/styles/swift.css" rel="stylesheet" type="text/css">
+	<script src="/swift/scripts/swift.js" type="text/javascript" rel="stylesheet"></script>
+</head>
+<body class="white responsify swift-blog">
+	<div id="globalheader-wrapper">
+<nav id="globalheader" data-hires="true">
+	
+	<h1 data-hires="true"><a href="/">Apple Developer</a></h1>
+	<ul id="gh-nav">
+		<li id="gh-nav-technologies"><a href="/technologies/">Technologies</a></li>
+		<li id="gh-nav-resources"><a href="/resources/">Resources</a></li>
+		<li id="gh-nav-programs"><a href="/programs/">Programs</a></li>
+		<li id="gh-nav-support"><a href="/support/">Support</a></li>
+		<li id="gh-nav-membercenter"><a href="/membercenter/">Member Center</a></li>
+	</ul>
+
+	<div id="gh-search" data-hires="true">
+		<form action="/search/index.php" method="get" accept-charset="utf-8"><div>
+			<label for="gh-adcsearch">
+				<span class="prettyplaceholder"></span>
+				<input type="text" name="q" id="gh-adcsearch" class="adcsearch prettysearch augmented">
+			</label>
+		</div></form>
+	</div>
+
+	<script type="text/javascript">
+		Event.onDOMReady(function() {
+			// Get root path for Global Header Active class
+			ghLocation = location.pathname.split('/')[1];
+			// Make sure it doesn't try to add a file extension to the css class
+			if(ghLocation.include('.')) ghLocation = ghLocation.split('.')[0];
+			// Add Global Header Active State Class
+			$$('body')[0].addClassName('gh-nav-'+location.pathname.split('/')[1]+'-active');
+		});
+	</script>
+</nav>
+</div>
+	<div id="top">
+<!-- SiteCatalyst code version: H.8. Copyright 1997-2006 Omniture, Inc. -->
+<script type="text/javascript">
+/* RSID: */
+var s_account="appleglobal,appleusdeveloper"
+</script>
+
+<script type="text/javascript" src="https://www.apple.com/metrics/scripts/s_code_h.js"></script>
+<script type="text/javascript">
+s.pageName=AC.Tracking.pageName();
+s.channel="www.us.developer"
+
+/************* DO NOT ALTER ANYTHING BELOW THIS LINE ! **************/
+var s_code=s.t();if(s_code)document.write(s_code)</script>
+<!-- End SiteCatalyst code version: H.8. -->
+</div>	<!-- - -->
+<div class="swift-header-container" data-hires="true">
+    <div class="swift-header">
+        <p class="imagereplace">Swift: A new programming language for iOS and OS X.</p>
+    </div>
+</div>
+<!-- - -->
+	<div id="content" class="content responsify" data-hires="true">
+		<section class="layout-tabs">
+			<div class="tab-wrapper">
+				<div class="divider"></div>
+				<div class="grid3col tabs">
+					<div class="column one"><a href="/swift/">Overview</a></div>
+					<div class="column two active"><a href="/swift/blog/">Blog</a></div>
+					<div class="column three"><a href="/swift/resources/">Resources</a></div>
+				</div>
+			</div>
+		</section>
+		<section class="blog-articles padding-bottom-40">
+						<ul class="article-list">
+													<li id="article-18" class="article padding-top-50 padding-bottom-50 ">
+						<p class="article-date lighter">Nov 11, 2014</p>
+						<h2>
+														Introduction to the Swift REPL
+													</h2>
+
+						<p>Xcode 6.1 introduces yet another way to experiment with Swift in the form of an interactive Read Eval Print Loop, or REPL. Developers familiar with interpreted languages will feel comfortable in this command-line environment, and even experienced developers will find a few unique features. To get started, launch Terminal.app (found in /Applications/Utilities) and type “swift” at the prompt in OS X Yosemite, or “xcrun swift” in OS X Mavericks. You’ll then be in the Swift REPL:<pre><code>Welcome to Swift version 1.1 (swift-600.0.20.0). Type :help for assistance.
+  <span class="console">1&gt;</span>  <span class="cursor"> </span></code></pre></p><p>All you need to do is type Swift statements and the REPL will immediately execute your code.  Expression results are automatically formatted and displayed along with their type, as are the results of both variable and constant declarations.  Console output flows naturally within the interactive session:</p><pre><code>  <span class="console">1&gt;</span> "100".toInt()
+<span class="output">$R0: Int? = 100</span>
+  <span class="console">2&gt;</span> let name = "Katherine"
+<span class="output">name: String = "Katherine"</span>
+  <span class="console">3&gt;</span> println("Hello, \(name)")
+<span class="output">Hello, Katherine</span></code></pre><p>Note that the result from line one has been given a name by the REPL even though the result of the expression wasn’t explicitly assigned to anything.  You can reference these results to reuse their values in subsequent statements:</p><pre><code>  <span class="console">4&gt;</span> $R0! + 200
+<span class="output">$R1: Int = 300</span></code></pre><p>The Swift compiler recognizes incomplete code, and will prompt for additional input when needed.  Your code will even be indented automatically as it would in Xcode. For instance, starting a function:</p><pre><code><span class="console">5&gt;</span> func timesTwo() {
+<span class="console">6.		</span><span class="cursor"> </span></code></pre><p>The prompt for continuation lines is a line number followed by a period instead of the angle bracket that indicates a new statement, so you can tell at a glance when you’re being asked to complete a code fragment.  At this point you can keep typing remaining lines in the method:</p><pre><code><span class="console">5&gt;</span> func timesTwo() {
+<span class="console">6.</span>		return value * 2
+<span class="console">7.</span> }<span class="cursor"> </span> </code></pre><p>There are three noteworthy points to make here:  The first is that line six was originally indented, but the REPL automatically unindented when we typed the closing brace.  The second is that the function references a parameter we forgot to declare and needs a return type, so you’ll need to add both to the declaration.  The last is that even if you did press return after the last line, it’s not too late to fix it.</p><h3>Multi-Line History</h3><p>When code is submitted to the compiler it’s also recorded in the REPL history, which makes correcting mistakes trivial.  If you pressed return at the end of the incomplete function declaration above, you’d be presented with the following message:</p><pre><code><span class="string">error:</span> use of unresolved identifier 'value'</code></pre><p>Like most history implementations, you can call up your last entry by pressing up arrow from the prompt.  The REPL brings back all three lines in our example, and places the cursor at the end.  You can now proceed with editing the code to correct your mistake as described in the next section.</p><p>Your history is preserved between sessions and will record hundreds of code fragments.  Each time you move up from the top line you’ll move to an earlier history entry.  Each time you move down from an empty line at the bottom of an entry you’ll move to a more recent history entry.  The empty line that opens up before moving to the next entry comes in handy for reasons discussed below.</p><h3>Multi-Line Editing</h3><p>Even though the REPL behaves like a traditional line editor, it also provides convenient features for dealing with multi-line input like most class or function declarations.  In the example above, before pressing return on the final line you can press up arrow to move the cursor up to the declaration line, then use the left arrow to move the cursor just after the opening parenthesis for the parameter list:</p><pre><code><span class="console">5&gt;</span> func timesTwo(<span class="cursor">)</span> {
+<span class="console">6.</span>		return value * 2
+<span class="console">7.</span> }</code></pre><p>Type the parameter declaration, press the right arrow to move past the closing parenthesis and add the return type as well:</p><pre><code><span class="console">5&gt;</span> func timesTwo(value: Int) -&gt; Int<span class="cursor"> </span>{
+<span class="console">6.</span>		return value * 2
+<span class="console">7.</span> }</code></pre><p>You can’t press return to complete the declaration at this point because you’re in the middle of a block of text.  Pressing return here would insert a line break, which can be useful if you’re trying to insert additional lines in a function or method body, but what you want here is to move to the end of the declaration.  You can press down arrow twice to get there, or use the Emacs sequence <span class="keyword">ESC ></span> (the escape key followed by a closing angle bracket).  Pressing return at the end of the last line will compile the newly declared function so it’s ready for use:</p><pre><code>  <span class="console">8&gt; </span> timesTwo(21)
+<span class="output">$R2: (Int) = 42</span></code></pre><p>Automatic detection of statement completion means that you can just type code and the REPL will do the right thing the vast majority of the time.  There are occasions, however, where it’s necessary to submit more than one declaration at the same time because they have mutual dependencies. Consider the following code:</p><pre><code>func foo() {
+	bar()
+}
+func bar() {
+	foo()
+}</code></pre><p>Typing everything above line by line will result in trying to compile the first function once the third line is complete, and of course this produces an error:</p><pre><code><span class="string">error:</span> use of unresolved identifier 'bar'</code></pre><p>You could declare both functions on a single line to get around automatic completion detection that takes place when you press return, but there’s a better solution.  After typing the third line above you can press the down arrow to move to create a fourth line manually, and type the remainder normally.  The two declarations are compiled together, achieving the desired goal of mutual recursion.</p><h3>Quick Reference</h3><p>To help you get started, here’s a handy chart with some of the most commonly used editing and navigation keys:</p><pre><code>Arrow Keys		Move cursor left/right/up/down
+Control+F		Move cursor right one character, same as right arrow
+Control+B		Move cursor left one character, same as left arrow
+Control+N		Move cursor to end of next line, same as down arrow
+Control+P		Move cursor to end of prior line, same as up arrow
+Control+D		Delete the character under the cursor
+Option+Left		Move cursor to start of prior word
+Option+Right	Move cursor to start of next word
+Control+A		Move cursor to start of current line
+Control+E		Move cursor to end of current line
+Delete			Delete the character to the left of the cursor
+Esc &lt;			Move cursor to start of first line
+Esc &gt;			Move cursor to end of last line</code></pre>
+
+						
+						
+
+												<a class="arrow arrow-left" href="http://developer.apple.com/swift/blog/#article-18">All Blog Posts</a>
+											</li>
+											</section>
+	</div><!-- /content -->
+	<div id="globalfooter-wrapper">
+		<footer id="globalfooter">
+			<div id="breadory">
+				<ol id="breadcrumbs">
+					<li class="home"><a href="/">Developer</a></li>
+					<li><a href="/swift/">Swift</a></li>
+										<li><a href="/swift/blog/">Blog</a></li>
+					<li>Introduction to the Swift REPL</li>
+									</ol>
+			</div><!--/breadory-->
+			<p class="gf-buy">Shop the <a href="http://www.apple.com/store/">Apple Online Store</a> (1-800-MY-APPLE), visit an <a href="http://www.apple.com/retail/">Apple Retail Store</a>, or find a <a href="http://www.apple.com/buy/locator/">reseller</a>.</p>
+<ul class="gf-links piped">
+	<li><a href="/news/" class="first">News</a></li>
+	<li><a href="/register/">Register</a></li>
+	<li><a href="/bug-reporting/">Report Bugs</a></li>
+	<li><a href="/contact/">Contact Us</a></li>
+</ul>
+<div class="gf-sosumi">
+	<p>Copyright © 2014 Apple Inc. All rights reserved.</p>
+	<ul class="piped">
+		<li><a href="http://www.apple.com/legal/internet-services/terms/site.html" class="first">Terms of Use</a></li>
+		<li><a href="http://www.apple.com/privacy/">Privacy Policy</a></li>
+	</ul>
+</div>
+<div id="localization-links">
+	<ul>
+		<li><a href="/cn/" title="Simplified Chinese">简体中文</a></li>
+		<li><a href="/jp/" title="Japanese">日本語</a></li>
+		<li><a href="/kr/" title="Korean">한국어</a></li>
+	</ul>
+</div>		</footer><!--/globalfooter-->
+	</div><!-- /globalfooter-wrapper -->
+</body>
+</html>
