@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>在 kibana 里实现去重计数</title>
+    <meta name="author" content="陈子">
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!-- Le styles -->
+    <link href="/assets/themes/twitter/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/themes/twitter/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+    <link href="/assets/themes/twitter/css/pygments/default.css" rel="stylesheet" type="text/css">
+    <!-- Le fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+  </head>
+  <body>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="/">三斗室</a>
+          <ul class="nav">
+      	<li><a href="/archive.html">归档</a></li>
+      	<li><a href="/categories.html">分类</a></li>
+      	<li><a href="/errata.html">《网站运维技术与实践》勘误</a></li>
+      	<li><a href="/pages.html">Pages</a></li>
+      	<li><a href="/projects.html">学习记录</a></li>
+      	<li><a href="/tags.html">标签</a></li>
+            <li><a href="http://chenlinux.com/poetry/index.html" />诗文集</a></li>
+            <li><link title="RSS 2.0" type="application/rss+xml" href="http://chenlinux.com/feed.xml" rel="alternate" /><a href="http://chenlinux.com/feed.xml" target="_blank">RSS订阅</a></li>
+          </ul>
+          <ul class="nav pull-right"><li><a href="/about.html">有关我</a></li></ul>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+    <div class="row">
+      <div class="span7">
+<div class="row">
+  <div class="page-header">
+    <h1>在 kibana 里实现去重计数 <small></small></h1>
+    <div class="date"><span>19 November 2014</span></div>
+    <ul class="tag_box pull-right">
+    	<li><a href="/tags.html#kibana-ref">kibana <span>15</span></a></li>
+    	<li><a href="/tags.html#elasticsearch-ref">elasticsearch <span>25</span></a></li>
+    	<li><a href="/tags.html#javascript-ref">javascript <span>9</span></a></li>
+    </ul>
+  </div>
+  <div style='background-color: #FFF;'>
+    <p>如何在 elk 里统计或者展示去重计数，是一个持续很久的需求了。几乎每个月都会有新手提问题说：“我怎么在 kibana 里统计网站 UV 啊？”可惜这个问题的回答总是：做不到……</p>
+<p>其实 Elasticsearch 从 1.1.0 版本开始已经可以做到<a href="http://www.elasticsearch.org/blog/count-elasticsearch/">去重统计</a>了。但是 kibana3 本身是在 0.90 版本基础上实现的，所以也就没办法了。</p>
+<p>今天抽出时间，把 histogram 面板的代码重写了一遍，用 aggregations 接口替换了 facets 接口。改造完成后，再加上去重就很容易了。</p>
+<p>aggregations 接口最大的特点是层级关系。不过也不是可以完全随便嵌套的，原先 date_histogram facets 里的 global 参数，被拆分成了 global aggregation，但是这个 global aggregation 就强制要求必须用在顶层。所以最后 request 相关代码就变成了这个样子：</p>
+<div class="highlight"><pre><code class="language-javascript" data-lang="javascript"><span class="kd">var</span> <span class="nx">aggr</span> <span class="o">=</span> <span class="nx">$scope</span><span class="p">.</span><span class="nx">ejs</span><span class="p">.</span><span class="nx">DateHistogramAggregation</span><span class="p">(</span><span class="nx">q</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
+<span class="k">if</span><span class="p">(</span><span class="nx">$scope</span><span class="p">.</span><span class="nx">panel</span><span class="p">.</span><span class="nx">mode</span> <span class="o">===</span> <span class="s1">&#39;count&#39;</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">aggr</span> <span class="o">=</span> <span class="nx">aggr</span><span class="p">.</span><span class="nx">field</span><span class="p">(</span><span class="nx">$scope</span><span class="p">.</span><span class="nx">panel</span><span class="p">.</span><span class="nx">time_field</span><span class="p">);</span>
+<span class="p">}</span> <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="nx">$scope</span><span class="p">.</span><span class="nx">panel</span><span class="p">.</span><span class="nx">mode</span> <span class="o">===</span> <span class="s1">&#39;uniq&#39;</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">aggr</span> <span class="o">=</span> <span class="nx">aggr</span><span class="p">.</span><span class="nx">field</span><span class="p">(</span><span class="nx">$scope</span><span class="p">.</span><span class="nx">panel</span><span class="p">.</span><span class="nx">time_field</span><span class="p">).</span><span class="nx">agg</span><span class="p">(</span><span class="nx">$scope</span><span class="p">.</span><span class="nx">ejs</span><span class="p">.</span><span class="nx">CardinalityAggregation</span><span class="p">(</span><span class="nx">q</span><span class="p">.</span><span class="nx">id</span><span class="p">).</span><span class="nx">field</span><span class="p">(</span><span class="nx">$scope</span><span class="p">.</span><span class="nx">panel</span><span class="p">.</span><span class="nx">value_field</span><span class="p">));</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+  <span class="nx">aggr</span> <span class="o">=</span> <span class="nx">aggr</span><span class="p">.</span><span class="nx">field</span><span class="p">(</span><span class="nx">$scope</span><span class="p">.</span><span class="nx">panel</span><span class="p">.</span><span class="nx">time_field</span><span class="p">).</span><span class="nx">agg</span><span class="p">(</span><span class="nx">$scope</span><span class="p">.</span><span class="nx">ejs</span><span class="p">.</span><span class="nx">StatsAggregation</span><span class="p">(</span><span class="nx">q</span><span class="p">.</span><span class="nx">id</span><span class="p">).</span><span class="nx">field</span><span class="p">(</span><span class="nx">$scope</span><span class="p">.</span><span class="nx">panel</span><span class="p">.</span><span class="nx">value_field</span><span class="p">));</span>
+<span class="p">}</span>
+<span class="nx">request</span> <span class="o">=</span> <span class="nx">request</span><span class="p">.</span><span class="nx">agg</span><span class="p">(</span>
+  <span class="nx">$scope</span><span class="p">.</span><span class="nx">ejs</span><span class="p">.</span><span class="nx">GlobalAggregation</span><span class="p">(</span><span class="nx">q</span><span class="p">.</span><span class="nx">id</span><span class="p">).</span><span class="nx">agg</span><span class="p">(</span>
+    <span class="nx">$scope</span><span class="p">.</span><span class="nx">ejs</span><span class="p">.</span><span class="nx">FilterAggregation</span><span class="p">(</span><span class="nx">q</span><span class="p">.</span><span class="nx">id</span><span class="p">).</span><span class="nx">filter</span><span class="p">(</span><span class="nx">$scope</span><span class="p">.</span><span class="nx">ejs</span><span class="p">.</span><span class="nx">QueryFilter</span><span class="p">(</span><span class="nx">query</span><span class="p">)).</span><span class="nx">agg</span><span class="p">(</span>
+      <span class="nx">aggr</span><span class="p">.</span><span class="nx">interval</span><span class="p">(</span><span class="nx">_interval</span><span class="p">)</span>
+    <span class="p">)</span>
+  <span class="p">)</span>
+<span class="p">).</span><span class="nx">size</span><span class="p">(</span><span class="nx">$scope</span><span class="p">.</span><span class="nx">panel</span><span class="p">.</span><span class="nx">annotate</span><span class="p">.</span><span class="nx">enable</span> <span class="o">?</span> <span class="nx">$scope</span><span class="p">.</span><span class="nx">panel</span><span class="p">.</span><span class="nx">annotate</span><span class="p">.</span><span class="nx">size</span> <span class="o">:</span> <span class="mi">0</span><span class="p">);</span></code></pre></div>
+<p>完整的代码已经提交到 github，见 <a href="https://github.com/chenryn/kibana-authorization/commit/6cb4d28a6c610d28680fffdb81c9f6c83cfaf488">https://github.com/chenryn/kibana-authorization/commit/6cb4d28a6c610d28680fffdb81c9f6c83cfaf488</a></p>
+    <hr>
+    <div class="pagination">
+      <ul>
+        <li class="prev"><a href="/2014/11/18/kibana4-beta-2-get-now" title="【翻译】Kibana 4 beta 2 发布">&larr; Previous</a></li>
+        <li><a href="/archive.html">Archive</a></li>
+        <li class="next disabled"><a>Next &rarr;</a>
+      </ul>
+    </div>
+    <hr>
+  <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_tsina">新浪微博</a>
+<a class="jiathis_button_weixin">微信</a>
+<a class="jiathis_button_renren">人人网</a>
+<a class="jiathis_button_ydnote">有道云笔记</a>
+<a class="jiathis_button_gmail">Gmail邮箱</a>
+<a class="jiathis_button_twitter">Twitter</a>
+<a class="jiathis_button_googleplus">Google+</a>
+<a class="jiathis_button_hi">百度空间</a>
+<a class="jiathis_button_fb">Facebook</a>
+<a class="jiathis_button_douban">豆瓣</a>
+<a href="http://www.jiathis.com/share?uid=1589850" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+var jiathis_config={
+	data_track_clickback:true,
+	summary:"",
+	ralateuid:{
+		"tsina":"1035836154"
+	},
+	shortUrl:false,
+	hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1589850" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" id="UYScript" src="http://v1.uyan.cc/js/iframe.js?UYUserId=1589850" async=""></script>
+<!-- UY END -->
+  </div>
+</div>
+      </div>
+      <div class="span4">
+          <div class="well sidebar-nav">
+             <ul id="relate_blog" class="nav nav-list">
+               <li class="nav-header">最近文章</li>
+                 <li><a href="/2014/11/18/kibana4-beta-2-get-now">【翻译】Kibana 4 beta 2 发布</a></li>
+                 <li><a href="/2014/10/28/perl6-bench">用 perl6-bench 做 perl6 性能对比</a></li>
+                 <li><a href="/2014/10/27/escc">ESCC 参会笔记</a></li>
+                 <li><a href="/2014/10/19/grokdebug-commandline">在终端命令行上调试 grok 表达式</a></li>
+                 <li><a href="/2014/10/19/rsyslog-impstats-elasticsearch">Rsyslog 性能数据 impstats 直接写入 Elasticsearch</a></li>
+                 <li><a href="/2014/10/18/performance-testing-tunning-for-logstash-inputs-syslog">LogStash::Inputs::Syslog 性能测试与优化</a></li>
+                 <li><a href="/2014/10/17/netty-to-eventmachine-on-jruby">在 JRuby 上用 netty 模拟 eventmachine</a></li>
+                 <li><a href="/2014/10/11/perlapi-magic-intro">PerlAPI 里的 Magic 简介</a></li>
+                 <li><a href="/2014/10/10/run-kibana4-without-jar">从源代码运行 Kibana 4</a></li>
+            </ul>
+          </div>
+        <div class="well sidebar-nav">
+          <iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=1&ptype=1&speed=0&skin=2&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=1035836154&verifier=a26926d5&dpc=1"></iframe>
+        </div>
+        <div class="well sidebar-nav">
+            <div id="uyan_list_time_frame"></div>
+            <script type="text/javascript" id="UYScriptTime" src="http://v1.uyan.cc/js/iframe_time_list.js?UYUserId=1589850&rankType=time" async=""></script>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(英文)</li>
+              <li><a href="http://codeascraft.com/" title="Etsy 运维团队博客">Code as Craft</a></li>
+              <li><a href="http://devopsanywhere.blogspot.jp/" title="">devopsanywhere</a></li>
+              <li><a href="http://www.jedi.be/blog/" title="">Jong En Dynamische Informatica</a></li>
+              <li><a href="http://www.planetdevops.net/" title="">planetdevops</a></li>
+              <li><a href="http://www.kitchensoap.com/" title="《网站运维》作者，Etsy 运维">Kitchen Soap</a></li>
+              <li><a href="http://blog.johngoulah.com" title="Musings of linux, open source, cloud computing and systems">John Goulah</a></li>
+              <li><a href="http://serverfault.com/" title="stackexchange下属的系统工程师问答网站">serverfault</a></li>
+              <li><a href="http://www.thegeekstuff.com/" title="各种超酷Linux命令用法">TheGeekStuff</a></li>
+              <li><a href="http://neilb.org/" title="The good,the bad,and the beautiful">neilb</a></li>
+              <li><a href="http://www.reddit.com/r/perl/" title="">reddit perl 频道</a></li>
+              <li><a href="http://jpetazzo.github.io/" title="">~jpetazzo</a></li>
+              <li><a href="http://www.perfplanet.com/" title="News and views from the web performance blogosphere">Performance Planet</a></li>
+              <li><a href="http://cuddletech.com/blog/" title="Use UNIX or die">Cuddle Tech</a></li>
+              <li><a href="http://showmetheco.de/" title="Viacheslav Tykhanovskyi(PocketIO/Text::Haml)">No time to wait</a></li>
+              <li><a href="http://blog.dataloop.io/" title="A new SaaS monitoring tool for DevOps & Operations">Dataloop.IO</a></li>
+              <li><a href="http://www.ducea.com/" title="">MDLog:/sysadmin</a></li>
+              <li><a href="http://planeteria.org/perl6/" title="Perl6 文集">Planet Perl 6</a></li>
+              <li><a href="http://www.metaforsoftware.com/blog/" title="">metafor</a></li>
+              <li><a href="http://blog.kablamo.org/" title="Eric Johnson，一个游走在伦敦和北京的 Perler">kablamo</a></li>
+              <li><a href="http://aphyr.com/posts" title="call me maybe 吐槽系列">Aphyr</a></li>
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(中文)</li>
+              <li><a href="http://www.nginxs.com/" title="">eric</a></li>
+              <li><a href="http://www.hellodb.net/" title="Ali DBA 张瑞">Hello DBA</a></li>
+              <li><a href="http://blog.nosqlfan.com/" title="not only sql信息集散地">NoSQLfan</a></li>
+              <li><a href="http://ourmysql.com/" title="">OurMySQL</a></li>
+              <li><a href="http://timo.piqiu.me/" title="TIMO IS MY OASIS">Timo</a></li>
+              <li><a href="http://www.liurongxing.com/" title="">刘荣星</a></li>
+              <li><a href="http://www.cnadn.net/" title="F5工程师">应用交付学习之路</a></li>
+              <li><a href="http://scmbob.org/" title="杭州NSN工程师，shell高人~">扛一肩记忆</a></li>
+              <li><a href="http://www.php-oa.com/" title="音悦台技术经理">扶凯</a></li>
+              <li><a href="http://www.lark.net.cn/" title="王剑">lark's cloud</a></li>
+              <li><a href="http://log.heartoutside.com/" title="HeartOutSide">HeartOutside</a></li>
+              <li><a href="http://blog.liulantao.com/" title="刘兰涛">Lax</a></li>
+              <li><a href="http://niubie.me/" title="莫言">莫言</a></li>
+              <li><a href="http://noops.me/" title="小米运维部">NoOps</a></li>
+              <li><a href="http://www.searchtech.pro/" title="">云端分布式搜索技术</a></li>
+              <li><a href="http://www.usefulshare.com" title="当当网安全运维">UsefulShare</a></li>
+              <li><a href="http://junqili.com/" title="深入研究puppet">纸飞机</a></li>
+              <li><a href="http://www.chinaxing.org/" title="">ChinaXing</a></li>
+              <li><a href="http://bubbyroom.com/" title="守住每一天">Liuyu's blog</a></li>
+              <li><a href="http://blog.aka-cool.net/" title="">Aka.Why</a></li>
+              <li><a href="http://blog.l8ii.com/" title="刘侨">LairdNote</a></li>
+              <li><a href="http://flw.tools/" title="">flw的工具箱</a></li>
+              <li><a href="http://blog.mcshell.org/" title="">mcshell</a></li>
+              <li><a href="http://novoland.github.io/" title="">克鲁斯卡尔的博客</a></li>
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="booklists" class="nav nav-list">
+          <li class="nav-header">我写的第一本技术书籍</li>
+          <li><a href='http://product.china-pub.com/3769604'><img src='http://images.china-pub.com/ebook3765001-3770000/3769604/shupi.jpg' border='0' alt='网站运维技术与实践'/></a></li>
+          <li class="nav-header">我写的两本电子书籍</li>
+          <li><a href='http://chenryn.gitbooks.io/logstash-best-practice/'><img src='https://sm3lir.cloudimage.io/s/cdn/x/https://www.gitbook.io/cover/book/chenryn/logstash-best-practice?build=1416299695472' border='0' alt='LogStash 最佳实践'/></a></li>
+          <li><a href='http://kibana.logstash.es/'><img src='https://sm3lir.cloudimage.io/s/cdn/x/https://www.gitbook.io/cover/book/chenryn/kibana-guide-cn?build=1415872457562' border='0' alt='Kibana 中文指南'/></a></li>
+        </div>
+      </div>
+    </div> <!-- row -->
+      <footer>
+        <p>&copy; 陈子 2012 
+          with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
+          and <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap</a>
+        </p>
+      </footer>
+    </div> <!-- /container -->
+  </body>
+</html>

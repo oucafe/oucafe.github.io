@@ -1,0 +1,342 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>iOS移动开发周报-第31期 - 唐巧的技术博客</title>
+  <meta name="author" content="唐巧">
+
+  
+  <meta name="description" content="版权说明 本文为InfoQ中文站特供稿件，首发地址为：文章链接。如需转载，请与InfoQ中文站联系。 前言 欢迎国内的iOS同行或技术作者向我提交周报线索，线索可以是新闻、教程、开发工具或开源项目，将相关文章的简介和链接在微博上发布并 @唐巧_boy 即可。 【摘要】： &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://blog.devtang.com/blog/2014/11/19/ios-weekly-31">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="唐巧的技术博客" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <!-- googleapis is fucked by gfw -->
+  <script src="http://cdn.staticfile.org/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-28029597-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">唐巧的技术博客</a></h1>
+  
+    <h2>记录下自己学习的点滴</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:blog.devtang.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">首页</a></li>
+  <li><a href="/blog/archives">所有文章</a></li>
+  <li><a href="/blog/categories/ios/">iOS开发专题</a></li>
+  <li><a href="http://weibo.com/tangqiaoboy" target="_blank">我的微博</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">iOS移动开发周报-第31期</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-19T22:09:57+08:00" pubdate data-updated="true">Nov 19<span>th</span>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h3>版权说明</h3>
+
+<p>本文为InfoQ中文站特供稿件，首发地址为：<a href="http://www.infoq.com/cn/news/2014/11/objective-c-runtime">文章链接</a>。如需转载，请与InfoQ中文站联系。</p>
+
+<h3>前言</h3>
+
+<p>欢迎国内的iOS同行或技术作者向我提交周报线索，线索可以是新闻、教程、开发工具或开源项目，将相关文章的简介和链接在微博上发布并 <a href="http://weibo.com/tangqiaoboy">@唐巧_boy</a> 即可。</p>
+
+<p>【摘要】：本期iOS移动开发周报带来如下内容：黑幕背后的__block修饰符、刨根问底Objective－C Runtime、Flashlight等。</p>
+
+<h2>新闻</h2>
+
+<ol>
+<li><p><a href="http://tech.sina.com.cn/mobile/n/apple/2014-11-14/21329792202.shtml">《三名iOS系统恶意程序制作者被抓获》</a>：11月14日据首都网警微博报道，北京市公安局将iOS系统恶意程序的三名制作者抓获，涉案网站被关停。11月初，有研究人员在iOS系统中发现了一个名为Wirelurker的漏洞，可以让iPhone在不越狱的情况下感染病毒，并且有可能已经影响了数十万用户。</p></li>
+<li><p><a href="http://www.tuicool.com/articles/zIFbQ3r">《第三方SSD的电脑升级Yosemite需要关闭kext signing》</a>：苹果在本次升级里为 Yosemite 增加了一个新型的安全插件“kext signing”，存储在 NVRAM/PRAM 里，未经苹果认证的第三方 SSD 硬盘都将被这个插件过滤掉，所以会有用户在升级后开机遇到灰叉的情况，这时你可以使用最新版的Trim Enabler 3.3 ，升级前可提前关闭“kext signing”。</p></li>
+</ol>
+
+
+<h2>教程</h2>
+
+<ol>
+<li><p><a href="http://chun.tips/blog/2014/11/13/hei-mu-bei-hou-de-blockxiu-shi-fu/">《黑幕背后的__block修饰符》</a>：文章通过使用 <code>clang -rewrite-objc</code> 命令，分析了 <code>__block</code> 修饰符是如何做到改变引用的变量的值。</p></li>
+<li><p><a href="http://t.cn/R7meOzE">《刨根问底Objective－C Runtime（3）－ 消息 和 Category》</a>：文章通过一道习题，利用分析Objective-C实现源代码，讲解了Objective-C的消息和Category的实现原理。</p></li>
+<li><p><a href="http://t.cn/R7melvT">《刨根问底Objective－C Runtime（4）－ 成员变量与属性》</a>：本篇笔记主要是讲述Objective－C Runtime的成员变量和属性。</p></li>
+<li><p><a href="http://nshipster.cn/uialertcontroller/">《UIAlert​Controller》</a>：你知道 UIAlertView、UIActionSheet (以及它们各自的 delegate protocols) 在 iOS 8 中已经被废弃了吗？本文章的主题就是 UIAlertController，向大家展示如何替换旧的 alert，以及这些操作方法的高级扩展。</p></li>
+<li><p><a href="http://nshipster.cn/swift-comparison-protocols/">《Swift Comparison Protocols》</a>：Objective-C 让我们对相等性和唯一性的本质慢慢有了带有哲学色彩的思考。为了解救那些不愿意向论文一样的哲理卑身屈膝的开发者，Swift 为此作出了很多改进。在 Swift 中，Equatable 是一个基本类型，由此也演变出了 Comparable 和 Hashable 两种类型。这三个一起组成了这门语言关于对象比较的核心元素。本文介绍了 Swift 中的比较功能。</p></li>
+<li><p><a href="http://nshipster.cn/wkwebkit/">《WKWeb​View》</a>：WKWebView 是现代 WebKit API 在 iOS 8 和 OS X Yosemite 应用中的核心部分。它代替了 UIKit 中的 UIWebView 和 AppKit 中的 WebView，提供了统一的跨双平台 API。本文比较了 WKWebView 与 UIWebView 的功能。</p></li>
+</ol>
+
+
+<h2>工具</h2>
+
+<ol>
+<li><p><a href="https://github.com/nate-parrott/Flashlight">Flashlight</a>：Flashlight 是为 Spotlight 写插件的非官方框架。</p></li>
+<li><p><a href="https://github.com/allenhsu/FlashlightPlugins">FlashlightPlugins</a>：FlashlightPlugins 基于 Flashlight 的中文插件列表。</p></li>
+</ol>
+
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">唐巧</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-11-19T22:09:57+08:00" pubdate data-updated="true">Nov 19<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/ios/'>iOS</a>, <a class='category' href='/blog/categories/weekly/'>weekly</a>
+  
+</span>
+
+
+    </p>
+    <p class="meta">
+      原创文章，版权声明：自由转载-非商用-非衍生-保持署名 | <a href="http://creativecommons.org/licenses/by-nc-nd/3.0/deed.zh" id="">Creative Commons BY-NC-ND 3.0</a>
+
+    </p>
+    
+      <div class="sharing">
+  
+  
+  
+  
+    <style>
+    .flash-video{display:none;}
+</style>
+<!-- JiaThis Button BEGIN -->
+<div id="ckepop">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_tsina">新浪微博</a>
+<a class="jiathis_button_t163">网易微博</a>
+<a class="jiathis_button_tqq">腾讯微博</a>
+<a class="jiathis_button_renren">人人网</a>
+<a class="jiathis_button_douban">豆瓣</a>
+
+<a href="http://www.jiathis.com/share?uid=1574434" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+var jiathis_config={
+    data_track_clickback:true,
+    sm:"t163,tsina,tqq,renren,douban",
+    summary:"",
+    hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v2.jiathis.com/code_mini/jia.js?uid=1574434" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+<br />
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" id="UYScript" src="http://v1.uyan.cc/js/iframe.js?UYUserId=89581" async=""></script>
+<!-- UY END -->
+
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/11/15/ios-weekly-30/" title="Previous Post: iOS移动开发周报-第30期">&laquo; iOS移动开发周报-第30期</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>赞助商</h1>
+  <p>
+     <a href="http://pgyer.com" target="_blank"><img width="260px" src="/images/ad_pgyer.gif" /></a>
+  </p>
+</section>
+<section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/11/19/ios-weekly-31/">iOS移动开发周报-第31期</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/11/15/ios-weekly-30/">iOS移动开发周报-第30期</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/30/ios-weekly-29/">iOS移动开发周报-第29期</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/22/ios-weekly-28/">iOS移动开发周报-第28期</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/12/ios-weekly-27/">iOS移动开发周报-第27期</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/03/opensouce-a-key-value-storage-tool/">开源一个Key-Value存储工具类</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/10/01/startup-2nd-year-summary/">写在创业两周年</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/24/ios-weekly-26/">iOS移动开发周报-第26期</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/14/ios-weekly-25/">iOS移动开发周报-第25期</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/13/scrum-introduction/">适合码农工作时玩的游戏：Scrum</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/09/ios-weekly-24/">iOS移动开发周报-第24期</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/01/ios-weekly-23/">iOS移动开发周报-第23期</a>
+      </li>
+    
+  </ul>
+</section>
+<section>
+  <h1>About Me</h1>
+  <p> Blogger, InfoQ编辑, iOS开发, 创业者。<br/>
+      <br/>Java开发工程师，曾开发网易微博后台。
+      <br/>iOS开发工程师，曾开发有道云笔记、粉笔网、猿题库。
+      <br/>
+      <br/>新浪微博: <a href='http://weibo.com/tangqiaoboy' target='_blank'>唐巧_boy</a>
+      <span id="wb_follow_btn"></span>
+      <br />我的<strong>"iOSDevTips"</strong>微信公众账号:
+      <br/><img width="220px" src="/images/weixin-qr.jpg" />
+  </p>
+</section>
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  &copy; 2014 - 唐巧 -
+  <span class="credit">基于 <a href="http://octopress.org" target="_blank">Octopress</a></span>
+  <span class="credit">, 感谢 <a href="http://gitcafe.com/signup?invited_by=tangqiaoboy" target="_blank">GitCafe</a> 为本站提供存储空间</span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+
+
+<script src=" http://tjs.sjs.sinajs.cn/open/api/js/wb.js?appkey=2351546126" type="text/javascript" charset="utf-8"></script>
+<script>
+WB2.anyWhere(function(W){
+W.widget.followButton({
+    uid: 1708947107,
+    id: "wb_follow_btn"
+    });
+});
+</script>
+
+
+</body>
+</html>
