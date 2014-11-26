@@ -1,0 +1,735 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<title>CIKM Competition数据挖掘竞赛夺冠算法陈运文 | 我爱自然语言处理</title>
+<link rel="profile" href="http://gmpg.org/xfn/11" />
+<link rel="stylesheet" type="text/css" media="all" href="http://www.52nlp.cn/wp-content/themes/twentytenorg/style.css" />
+<link rel="pingback" href="http://www.52nlp.cn/xmlrpc.php" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; Feed" href="http://www.52nlp.cn/feed" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; 评论Feed" href="http://www.52nlp.cn/comments/feed" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; CIKM Competition数据挖掘竞赛夺冠算法陈运文评论Feed" href="http://www.52nlp.cn/cikm-competition-topdata/feed" />
+<link rel='stylesheet' id='yarppWidgetCss-css'  href='http://www.52nlp.cn/wp-content/plugins/yet-another-related-posts-plugin/style/widget.css?ver=4.0.1' type='text/css' media='all' />
+<link rel='stylesheet' id='codecolorer-css'  href='http://www.52nlp.cn/wp-content/plugins/codecolorer/codecolorer.css?ver=0.9.9' type='text/css' media='screen' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.52nlp.cn/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.52nlp.cn/wp-includes/wlwmanifest.xml" /> 
+<link rel='prev' title='Python自然语言处理实践: 在NLTK中使用斯坦福中文分词器' href='http://www.52nlp.cn/python%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86%e5%ae%9e%e8%b7%b5-%e5%9c%a8nltk%e4%b8%ad%e4%bd%bf%e7%94%a8%e6%96%af%e5%9d%a6%e7%a6%8f%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%99%a8' />
+<meta name="generator" content="WordPress 4.0.1" />
+<link rel='canonical' href='http://www.52nlp.cn/cikm-competition-topdata' />
+<link rel='shortlink' href='http://www.52nlp.cn/?p=6838' />
+<!-- wp thread comment 1.4.9.4.002 -->
+<style type="text/css" media="screen">
+.editComment, .editableComment, .textComment{
+	display: inline;
+}
+.comment-childs{
+	border: 1px solid #999;
+	margin: 5px 2px 2px 4px;
+	padding: 4px 2px 2px 4px;
+	background-color: white;
+}
+.chalt{
+	background-color: #E2E2E2;
+}
+#newcomment{
+	border:1px dashed #777;width:90%;
+}
+#newcommentsubmit{
+	color:red;
+}
+.adminreplycomment{
+	border:1px dashed #777;
+	width:99%;
+	margin:4px;
+	padding:4px;
+}
+.mvccls{
+	color: #999;
+}
+			
+</style>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: { equationNumbers: { autoNumber: "AMS" } },
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+    inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+    displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+    processEscapes: true
+  },
+  "HTML-CSS": { availableFonts: ["TeX"] }
+});
+</script><script type="text/javascript" src="http://www.52nlp.cn/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</head>
+
+<body class="single single-post postid-6838 single-format-standard">
+<div id="wrapper" class="hfeed">
+	<div id="header">
+		<div id="masthead">
+			<div id="branding" role="banner">
+								<div id="site-title">
+					<span>
+						<a href="http://www.52nlp.cn/" title="我爱自然语言处理" rel="home">我爱自然语言处理</a>
+					</span>
+				</div>
+				<div id="site-description">I Love Natural Language Processing</div>
+
+										<img src="http://www.52nlp.cn/wp-content/themes/twentytenorg/images/headers/path.jpg" width="940" height="198" alt="" />
+								</div><!-- #branding -->
+
+			<div id="access" role="navigation">
+			  				<div class="skip-link screen-reader-text"><a href="#content" title="跳至正文">跳至正文</a></div>
+								<div class="menu"><ul><li ><a href="http://www.52nlp.cn/">首页</a></li><li class="page_item page-item-2"><a href="http://www.52nlp.cn/about">关于</a></li><li class="page_item page-item-2557 page_item_has_children"><a href="http://www.52nlp.cn/resources">资源</a><ul class='children'><li class="page_item page-item-1271"><a href="http://www.52nlp.cn/resources/wpmatheditor">WpMathEditor</a></li></ul></li></ul></div>
+ 
+				<div class="menu"><ul><li class="page_item page-item-2"></li><li class="page_item page-item-2"><a href="http://coursegraph.com" title="课程图谱" target="_blank">课程图谱</a></li><li class="page_item page-item-2"><a href="http://www.nlpjob.com" title="求职" target="_blank">求职招聘</a></li></ul></div>
+			</div><!-- #access -->
+		</div><!-- #masthead -->
+	</div><!-- #header -->
+
+	<div id="main">
+
+		<div id="container">
+			<div id="content" role="main">
+
+			
+
+				<div id="nav-above" class="navigation">
+					<div class="nav-previous"><a href="http://www.52nlp.cn/python%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86%e5%ae%9e%e8%b7%b5-%e5%9c%a8nltk%e4%b8%ad%e4%bd%bf%e7%94%a8%e6%96%af%e5%9d%a6%e7%a6%8f%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%99%a8" rel="prev"><span class="meta-nav">&larr;</span> Python自然语言处理实践: 在NLTK中使用斯坦福中文分词器</a></div>
+					<div class="nav-next"></div>
+				</div><!-- #nav-above -->
+
+				<div id="post-6838" class="post-6838 post type-post status-publish format-standard hentry category-chinese-information-processing category-354 category-text-classification category-344 category-nlp category-computational-linguistics category-informal-essay tag-354 tag-569">
+					<h1 class="entry-title">CIKM Competition数据挖掘竞赛夺冠算法陈运文</h1>
+
+					<div class="entry-meta">
+						<span class="meta-prep meta-prep-author">发表于</span> <a href="http://www.52nlp.cn/cikm-competition-topdata" title="23:50" rel="bookmark"><span class="entry-date">2014年11月20号</span></a> <span class="meta-sep">由</span> <span class="author vcard"><a class="url fn n" href="http://www.52nlp.cn/author/chenyunwen" title="查看所有由 chenyunwen 发布的文章">chenyunwen</a></span>					</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+						<h2><span style="color: #0000ff"><strong>背景</strong></span></h2>
+<p>CIKM Cup(或者称为CIKM Competition)是ACM CIKM举办的国际数据挖掘竞赛的名称。CIKM全称是International Conference on Information and Knowledge Management，属于信息检索和数据挖掘领域的国际著名学术会议，由ACM SIGIR分会（ACM Special Interest Group on Information Retrieval）主办。</p>
+<p>随着数据挖掘技术越来越重要，CIKM会议的影响力也水涨船高，逐渐逼近KDD、WWW、ICDE。2014年是CIKM第一次在中国大陆举办，邀请了Google大神Jeff Dean，微软EVP陆奇博士和德国Max Planck Institute的Gerhard Weikum教授担任Keynote Speaker，盛况空前。CIKM很重视工业界的运用，既有面向工业届的Tutorial/Workshop，也有CIKM Cup这样面向实战的国际数据挖掘竞赛（类似另一个著名的数据挖掘竞赛KDD Cup），比赛使用真实的工业界数据和应用课题，让全世界的数据挖掘选手们一较高下。</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2014/11/cikm.png"><img class="aligncenter wp-image-6855 size-full" src="http://www.52nlp.cn/wp-content/uploads/2014/11/cikm.png" alt="cikm" width="735" height="142" /></a></p>
+<p>今年的CIKM Cup竞赛的题目是自动识别用户的查询意图（Query Intent Detection，QID），主办方提供了来自百度线上的真实的用户查询和点击的数据（总行数为6141万行），竞赛目标是根据已标注的用户行为数据，来判断其中用户查询时的真实意图，要求识别的准确率和召回率越高越好。比赛历时2个半月，共吸引了520支队伍参赛，最终我们的队伍Topdata脱颖而出，所提出的算法以F1值0.9296排名Final Leaderboard第一获得冠军！</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2014/11/topdata.png"><img class="aligncenter wp-image-6856 " src="http://www.52nlp.cn/wp-content/uploads/2014/11/topdata.png" alt="topdata" width="490" height="330" /></a></p>
+<p>应很多朋友的邀请，发表这篇文章详细介绍我们使用的方法，给对大数据挖掘算法感兴趣的朋友们作个参考。另外在领奖现场我们和其他参赛队伍作了愉快的交流，因此本文也吸收了其他队伍的一些优秀思路，可以看作是这次竞赛整体方法和对策的总结。文章最后还附上了一些我个人的参赛感言（陈运文）。<br />
+<span id="more-6838"></span></p>
+<h2><span style="color: #0000ff"><strong>竞赛题目介绍</strong></span></h2>
+<p>百度提供的数据是用户在搜索引擎上真实完整的查询过程。用户与搜索引擎的一轮完整交互过程称为一个Search Session，在Session里提供的信息包括：用户查询词（Query），用户所点击的搜索结果的标题（Title），如果用户在Session期间变换了查询词（例如从Query1 &#8211;&gt;Query2），则后续的搜索和点击均会被记录，直到用户脱离本次搜索，则Session结束。</p>
+<p>训练样本中已标记出了部分Query的查询意图，包括“VIDEO”, “NOVEL”, “GAME”, “TRAVEL”, “LOTTERY”, “ZIPCODE”, and “OTHER”7个类别。另一些未知类型样本标记为“UNKNOWN”。标记为“TEST”的Query则是要预测类别的样本。竞赛的训练数据形如：</p>
+<p style="text-align: left"><span style="color: #999999"><em>Class1      Query1     Title1</em></span></p>
+<p style="text-align: left"><span style="color: #999999"><em>Class1      Query1     Title2</em></span></p>
+<p style="text-align: left"><span style="color: #999999"><em>Class2      Query2     -</em></span></p>
+<p style="text-align: left"><span style="color: #999999"><em>Class2      Query2     Title3</em></span></p>
+<p style="text-align: left"><span style="color: #999999"><em>Class3      Query4     Title5</em></span></p>
+<p>注： “-”号表示用户当前进行了Query变换（当次没有发生点击行为）；空行表示Session结束。</p>
+<p>需要指出的是竞赛提供的文本数据按单字（注：连续的字母或者数字串视为单字）进行了加密（以避免因中文NLP处理能力的差异影响竞赛结果）。用7位数字串加密后的训练样本形如：</p>
+<p><span style="color: #999999"><em>CLASS=GAME      0729914 0624792 0348144           0912424 0624792 0348144 0664000 0267839 0694263 0129267 0784491 0498098 0683557 0162820 0042895 0784491 0517582 1123536 0517582 0931307 0517582 1079654 0809167</em></span></p>
+<p><span style="color: #999999"><em>CLASS=VIDEO     0295063 0706287 0785637 0283234 0982816 0295063 0706287         0785637 0283234 0335623 0437326 0479957 0153430 0747808 0673355 1112955 1110131 0466107 0754212 0464472 0673355 0694263</em></span></p>
+<p><span style="color: #999999"><em>CLASS=UNKNOWN   0295063 0706287 0785637 0283234 1034216 0999132 1055194 0958285 0424184 -</em></span></p>
+<p>具体的数据产生方法、格式介绍等可以详见链接：</p>
+<p><a href="http://openresearch.baidu.com/activitycontent.jhtml?channelId=769">http://openresearch.baidu.com/activitycontent.jhtml?channelId=769</a></p>
+<p>训练样本中已标记的Query类型包括“VIDEO”, “NOVEL”, “GAME”, “TRAVEL”, “LOTTERY”, “ZIPCODE”, and “OTHER”7个，注意存在一些跨两类的样本，例如CLASS=GAME | CLASS=VIDEO        0241068 0377891 0477545。</p>
+<p>算法竞赛的评价方法是信息检索中常用的F1值，实际计算时会先计算各个类别的Precision和Recall值，再合并为F1(macro)：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2014/11/傲游截图20141120192626.png"><img class="aligncenter wp-image-6839 " src="http://www.52nlp.cn/wp-content/uploads/2014/11/傲游截图20141120192626.png" alt="F1计算公式" width="462" height="260" /></a></p>
+<h2><span style="color: #0000ff"><strong>基础分析</strong></span></h2>
+<p>本届CIKM竞赛题可视为一个经典的有监督机器学习问题(Supervised Learning)，经典的模式分类（Pattern Classification）方法：包括特征抽取、分类训练等技术都能沿用，对机器学习有所了解的朋友们应该能很快上手。不过与经典的文本分类问题相比，这里有几个特别的注意点：</p>
+<p><strong>1 类别不完全互斥，存在交叉</strong>。即Query有可能同时属于多个类别，而存在交叉的Query往往是查询意图表达不明确、存在多义的情况。如搜“极品飞车”，既可能是指一款电脑游戏（CLASS=GAME），也有可能是同名的电影（CLASS=VIDEO）。</p>
+<p><strong>2 样本分布不均匀</strong>。包括两个方面：从类别方面来看，训练样本多寡不均（VIDEO类样本数量是ZIPCODE类的40倍）；从Query频次方面来看，少数热门Query出现频次极高，大量冷门Query特征稀有，这和现实环境的搜索类似。这里尤其需要注意的是，在评估函数中，计算各类别的Macro Precision和Recall时，由于分母是该category的Query number，所以越是稀少的类别，其每个Query的预测精度对最终F1值的影响越大。换句话说冷门类别对结果的影响更大，需要格外关注。</p>
+<p><strong>3 训练样本里存在两个特殊类别</strong>。一个是“OTHER”、另一个是“UNKNOWN”。“OTHER”和其他6个已知类别并列，且不存在任何交叉，可以认为OTHER类别包含比较杂的Query需求，同时OTHER样本数量很多（仅次于VIDEO类）。UNKNOWN则是在生成训练集合时，由于同Session中有已知Category的样本而被带出来的，类别未标注。UNKNOWN样本的数量非常大，有2901万条，几乎占了训练样本总行数的一半。</p>
+<p><strong>4 Search Query以短文本为主</strong>，Query通常极为精炼（3-9个字为主，甚至存在大量单字Query），特征比较稀疏。而Query有对应的很多点击Title，充分挖掘好两类文本间的关系，对提升效果会有很大的帮助。</p>
+<p><strong>5 提供了Session信息</strong>。Session中蕴藏着上下文Query间、Query和对应的Title间的紧密关系。不同Session里相同Query所点击的不同Title、或不同Title反向对应的Query等关系网也能被用来提高识别效果。</p>
+<p>基于上述的分析，我们首先尝试了一些最朴素的文本分类思路，包括基础性的一些数据统计和特征提取、Session信息统计、简单的分类算法或分类规则等（例如朴素贝叶斯、最近邻、决策树等分类器），这样F1值能达到0.8左右。这个初步尝试过程我认为是挺有必要的，因为能帮助我们把握数据分布的情况、加深对问题的理解，是后面精益求精的起点。</p>
+<h2><span style="color: #0000ff"><strong>文本特征提取</strong></span></h2>
+<p>Query和Title的加密后的文本信息是可以非常直观的提取基础的文本特征的。在赛后和其他优胜队伍交流时，发现几乎所有的队伍在这个环节都采用了N-gram的方法进行文本处理。 在使用N-Gram语法模型时，我们使用了double（right &amp; left）padding的方法生成Unigram、Bigram、Trigram特征向量（如下图），实验中我们使用NLTK来完成开发：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2014/11/ngram-feature.png"><img class="aligncenter wp-image-6842 size-full" src="http://www.52nlp.cn/wp-content/uploads/2014/11/ngram-feature.png" alt="ngram-feature" width="546" height="172" /></a></p>
+<p>比赛中N-gram Model我们只用到了Tri-gram，原因是4-gram或更高维的N-gram特征带来的效果收益极其微小，但带来特征向量的巨大膨胀，模型训练时间大幅度延长，而竞赛提供的有限的训练样本数量无法让如此高维的特征向量得到充分训练，所以权衡后我们放弃了后面的特征。</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2014/11/ngram.png"><img class="aligncenter wp-image-6843 " src="http://www.52nlp.cn/wp-content/uploads/2014/11/ngram.png" alt="ngram" width="547" height="94" /></a></p>
+<p>除了上述通用的N-grams特征外，还有一些思路来判断表义能力强的词汇，加入训练样本的特征向量：</p>
+<ol>
+<li>分析各个Category的N-grams词汇的分布，抽取只在某个category中出现的N-gram。这些词汇的区分度强，我们挖掘得到的各个类别的特征词典形如下图</li>
+<li>根据TF（term frequency）、IDF等统计特征可以用来进行gram的筛选工作，降低特征维数并提高精度</li>
+<li>统计某word和前后word的分布概率，通过P(w_i|w_pre)或P(w_i|w_after)选择成词概率高的词汇</li>
+<li>有队伍强化了Query的尾部/头部gram的权重，可能也对提高识别准确率有所帮助</li>
+</ol>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2014/11/monopoly.png"><img class="aligncenter wp-image-6844 size-full" src="http://www.52nlp.cn/wp-content/uploads/2014/11/monopoly.png" alt="monopoly" width="568" height="92" /></a></p>
+<p>值得一提的是，在提取这些Bag of Words特征阶段，有几支队伍使用了Google开源工具Word2Vec来处理NGrams，SkipGrams，Co-occurrence Ngrams问题，Word2Vec提供了良好的词汇关系计算方法，很好的提高了开发效率。</p>
+<h2><span style="color: #0000ff"><strong>统计特征提取</strong></span></h2>
+<p>从实际问题中能抽取的基础统计特征非常多，各个队伍的方法可谓五花八门。用得比较多的特征包括：</p>
+<ol>
+<li>Query的长度</li>
+<li>Query的频次</li>
+<li>Title的长度</li>
+<li>Title的频次</li>
+<li>BM-25</li>
+<li>Query的首字、尾字等</li>
+</ol>
+<p>其它细致的特征还能发现很多。需要指出的是，其中当特征为连续值时，后续形成特征向量时往往需要离散化，即分段映射特征到对应的feature bucket中。</p>
+<h2><span style="color: #0000ff"><strong>分类框架的两个注意点</strong></span></h2>
+<p>在设计基本的分类算法模型时，有两个点需要需要提前注意：</p>
+<p><strong>1 多分类问题的处理方式</strong></p>
+<p>前面已经提到过，一个需要关注的现象是样本中存在跨两个类别的数据。待测样本中也同样会有跨类的情况。应该如何处理这样的样本呢？一个直观的思路是将跨类的样本进行拆分，即如果一条训练样本为：</p>
+<p>CLASS=A | CLASS=B  Query1</p>
+<p>则在生成训练样本时转变为：</p>
+<p><em>CLASS=A Query1</em></p>
+<p><em>CLASS=B Query1</em></p>
+<p>在预测阶段，则根据分类的结果，取超过阈值Threshold的Top2 CLASS进行合并：</p>
+<p><em>Query_TEST，&lt;CLASS1, weight1&gt;, &lt;CLASS2, weight2&gt; &#8230;   &#8212;&gt; Query_TEST CLASS1 | CLASS2</em></p>
+<p>但上述方法会遇到两个问题：第一个问题是同一训练样本分拆到不同类别后，会导致两个类别样本重叠，分类平面难以处理，影响模型训练精度；第二个问题是在合并Top2 Class生成结果时阈值的设定对结果影响很大，但这个参数Threshold的确定又缺乏依据，因此最终精度的波动会很大。</p>
+<p>所以比赛中我们没有选择上述的拆分处理方法，而是将多类的训练样本单独作为一个类别，这样总的待分类别数量增加到15类（注：一个细节是category的先后顺序要先归一，即CLASS1 | CLASS2 = CLASS2 | CLASS1）。动机是我认为跨类别的样本有其特殊之处（如往往较短的Query查询意图不明。而长Query跨类的相对少，搜“龙之谷”可能是找游戏或电影，但如果搜“龙之谷 在线观看”则明确在找电影）。将跨类样本作为独立类别来进行特征抽取和分类，能够将这些特征更好的运用起来，对识别效果是有帮助的，我们的对比实验也证实了这个想法。</p>
+<p>2 <strong>Query-Title</strong><strong>样本的组织方法</strong></p>
+<p>Taining Data中很多Query多次出现，并对应不同的Title。训练过程中可以将每一个&lt;Query, Title&gt;Pair作为一条训练样本来用。这样形成的训练样本的数量有数千万条，但是每则样本的文本很短，抽取的特征比较有限。</p>
+<p>另外一个处理方式是首先将相同Query对应的Title进行归并，以Query为单位来构成一条训练样本，形如：</p>
+<p><em>Query1, Title_11, Title_12, Title_13 …… Title_1n</em></p>
+<p><em>Query2, Title_21, Title_22, Title_23 …. Title_2n</em></p>
+<p>归并后的训练样本总数降为3.87万条，待测样本数量为3.89万条，和前面的方法相比，这样来做有2个收益：第一是训练样本数量减少了3个数量级，训练速度大为加快；第二是每条训练样本的文本长度增加，能进行更复杂的特征抽取（例如利用LDA等抽取Topic信息）。因此在实践中我们采用了这种方式组织样本。</p>
+<p>经过上述的过程，我们为训练样本和测试样本生成近100w维的特征向量（有的队伍进行了特征降维和筛选，如PCA变换等）。紧接着可以选择一个分类器（Classifier）进行模型的训练和分类。以常见的SVM（支持向量机）为例，我们可以轻松获得超过0.90的F1-Score：</p>
+<p><em>./ svm-train -t 2 -c 10000 -m 3000 -b 1 ${train_feature_file} ${svm_model_file}</em></p>
+<p><em>./svm-predict -b 1 ${test_feature_file}  ${svm_model_file} ${pred_file}</em></p>
+<p>顺便一提，SVM里对结果影响最大的是 -c 参数，这是对训练过程中错分样本的惩罚系数(或称损失函数)。另外-t参数确定的是核函数的类型，实践证明-t 2 RBF核(默认值)的效果要比线性核、多项式核等效果略好一些。</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2014/11/2011092418233495.png"><img class="aligncenter wp-image-6846 " src="http://www.52nlp.cn/wp-content/uploads/2014/11/2011092418233495.png" alt="2011092418233495" width="534" height="236" /></a></p>
+<h2><span style="color: #0000ff"><strong>Query</strong><strong>间关系的分析</strong></span></h2>
+<p>除了Term级的特征抽取，围绕Query为粒度的特征分析也极为重要，Session提供了大量的上下文Query给我们参考，这对提高算法的识别精度有很大的帮助，下面是我们的处理方法：</p>
+<p><strong>1 Query间特征词汇的挖掘</strong></p>
+<p>在分析Session log的过程中，一个有意思的发现是往往用户的查询词存在递进关系。尤其在前面的Query查询满意度不高的情况下，用户往往会主动进行Query变换，期望获得更满意的结果。而此时Query变换前后的Diff部分能强烈的表达用户的查询意图。</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2014/11/suffix-prefix-feature.png"><img class="aligncenter wp-image-6847 size-full" src="http://www.52nlp.cn/wp-content/uploads/2014/11/suffix-prefix-feature.png" alt="suffix-prefix-feature" width="324" height="159" /></a></p>
+<p>如上图，通过在同Session的上下文中（半径为R的范围内）提取出存在一定相似度的Query1和Query2，找到Diff部分的前缀（Prefix String）和后缀（Suffix String），它们可以认为是Query的需求词/属性词集中的部分，形成特征后对提高精度起到了很好的帮助。</p>
+<p><strong>2. Query间共现关系的运用</strong></p>
+<p>类似数据挖掘中“啤酒与尿布”的经典故事，Query和Query如果频繁在同一个Session中共现，则也可以认为两个Query有紧密的相关关系，事实上这也是搜索引擎挖掘生成相关查询词（related query）的一个思路。<a href="http://www.52nlp.cn/wp-content/uploads/2014/11/20141117183000.png"><img class="aligncenter wp-image-6851 size-full" src="http://www.52nlp.cn/wp-content/uploads/2014/11/20141117183000.png" alt="20141117183000" width="480" height="113" /></a></p>
+<p>实践中可以通过挖掘共现关系（Co-occurrent）生成当前Query的相关Query集合，将这些Query的属性作为特征来加以利用。进一步的，为保证精度，还可进一步通过Query Similarity的计算（例如各种距离公式）来过滤噪音，筛选出文本上具备一定相似度的Query。例如通过Jaccard distance或Dice Coefficient：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2014/11/jacard.png"><img class="aligncenter size-full wp-image-6848" src="http://www.52nlp.cn/wp-content/uploads/2014/11/jacard.png" alt="jacard" width="191" height="39" /></a><a href="http://www.52nlp.cn/wp-content/uploads/2014/11/coefficient.png"><img class="aligncenter size-full wp-image-6849" src="http://www.52nlp.cn/wp-content/uploads/2014/11/coefficient.png" alt="coefficient" width="116" height="47" /></a></p>
+<p>进一步筛选出文本相关性强的Query pair，将Query id，class作为特征向量的一部分发挥作用</p>
+<p><strong>3 生成Query的Family Tree</strong></p>
+<p>我们挖掘Query和Query间的传递关系并形成了一个家族树（Family Tree），家族树的概念是如果两个Query之间存在真包含关系，即Query1 ⊂  Query2，则Query1为Son，Query2为Father；Father和Son是多对多关系，两个Query如果有共同的Father且互相没有包含关系则为Brother。</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2014/11/query-relation-feature.png"><img class="aligncenter wp-image-6852 size-full" src="http://www.52nlp.cn/wp-content/uploads/2014/11/query-relation-feature.png" alt="query-relation-feature" width="626" height="217" /></a></p>
+<p>显然通过Family Tree我们可以将Query亲属的Category作为该Query的特征向量的一部分来发挥作用</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2014/11/query-relation.png"><img class="aligncenter wp-image-6853 size-full" src="http://www.52nlp.cn/wp-content/uploads/2014/11/query-relation.png" alt="query-relation" width="918" height="244" /></a><strong>4 Query的Macro Features</strong></p>
+<p>整体来分析Query所在的Session的category分布情况，可以提取search behavior的Macro Feature，</p>
+<p>另外当前Query上下文的query、title，以及这些query对应的类别，这些Context信息也都可以纳入使用</p>
+<h2><span style="color: #0000ff"><strong>Query-Title</strong><strong>关系的分析</strong></span></h2>
+<p>这次竞赛比较有意思的是Query和对应的Title构成了一个个的关系对&lt;Query, Title&gt;，从<strong>微观</strong>（Word粒度）和<strong>宏观</strong>（Q-T之间的关系网结构）等不同角度来观察Query-Title间关系，我们有以下发现：</p>
+<p><strong>1.Query-Title</strong><strong>关系的微观分析</strong></p>
+<p>我们发现Query和Title往往是存在共同的词汇（公共子串）。搜索引擎通常会把Title里和Query相同的词汇重点提示给用户（例如百度文字飘红，Google加粗文字），这些Query-Title中相同的词汇往往是最为重要的语料，对这些词汇的使用方法又可以包括：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2014/11/query-title-feature.png"><img class="aligncenter wp-image-6854 size-full" src="http://www.52nlp.cn/wp-content/uploads/2014/11/query-title-feature.png" alt="query-title-feature" width="684" height="157" /></a></p>
+<ul>
+<li>将Query-Title的公共子串作为Keyword进行提取，形成特征（上图上部蓝色块）</li>
+<li>对Keyword进一步构成N-gram词袋</li>
+<li>利用公共子串作为分割点，对Query和Title进行分词（弥补没有原文导致常用的文本分词方法无法使用），将Query、Title分别切割所得的大粒度phrase片段可作为特征使用</li>
+</ul>
+<ol start="2">
+<li><strong>Query-Title</strong><strong>关系的宏观关系挖掘</strong></li>
+</ol>
+<p>如果将Query和Title都视作一个图（Graph）结构中的节点，则Query-Title点击对则是Graph的边（Edge），Query和Title的多对多的关系能形成类似下图的结构，很像一个社交网络</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2014/11/20141118163218.png"><img class="aligncenter size-full wp-image-6861" src="http://www.52nlp.cn/wp-content/uploads/2014/11/20141118163218.png" alt="20141118163218" width="500" height="224" /></a></p>
+<p>社交网络中的智能推荐的思想也可以在这里运用。类似推荐系统中的&lt;User, Item&gt;关系对，这里&lt;Query, Title&gt;的关系可以使用协同过滤（Collaborative Filtering）的思想，当两个Query所点击的Title列表相似时，则另外Query的category可以被“推荐”给当前Query；</p>
+<p>协同过滤既可以自定义距离计算公式的方法（Distance-based）来计算，也可以采用基于矩阵分解（Model-based）方法来计算，后者精度往往更高。因此比赛中我们采用了SVD分解的方法来解析Query-Title关系，实践中我们发现SVD++算法没有在SVD基础上有提升，Title或Query的特征作为隐式反馈引入后反而会降低，因此我们将特征放入Global bias Feature里使用</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2014/11/svd.png"><img class="aligncenter  wp-image-6862" src="http://www.52nlp.cn/wp-content/uploads/2014/11/svd.png" alt="svd" width="511" height="225" /></a></p>
+<ol start="3">
+<li><strong>Click Model</strong><strong>的使用</strong></li>
+</ol>
+<p>用户的搜索点击模型（Click Model）其实是一个非常大的话题，涉及到用户查询满意度的建模和分析。在今天的搜索引擎技术中，通过Click Model衍生出了众多的功能，包括搜索满意度的自动监控、搜索结果的自动调权调序等。而这些技术的出发点都是User Behavior数据。</p>
+<p>在Session信息里，用户的点击行为往往能提供丰富的信息：在搜索结果从上至下被用户浏览的过程中，当被点击的结果中间出现了跳跃，例如Query1对应的自然排序结果是Result1, Result2, Result3…, 但是如果大量用户的点击是Result1, Result3, 则Result2的相关性可能存在问题；</p>
+<p>另外一种情况是，如果同一个Query产生了一次点击后，间隔一段时间后再次出现了对后面结果的点击，则也许说明了之前结果的满足度不够高。</p>
+<p>在同一个Session里，用户发生主动Query变换（或称为Query Re-write）也往往能说明问题，前面的Query如果搜索结果质量不高，则很多用户会选择修改查询词，此时前面被点击的Title重要程度往往不如后续的Title，等等各类场景很丰富。</p>
+<p>以上各类的Click Model思想虽然在实际线上系统中被广泛运用，但竞赛中没有提供更详细的信息，包括点击结果在搜索中的排序（对于分析点击模型至关重要）、点击发生的时间、点击停留间隔、用户的Cookieid/Userid等，限制了发挥，真实应用里，通过Click Model来对用户查询意图的把握，应该可以更深入的进行挖掘</p>
+<h2><span style="color: #0000ff"><strong> Title关系以及其他特征</strong></span></h2>
+<p>Title的文本分析也可以进一步提供有价值的特征。例如很多网页的Title中会携带网站的机构名称或者网页的属性词（例如Title可以是 “XXXXX&#8212;东方航空公司”、“XXXXX&#8212;爱奇艺网”、“XXXXX&#8212;第一视频门户”等）</p>
+<p>这些语素对精确的预测用户的需求会有非常高的价值。通过分析存在相关点击的Title之间的公共子串，提取出这些高价值的子串是有价值的。但竞赛中Title的文字被加密处理，实践上述思路比较困难。实践中这条路应该是完全行得通的。</p>
+<p>另外Title和Title之间的关联关系也同样可以沿用Query-Query之间关系的处理方法，在此不再赘述。</p>
+<p>Topic Model也是经常被使用的文本分析方法。有队伍将每个Query点击的所有Title合并起来进行LDA进行主题建模，据说也起到了不错的效果</p>
+<p>本次竞赛中，特征的抽取和运用仍然是极为重要的环节，虽然Deep Learning等摆脱特征工程的机器学习新框架逐步在成长，但是在实际运用中，面向具体应用的“特征抽取+模式分类算法”仍然是解决问题不可或缺的利器。</p>
+<h2><span style="color: #0000ff"><strong> 模式分类算法</strong></span></h2>
+<p>分类（Classification）可谓是机器学习（Machine Learning）领域的经典话题，学术界多年来提出了种类繁多的方法，经典教材也有很多，例如Sergios Theodoridis等著的《Pattern Recognition》、Christopher M. Bishop等著的《Pattern Recognition And Machine Learning》。这里不赘述方法原理，分享一些实战中总结的经验 (陈运文)。</p>
+<p>实践中特征向量维数一般很高，训练样本的数量往往也很多，对模型的性能和效果都有很高的要求。竞赛中我们也尝试了很多分类方法，分以下几个侧面来谈一谈：</p>
+<p><strong>1 单模型分类算法</strong></p>
+<p>经典的单模型分类方法有很多，在对比了决策树、朴素贝叶斯、最大熵(EM)、人工神经网络（ANN）、k近邻、Logistic回归等方法后，我们选用了SVM（Support Vector Machine）作为单模型分类器。</p>
+<p>这里尤其要感谢台大的林智仁老师，LibSVM这个著名的开源软件包训练快速、稳定，精度高，能够让SVM在各类工业应用中方便的使用。在CIKM会议期间有幸当面听了林老师的讲座，他分享了开发机器学习软件包的心得，尤其在通用性、易用性、稳定性等方面的一些注意点。</p>
+<p><strong>2 组合模型模式分类算法</strong></p>
+<p>基于组合思路的分类算法能提供非常高的分类精度，经典的组合模型思想包括Boosting（AdaBoost）和Bagging（Bootstrap Aggregating）两大类。这两种方法都有深刻的理论背景，在很多实践运用中都取得了显著的效果。组合思想在实践中最知名的包括GBDT（Gradient Boosting Decision Tree）和Random Forests(随即森林)，这两类方法都是基于决策树发展演化而来（CART，Classification And Regression Tree），精度高，泛化能力强，通常比单模型方法效果出色，竞赛中被广泛采用，取得了不错的成绩。尤其当待处理特征是连续值时，GBDT和Random Forest处理起来要更优雅。</p>
+<p><strong> 3 矩阵分解模型</strong></p>
+<p>矩阵分解（Matrix Factorization）通常作为分类辅助工具使用，如常用于特征降维的PCA变换等，在分类之前可以进行特征空间的压缩。</p>
+<p>另外在推荐系统中（区别与分类），一般认为效果较好的方法是SVD（或其改进版本，俗称SVD++），在这次CIKM Competition中，我们也使用了SVD进行分类操作，通过对Query-Title关系进行SVD分解，并加入各种特征后，能达到0.9096的F1-Score，虽然SVM的单模型我们最好能达到0.9192，两者相差有1%，但SVD方法通过后续的Ensemble能发挥很好的作用。</p>
+<p><strong>4 Ensemble框架</strong></p>
+<p>Ensemble技术可谓是精度提升的大杀器，本次竞赛最终成绩Top3队伍都不约而同的采用了它。</p>
+<p>Ensemble的基本思想是充分运用不同分类算法各种的优势，取长补短，组合形成一个强大的分类框架。俗话说“三个臭皮匠顶个诸葛亮”，而如果基础的分类算法也已经很优秀了，那就是“三个诸葛亮”组合起来，就更加厉害了。需要注意的是Ensemble不是简单的把多个分类器合并起来结果，或者简单将分类结果按固定参数线性叠加(例如不是 a1 * ALGO1 + a2 * ALGO2 + a3 * ALGO3)，而是通过训练Ensemble模型，来实现最优的组合。</p>
+<p>在Ensemble框架下，我们分类器分为两个Level: L1层和L2层。L1层是基础分类器，前面1、2、3小节所提的方法均可以作为L1层分类器来使用；L2层基于L1层，将L1层的分类结果形成特征向量，再组合一些其他的特征后，形成L2层分类器（如SVM）的输入。这里需要特别留意的是用于L2层的训练的样本必须没有在训练L1层时使用过。</p>
+<p>Ensemble的训练过程稍微复杂，因为L1层模型和L2层模型要分别进行训练后再组合。实践中我们将训练样本按照特定比例切分开（由于竞赛的训练样本和测试样本数量比为1：1，因此我们将训练样本按1：1划分为两部分，分别简称为Train pig和Test Pig）。基于划分后的样本，整个训练过程步骤如下：</p>
+<p><span style="color: #3366ff"><em>Step1：使用Train pig抽取特征，形成特征向量后训练L1层模型</em></span></p>
+<p><span style="color: #3366ff"><em>Step2：使用训练好的L1层模型，预测Test pig，将预测结果形成L2层的输入特征向量</em></span></p>
+<p><span style="color: #3366ff"><em>Step3：结合其他特征后，形成L2层的特征向量，并使用Test pig训练L2层模型</em></span></p>
+<p><span style="color: #3366ff"><em>Step4：使用全部训练样本（Tain pig + Test pig）重新训练L1层模型</em></span></p>
+<p><span style="color: #3366ff"><em>Step5：将待测样本Test抽取特征后先后使用上述训练好的L1+L2层Ensemble模型来生成预测结果</em></span></p>
+<p>基于Ensemble技术，F1-Score可以从0.91XX的水平一跃提升到0.92XX。</p>
+<p><strong> 5 Ensemble的几个设计思路</strong></p>
+<p>在设计Ensemble L1层算法的过程中，有很多种设计思路，我们选择了不同的分类算法训练多个分类模型，而另外有队伍则为每一个类别设计了专用的二分分类器，每个分类器关注其中一个category的分类(one-vs-all)；也可以选择同一种分类算法，但是用不同的特征训练出多个L1层分类器；另外设置不同的参数也能形成多个L1层分类器等</p>
+<p>L1层分类器的分类方法差异越大，经过L2层Ensemble后的整个分类系统的泛化效果往往更好，不容易出现过拟合(overfitting)。</p>
+<p><img class="aligncenter  wp-image-6866" src="http://www.52nlp.cn/wp-content/uploads/2014/11/two-level-model2.png" alt="two-level-model2" width="464" height="282" /></p>
+<p>Ensemble的L2层算法也可以有很多种选择，常用的分类器都可以尝试使用，我们选择的L2层算法也是SVM。另外Logistic Regression, GBDT和RBM（Restricted Boltzmann Machines）也是使用得比较多的L2层组合算法。</p>
+<h2><span style="color: #0000ff"><strong>数据预处理、后处理和其他一些操作</strong></span></h2>
+<p>现实系统中的数据通常都是比较杂乱的，实际应用中往往50%的精力需要分配给数据的理解和清洗工作。尽管竞赛中百度提供的搜索日志已经处理过了，但是仍然可以进行一些归一、去重、填充等预处理(Preprocess)操作。实战中我们进行了一系列处理后（例如去除重复行，无意义的行等），Train文件的行数减少了约20%，一方面能加快运算速度，另一方面也使各类统计计算更准确。</p>
+<p>对预测结果的后处理(Postprocess)也是有必要的。在Postprocess阶段可以对分类预测的结果最终再进行一些调整，包括对跨类别结果的合并（合成CLASS=A|B的结果）；少量稀有类别的召回；针对一些特殊类型（如特别短或少）Query的定制规则等等，会对最终效果有些许的提升。</p>
+<p>在数据处理的整个过程中，还会遇到一些数据的归一、平滑、离散等处理细节，篇幅所限不展开说了。</p>
+<p>竞赛中UNKNOWN数据的填充也是一个思路，但是我们在这方面的各种尝试一直没有取得成效。其实前面提到的种种方法，也是从各种失败的尝试中总结和寻找出来的，10次尝试里有9次都是失败的，但是千万不要气馁，阳光总在风雨后。</p>
+<p>我们整体的处理流程图如下</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2014/11/Topdata竞赛整体架构图.png"><img class="aligncenter  wp-image-6867" src="http://www.52nlp.cn/wp-content/uploads/2014/11/Topdata竞赛整体架构图-1024x406.png" alt="Topdata竞赛整体架构图" width="683" height="271" /></a></p>
+<h2><span style="color: #0000ff"><strong> 夺冠经历和感言</strong></span></h2>
+<p>回顾最近几年我们夺得过好名次的数据挖掘竞赛，包括KDD Cup 2012亚军、EMI推荐算法竞赛冠军、和这次的CIKM Competition 2014冠军，我最大的体会是任何时候都要坚持到底，不轻易放弃。</p>
+<p>因为无论参加哪个比赛，竞赛期间总会遇到痛苦的瓶颈期，所有的尝试都验证是无效的，仿佛所有出路都被堵死了。这次的CIKM竞赛也不例外，在渡过初始阶段势如破竹的进展后（参赛一周时间后我们队伍就打入了排行榜Top10），很快我们就碰到了天花板，接下来的2周多时间里可谓倍受煎熬，满怀期望的各种思路与尝试都被冰冷的现实无情的击碎了，当时间在流逝而一筹莫展的时候，乐观的心态、坚持到底的毅力非常非常宝贵。竞赛是这样，其他很多事情其实也是如此。</p>
+<p>另外一个体会是一定要让思路保持活跃和开阔，经常试着用不同的视角观察数据和问题，往往就能找到希望的突破口。</p>
+<p>最后鸣谢主办方CIKM、百度、SIGIR精心举办的这次活动，让大家有一个很好切磋技艺的机会。在竞赛期间，和团队的伙伴们一起拼搏、努力、学习、成长的过程，是我最开心和难忘的事情！（文：盛大文学首席数据官 陈运文）</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2014/11/1415349075700.jpg"><img class="aligncenter size-full wp-image-6868" src="http://www.52nlp.cn/wp-content/uploads/2014/11/1415349075700.jpg" alt="1415349075700" width="500" height="330" /></a></p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2014/11/1415349075105.jpg"><img class="aligncenter size-full wp-image-6869" src="http://www.52nlp.cn/wp-content/uploads/2014/11/1415349075105.jpg" alt="1415349075105" width="500" height="446" /></a></p>
+<div class='yarpp-related'>
+<p>相关文章:<ol>
+<li><a href="http://www.52nlp.cn/python-%e7%bd%91%e9%a1%b5%e7%88%ac%e8%99%ab-%e6%96%87%e6%9c%ac%e5%a4%84%e7%90%86-%e7%a7%91%e5%ad%a6%e8%ae%a1%e7%ae%97-%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0-%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98" rel="bookmark" title="Python 网页爬虫 &amp; 文本处理 &amp; 科学计算 &amp; 机器学习 &amp; 数据挖掘兵器谱">Python 网页爬虫 &#038; 文本处理 &#038; 科学计算 &#038; 机器学习 &#038; 数据挖掘兵器谱 </a></li>
+<li><a href="http://www.52nlp.cn/googles-python-class-sos-%e7%bb%ad-%e4%b8%8b%e8%bd%bd" rel="bookmark" title="Google’s Python Class SOS 续 &#8211;下载">Google’s Python Class SOS 续 &#8211;下载 </a></li>
+<li><a href="http://www.52nlp.cn/niutrans-%e4%b8%80%e5%a5%97%e5%bc%80%e6%ba%90%e7%9a%84%e7%bb%9f%e8%ae%a1%e6%9c%ba%e5%99%a8%e7%bf%bb%e8%af%91%e5%b9%b3%e5%8f%b0" rel="bookmark" title="NiuTrans: 一套开源的统计机器翻译平台">NiuTrans: 一套开源的统计机器翻译平台 </a></li>
+<li><a href="http://www.52nlp.cn/lda-math-%e8%ae%a4%e8%af%86betadirichlet%e5%88%86%e5%b8%831" rel="bookmark" title="LDA-math-认识Beta/Dirichlet分布(1)">LDA-math-认识Beta/Dirichlet分布(1) </a></li>
+<li><a href="http://www.52nlp.cn/%e6%94%af%e6%8c%81%e4%ba%94%e4%b8%aasmt%e6%a8%a1%e5%9e%8b%e7%9a%84niutrans-%e5%ae%8c%e6%95%b4%e7%89%88-ver1-0-0-%e6%b5%8b%e8%af%95%e7%89%88%e6%ad%a3%e5%bc%8f%e5%8f%91%e5%b8%83" rel="bookmark" title="支持五个SMT模型的NiuTrans 完整版 ver1.0.0 测试版正式发布">支持五个SMT模型的NiuTrans 完整版 ver1.0.0 测试版正式发布 </a></li>
+<li><a href="http://www.52nlp.cn/natural-language-processing-and-computational-linguistics-common-abbreviations-acronyms" rel="bookmark" title="自然语言处理及计算语言学常见缩略语">自然语言处理及计算语言学常见缩略语 </a></li>
+<li><a href="http://www.52nlp.cn/%e6%a6%82%e7%8e%87%e8%af%ad%e8%a8%80%e6%a8%a1%e5%9e%8b%e5%8f%8a%e5%85%b6%e5%8f%98%e5%bd%a2%e7%b3%bb%e5%88%971-plsa%e5%8f%8aem%e7%ae%97%e6%b3%95" rel="bookmark" title="概率语言模型及其变形系列-PLSA及EM算法">概率语言模型及其变形系列-PLSA及EM算法 </a></li>
+<li><a href="http://www.52nlp.cn/lda-math-%e6%96%87%e6%9c%ac%e5%bb%ba%e6%a8%a1" rel="bookmark" title="LDA-math-文本建模">LDA-math-文本建模 </a></li>
+<li><a href="http://www.52nlp.cn/from-google-research-blog-google-at-acl-2011" rel="bookmark" title="From Google Research Blog: Google at ACL 2011">From Google Research Blog: Google at ACL 2011 </a></li>
+<li><a href="http://www.52nlp.cn/acl09-full-paper-accepted-details" rel="bookmark" title="ACL09 Full Paper录用情况">ACL09 Full Paper录用情况 </a></li>
+</ol></p>
+</div>
+											</div><!-- .entry-content -->
+
+
+					<div class="entry-utility">
+						此条目发表在 <a href="http://www.52nlp.cn/category/chinese-information-processing" rel="category tag">中文信息处理</a>, <a href="http://www.52nlp.cn/category/%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98" rel="category tag">数据挖掘</a>, <a href="http://www.52nlp.cn/category/text-classification" rel="category tag">文本分类</a>, <a href="http://www.52nlp.cn/category/%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0" rel="category tag">机器学习</a>, <a href="http://www.52nlp.cn/category/nlp" rel="category tag">自然语言处理</a>, <a href="http://www.52nlp.cn/category/computational-linguistics" rel="category tag">计算语言学</a>, <a href="http://www.52nlp.cn/category/informal-essay" rel="category tag">随笔</a> 分类目录，贴了 <a href="http://www.52nlp.cn/tag/%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98" rel="tag">数据挖掘</a>, <a href="http://www.52nlp.cn/tag/%e6%96%87%e6%9c%ac%e5%88%86%e6%9e%90" rel="tag">文本分析</a> 标签。将<a href="http://www.52nlp.cn/cikm-competition-topdata" title="链向 CIKM Competition数据挖掘竞赛夺冠算法陈运文 的固定链接" rel="bookmark">固定链接</a>加入收藏夹。											</div><!-- .entry-utility -->
+				</div><!-- #post-## -->
+
+				<div id="nav-below" class="navigation">
+					<div class="nav-previous"><a href="http://www.52nlp.cn/python%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86%e5%ae%9e%e8%b7%b5-%e5%9c%a8nltk%e4%b8%ad%e4%bd%bf%e7%94%a8%e6%96%af%e5%9d%a6%e7%a6%8f%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%99%a8" rel="prev"><span class="meta-nav">&larr;</span> Python自然语言处理实践: 在NLTK中使用斯坦福中文分词器</a></div>
+					<div class="nav-next"></div>
+				</div><!-- #nav-below -->
+
+				
+			<div id="comments">
+
+
+			<h3 id="comments-title">《<em>CIKM Competition数据挖掘竞赛夺冠算法陈运文</em>》有 5 条评论</h3>
+
+
+			<ol class="commentlist">
+					<li class="comment even thread-even depth-1" id="li-comment-82557">
+		<div id="comment-82557">
+		<div class="comment-author vcard">
+			<img alt='' src='http://1.gravatar.com/avatar/970f2ee3b5ed0a8a352789c5d5bd7d06?s=40&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn">laozhaokun</cite> <span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/cikm-competition-topdata/comment-page-1#comment-82557">
+			2014年11月21号00:24</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>感谢分享，好文。祝贺！</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,82557,1,'laozhaokun');">回复</a>]</p></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-83097">
+		<div id="comment-83097">
+		<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/cfa9c139c07461a526b603eed19de5a9?s=40&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn">qjay</cite> <span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/cikm-competition-topdata/comment-page-1#comment-83097">
+			2014年11月21号10:53</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>送上祝福，恭喜恭喜！！！很赞同“坚持到底不轻易放弃”这句话，也要以此来勉励我自己！</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,83097,1,'qjay');">回复</a>]</p></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="li-comment-84202">
+		<div id="comment-84202">
+		<div class="comment-author vcard">
+			<img alt='' src='http://0.gravatar.com/avatar/e16c8ed2de1953ef4a43a888d8aa1f5c?s=40&amp;d=http%3A%2F%2F0.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn"><a href='http://blog.csdn.net/huagong_adu' rel='external nofollow' class='url'>Ralph_adu</a></cite> <span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/cikm-competition-topdata/comment-page-1#comment-84202">
+			2014年11月22号15:03</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>“用于L2层的训练的样本必须没有在训练L1层时使用过”，是为了防止过拟合吗？</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,84202,1,'Ralph_adu');">回复</a>]</p><div class="comment-childs chalt" id="comment-84251"><img alt='' src='http://1.gravatar.com/avatar/74e2fff0f505bc21ba7d92a1e941b5c5?s=32&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D32&amp;r=G' class='avatar avatar-32 photo' height='32' width='32' /><p><cite>miyanguangdajie</cite> 回复:<br /><small class="commentmetadata">十一月 22nd, 2014 at 16:39</small></p><p>因为如果训练L2层的样本和训练L1层的样本有重合的话，说明在L1阶段训练和测试的时候，这部分重合的样本都被使用了</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,84251,2,'miyanguangdajie');">回复</a>]</p></div></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-85572">
+		<div id="comment-85572">
+		<div class="comment-author vcard">
+			<img alt='' src='http://1.gravatar.com/avatar/da5f92149b19f4cd45c1086398b39c6e?s=40&amp;d=http%3A%2F%2F1.gravatar.com%2Favatar%2Fad516503a11cd5ca435acc9bb6523536%3Fs%3D40&amp;r=G' class='avatar avatar-40 photo' height='40' width='40' />			<cite class="fn">冯知凡</cite> <span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/cikm-competition-topdata/comment-page-1#comment-85572">
+			2014年11月24号12:13</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>Step4：使用全部训练样本（Tain pig + Test）重新训练L1层模型</p>
+<p>这块貌似写错了，应该是</p>
+<p>Step4：使用全部训练样本（Tain pig + Test pig）重新训练L1层模型</p>
+<p>楼主写得比较系统，各个角度基本都涉及到了。<br />
+ensemble看来还是各类CUP的大杀器呀。哈哈</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,85572,1,'冯知凡');">回复</a>]</p></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+			</ol>
+
+
+
+								<div id="respond" class="comment-respond">
+				<h3 id="reply-title" class="comment-reply-title">发表评论 <small><a rel="nofollow" id="cancel-comment-reply-link" href="/cikm-competition-topdata#respond" style="display:none;">取消回复</a></small></h3>
+									<form action="http://www.52nlp.cn/wp-comments-post.php" method="post" id="commentform" class="comment-form">
+																			<p class="comment-notes">电子邮件地址不会被公开。 必填项已用<span class="required">*</span>标注</p>							<p class="comment-form-author"><label for="author">姓名 <span class="required">*</span></label> <input id="author" name="author" type="text" value="" size="30" aria-required='true' /></p>
+<p class="comment-form-email"><label for="email">电子邮件 <span class="required">*</span></label> <input id="email" name="email" type="text" value="" size="30" aria-required='true' /></p>
+<p class="comment-form-url"><label for="url">站点</label> <input id="url" name="url" type="text" value="" size="30" /></p>
+												<p class="comment-form-comment"><label for="comment">评论</label> <textarea id="comment" name="comment" cols="45" rows="8" aria-required="true"></textarea></p>						<p class="form-allowed-tags">您可以使用这些<abbr title="HyperText Markup Language">HTML</abbr>标签和属性： <code>&lt;a href=&quot;&quot; title=&quot;&quot;&gt; &lt;abbr title=&quot;&quot;&gt; &lt;acronym title=&quot;&quot;&gt; &lt;b&gt; &lt;blockquote cite=&quot;&quot;&gt; &lt;cite&gt; &lt;code&gt; &lt;del datetime=&quot;&quot;&gt; &lt;em&gt; &lt;i&gt; &lt;q cite=&quot;&quot;&gt; &lt;strike&gt; &lt;strong&gt; </code></p>						<p class="form-submit">
+							<input name="submit" type="submit" id="submit" value="发表评论" />
+							<input type='hidden' name='comment_post_ID' value='6838' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+						</p>
+						<p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="09e9fc4621" /></p><p style="display: none;"><input type="hidden" id="ak_js" name="ak_js" value="105"/></p><p><input type="hidden" id="comment_reply_ID" name="comment_reply_ID" value="0" /><input type="hidden" id="comment_reply_dp" name="comment_reply_dp" value="0" /></p><div id="cancel_reply" style="display:none;"><a href="javascript:void(0)" onclick="movecfm(null,0,1,null);" style="color:red;">点击取消回复</a></div><script type="text/javascript">
+/* <![CDATA[ */
+var commentformid = "commentform";
+var USERINFO = false;
+var atreply = "none";
+/* ]]> */
+</script>
+<script type="text/javascript" src="http://www.52nlp.cn/wp-content/plugins/wp-thread-comment/wp-thread-comment.js.php?jsver=common"></script>
+					</form>
+							</div><!-- #respond -->
+			
+</div><!-- #comments -->
+
+
+			</div><!-- #content -->
+		</div><!-- #container -->
+
+﻿
+		<div id="primary" class="widget-area" role="complementary">
+			<ul class="xoxo">
+<!-- begin l_sidebar -->
+	<div id="l_sidebar">
+<p>卓越网：<a href="http://www.amazon.cn/mn/searchApp?source=garypyang-23&searchType=1&keywords=自然语言处理" title="自然语言处理书籍"target=_blank>自然语言处理书籍</a><br>
+<li id="search-3" class="widget-container widget_search"><h3 class="widget-title">站内搜索</h3><form role="search" method="get" id="searchform" class="searchform" action="http://www.52nlp.cn/">
+				<div>
+					<label class="screen-reader-text" for="s">搜索：</label>
+					<input type="text" value="" name="s" id="s" />
+					<input type="submit" id="searchsubmit" value="搜索" />
+				</div>
+			</form></li><li id="text-4" class="widget-container widget_text"><h3 class="widget-title">NLPJob新鲜职位推荐:</h3>			<div class="textwidget"><p></p>
+<script src="http://www.nlpjob.com/api/api.php?action=getJobs
+&type=0&category=0&count=8&random=1&days_behind=7&response=js" type="text/javascript"></script>
+
+<script type="text/javascript">showJobs('jobber-container', 'jobber-list');</script></div>
+		</li><li id="text-3" class="widget-container widget_text"><h3 class="widget-title">52nlp新浪微博</h3>			<div class="textwidget"><p><iframe id="sina_widget_2104931705" style="width:100%; height:500px;" frameborder="0" scrolling="no" src="http://v.t.sina.com.cn/widget/widget_blog.php?uid=2104931705&height=500&skin=wd_01&showpic=1"></iframe></p>
+<p><!-- JiaThis Button BEGIN --><br />
+<script type="text/javascript" src="http://v3.jiathis.com/code/jiathis_r.js?uid=1340292124103344&move=0&amp;btn=r3.gif" charset="utf-8"></script><br />
+<!-- JiaThis Button END --></p>
+</div>
+		</li><li id="categories-309398091" class="widget-container widget_categories"><h3 class="widget-title">分类目录</h3>		<ul>
+	<li class="cat-item cat-item-72"><a href="http://www.52nlp.cn/category/mit-nlp" title="麻省理工学院开放式课程&quot;自然语言处理“的相关翻译文章">MIT自然语言处理</a> (23)
+</li>
+	<li class="cat-item cat-item-469"><a href="http://www.52nlp.cn/category/topic-model" >Topic Model</a> (10)
+</li>
+	<li class="cat-item cat-item-87"><a href="http://www.52nlp.cn/category/wordpress" >wordpress</a> (6)
+</li>
+	<li class="cat-item cat-item-317"><a href="http://www.52nlp.cn/category/%e4%b8%93%e9%a2%98" >专题</a> (6)
+</li>
+	<li class="cat-item cat-item-263"><a href="http://www.52nlp.cn/category/chinese-information-processing" >中文信息处理</a> (19)
+</li>
+	<li class="cat-item cat-item-62"><a href="http://www.52nlp.cn/category/word-segmentation" >中文分词</a> (35)
+</li>
+	<li class="cat-item cat-item-420"><a href="http://www.52nlp.cn/category/%e5%b9%b6%e8%a1%8c%e7%ae%97%e6%b3%95" >并行算法</a> (1)
+</li>
+	<li class="cat-item cat-item-268"><a href="http://www.52nlp.cn/category/%e6%8b%9b%e8%81%98" >招聘</a> (4)
+</li>
+	<li class="cat-item cat-item-560"><a href="http://www.52nlp.cn/category/%e6%8e%a8%e8%8d%90%e7%b3%bb%e7%bb%9f" >推荐系统</a> (3)
+</li>
+	<li class="cat-item cat-item-354"><a href="http://www.52nlp.cn/category/%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98" >数据挖掘</a> (2)
+</li>
+	<li class="cat-item cat-item-241"><a href="http://www.52nlp.cn/category/text-classification" >文本分类</a> (3)
+</li>
+	<li class="cat-item cat-item-193"><a href="http://www.52nlp.cn/category/maximum-entropy-model" >最大熵模型</a> (7)
+</li>
+	<li class="cat-item cat-item-344"><a href="http://www.52nlp.cn/category/%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0" >机器学习</a> (14)
+</li>
+	<li class="cat-item cat-item-1"><a href="http://www.52nlp.cn/category/machine-translation" >机器翻译</a> (54)
+</li>
+	<li class="cat-item cat-item-195"><a href="http://www.52nlp.cn/category/%e6%9d%a1%e4%bb%b6%e9%9a%8f%e6%9c%ba%e5%9c%ba" >条件随机场</a> (3)
+</li>
+	<li class="cat-item cat-item-153"><a href="http://www.52nlp.cn/category/tagging" >标注</a> (13)
+</li>
+	<li class="cat-item cat-item-885"><a href="http://www.52nlp.cn/category/%e7%a7%91%e5%ad%a6%e8%ae%a1%e7%ae%97" >科学计算</a> (1)
+</li>
+	<li class="cat-item cat-item-538"><a href="http://www.52nlp.cn/category/%e7%bb%9f%e8%ae%a1%e5%ad%a6" >统计学</a> (10)
+</li>
+	<li class="cat-item cat-item-126"><a href="http://www.52nlp.cn/category/translation-model" >翻译模型</a> (2)
+</li>
+	<li class="cat-item cat-item-51"><a href="http://www.52nlp.cn/category/nlp" >自然语言处理</a> (226)
+</li>
+	<li class="cat-item cat-item-106"><a href="http://www.52nlp.cn/category/computational-linguistics" >计算语言学</a> (39)
+</li>
+	<li class="cat-item cat-item-22"><a href="http://www.52nlp.cn/category/dictionary" >词典</a> (8)
+</li>
+	<li class="cat-item cat-item-221"><a href="http://www.52nlp.cn/category/semantics" >语义学</a> (1)
+</li>
+	<li class="cat-item cat-item-161"><a href="http://www.52nlp.cn/category/semantic-web" >语义网</a> (3)
+</li>
+	<li class="cat-item cat-item-37"><a href="http://www.52nlp.cn/category/corpus" >语料库</a> (12)
+</li>
+	<li class="cat-item cat-item-86"><a href="http://www.52nlp.cn/category/language-model" >语言模型</a> (23)
+</li>
+	<li class="cat-item cat-item-156"><a href="http://www.52nlp.cn/category/speech-recognition" >语音识别</a> (4)
+</li>
+	<li class="cat-item cat-item-314"><a href="http://www.52nlp.cn/category/%e8%b4%9d%e5%8f%b6%e6%96%af%e6%a8%a1%e5%9e%8b" >贝叶斯模型</a> (1)
+</li>
+	<li class="cat-item cat-item-110"><a href="http://www.52nlp.cn/category/reprint" >转载</a> (28)
+</li>
+	<li class="cat-item cat-item-451"><a href="http://www.52nlp.cn/category/%e9%97%ae%e7%ad%94%e7%b3%bb%e7%bb%9f" >问答系统</a> (1)
+</li>
+	<li class="cat-item cat-item-3"><a href="http://www.52nlp.cn/category/informal-essay" >随笔</a> (62)
+</li>
+	<li class="cat-item cat-item-60"><a href="http://www.52nlp.cn/category/hidden-markov-model" >隐马尔科夫模型</a> (36)
+</li>
+		</ul>
+</li><li id="archives-2" class="widget-container widget_archive"><h3 class="widget-title">文章归档</h3>		<ul>
+	<li><a href='http://www.52nlp.cn/2014/11'>2014年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/09'>2014年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/07'>2014年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/06'>2014年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/05'>2014年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/04'>2014年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/01'>2014年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/12'>2013年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/06'>2013年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/05'>2013年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/04'>2013年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/03'>2013年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/02'>2013年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/01'>2013年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/12'>2012年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/11'>2012年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/10'>2012年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/09'>2012年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/08'>2012年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/07'>2012年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/06'>2012年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/05'>2012年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/04'>2012年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/03'>2012年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/01'>2012年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/12'>2011年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/11'>2011年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/10'>2011年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/09'>2011年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/08'>2011年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/07'>2011年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/06'>2011年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/05'>2011年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/04'>2011年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/03'>2011年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/02'>2011年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/01'>2011年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/12'>2010年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/11'>2010年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/10'>2010年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/09'>2010年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/08'>2010年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/07'>2010年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/06'>2010年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/05'>2010年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/04'>2010年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/03'>2010年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/02'>2010年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/01'>2010年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/12'>2009年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/11'>2009年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/10'>2009年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/09'>2009年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/08'>2009年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/07'>2009年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/06'>2009年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/05'>2009年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/04'>2009年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/03'>2009年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/02'>2009年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/01'>2009年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2008/12'>2008年十二月</a></li>
+		</ul>
+</li>		<li id="recent-posts-2" class="widget-container widget_recent_entries">		<h3 class="widget-title">最新文章</h3>		<ul>
+					<li>
+				<a href="http://www.52nlp.cn/cikm-competition-topdata">CIKM Competition数据挖掘竞赛夺冠算法陈运文</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/python%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86%e5%ae%9e%e8%b7%b5-%e5%9c%a8nltk%e4%b8%ad%e4%bd%bf%e7%94%a8%e6%96%af%e5%9d%a6%e7%a6%8f%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%99%a8">Python自然语言处理实践: 在NLTK中使用斯坦福中文分词器</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e7%bf%bb%e8%af%91%e6%8a%80%e6%9c%af%e6%b2%99%e9%be%99%e7%ac%ac17%e6%ac%a1%e6%b4%bb%e5%8a%a8-%e7%bf%bb%e8%af%91%e8%b4%a8%e9%87%8f%e8%af%84%e4%bc%b0%e5%8f%8a%e6%8e%a7%e5%88%b6">翻译技术沙龙第17次活动——“翻译质量评估及控制技术与工具”活动通知</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/python-%e7%bd%91%e9%a1%b5%e7%88%ac%e8%99%ab-%e6%96%87%e6%9c%ac%e5%a4%84%e7%90%86-%e7%a7%91%e5%ad%a6%e8%ae%a1%e7%ae%97-%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0-%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98">Python 网页爬虫 &#038; 文本处理 &#038; 科学计算 &#038; 机器学习 &#038; 数据挖掘兵器谱</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e7%bf%bb%e8%af%91%e6%8a%80%e6%9c%af%e6%b2%99%e9%be%99%e7%ac%ac%e5%8d%81%e5%85%ad%e6%ac%a1%e6%b4%bb%e5%8a%a8-%e4%ba%92%e8%81%94%e7%bd%91%e6%8a%80%e6%9c%af%e9%a9%b1%e5%8a%a8">翻译技术沙龙第十六次活动——“互联网技术驱动下的语言服务众包模式” 通知</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e7%81%ab%e5%85%89%e6%91%87%e6%9b%b3%e7%a5%9e%e5%a5%87%e7%9a%84%e4%bc%bd%e7%8e%9b%e5%87%bd%e6%95%b0%e4%b8%8b">[火光摇曳]神奇的伽玛函数(下)</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e7%a5%9e%e5%a5%87%e7%9a%84%e4%bc%bd%e7%8e%9b%e5%87%bd%e6%95%b0%e4%b8%8a">[火光摇曳]神奇的伽玛函数(上)</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/nlpjob-%e4%b8%bb%e7%ab%99%e4%b8%8a%e7%ba%bf">NLPJob 主站上线</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e9%a1%ba%e4%b8%b0%e6%b5%b7%e6%b7%98sfbuy%e9%a6%96%e6%ac%a1%e4%bd%93%e9%aa%8c-%e7%be%8e%e5%9b%bd%e4%ba%9a%e9%a9%ac%e9%80%8a%e6%b5%b7%e6%b7%98kindle-dx%e8%bd%ac%e8%bf%90%e5%85%a8%e6%94%bb%e7%95%a5">顺丰海淘SFBuy首次体验-美国亚马逊海淘Kindle DX转运全攻略</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/digitalocean%e4%bd%bf%e7%94%a8%e5%b0%8f%e8%ae%b0">DigitalOcean使用小记</a>
+						</li>
+				</ul>
+		</li><li id="recentcomments" class="widget-container widget_recentcomments"><h3 class="widget-title">最近评论</h3><ul><li class="rc-navi rc-clearfix"><span class="rc-loading">正在加载...</span></li><li id="rc-comment-temp" class="rc-item rc-comment rc-clearfix"><div class="rc-info"></div><div class="rc-timestamp"></div><div class="rc-excerpt"></div></li><li id="rc-ping-temp" class="rc-item rc-ping rc-clearfix"><span class="rc-label"></span></li></ul></li>			</ul>
+		</div><!-- #primary .widget-area -->
+
+
+		<div id="secondary" class="widget-area" role="complementary">
+			<ul class="xoxo">
+				<li id="linkcat-103" class="widget-container widget_links"><h3 class="widget-title">NLP相关网站</h3>
+	<ul class='xoxo blogroll'>
+<li><a href="http://www.aclweb.org/" rel="co-worker" title="The Association for Computational Linguistics" target="_blank">ACL</a></li>
+<li><a href="http://aclweb.org/anthology-new/" rel="co-worker" title="A Digital Archive of Research Papers in Computational Linguistics" target="_blank">ACL Anthology</a></li>
+<li><a href="http://belobog.si.umich.edu/clair/anthology/index.cgi" rel="colleague" target="_blank">ACL Anthology Network</a></li>
+<li><a href="http://aclweb.org/aclwiki/index.php?title=Main_Page" rel="colleague" title="the Wiki of the Association for Computational Linguistics" target="_blank">ACL Wiki</a></li>
+<li><a href="http://www.clsp.jhu.edu/" rel="colleague" target="_blank">CLSP</a></li>
+<li><a href="http://www.cwbbase.com/" rel="colleague" title="这是一个略具规模的中文语义词库, 也是稍有特色的汉语语义词典" target="_blank">CWB中文词库</a></li>
+<li><a href="http://www.euromatrix.net/" rel="colleague" target="_blank">EuroMatrix</a></li>
+<li><a href="http://www.freebase.com" rel="colleague" target="_blank">Freebase</a></li>
+<li><a href="http://www.clsp.jhu.edu/workshops/" rel="colleague" target="_blank">JHU Workshop</a></li>
+<li><a href="http://www.ldc.upenn.edu/" rel="colleague" title="Linguistic Data Consortium" target="_blank">LDC</a></li>
+<li><a href="http://www.statmt.org/moses/" rel="colleague" title="A factored phrase-based beam-search decoder for machine translation" target="_blank">Moses</a></li>
+<li><a href="http://nlpers.blogspot.com/" rel="colleague" title="国外一个非常不错的自然语言处理博客" target="_blank">nlper</a></li>
+<li><a href="http://www.nlpjob.com" target="_blank">NLPJob</a></li>
+<li><a href="http://www.powerset.com/" rel="colleague" target="_blank">Powerset</a></li>
+<li><a href="http://www.speech.sri.com/projects/srilm/" rel="colleague" title="- The SRI Language Modeling Toolkit" target="_blank">SRILM</a></li>
+<li><a href="http://www.statmt.org/" rel="colleague" title="This website is dedicated to research in statistical machine translation" target="_blank">Statistical Machine Translation</a></li>
+<li><a href="http://textanalysisonline.com/" target="_blank">Text Analysis</a></li>
+<li><a href="http://textminingonline.com/" target="_blank">Text Mining</a></li>
+<li><a href="http://textsummarization.net/" target="_blank">Text Summarization</a></li>
+<li><a href="http://w3china.org/index.htm" rel="friend" title="致力于促进W3C技术的广泛应用, 传播关于未来Web的知识与技术" target="_blank">中国万维网联盟</a></li>
+<li><a href="http://www.cipsc.org.cn/" rel="co-worker" title="Chinese Information Processing Society of China" target="_blank">中国中文信息学会</a></li>
+<li><a href="http://www.nlp.org.cn/" rel="colleague" title="中文自然语言处理开放平台" target="_blank">中文自然语言处理开放平台</a></li>
+<li><a href="http://www.mt-archive.info/" rel="colleague" title="Repository and bibliography of articles, books and papers on topics" target="_blank">机器翻译档案计划</a></li>
+<li><a href="http://www.statmt.org/europarl/" rel="colleague" target="_blank">欧洲议会平行语料库</a></li>
+<li><a href="http://www.keenage.com/" title="HowNet" target="_blank">知网</a></li>
+<li><a href="http://www.nlpir.org/" rel="friend" title="由张华平博士发起，由北京理工大学网络搜索与挖掘实验室运营，旨在推动NLP(自然语言处理)与IR(信息检索)领域的共享与共赢" target="_blank">自然语言处理与信息检索共享平台</a></li>
+<li><a href="http://mitel.ict.ac.cn/" rel="co-worker" title="中科院计算所多语言交互技术实验室" target="_blank">计算所多语言交互技术实验室</a></li>
+
+	</ul>
+</li>
+<li id="linkcat-2" class="widget-container widget_links"><h3 class="widget-title">友情链接</h3>
+	<ul class='xoxo blogroll'>
+<li><a href="http://blog.youxu.info/" title="一个计算机专业的 Ph.D. 学生徐宥的个人博客" target="_blank">4G spaces</a></li>
+<li><a href="http://blog.52nlp.org" rel="me" title="我爱自然语言处理完全镜像" target="_blank">52nlpblog</a></li>
+<li><a href="http://www.52nlp.com" rel="me" title="52nlp的英文站" target="_blank">52nlpcom</a></li>
+<li><a href="http://hi.baidu.com/drkevinzhang" rel="friend" title="ICTCLAS 张华平博士的空间" target="_blank">ICTCLAS 张华平博士的空间</a></li>
+<li><a href="http://blog.so8848.com/" rel="friend" title="信息检索博客" target="_blank">Information Retrieval Blog</a></li>
+<li><a href="http://interop123.com/default.aspx" rel="friend" title="崔晓源师兄关于NET技术的站点" target="_blank">NET互操作技术社区</a></li>
+<li><a href="http://bbs.w3china.org/" rel="friend" title="中国万维网联盟讨论区" target="_blank">W3CHINA讨论区</a></li>
+<li><a href="http://www.ailab.cn/" rel="friend" target="_blank">人工智能网</a></li>
+<li><a href="http://mindhacks.cn/" rel="friend" title="一个很有思想的价值博客!" target="_blank">刘未鹏之Mind Hacks</a></li>
+<li><a href="http://www.cnblogs.com/finallyliuyu/" rel="friend" target="_blank">原地转圈的驴子</a></li>
+<li><a href="http://xunren.thuir.org/" target="_blank">微博寻人（梁博）</a></li>
+<li><a href="http://52opencourse.com" rel="friend" title="我爱公开课，高质量公开课交流平台" target="_blank">我爱公开课</a></li>
+<li><a href="http://iregex.org/" rel="friend" target="_blank">我爱正则表达式</a></li>
+<li><a href="http://courseminer.com" target="_blank">挖课</a></li>
+<li><a href="http://www.flickering.cn/" target="_blank">火光摇曳</a></li>
+<li><a href="http://www.sciencenet.cn/u/timy/" rel="friend" title="章成志老师的博客" target="_blank">章成志的博客</a></li>
+<li><a href="http://blog.csdn.net/v_JULY_v/" target="_blank">结构之法 算法之道</a></li>
+<li><a href="http://www.lingcc.com/" rel="friend" title="关注编译器,虚拟机,编程语言及技术,IT职业和程序员生活" target="_blank">编译点滴</a></li>
+<li><a href="http://www.52nlp.org" rel="me" title="52nlp的官方网站" target="_blank">自然语言处理</a></li>
+<li><a href="http://www.ieee.org.cn/" rel="friend" title="计算机科学论坛" target="_blank">计算机科学论坛</a></li>
+<li><a href="http://coursegraph.com/">课程图谱</a></li>
+<li><a href="http://blog.coursegraph.com" rel="friend">课程图谱博客</a></li>
+
+	</ul>
+</li>
+<li id="meta-4" class="widget-container widget_meta"><h3 class="widget-title">功能</h3>			<ul>
+						<li><a href="http://www.52nlp.cn/wp-login.php">登录</a></li>
+			<li><a href="http://www.52nlp.cn/feed">文章<abbr title="Really Simple Syndication">RSS</abbr></a></li>
+			<li><a href="http://www.52nlp.cn/comments/feed">评论<abbr title="Really Simple Syndication">RSS</abbr></a></li>
+<li><a href="https://cn.wordpress.org/" title="基于WordPress，一个优美、先进的个人信息发布平台。">WordPress.org</a></li>			</ul>
+</li>			</ul>
+		</div><!-- #secondary .widget-area -->
+
+	</div><!-- #main -->
+
+	<div id="footer" role="contentinfo">
+		<div id="colophon">
+
+
+
+			<div id="site-info">
+				<a href="http://www.52nlp.cn/" title="我爱自然语言处理" rel="home">
+					我爱自然语言处理				</a>
+			</div><!-- #site-info -->
+
+			<div id="site-generator">
+								<a href="http://cn.wordpress.org/"
+						title="优雅的个人发布平台" rel="generator">
+					自豪地采用 WordPress。				</a>
+			</div><!-- #site-generator -->
+
+		</div><!-- #colophon -->
+	</div><!-- #footer -->
+
+</div><!-- #wrapper -->
+
+<script>
+/* <![CDATA[ */
+var rcGlobal = {
+	serverUrl		:'http://www.52nlp.cn',
+	infoTemp		:'%REVIEWER% 在 %POST%',
+	loadingText		:'正在加载',
+	noCommentsText	:'没有任何评论',
+	newestText		:'&laquo; 最新的',
+	newerText		:'&laquo; 上一页',
+	olderText		:'下一页 &raquo;',
+	showContent		:'',
+	external		:'',
+	avatarSize		:'0',
+	avatarPosition	:'left',
+	anonymous		:'匿名'
+};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://www.52nlp.cn/wp-content/plugins/akismet/_inc/form.js?ver=3.0.3'></script>
+<link rel='stylesheet' id='yarppRelatedCss-css'  href='http://www.52nlp.cn/wp-content/plugins/yet-another-related-posts-plugin/style/related.css?ver=4.0.1' type='text/css' media='all' />
+<script type='text/javascript' src='http://www.52nlp.cn/wp-content/plugins/wp-recentcomments/js/wp-recentcomments.js?ver=2.2.7'></script>
+	<p align="center"> 本站架设在 <a href="http://www.52nlp.cn/digitalocean%E4%BD%BF%E7%94%A8%E5%B0%8F%E8%AE%B0">DigitalOcean</a> 上, 采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本站内容必须也遵循“署名-非商业用途-保持一致”的创作共用协议.</p>
+<!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(["trackPageView"]);
+  _paq.push(["enableLinkTracking"]);
+
+  (function() {
+    var u=(("https:" == document.location.protocol) ? "https" : "http") + "://162.243.252.121/piwik/";
+    _paq.push(["setTrackerUrl", u+"piwik.php"]);
+    _paq.push(["setSiteId", "5"]);
+    var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0]; g.type="text/javascript";
+    g.defer=true; g.async=true; g.src=u+"piwik.js"; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Piwik Code -->
+</body>
+</html>
