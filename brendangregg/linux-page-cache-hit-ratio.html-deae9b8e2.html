@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>Linux Page Cache Hit Ratio</title>
+        <meta name="viewport" content="width=device-width">
+
+        <!-- syntax highlighting CSS -->
+        <link rel="stylesheet" href="/blog/css/syntax.css">
+
+        <!-- Custom CSS -->
+        <link rel="stylesheet" href="/blog/css/main.css">
+
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-7747513-3']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+    </head>
+    <body>
+
+	<div class="nav">
+	<p class="navhdr">This Site:</p>
+<a href="/index.html">Homepage</a><br>
+<a href="/blog/index.html">Blog</a><br>
+<a href="/sitemap.html">Full Site Map</a><br>
+<a href="/sysperfbook.html">Sys Perf book</a><br>
+<a href="/linuxperf.html">Linux Perf</a><br>
+<a href="/methodology.html">Perf Methods</a><br>
+<a href="/usemethod.html">USE Method</a><br>
+<a href="/tsamethod.html">TSA Method</a><br>
+<a href="/offcpuanalysis.html">Off-CPU Analysis</a><br>
+<a href="/activebenchmarking.html">Active Bench.</a><br>
+<a href="/flamegraphs.html">Flame Graphs</a><br>
+<a href="/heatmaps.html">Heat Maps</a><br>
+<a href="/frequencytrails.html">Frequency Trails</a><br>
+<a href="/colonygraphs.html">Colony Graphs</a><br>
+<a href="/perf.html">perf Examples</a><br>
+<a href="/ktap.html">ktap Examples</a><br>
+<a href="/dtrace.html">DTrace Tools</a><br>
+<a href="/dtracetoolkit.html">DTraceToolkit</a><br>
+<a href="/dtkshdemos.html">DtkshDemos</a><br>
+<a href="/guessinggame.html">Guessing Game</a><br>
+<a href="/specials.html">Specials</a><br>
+<a href="/books.html">Books</a><br>
+<a href="/sites.html">Other Sites</a><br>
+
+	</div>
+
+	<div class="recent">
+	Recent posts:<br>
+	<ul style="padding-left:18px">
+	  
+		   <li>31 Dec 2014 &raquo;<br>
+		   <a href="/blog/2014-12-31/linux-page-cache-hit-ratio.html">  
+		   Linux Page Cache Hit Ratio</a></li>
+	  
+		   <li>22 Nov 2014 &raquo;<br>
+		   <a href="/blog/2014-11-22/linux-perf-tools-2014.html">  
+		   Linux Performance Tools 2014</a></li>
+	  
+		   <li>09 Nov 2014 &raquo;<br>
+		   <a href="/blog/2014-11-09/differential-flame-graphs.html">  
+		   Differential Flame Graphs</a></li>
+	  
+		   <li>31 Oct 2014 &raquo;<br>
+		   <a href="/blog/2014-10-31/cpi-flame-graphs.html">  
+		   Catching Your CPUs Napping</a></li>
+	  
+		   <li>27 Sep 2014 &raquo;<br>
+		   <a href="/blog/2014-09-27/from-clouds-to-roots.html">  
+		   From Clouds to Roots: Performance Analysis at Netflix</a></li>
+	  
+		   <li>17 Sep 2014 &raquo;<br>
+		   <a href="/blog/2014-09-17/node-flame-graphs-on-linux.html">  
+		   node.js Flame Graphs on Linux</a></li>
+	  
+		   <li>15 Sep 2014 &raquo;<br>
+		   <a href="/blog/2014-09-15/the-msrs-of-ec2.html">  
+		   The MSRs of EC2</a></li>
+	  
+		   <li>11 Sep 2014 &raquo;<br>
+		   <a href="/blog/2014-09-11/perf-kernel-line-tracing.html">  
+		   Linux perf Rides the Rocket</a></li>
+	  
+		   <li>06 Sep 2014 &raquo;<br>
+		   <a href="/blog/2014-09-06/linux-ftrace-tcp-retransmit-tracing.html">  
+		   Linux ftrace TCP Retransmit Tracing</a></li>
+	  
+		   <li>30 Aug 2014 &raquo;<br>
+		   <a href="/blog/2014-08-30/ftrace-the-hidden-light-switch.html">  
+		   ftrace: The Hidden Light Switch</a></li>
+	  
+		   <li>23 Aug 2014 &raquo;<br>
+		   <a href="/blog/2014-08-23/linux-perf-tools-linuxcon-na-2014.html">  
+		   Linux Performance Tools at LinuxCon North America 2014</a></li>
+	  
+		   <li>28 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-28/execsnoop-for-linux.html">  
+		   execsnoop For Linux: See Short-Lived Processes</a></li>
+	  
+		   <li>25 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-25/opensnoop-for-linux.html">  
+		   opensnoop For Linux</a></li>
+	  
+		   <li>23 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-23/linux-iosnoop-latency-heat-maps.html">  
+		   Linux iosnoop Latency Heat Maps</a></li>
+	  
+		   <li>16 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-16/iosnoop-for-linux.html">  
+		   iosnoop For Linux</a></li>
+	  
+		   <li>13 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-13/linux-ftrace-function-counting.html">  
+		   Linux ftrace Function Counting</a></li>
+	  
+		   <li>10 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-10/perf-hacktogram.html">  
+		   perf Hacktogram</a></li>
+	  
+		   <li>03 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-03/perf-counting.html">  
+		   perf Counting</a></li>
+	  
+		   <li>01 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-01/perf-heat-maps.html">  
+		   perf Heat Maps</a></li>
+	  
+		   <li>29 Jun 2014 &raquo;<br>
+		   <a href="/blog/2014-06-29/perf-static-tracepoints.html">  
+		   perf Static Tracepoints</a></li>
+	  
+	</ul>
+	<a href="/blog/index.html">Blog index</a><br>
+	<a href="/blog/about.html">About</a><br>
+	<a href="/blog/rss.xml">RSS</a><br>
+	</div>
+
+        <div class="site">
+          <div class="header">
+            <h1 class="title"><a href="/blog/index.html">Brendan Gregg's Blog</a></h1>
+            <a class="extra" href="/blog/index.html">home</a>
+          </div>
+
+          <h2 class="big">Linux Page Cache Hit Ratio</h2>
+<p class="meta">31 Dec 2014</p>
+
+<div class="post">
+<p>A recent Linux performance regression turned out to be caused by a difference in the page cache hit ratio: what was caching very well on the older system was caching poorly on the newer one. So how do you measure the page cache hit ratio directly?</p>
+
+<p>How about a tool like this?:</p>
+
+<pre>
+# <b>./cachestat 1</b>
+Counting cache functions... Output every 1 seconds.
+    HITS   MISSES  DIRTIES    RATIO   BUFFERS_MB   CACHE_MB
+     210      869        0    19.5%            2        209
+     444     1413        0    23.9%            8        210
+     471     1399        0    25.2%           12        211
+     403     1507        3    21.1%           18        211
+     967     1853        3    34.3%           24        212
+     422     1397        0    23.2%           30        212
+[...]
+</pre>
+
+<p>This not only shows the size of the buffer and page cache, but also activity statistics. I&#39;ve added cachestat to my <a href="https://github.com/brendangregg/perf-tools">perf-tools</a> collection on github.</p>
+
+<h2>Longer Example</h2>
+
+<p>Here is some sample output followed by the workload that caused it:</p>
+
+<pre>
+# <b>./cachestat -t</b>
+Counting cache functions... Output every 1 seconds.
+TIME         HITS   MISSES  DIRTIES    RATIO   BUFFERS_MB   CACHE_MB
+08:28:57      415        0        0   100.0%            1        191
+08:28:58      411        0        0   100.0%            1        191
+08:28:59      362       97        0    78.9%            0          8
+08:29:00      411        0        0   100.0%            0          9
+08:29:01      775    20489        0     3.6%            0         89
+08:29:02      411        0        0   100.0%            0         89
+08:29:03     6069        0        0   100.0%            0         89
+08:29:04    15249        0        0   100.0%            0         89
+08:29:05      411        0        0   100.0%            0         89
+08:29:06      411        0        0   100.0%            0         89
+08:29:07      411        0        3   100.0%            0         89
+[...]
+</pre>
+
+<p>I used the -t option to include the TIME column, to make describing the output easier.</p>
+
+<p>The workload was:</p>
+
+<pre>
+# echo 1 > /proc/sys/vm/drop_caches; sleep 2; cksum 80m; sleep 2; cksum 80m
+</pre>
+
+<p>At 8:28:58, the page cache was dropped by the first command, which can be seen by the drop in size for &quot;CACHE_MB&quot; (page cache size) from 191 Mbytes to 8.</p>
+
+<p>After a 2 second sleep, a cksum command was issued at 8:29:01, for an 80 Mbyte file (called &quot;80m&quot;), which caused a total of ~20,400 misses (&quot;MISSES&quot; column), and the page cache size to grow by 80 Mbytes. Each page is 4 Kbytes, so 20k x 4k == 80 Mbytes. The hit ratio during the uncached read dropped to 3.6%.</p>
+
+<p>Finally, after another 2 second sleep, at 8:29:03 the cksum command was run a second time, this time hitting entirely from cache (the statistics spanning two output rows).</p>
+
+<h2>How It Works</h2>
+
+<p>I was curious to see whether ftrace, which is built into the Linux kernel, could measure cache activity, since ftrace function profiling provides efficient in-kernel counts. Systems can have a very high rate of cache activity, so we need to be careful to consider the overhead of any instrumentation.</p>
+
+<p>While ftrace function profiling is cheap, its capabilities are also limited. It can count kernel function calls by-CPU, and show average latency, but that&#39;s all. (It is the same facility used by funccount from <a href="https://github.com/brendangregg/perf-tools">perf-tools</a>.) I can&#39;t, for example, use it with an advanced filter to match on function arguments or return values. It will only work if I deduce cache activity from kernel function calls alone.</p>
+
+<p>For the kernels I&#39;m studying (3.2 and 3.13), here are the four kernel functions I&#39;m profiling to measure cache activity:</p>
+
+<ul>
+<li>mark_page_accessed() for measuring cache accesses</li>
+<li>mark_buffer_dirty() for measuring cache writes</li>
+<li>add_to_page_cache_lru() for measuring page additions</li>
+<li>account_page_dirtied() for measuring page dirties</li>
+</ul>
+
+<p>mark_page_accessed() shows total cache accesses, and add_to_page_cache_lru() shows cache insertions (so does add_to_page_cache_locked(), which even includes a tracepoint, but doesn&#39;t fire on later kernels). I thought for a second that these two were sufficient: assuming insertions are misses, I have misses and total accesses, and can calculate hits.</p>
+
+<p>The problem is that accesses and insertions also happens for writes, dirtying cache data. So the other two kernel functions help tease this apart (remember, I only have function call rates to work with here). mark_buffer_dirty() is used to see which of the accesses were for writes, and account_page_dirtied() to see which of the insertions were for writes.</p>
+
+<p>It is possible that the kernel functions I&#39;m using have been renamed (or are different logically) for your kernel version, and this script will not work as-is. I was hoping to use fewer than four functions, to make this more maintainable, but I didn&#39;t find a smaller set that worked for the workloads I tested.</p>
+
+<p>If cachestat starts breaking too much for my kernel versions, I may rewrite it to use SystemTap or perf_events, which allow filtering.</p>
+
+<h2>Warnings</h2>
+
+<p>Instrumenting cache activity does cost some overhead, and this tool might slow your target system by 2% or so. Higher if you stress-test the cache. It also uses dynamic tracing of kernel functions, which could cause kernel freezes or panics, depending on your kernel version. Test before use.</p>
+
+<p>The statistics should also be treated as best-effort. There may be some error margin depending on the frequency of unusual workload types, not properly matched by these four kernel functions. Test with a known workload to get confidence it will work for the intended target.</p>
+
+<h2>The Problem</h2>
+
+<p>When I encountered the earlier Linux performance regression, I didn&#39;t have cachestat. We had spotted a high rate of disk I/O, which led me to investigate the cause and work my way back to cache misses. I did this using custom ftrace and perf_events commands, measuring the rate of kernel functions and their call stacks.</p>
+
+<p>While I got the job done, I wanted a better way for next time, which led to cachestat.</p>
+
+<h2>Other Techniques</h2>
+
+<p>I&#39;ve found a few ways people commonly study the page cache hit ratio on Linux:</p>
+
+<ul>
+<p>A) Study the page cache miss rate by using iostat(1) to monitor disk reads, and assume these are cache misses, and not, for example, O_DIRECT. The miss rate is usually a more important metric than the ratio anyway, since misses are proportional to application pain. Also use free(1) to see the cache sizes.</p>
+
+<p>B) Drop the page cache (echo 1 > /proc/sys/vm/drop_caches), and measure how much performance gets worse! I love the use of a negative experiment, but this is of course a painful way to shed some light on cache usage.</p>
+
+<p>C) Use sar(1) and study minor and major faults. I don't think this works (eg, regular I/O).</p>
+
+<p>D) Use the <a href="https://sourceware.org/systemtap/wiki/WSCacheHitRate">cache-hit-rate.stp</a> SystemTap script, which is number two in an Internet search for Linux page cache hit ratio.  It instruments cache access high in the stack, in the VFS interface, so that reads to any file system or storage device can be seen. Cache misses are measured via their disk I/O. This also misses some workload types (some are mentioned in "Lessons" on that page), and calls ratios "rates".</p>
+</ul>
+
+<p>I would have tried the SystemTap approach myself to begin with, but it can miss types including mmap&#39;d reads and other kernel sources. For example, here&#39;s a call stack for mark_page_accessed() (a cache read), showing that we got here via a write() syscall:</p>
+
+<pre>
+          dd-30425 [000] 6788093.150288: mark_page_accessed: (mark_page_accessed+0x0/0x60)
+          dd-30425 [000] 6788093.150291: <stack trace>
+ => __getblk
+ => __bread
+ => ext3_get_branch
+ => ext3_get_blocks_handle
+ => ext3_get_block
+ => __block_write_begin
+ => ext3_write_begin
+ => generic_perform_write
+ => generic_file_buffered_write
+ => __generic_file_aio_write
+ => generic_file_aio_write
+ => do_sync_write
+ => vfs_write
+ => sys_write
+ => system_call_fastpath
+</pre>
+
+<p>It&#39;s reading file system metadata. This example uses ftrace, via my kprobe tool (<a href="https://github.com/brendangregg/perf-tools">perf-tools</a>).</p>
+
+<p>My preferred technique would be to modify the kernel to instrument page cache activity. Eg, either:</p>
+
+<ul>
+<p>E) Apply Keiichi's <a href="https://lkml.org/lkml/2011/7/18/326">pagecache monitoring</a> kernel patch, which provides tracepoints for cache instrumentation, and tools with awesome capabilities: not just system-wide ratios, but also per-process and per-file. I'd like this to be in mainline.</p>
+
+<p>F) Develop another kernel patch to add cache hit/miss statistics to /proc/meminfo.</p>
+</ul>
+
+<p>And then, there&#39;s the approach I used myself for the issue: dynamic tracing of file system and disk I/O functions using ftrace and perf_events.</p>
+
+<h2>pcstat</h2>
+
+<p>If you&#39;re interested in page cache activity, you should also like <a href="https://github.com/tobert/pcstat">pcstat</a>, by Al Tobey, which uses mincore (or fincore), to see size how much files are present in the page cache. It&#39;s pretty awesome.</p>
+
+<h2>Conclusion</h2>
+
+<p>Hopefully in the future the kernel will provide an easy way to measure page cache activity, be it from /proc or tracepoints. In the meantime, I have cachestat which works for my kernel versions. Its current implementation is brittle, and may not work well on other versions without modifications, so its greatest value may be <a href="http://dtrace.org/blogs/brendan/2013/05/27/the-greatest-tool-that-never-worked-har/">showing what can be done</a> with a little effort.</p>
+
+</div>
+
+
+
+<br><hr>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+var disqus_shortname = 'brendangregg';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+          <div class="footer">
+            <div class="contact">
+                Copyright 2014 Brendan Gregg.<br><a href="/blog/about.html">About this blog</a>
+            </div>
+          </div>
+        </div>
+
+    </body>
+</html>
