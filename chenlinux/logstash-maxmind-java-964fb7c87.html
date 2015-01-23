@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>JRuby 调用 maxmind-java 测试</title>
+    <meta name="author" content="陈子">
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!-- Le styles -->
+    <link href="/assets/themes/twitter/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/themes/twitter/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+    <link href="/assets/themes/twitter/css/pygments/default.css" rel="stylesheet" type="text/css">
+    <!-- Le fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+  </head>
+  <body>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="/">三斗室</a>
+          <ul class="nav">
+      	<li><a href="/archive.html">归档</a></li>
+      	<li><a href="/categories.html">分类</a></li>
+      	<li><a href="/errata.html">《网站运维技术与实践》勘误</a></li>
+      	<li><a href="/pages.html">Pages</a></li>
+      	<li><a href="/projects.html">学习记录</a></li>
+      	<li><a href="/tags.html">标签</a></li>
+            <li><a href="http://chenlinux.com/poetry/index.html" />诗文集</a></li>
+            <li><link title="RSS 2.0" type="application/rss+xml" href="http://chenlinux.com/feed.xml" rel="alternate" /><a href="http://chenlinux.com/feed.xml" target="_blank">RSS订阅</a></li>
+          </ul>
+          <ul class="nav pull-right"><li><a href="/about.html">有关我</a></li></ul>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+    <div class="row">
+      <div class="span7">
+<div class="row">
+  <div class="page-header">
+    <h1>JRuby 调用 maxmind-java 测试 <small></small></h1>
+    <div class="date"><span>22 January 2015</span></div>
+    <ul class="tag_box pull-right">
+    	<li><a href="/tags.html#geoip-ref">geoip <span>1</span></a></li>
+    	<li><a href="/tags.html#ruby-ref">ruby <span>20</span></a></li>
+    	<li><a href="/tags.html#performance-ref">performance <span>1</span></a></li>
+    	<li><a href="/tags.html#java-ref">java <span>3</span></a></li>
+    </ul>
+  </div>
+  <div style='background-color: #FFF;'>
+    <p>GeoIP 是一个非常有用的信息，也是使用 ELKstack 时一般都会加上的过滤器插件。不过 geoip 插件的性能，有些时候却会成为整个系统的瓶颈。另一个问题，则是 GeoIP 数据文件的准确度，在国内比较头疼。即使你有一个自己处理出来的准确度较高的 IP 库，GeoIP 也没有提供现成的修改数据文件内容的工具。这个时候，MaxMind 公司的 GeoIP2 就进入我的视线了。</p>
+<p>GeoIP2 在字段上比 GeoIP 更丰富。而且还提供了 <a href="https://metacpan.org/pod/MaxMind::DB::Writer">MaxMind::DB::Writer</a> 库方便使用者自己生成 GeoIP2 数据文件！感谢<a href="http://weibo.com/345198426">@纯白色燃烧</a>童鞋用<a href="http://blog.yikuyiku.com/?p=4144">自己的 CPAN 库成功倒逼</a> MaxMind 公司。</p>
+<p>据@纯白色燃烧 介绍，GeoIP2 比 GeoIP 有六到七倍的性能提升。不过他是在 C 平台下，使用 libmaxminddb 库做的测试，而 logstash 是 JRuby 平台，所以我们需要的是验证如何在 JRuby 上使用 GeoIP2，以及跟 GeoIP 的性能对比。</p>
+<p>在 JRuby 上用模块，有两种方式，一种是纯 Ruby 实现，一种是纯 Java 实现。MaxMind 提供了纯 Java 实现，社区另外有一个纯 Ruby 实现的库。下面开始测试。</p>
+<h2 id="section">准备工作</h2>
+<p>首先需要准备环境。安装 JRuby，纯 Ruby 实现的 maxminddb 库；然后下载 GeoIP2 数据文件，下载 Java 实现的 MaxMind-Java 库。</p>
+<pre><code>sudo port install jruby
+sudo jgem install maxminddb
+wget https://geolite.maxmind.com/download/geoip/database/GeoLite2-City.mmdb.gz
+gzip -d GeoLite2-City.mmdb.gz
+wget https://github.com/maxmind/GeoIP2-java/releases/download/v2.1.0/geoip2-2.1.0-with-dependencies.zip
+unzip geoip2-2.1.0-with-dependencies.zip
+</code></pre>
+<h2 id="section-1">测试程序</h2>
+<p>准备就绪，然后就是如何测试的问题了。为了贴近 logstash 运行环境，我扒拉了一下 logstash 最核心的 <code>pipeline.rb</code> 文件，简化出来了一个测试程序。相当于是 <code>logstash -w 20 -e 'input {generator {}} filter {geoip{}} output {null{}}</code> 的效果：</p>
+<div class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#!/usr/bin/env jruby</span>
+<span class="nb">require</span> <span class="s2">&quot;geoip&quot;</span>
+<span class="nb">require</span> <span class="s2">&quot;maxminddb&quot;</span>
+<span class="nb">require</span> <span class="s2">&quot;thread&quot;</span>
+<span class="nb">require</span> <span class="s2">&quot;java&quot;</span>
+<span class="c1"># 测试数据</span>
+<span class="n">ip</span> <span class="o">=</span> <span class="s1">&#39;202.106.0.20&#39;</span>
+<span class="c1"># 加载 maxmind-java 的所有 jar 包</span>
+<span class="no">Dir</span><span class="o">[</span><span class="s2">&quot;/Users/raochenlin/geoip2-2.1.0/lib/*.jar&quot;</span><span class="o">].</span><span class="n">each</span> <span class="p">{</span> <span class="o">|</span><span class="n">jar</span><span class="o">|</span> <span class="nb">require</span> <span class="n">jar</span> <span class="p">}</span>
+<span class="c1"># 导入关键性的 java 类</span>
+<span class="n">import</span> <span class="n">com</span><span class="o">.</span><span class="n">maxmind</span><span class="o">.</span><span class="n">geoip2</span><span class="o">.</span><span class="n">DatabaseReader</span>
+<span class="n">import</span> <span class="n">java</span><span class="o">.</span><span class="n">net</span><span class="o">.</span><span class="n">InetAddress</span>
+<span class="c1"># 这个原生的 java 写法是：</span>
+<span class="c1">#   File database = new File(&quot;/Users/raochenlin/GeoLite2-City.mmdb&quot;)</span>
+<span class="c1">#   DatabaseReader reader = new DatabaseReader.Builder(database).build()</span>
+<span class="c1"># 之前对 java 不太懂，想直接 import Builder 进来</span>
+<span class="c1"># 其实 Builder 是DatabaseReader 类里的静态类(public final static class)，不能直接 import</span>
+<span class="n">database</span> <span class="o">=</span> <span class="n">java</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">File</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">&quot;/Users/raochenlin/GeoLite2-City.mmdb&quot;</span><span class="p">)</span>
+<span class="vi">@reader</span> <span class="o">=</span> <span class="no">DatabaseReader</span><span class="o">::</span><span class="no">Builder</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">database</span><span class="p">)</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
+<span class="c1"># 纯 Ruby 实现的库</span>
+<span class="vi">@db</span> <span class="o">=</span> <span class="no">MaxMindDB</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;/Users/raochenlin/GeoLite2-City.mmdb&#39;</span><span class="p">)</span>
+<span class="c1"># 老的 GeoIP 库，需要制定不同的数据文件类型，这部分直接抄自 logstash 源码</span>
+<span class="vi">@geo</span> <span class="o">=</span> <span class="no">GeoIP</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s1">&#39;/Users/raochenlin/Downloads/logstash-1.4.2/vendor/geoip/GeoLiteCity.dat&#39;</span><span class="p">)</span>
+<span class="vi">@geoip_type</span> <span class="o">=</span> <span class="k">case</span> <span class="vi">@geo</span><span class="o">.</span><span class="n">database_type</span>
+<span class="k">when</span> <span class="no">GeoIP</span><span class="o">::</span><span class="no">GEOIP_CITY_EDITION_REV0</span><span class="p">,</span> <span class="no">GeoIP</span><span class="o">::</span><span class="no">GEOIP_CITY_EDITION_REV1</span>
+  <span class="ss">:city</span>
+<span class="k">when</span> <span class="no">GeoIP</span><span class="o">::</span><span class="no">GEOIP_COUNTRY_EDITION</span>
+  <span class="ss">:country</span>
+<span class="k">when</span> <span class="no">GeoIP</span><span class="o">::</span><span class="no">GEOIP_ASNUM_EDITION</span>
+  <span class="ss">:asn</span>
+<span class="k">when</span> <span class="no">GeoIP</span><span class="o">::</span><span class="no">GEOIP_ISP_EDITION</span><span class="p">,</span> <span class="no">GeoIP</span><span class="o">::</span><span class="no">GEOIP_ORG_EDITION</span>
+  <span class="ss">:isp</span>
+<span class="k">else</span>
+  <span class="k">raise</span> <span class="no">RuntimeException</span><span class="o">.</span><span class="n">new</span> <span class="s2">&quot;This GeoIP database is not currently supported&quot;</span>
+<span class="k">end</span>
+<span class="c1"># 开始 logstash 流程</span>
+<span class="c1"># 创建从 input 到 filter 的缓冲队列，固定大小 20</span>
+<span class="c1"># SizedQueue 是 thread 库导入的</span>
+<span class="vi">@input_to_filter</span> <span class="o">=</span> <span class="no">SizedQueue</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+<span class="c1"># 具体的 geoip 过滤器线程</span>
+<span class="k">def</span> <span class="nf">geoworker</span>
+    <span class="k">begin</span>
+        <span class="k">while</span> <span class="kp">true</span>
+            <span class="n">ip</span> <span class="o">=</span> <span class="vi">@input_to_filter</span><span class="o">.</span><span class="n">pop</span>
+<span class="c1"># GeoIP 查询方法</span>
+<span class="c1">#            data = @geo.send(@geoip_type, ip)</span>
+<span class="c1">#            puts data.to_hash[:city_name]</span>
+<span class="c1"># MaxMind-java 查询方法，注意传入的是 InetAddress 对象</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="vi">@reader</span><span class="o">.</span><span class="n">city</span><span class="p">(</span><span class="no">InetAddress</span><span class="o">.</span><span class="n">getByName</span><span class="p">(</span><span class="n">ip</span><span class="p">))</span>
+<span class="c1">#            puts data.getCountry().getName()</span>
+<span class="c1"># maxminddb 查询方法</span>
+<span class="c1">#            data = @db.lookup(ip)</span>
+<span class="c1">#            puts data.country.name</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+<span class="c1"># 定义 input 线程，传入一百万次 IP 到缓冲队列</span>
+<span class="n">lines_num</span> <span class="o">=</span> <span class="mi">1000000</span>
+<span class="n">input</span> <span class="o">=</span> <span class="no">Thread</span><span class="o">.</span><span class="n">new</span> <span class="k">do</span>
+    <span class="n">lines_num</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">i</span><span class="o">|</span>
+        <span class="vi">@input_to_filter</span><span class="o">.</span><span class="n">push</span><span class="p">(</span><span class="n">ip</span><span class="p">)</span>
+    <span class="k">end</span>
+<span class="c1"># IP 发送完毕，计算每秒处理的速率</span>
+    <span class="n">end_time</span> <span class="o">=</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">to_f</span> <span class="o">*</span> <span class="mi">1000</span>
+    <span class="nb">puts</span> <span class="n">lines_num</span> <span class="o">*</span> <span class="mi">1000</span> <span class="o">/</span> <span class="p">(</span><span class="n">end_time</span> <span class="o">-</span> <span class="vi">@start_time</span><span class="p">)</span>
+<span class="k">end</span>
+<span class="c1"># 定义 filter 线程，启动 20 个</span>
+<span class="n">arr</span> <span class="o">=</span> <span class="mi">20</span><span class="o">.</span><span class="n">times</span><span class="o">.</span><span class="n">collect</span> <span class="k">do</span>
+    <span class="no">Thread</span><span class="o">.</span><span class="n">new</span> <span class="k">do</span>
+        <span class="n">geoworker</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+<span class="c1"># 记录开始时间，运行定义好的各线程</span>
+<span class="vi">@start_time</span> <span class="o">=</span> <span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">to_f</span> <span class="o">*</span> <span class="mi">1000</span>
+<span class="n">input</span><span class="o">.</span><span class="n">join</span>
+<span class="n">arr</span><span class="o">.</span><span class="n">each</span><span class="p">{</span><span class="o">|</span><span class="n">t</span><span class="o">|</span> <span class="n">t</span><span class="o">.</span><span class="n">join</span><span class="p">}</span></code></pre></div>
+<h2 id="section-2">测试结果</h2>
+<p>在一百万次查询的测试中，结果如下：</p>
+<ol>
+  <li>geoip worker 的查询 qps 是：6038.902610617599</li>
+  <li>maxminddb worker 的查询 qps 是：4621.093443130513</li>
+  <li>maxmind-java worker 的查询 qps 是：27943.88867154753</li>
+</ol>
+<p>可见，对于这部分有性能要求的，完全可以改用 <code>maxmind-java</code> 库，可以数倍提高。</p>
+    <hr>
+    <div class="pagination">
+      <ul>
+        <li class="prev"><a href="/2015/01/21/extends-zabbix-web" title="扩展 Zabbix Web 页面功能">&larr; Previous</a></li>
+        <li><a href="/archive.html">Archive</a></li>
+        <li class="next disabled"><a>Next &rarr;</a>
+      </ul>
+    </div>
+    <hr>
+  <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_tsina">新浪微博</a>
+<a class="jiathis_button_weixin">微信</a>
+<a class="jiathis_button_renren">人人网</a>
+<a class="jiathis_button_ydnote">有道云笔记</a>
+<a class="jiathis_button_gmail">Gmail邮箱</a>
+<a class="jiathis_button_twitter">Twitter</a>
+<a class="jiathis_button_googleplus">Google+</a>
+<a class="jiathis_button_hi">百度空间</a>
+<a class="jiathis_button_fb">Facebook</a>
+<a class="jiathis_button_douban">豆瓣</a>
+<a href="http://www.jiathis.com/share?uid=1589850" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+var jiathis_config={
+	data_track_clickback:true,
+	summary:"",
+	ralateuid:{
+		"tsina":"1035836154"
+	},
+	shortUrl:false,
+	hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1589850" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" id="UYScript" src="http://v1.uyan.cc/js/iframe.js?UYUserId=1589850" async=""></script>
+<!-- UY END -->
+  </div>
+</div>
+      </div>
+      <div class="span4">
+          <div class="well sidebar-nav">
+             <ul id="relate_blog" class="nav nav-list">
+               <li class="nav-header">最近文章</li>
+                 <li><a href="/2015/01/21/extends-zabbix-web">扩展 Zabbix Web 页面功能</a></li>
+                 <li><a href="/2015/01/06/implement-script-field-for-kibana3">给 Kibana3 添加脚本化字段支持</a></li>
+                 <li><a href="/2014/12/26/report-of-this-year">2014 年度个人总结</a></li>
+                 <li><a href="/2014/12/19/kibana-4-beta-3-now-more-filtery">【翻译】Kibana 4 beta 3 发布，重新支持过滤器</a></li>
+                 <li><a href="/2014/12/08/difference-filterings-kibana">Kibana 中几个不同的 filtering</a></li>
+                 <li><a href="/2014/11/27/elasticsearch-scripts-aggregations">利用脚本灵活定制 Elasticsearch 中的聚合效果</a></li>
+                 <li><a href="/2014/11/23/kibana-panel-only-dashboard">利用动态仪表板实现kibana单图表导出功能</a></li>
+                 <li><a href="/2014/11/20/phantomjs-snapshot">用 phantomjs 截图</a></li>
+                 <li><a href="/2014/11/19/uniq-count-kibana">在 kibana 里实现去重计数</a></li>
+            </ul>
+          </div>
+        <div class="well sidebar-nav">
+          <iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=1&ptype=1&speed=0&skin=2&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=1035836154&verifier=a26926d5&dpc=1"></iframe>
+        </div>
+        <div class="well sidebar-nav">
+            <div id="uyan_list_time_frame"></div>
+            <script type="text/javascript" id="UYScriptTime" src="http://v1.uyan.cc/js/iframe_time_list.js?UYUserId=1589850&rankType=time" async=""></script>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(英文)</li>
+              <li><a href="http://codeascraft.com/" title="Etsy 运维团队博客">Code as Craft</a></li>
+              <li><a href="http://devopsanywhere.blogspot.jp/" title="">devopsanywhere</a></li>
+              <li><a href="http://www.jedi.be/blog/" title="">Jong En Dynamische Informatica</a></li>
+              <li><a href="http://www.planetdevops.net/" title="">planetdevops</a></li>
+              <li><a href="http://www.kitchensoap.com/" title="《网站运维》作者，Etsy 运维">Kitchen Soap</a></li>
+              <li><a href="http://blog.johngoulah.com" title="Musings of linux, open source, cloud computing and systems">John Goulah</a></li>
+              <li><a href="http://serverfault.com/" title="stackexchange下属的系统工程师问答网站">serverfault</a></li>
+              <li><a href="http://www.thegeekstuff.com/" title="各种超酷Linux命令用法">TheGeekStuff</a></li>
+              <li><a href="http://neilb.org/" title="The good,the bad,and the beautiful">neilb</a></li>
+              <li><a href="http://www.reddit.com/r/perl/" title="">reddit perl 频道</a></li>
+              <li><a href="http://jpetazzo.github.io/" title="">~jpetazzo</a></li>
+              <li><a href="http://www.perfplanet.com/" title="News and views from the web performance blogosphere">Performance Planet</a></li>
+              <li><a href="http://cuddletech.com/blog/" title="Use UNIX or die">Cuddle Tech</a></li>
+              <li><a href="http://showmetheco.de/" title="Viacheslav Tykhanovskyi(PocketIO/Text::Haml)">No time to wait</a></li>
+              <li><a href="http://blog.dataloop.io/" title="A new SaaS monitoring tool for DevOps & Operations">Dataloop.IO</a></li>
+              <li><a href="http://www.ducea.com/" title="">MDLog:/sysadmin</a></li>
+              <li><a href="http://planeteria.org/perl6/" title="Perl6 文集">Planet Perl 6</a></li>
+              <li><a href="http://www.metaforsoftware.com/blog/" title="">metafor</a></li>
+              <li><a href="http://blog.kablamo.org/" title="Eric Johnson，一个游走在伦敦和北京的 Perler">kablamo</a></li>
+              <li><a href="http://aphyr.com/posts" title="call me maybe 吐槽系列">Aphyr</a></li>
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(中文)</li>
+              <li><a href="http://www.nginxs.com/" title="">eric</a></li>
+              <li><a href="http://www.hellodb.net/" title="Ali DBA 张瑞">Hello DBA</a></li>
+              <li><a href="http://blog.nosqlfan.com/" title="not only sql信息集散地">NoSQLfan</a></li>
+              <li><a href="http://ourmysql.com/" title="">OurMySQL</a></li>
+              <li><a href="http://timo.piqiu.me/" title="TIMO IS MY OASIS">Timo</a></li>
+              <li><a href="http://www.liurongxing.com/" title="">刘荣星</a></li>
+              <li><a href="http://www.cnadn.net/" title="F5工程师">应用交付学习之路</a></li>
+              <li><a href="http://scmbob.org/" title="杭州NSN工程师，shell高人~">扛一肩记忆</a></li>
+              <li><a href="http://www.php-oa.com/" title="音悦台技术经理">扶凯</a></li>
+              <li><a href="http://www.lark.net.cn/" title="王剑">lark's cloud</a></li>
+              <li><a href="http://log.heartoutside.com/" title="HeartOutSide">HeartOutside</a></li>
+              <li><a href="http://blog.liulantao.com/" title="刘兰涛">Lax</a></li>
+              <li><a href="http://niubie.me/" title="莫言">莫言</a></li>
+              <li><a href="http://noops.me/" title="小米运维部">NoOps</a></li>
+              <li><a href="http://www.searchtech.pro/" title="">云端分布式搜索技术</a></li>
+              <li><a href="http://www.usefulshare.com" title="当当网安全运维">UsefulShare</a></li>
+              <li><a href="http://junqili.com/" title="深入研究puppet">纸飞机</a></li>
+              <li><a href="http://www.chinaxing.org/" title="">ChinaXing</a></li>
+              <li><a href="http://bubbyroom.com/" title="守住每一天">Liuyu's blog</a></li>
+              <li><a href="http://blog.aka-cool.net/" title="">Aka.Why</a></li>
+              <li><a href="http://blog.l8ii.com/" title="刘侨">LairdNote</a></li>
+              <li><a href="http://flw.tools/" title="">flw的工具箱</a></li>
+              <li><a href="http://blog.mcshell.org/" title="">mcshell</a></li>
+              <li><a href="http://novoland.github.io/" title="">克鲁斯卡尔的博客</a></li>
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="booklists" class="nav nav-list">
+          <li class="nav-header">我写的第一本技术书籍</li>
+          <li><a href='http://product.china-pub.com/3769604'><img src='http://images.china-pub.com/ebook3765001-3770000/3769604/shupi.jpg' border='0' alt='网站运维技术与实践'/></a></li>
+          <li class="nav-header">我写的两本电子书籍</li>
+          <li><a href='http://chenryn.gitbooks.io/logstash-best-practice/'><img src='https://sm3lir.cloudimage.io/s/cdn/x/https://www.gitbook.io/cover/book/chenryn/logstash-best-practice?build=1416299695472' border='0' alt='LogStash 最佳实践'/></a></li>
+          <li><a href='http://kibana.logstash.es/'><img src='https://sm3lir.cloudimage.io/s/cdn/x/https://www.gitbook.io/cover/book/chenryn/kibana-guide-cn?build=1415872457562' border='0' alt='Kibana 中文指南'/></a></li>
+        </div>
+      </div>
+    </div> <!-- row -->
+      <footer>
+        <p>&copy; 陈子 2012 
+          with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
+          and <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap</a>
+        </p>
+      </footer>
+    </div> <!-- /container -->
+  </body>
+</html>
