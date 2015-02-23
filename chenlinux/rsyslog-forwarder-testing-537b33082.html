@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>rsyslog 的 TCP 转发性能测试</title>
+    <meta name="author" content="陈子">
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!-- Le styles -->
+    <link href="/assets/themes/twitter/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/themes/twitter/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+    <link href="/assets/themes/twitter/css/pygments/default.css" rel="stylesheet" type="text/css">
+    <!-- Le fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+  </head>
+  <body>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="/">三斗室</a>
+          <ul class="nav">
+      	<li><a href="/archive.html">归档</a></li>
+      	<li><a href="/categories.html">分类</a></li>
+      	<li><a href="/errata.html">《网站运维技术与实践》勘误</a></li>
+      	<li><a href="/pages.html">Pages</a></li>
+      	<li><a href="/projects.html">学习记录</a></li>
+      	<li><a href="/tags.html">标签</a></li>
+            <li><a href="http://chenlinux.com/poetry/index.html" />诗文集</a></li>
+            <li><link title="RSS 2.0" type="application/rss+xml" href="http://chenlinux.com/feed.xml" rel="alternate" /><a href="http://chenlinux.com/feed.xml" target="_blank">RSS订阅</a></li>
+          </ul>
+          <ul class="nav pull-right"><li><a href="/about.html">有关我</a></li></ul>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+    <div class="row">
+      <div class="span7">
+<div class="row">
+  <div class="page-header">
+    <h1>rsyslog 的 TCP 转发性能测试 <small></small></h1>
+    <div class="date"><span>12 February 2015</span></div>
+    <ul class="tag_box pull-right">
+    	<li><a href="/tags.html#rsyslog-ref">rsyslog <span>2</span></a></li>
+    </ul>
+  </div>
+  <div style='background-color: #FFF;'>
+    <p>做一个日志手机系统，一般有两个思路。一个是提供一个多语言 SDK 包，然后开发者只需要找到对应的 SDK 加载即可；一个是采用最通用的日志传输协议，让开发者采用现成的协议实现。在通用协议里，最常见的，就是 syslog 协议。不过 syslog 过去采用 UDP 的印象太过深入人心，rsyslog 虽然宣称在测试用达到了每秒上百万的性能，也没多少人相信。那么，到底用 syslog 协议做跨网络传输，靠不靠谱？自己用压测，来证明一下！</p>
+<h2 id="section">测试环境</h2>
+<p>两台测试机。其中：</p>
+<p>A 配置为 imtcp/514，omfwd 到 B 的 514。</p>
+<pre><code>module( load="imtcp" )
+input( type="imtcp" port="514" ruleset="forwardruleset" )
+Ruleset( name="forwardruleset" )
+{
+    action (
+        type="omfwd"
+        Target="$b-server-ip"
+        Port="514"
+        Protocol="tcp"
+        RebindInterval="5000"
+        name="action_fwd"
+        queue.filename="action_fwd"
+        queue.size="50000"
+        queue.dequeuebatchsize="1000"
+        queue.maxdiskspace="5G"
+        queue.discardseverity="3"
+        queue.checkpointinterval="10"
+        queue.type="linkedlist"
+        queue.workerthreads="1"
+        queue.timeoutshutdown="10"
+        queue.timeoutactioncompletion="10"
+        queue.timeoutenqueue="20"
+        queue.timeoutworkerthreadshutdown="10"
+        queue.workerthreadminimummessages="5000"
+        queue.maxfilesize="500M"
+        queue.saveonshutdown="on"
+    )
+    stop
+}
+</code></pre>
+<p>B 配置为 imtcp/514，omfile 到本机。</p>
+<pre><code>module( load="imtcp" )
+input( type="imtcp" port="514" ruleset="recordruleset" )
+Ruleset( name="recordruleset" )
+{
+    action( type="omfile" file="/data1/debug.log" template="defaultLogFormat" asyncWriting="on" flushOnTXEnd="off" ioBufferSize="81920k" flushInterval="5")
+}
+</code></pre>
+<h2 id="section-1">测试工具</h2>
+<p>为了控制测试的速度，放弃之前压测 logstash 时候用的 logger 命令，采用 syslog-ng 项目自带的 loggen 命令。本来准备编译一下 syslog-ng，不过报错太多，实在复杂，看了一下 loggen.c 本身没啥依赖，所以决定采用最简单的办法获取 loggen 命令——下载 syslog-ng.rpm，然后直接解压压缩包！</p>
+<pre><code>wget http://mirrors.zju.edu.cn/epel/5/x86_64/syslog-ng-2.1.4-9.el5.x86_64.rpm
+rpm2cpio syslog-ng-2.1.4-9.el5.x86_64.rpm  | cpio -div
+</code></pre>
+<p><em>我这不能直接通过 yum install 安装，因为 syslog-ng 跟系统里已有的 rsyslog 是冲突的。</em></p>
+<h2 id="section-2">测试命令</h2>
+<p>rpm 获取的 loggen 命令还不支持 <code>--read-data</code> 参数，只能自己模拟填充数据。所以测试命令如下：</p>
+<pre><code>./usr/bin/loggen -r 10000 -i -s 500 -I 600 $a-server-ip 514
+</code></pre>
+<p>意即单条长度 500 字节，每秒 10000 条的频率，持续发送 600 秒。</p>
+<h2 id="section-3">验证方式</h2>
+<p>rsyslog 有专门的 impstats 模块，输出本身运行情况的统计，可以通过如下配置开启：</p>
+<pre><code>module( load="impstats" interval="60" severity="6" log.syslog="on" format="json" resetCounters="on")
+template( name="dynaFileRsyslog" type="string" string="/data1/rsyslog/impstats/%$year%/%$month%/%$day%_impstats.log" )
+if ( $syslogfacility-text == 'syslog' ) then
+{
+    action  ( type="omfile"  DynaFile="dynaFileRsyslog" FileCreateMode="0600" )
+    stop
+}
+</code></pre>
+<p>每 60 秒会输出 JSON 格式的统计数据，类似这样：</p>
+<pre><code>2015-02-11T20:00:43.176325+08:00 localhost rsyslogd-pstats: {"name":"action_fwd queue","size":0,"enqueued":0,"full":0,"discarded.full":0,"discarded.nf":0,"maxqsize":0}
+</code></pre>
+<p>其中，enqueued 表示进入队列的条目数，size 表示暂存在内存中的条目数，discarded.full 表示队列满丢弃的条目数，discarded.nf 表示队列将满丢弃的条目数。</p>
+<p>如果内存队列都不够用，那么 rsyslog 会记录到磁盘队列上，这时候看到类似上面的统计数据的另一条记录，区别是 <code>"name":"action_fwd queue[DA]"</code>，这个 DA 就是磁盘队列的意思。</p>
+<h2 id="section-4">测试结果</h2>
+<ol>
+  <li>每秒 5 万条的发送，可以做到毫无 size 的全部即时转发。</li>
+  <li>加大 <code>queue.size</code> 到 10 倍，即时转发能力提高到 12 万条。</li>
+  <li>再加大 <code>queue.workerthreads</code> 到 10，即时转发能力提高到 15 万条。</li>
+  <li>单独加大 <code>queue.dequeuebatchsize</code> 到 10 倍，即时转发能力提高到 17 万条。</li>
+  <li>同时加大 <code>queue.size</code> 和 <code>queue.dequeuebatchsize</code> 到 10 倍 ，即时转发能力提高到 18 万条。</li>
+  <li>加大频率到 24 万，进入磁盘队列，因为这时候已经到千兆网卡瓶颈。</li>
+  <li>加大模拟长度到 5000 字节，即时转发能力下降到 1 万。</li>
+</ol>
+<p>最后，尽可能删除掉各种配置，以默认方式运行，发现转发能力也能达到 5 万条。查了一下源码，默认的 <code>queue.size</code> 是 1000，<code>queue.dequeuebatchsize</code> 是 16。说明在这段大小(初始测试值是默认值的 50 多倍)内，性能变化不大。</p>
+<h2 id="section-5">长期运行</h2>
+<p>测试每次只运行几分钟，还需要长期运行的考验。运行两三天的观察，同时加大到 10 倍的配置(即短期测试可以跑满网卡的配置)，在长期稳定每秒 5 万条的测试中，也会出现内存队列的 size 数。还需继续观察 size 是否累积，以及更大量的情况是否会出现磁盘队列。</p>
+    <hr>
+    <div class="pagination">
+      <ul>
+        <li class="prev"><a href="/2015/02/11/python-elasticsearch-bulk" title="Python 批量写入 Elasticsearch 脚本">&larr; Previous</a></li>
+        <li><a href="/archive.html">Archive</a></li>
+        <li class="next"><a href="/2015/02/13/spark-streaming-sql" title="spark streaming 和 spark sql 结合示例">Next &rarr;</a></li>
+      </ul>
+    </div>
+    <hr>
+  <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_tsina">新浪微博</a>
+<a class="jiathis_button_weixin">微信</a>
+<a class="jiathis_button_renren">人人网</a>
+<a class="jiathis_button_ydnote">有道云笔记</a>
+<a class="jiathis_button_gmail">Gmail邮箱</a>
+<a class="jiathis_button_twitter">Twitter</a>
+<a class="jiathis_button_googleplus">Google+</a>
+<a class="jiathis_button_hi">百度空间</a>
+<a class="jiathis_button_fb">Facebook</a>
+<a class="jiathis_button_douban">豆瓣</a>
+<a href="http://www.jiathis.com/share?uid=1589850" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+var jiathis_config={
+	data_track_clickback:true,
+	summary:"",
+	ralateuid:{
+		"tsina":"1035836154"
+	},
+	shortUrl:false,
+	hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1589850" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" id="UYScript" src="http://v1.uyan.cc/js/iframe.js?UYUserId=1589850" async=""></script>
+<!-- UY END -->
+  </div>
+</div>
+      </div>
+      <div class="span4">
+          <div class="well sidebar-nav">
+             <ul id="relate_blog" class="nav nav-list">
+               <li class="nav-header">最近文章</li>
+                 <li><a href="/2015/02/14/spark-streaming-transform">spark streaming 的 transform 操作示例</a></li>
+                 <li><a href="/2015/02/14/spark-streaming-state">spark streaming 的 state 操作示例</a></li>
+                 <li><a href="/2015/02/13/spark-streaming-sql">spark streaming 和 spark sql 结合示例</a></li>
+                 <li><a href="/2015/02/11/python-elasticsearch-bulk">Python 批量写入 Elasticsearch 脚本</a></li>
+                 <li><a href="/2015/02/10/logstash-outputs-elasticsearch-http-memory-leak">LogStash::Outputs::ElaticSearch 使用 http 协议时的内存泄露问题</a></li>
+                 <li><a href="/2015/01/22/logstash-maxmind-java">JRuby 调用 maxmind-java 测试</a></li>
+                 <li><a href="/2015/01/21/extends-zabbix-web">扩展 Zabbix Web 页面功能</a></li>
+                 <li><a href="/2015/01/06/implement-script-field-for-kibana3">给 Kibana3 添加脚本化字段支持</a></li>
+                 <li><a href="/2014/12/26/report-of-this-year">2014 年度个人总结</a></li>
+            </ul>
+          </div>
+        <div class="well sidebar-nav">
+          <iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=1&ptype=1&speed=0&skin=2&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=1035836154&verifier=a26926d5&dpc=1"></iframe>
+        </div>
+        <div class="well sidebar-nav">
+            <div id="uyan_list_time_frame"></div>
+            <script type="text/javascript" id="UYScriptTime" src="http://v1.uyan.cc/js/iframe_time_list.js?UYUserId=1589850&rankType=time" async=""></script>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(英文)</li>
+              <li><a href="http://codeascraft.com/" title="Etsy 运维团队博客">Code as Craft</a></li>
+              <li><a href="http://devopsanywhere.blogspot.jp/" title="">devopsanywhere</a></li>
+              <li><a href="http://www.jedi.be/blog/" title="">Jong En Dynamische Informatica</a></li>
+              <li><a href="http://www.planetdevops.net/" title="">planetdevops</a></li>
+              <li><a href="http://www.kitchensoap.com/" title="《网站运维》作者，Etsy 运维">Kitchen Soap</a></li>
+              <li><a href="http://blog.johngoulah.com" title="Musings of linux, open source, cloud computing and systems">John Goulah</a></li>
+              <li><a href="http://serverfault.com/" title="stackexchange下属的系统工程师问答网站">serverfault</a></li>
+              <li><a href="http://www.thegeekstuff.com/" title="各种超酷Linux命令用法">TheGeekStuff</a></li>
+              <li><a href="http://neilb.org/" title="The good,the bad,and the beautiful">neilb</a></li>
+              <li><a href="http://www.reddit.com/r/perl/" title="">reddit perl 频道</a></li>
+              <li><a href="http://jpetazzo.github.io/" title="">~jpetazzo</a></li>
+              <li><a href="http://www.perfplanet.com/" title="News and views from the web performance blogosphere">Performance Planet</a></li>
+              <li><a href="http://cuddletech.com/blog/" title="Use UNIX or die">Cuddle Tech</a></li>
+              <li><a href="http://showmetheco.de/" title="Viacheslav Tykhanovskyi(PocketIO/Text::Haml)">No time to wait</a></li>
+              <li><a href="http://blog.dataloop.io/" title="A new SaaS monitoring tool for DevOps & Operations">Dataloop.IO</a></li>
+              <li><a href="http://www.ducea.com/" title="">MDLog:/sysadmin</a></li>
+              <li><a href="http://planeteria.org/perl6/" title="Perl6 文集">Planet Perl 6</a></li>
+              <li><a href="http://www.metaforsoftware.com/blog/" title="">metafor</a></li>
+              <li><a href="http://blog.kablamo.org/" title="Eric Johnson，一个游走在伦敦和北京的 Perler">kablamo</a></li>
+              <li><a href="http://aphyr.com/posts" title="call me maybe 吐槽系列">Aphyr</a></li>
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(中文)</li>
+              <li><a href="http://www.nginxs.com/" title="">eric</a></li>
+              <li><a href="http://www.hellodb.net/" title="Ali DBA 张瑞">Hello DBA</a></li>
+              <li><a href="http://blog.nosqlfan.com/" title="not only sql信息集散地">NoSQLfan</a></li>
+              <li><a href="http://ourmysql.com/" title="">OurMySQL</a></li>
+              <li><a href="http://timo.piqiu.me/" title="TIMO IS MY OASIS">Timo</a></li>
+              <li><a href="http://www.liurongxing.com/" title="">刘荣星</a></li>
+              <li><a href="http://www.cnadn.net/" title="F5工程师">应用交付学习之路</a></li>
+              <li><a href="http://scmbob.org/" title="杭州NSN工程师，shell高人~">扛一肩记忆</a></li>
+              <li><a href="http://www.php-oa.com/" title="音悦台技术经理">扶凯</a></li>
+              <li><a href="http://www.lark.net.cn/" title="王剑">lark's cloud</a></li>
+              <li><a href="http://log.heartoutside.com/" title="HeartOutSide">HeartOutside</a></li>
+              <li><a href="http://blog.liulantao.com/" title="刘兰涛">Lax</a></li>
+              <li><a href="http://niubie.me/" title="莫言">莫言</a></li>
+              <li><a href="http://noops.me/" title="小米运维部">NoOps</a></li>
+              <li><a href="http://www.searchtech.pro/" title="">云端分布式搜索技术</a></li>
+              <li><a href="http://www.usefulshare.com" title="当当网安全运维">UsefulShare</a></li>
+              <li><a href="http://junqili.com/" title="深入研究puppet">纸飞机</a></li>
+              <li><a href="http://www.chinaxing.org/" title="">ChinaXing</a></li>
+              <li><a href="http://bubbyroom.com/" title="守住每一天">Liuyu's blog</a></li>
+              <li><a href="http://blog.aka-cool.net/" title="">Aka.Why</a></li>
+              <li><a href="http://blog.l8ii.com/" title="刘侨">LairdNote</a></li>
+              <li><a href="http://flw.tools/" title="">flw的工具箱</a></li>
+              <li><a href="http://blog.mcshell.org/" title="">mcshell</a></li>
+              <li><a href="http://novoland.github.io/" title="">克鲁斯卡尔的博客</a></li>
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="booklists" class="nav nav-list">
+          <li class="nav-header">我写的第一本技术书籍</li>
+          <li><a href='http://product.china-pub.com/3769604'><img src='http://images.china-pub.com/ebook3765001-3770000/3769604/shupi.jpg' border='0' alt='网站运维技术与实践'/></a></li>
+          <li class="nav-header">我写的两本电子书籍</li>
+          <li><a href='http://chenryn.gitbooks.io/logstash-best-practice/'><img src='https://sm3lir.cloudimage.io/s/cdn/x/https://www.gitbook.io/cover/book/chenryn/logstash-best-practice?build=1416299695472' border='0' alt='LogStash 最佳实践'/></a></li>
+          <li><a href='http://kibana.logstash.es/'><img src='https://sm3lir.cloudimage.io/s/cdn/x/https://www.gitbook.io/cover/book/chenryn/kibana-guide-cn?build=1415872457562' border='0' alt='Kibana 中文指南'/></a></li>
+        </div>
+      </div>
+    </div> <!-- row -->
+      <footer>
+        <p>&copy; 陈子 2012 
+          with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
+          and <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap</a>
+        </p>
+      </footer>
+    </div> <!-- /container -->
+  </body>
+</html>

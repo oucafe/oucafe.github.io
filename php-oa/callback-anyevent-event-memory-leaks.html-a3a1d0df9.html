@@ -1,0 +1,370 @@
+		<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+		<title>扶凯 </title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<link rel="stylesheet" type="text/css" media="all" href="http://www.php-oa.com/wp-content/themes/pme-wp/style.css" />
+		<!-- Le styles -->
+		<link href="http://www.php-oa.com/wp-content/themes/pme-wp/css/bootstrap.min.css" rel="stylesheet">
+		<link rel="stylesheet" href="http://www.php-oa.com/wp-content/themes/pme-wp/css/style.min.css">
+		<style>
+			body {
+				padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+			}
+		</style>
+		<!-- Le HTML5 shim, for IE6-8 support of HTML5 elements -->
+		<!--[if lt IE 9]>
+		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<![endif]-->
+		<script src="http://www.php-oa.com/wp-content/themes/pme-wp/js/jquery.js"></script>
+		<script src="http://www.php-oa.com/wp-content/themes/pme-wp/js/bootstrap.min.js"></script>
+		<script src="http://www.php-oa.com/wp-content/themes/pme-wp/js/pme.js"></script>
+	</head>
+	<body>
+		<div id="header" class="navbar navbar-fixed-top">
+			<div class="navbar-inner">
+				<div class="container">
+					<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </a>
+					<a class="brand" href="/" title="Perl Programming">扶凯</a>
+					<div class="nav-collapse">
+						<ul id="nav" class="nav"><li id="menu-item-4978" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-4978"><a title="Home" href="http://www.php-oa.com">首页</a></li>
+<li id="menu-item-5002" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-5002"><a href="http://www.php-oa.com/%e6%8e%a8%e8%8d%90%e6%96%87%e7%ab%a0">推荐文章</a></li>
+<li id="menu-item-5003" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-5003"><a title="Perl 6" href="http://www.php-oa.com/perl-6">Perl 6</a></li>
+<li id="menu-item-5004" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-5004"><a title="Perl 轻量 Web 框架" href="http://www.php-oa.com/dancer">Dancer</a></li>
+<li id="menu-item-5208" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-5208"><a title="mojo" href="http://mojo.php-oa.com/">Mojolicious</a></li>
+<li id="menu-item-5005" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-5005"><a title="Perl 强大的面象对象" href="http://www.php-oa.com/moose">Moose</a></li>
+<li id="menu-item-5006" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-5006"><a title="PSGI/Plack" href="http://www.php-oa.com/psgi-plack">PSGI/Plack</a></li>
+<li id="menu-item-5007" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-5007"><a href="http://www.php-oa.com/category/%e7%94%9f%e6%b4%bb">生活</a></li>
+</ul>						<form id="searchform" class="navbar-search pull-left" method="get" action="http://www.php-oa.com">
+							<input type="text" class="search-query" placeholder="search" " name="s" id="s" />
+						</form>
+						<ul id="submenu" class="nav pull-right"><li id="menu-item-5000" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-5000"><a href="http://www.php-oa.com/youguanwo">关于我</a></li>
+</ul>
+					</div><!--nav-collapse / -->
+				</div>
+			</div>
+		</div><!--#header / -->
+		
+
+
+		<div id="container" class="container">
+			<div class="row">
+				<div id="content" class="span9">
+										<div id="post-5733">
+						<div class="row">
+							<div class="span9">
+								<h2 class="text-muted">在回调和闭包中的内存泄漏</h2>
+							</div>
+						</div>
+						<div class="row">
+							<div class="span8">
+								<i class="icon-user"></i>扶 凯  <i class="icon-time"></i>2015年01月28日 - 12:04 							</div>
+							<div class="span1 pull-left">
+								<span class="badge comments-nums"><a href="http://www.php-oa.com/2015/01/28/callback-anyevent-event-memory-leaks.html#respond" class="ds-thread-count" data-thread-key="5733" title="《在回调和闭包中的内存泄漏》上的评论">0</a></span>
+							</div>
+						</div>
+						<div class="well">
+							<p><span id="more-5733"></span><!--more-->近来老见到人有内存泄漏的问题，自己写模块和例子的时候，也发现有内存泄漏的问题。。。学艺不精啊，所以特在这写一个文章来分享一下有关这方面的内容。</p>
+<p>因为回调和闭包在事件程序中最多，所以我很早以前就找过一个有关这个的文章 &lt;&lt;<a href="http://www.richardbucker.com/2011/11/anyevent-and-memory-leaks.html">AnyEvent and memory leaks</a> &gt;&gt; 这个文章的作者，见到了 kraih (Mojolicious 的作者) 放了一个&nbsp; <a href="http://bit.ly/vX5Kag">gist link</a> 上面一个简单的内存泄漏的例子。这指出了，对于初学者来讲，写这种事件回调程序时最容易出的错的地方,&nbsp; 所以对于我们写 AnyEvent （Mojolicious 之类的应用）之类的程序员，了解这块非常非常有用，这样我们对可能造成的内存泄漏之类问题就知道怎么应对和处理 .</p>
+<h2>
+	闭包的内存泄漏实例</h2>
+<p>
+kraih 的例子如下:</p>
+<pre class="brush:perl;first-line:1;pad-line-numbers:true;highlight:null;collapse:false;">
+# Very common leak
+my $foo;
+$foo = sub {
+  my ($i, $j) = @_;
+  return if $i &gt;= $j;
+  say $i++;
+  $foo-&gt;($i, $j);
+};
+$foo-&gt;(1, 10);
+</pre>
+<h2>
+	<br />
+	测试是否内存泄漏的方式</h2>
+<p>
+对于上面这个例子，是一定有内存泄漏的，这时我们要怎么样来测试内存泄漏啦？</p>
+<p>方法 1: 使用 Devel::Cycle 模块，来测试引用, 如上面的例子，我们可以在最后面加上</p>
+<pre class="brush:perl;first-line:1;pad-line-numbers:true;highlight:null;collapse:false;">
+find_cycle $foo;
+
+</pre>
+<p>这样可以见到如下输出：</p>
+<pre class="brush:perl;first-line:1;pad-line-numbers:true;highlight:null;collapse:false;">
+Cycle (1):
+                      $A variable $foo =&gt; \$B                           
+                                         $$B =&gt; \&amp;A
+
+</pre>
+<p>
+上面可以直接见到变量一直存在对自身的引用，内存所以不被释放。</p>
+<p>方法2：上面的方式太复杂是吧。。。因为有时是一个对象，有时你根本不知道什么地方出错，这时我们有个法子进行压力测试,这样来让问题暴露出来，我们还是拿上面的例子来看。</p>
+<pre class="brush:perl;first-line:1;pad-line-numbers:true;highlight:null;collapse:false;">
+$0 = &#39;perl_MEM_TEST&#39;;
+
+while(1) {
+    {   
+        my $foo;
+        $foo = sub {
+            my ($i, $j) = @_;
+            return if $i &gt;= $j;
+            #say $i++;
+            $foo-&gt;($i, $j);
+        };  
+        $foo-&gt;(1, 10);
+    }   
+}
+
+</pre>
+<p>
+嗯，我们运维的思想， 这时只要 ps 来检查内存占用就好。因为 while 所以每秒的次数会非常非常高。一会问题就出来了。</p>
+<pre class="brush:perl;first-line:1;pad-line-numbers:true;highlight:null;collapse:false;">
+# ps -eo pid,user,comm,args,%cpu,rss,vsz|grep TEST|grep -v grep
+10366 root     perl            perl_MEM_TEST                101 2094848 2310136
+</pre>
+<p>我们可以见到 rss，基本上几秒以后就快速的增长，然后接下来就简单了，一个个的注掉函数，不断的隔离函数，直到定位到出了问题的函数。</p>
+<h2>
+	内存泄漏的原因</h2>
+<p>
+kraih 例子中的 bug 是因为 $foo 声明是在闭包之外而引起的. 但在函数内部的代码访问了这个闭包的变量。 这时变量的引用计数器增加 了。基本上所有的内存泄漏都是这个原因。从上面 find_cycle 都是这样。</p>
+<p>在看一个例子，前几天我所犯下的错误，经 py 指正过的。我在 AnyEvent 的应用中的例子，我想使用 begin end 来做回调组的同步，例子的例如下:</p>
+<pre class="brush:perl;first-line:1;pad-line-numbers:true;highlight:null;collapse:false;">
+  while(1) {
+
+    my $cv = AE::cv;
+
+    $cv-&gt;begin(sub{
+
+        $cv-&gt;send;
+
+    });
+
+    my $w = AE::timer 0, 0, sub {
+
+        $cv-&gt;end;
+
+    };
+
+    $cv-&gt;recv;
+
+}
+</pre>
+<p>也可以使用上面的方法 2 来进行内存泄漏的测试，也能见到内存快速的增长，但大家见到上面的错误了吗？ 嗯，这个错误很深，只是一个简单的错误。因为我在第一个 begin 中使用了 $cv ，但这个 $cv 是直接引用的外面的变量，所以让引用计数器在不断的增加。<br />
+其实作者也做了一样的的处理，这个时候，其实我们一定要使用传进来的 $cv 不要使用外部的 cv ，所以这个地方 $cv-&gt;send 必须要写成 shift-&gt;send 或者 $_[0]-&gt;send; 所以于对这种闭包的使用，我们最好都使用传参数的方式给所需要的函数引用传进去 。</p>
+<h2>
+	纠正内存泄漏</h2>
+<p>
+对于 kraih 的例子中，要纠正这个函数，方式是象下面一样，给要调用的函数本身通过传参的方式来传进去，这是 &lt;&lt;AnyEvent and memory leaks&gt;&gt; 中提供的方式.</p>
+<pre class="brush:perl;first-line:1;pad-line-numbers:true;highlight:null;collapse:false;">
+my $foo;
+$foo = sub {
+    my ($foofoo, $i, $j) = @_;
+    return if $i &gt;= $j;
+    say $i++;
+    $foofoo-&gt;($foofoo, $i, $j);
+    undef $foofoo; #this line is optional
+};
+
+$foo-&gt;($foo, 1, 10);
+
+
+</pre>
+<p>
+我们使用传参的方式，给函数传进去后就一切正常了。但上面的方法并不是很好看和好懂，这种闭包多了，函数的层级也会非常多，比如 AnyEvent::HTTP 模块中，就大量使用了这种闭包。</p>
+<p>下面提供一种我认为很好的方式，其实我其它的文章中也提到过.</p>
+<pre class="brush:perl;first-line:1;pad-line-numbers:true;highlight:null;collapse:false;">
+    {   
+        package T;
+        use Moo;
+        sub foo {
+            my $self = shift;
+            return sub {
+                my ($i, $j) = @_;
+                return if $i &gt;= $j;
+                say $i++;
+                $self-&gt;foo-&gt;($i, $j);
+            }   
+        };  
+        1;  
+    }   
+
+    my $t = T-&gt;new;
+    $t-&gt;foo-&gt;(1, 10);
+
+</pre>
+<p>给需要的东西，包成模块，然后给闭包这种难懂的东西，封装起来。当然可能不一定要使用闭包，只是自己调用自己的话，就可以不用这样，上面对于于象 AnyEvent::HTTP&nbsp; 中的回调 on_body 之类这种需要一个代码引用的时候，非常有用，因为 $self-&gt;foo 是返回一个代码引用。可以直接</p>
+<pre class="brush:perl;first-line:1;pad-line-numbers:true;highlight:null;collapse:false;">
+on_body =&gt; $self-&gt;foo;
+</pre>
+<p>
+这样很方便的使用，在需要大量回调的程序中，还不用给闭包堆得超级超级多，一层又一层。</p>
+
+			<!--[syntaxhighlighter]-->
+			<!--代码高亮，请勿编辑-->
+			<script type="text/javascript" src="http://www.php-oa.com/wp-content/plugins/ck-and-syntaxhighlighter/syntaxhighlighter/scripts/shCore.js"></script><script type="text/javascript" src="http://www.php-oa.com/wp-content/plugins/ck-and-syntaxhighlighter/syntaxhighlighter/scripts/shBrushPerl.js"></script>
+
+			<link type="text/css" rel="stylesheet" href="http://www.php-oa.com/wp-content/plugins/ck-and-syntaxhighlighter/syntaxhighlighter/styles/shCoreDefault.css" />
+			<link type="text/css" rel="stylesheet" href="http://www.php-oa.com/wp-content/plugins/ck-and-syntaxhighlighter/syntaxhighlighter/styles/shThemeDefault.css" />
+			<script type="text/javascript">
+			SyntaxHighlighter.defaults['class-name']	= '.syntaxhighlighter {     background-color: 999999 }';
+			SyntaxHighlighter.defaults['smart-tabs']	= true;
+			SyntaxHighlighter.defaults['tab-size']		= 4;
+			SyntaxHighlighter.defaults['gutter']		= true;
+			SyntaxHighlighter.defaults['quick-code']	= true;
+			SyntaxHighlighter.defaults['collapse'] 		= false;
+			SyntaxHighlighter.defaults['auto-links']	= true;
+			SyntaxHighlighter.defaults['toolbar']		= true;
+			SyntaxHighlighter.all();
+			</script>
+			<!--[/syntaxhighlighter]-->						</div>
+						<div class="row">
+							<div class="span7">
+							 							</div>
+							<div class="span2 pull-left">
+								
+							</div>
+						</div>
+						<hr />
+					</div>
+										
+					
+					<div class="comments">
+						<script type="text/javascript">
+var duoshuoQuery = {"short_name":"iakuf","sso":{"login":"http:\/\/www.php-oa.com\/wp-login.php?action=duoshuo_login","logout":"http:\/\/www.php-oa.com\/wp-login.php?action=logout&_wpnonce=9357958a0c"},"theme":"default","stylePatch":"wordpress\/pme-wp"};
+duoshuoQuery.sso.login += '&redirect_to=' + encodeURIComponent(window.location.href);
+duoshuoQuery.sso.logout += '&redirect_to=' + encodeURIComponent(window.location.href);
+(function() {
+    var ds = document.createElement('script'); ds.type = 'text/javascript'; ds.async = true;
+    ds.charset = 'UTF-8';
+    ds.src = 'http://static.duoshuo.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ds);
+})();
+</script><a name="comments"></a>
+
+<div class="ds-thread" data-thread-key="5733" data-author-key="1" data-title="在回调和闭包中的内存泄漏" data-url="http://www.php-oa.com/2015/01/28/callback-anyevent-event-memory-leaks.html"></div>
+
+<script type="text/javascript">
+	if (typeof DUOSHUO !== 'undefined')
+		DUOSHUO.EmbedThread('.ds-thread');
+</script>
+	<div id="ds-ssr">
+
+		
+            <ol id="commentlist">
+                            </ol>
+
+		            
+    </div>					</div>
+										
+				</div><!--#content /--->
+				<div id="sidebar" class="span3">
+	<div class="well">
+		<h3>分类目录</h3>		<ul>
+	<li class="cat-item cat-item-681"><a href="http://www.php-oa.com/category/perl" >Perl</a> (179)
+<ul class='children'>
+	<li class="cat-item cat-item-1112"><a href="http://www.php-oa.com/category/perl/perl6" >Perl 6</a> (14)
+</li>
+	<li class="cat-item cat-item-943"><a href="http://www.php-oa.com/category/perl/moose" >Perl Moose</a> (22)
+</li>
+	<li class="cat-item cat-item-1099"><a href="http://www.php-oa.com/category/perl/psgi-perl" >Perl PSGI</a> (26)
+</li>
+	<li class="cat-item cat-item-1121"><a href="http://www.php-oa.com/category/perl/perl-web-framework" >Perl Web 框架</a> (17)
+</li>
+	<li class="cat-item cat-item-824"><a href="http://www.php-oa.com/category/perl/perl-talks" >Perl 交流</a> (18)
+</li>
+	<li class="cat-item cat-item-955"><a href="http://www.php-oa.com/category/perl/perl-app" >Perl 应用</a> (53)
+</li>
+	<li class="cat-item cat-item-811"><a href="http://www.php-oa.com/category/perl/perl-module" title="perl模块的使用">Perl 模块</a> (34)
+</li>
+</ul>
+</li>
+	<li class="cat-item cat-item-712"><a href="http://www.php-oa.com/category/tech" >技术</a> (576)
+<ul class='children'>
+	<li class="cat-item cat-item-247"><a href="http://www.php-oa.com/category/tech/cdn%e6%8a%80%e6%9c%af" >CDN技术</a> (68)
+</li>
+	<li class="cat-item cat-item-1179"><a href="http://www.php-oa.com/category/tech/linux%e6%8a%80%e6%9c%af" >Linux技术</a> (1)
+</li>
+	<li class="cat-item cat-item-5"><a href="http://www.php-oa.com/category/tech/%e5%bd%92%e6%a1%a3%e6%97%a5%e5%bf%97" >归档日志</a> (33)
+</li>
+	<li class="cat-item cat-item-1180"><a href="http://www.php-oa.com/category/tech/%e6%8a%80%e6%9c%af%e9%9a%8f%e7%ac%94" >技术随笔</a> (11)
+	<ul class='children'>
+	<li class="cat-item cat-item-717"><a href="http://www.php-oa.com/category/tech/%e6%8a%80%e6%9c%af%e9%9a%8f%e7%ac%94/%e8%a7%86%e9%a2%91" >视频</a> (11)
+</li>
+	</ul>
+</li>
+	<li class="cat-item cat-item-411"><a href="http://www.php-oa.com/category/tech/log-processing" >日志处理</a> (8)
+</li>
+	<li class="cat-item cat-item-271"><a href="http://www.php-oa.com/category/tech/version-manage" >版本管理</a> (7)
+</li>
+	<li class="cat-item cat-item-11"><a href="http://www.php-oa.com/category/tech/%e8%bd%af%e4%bb%b6%e5%b7%a5%e5%85%b7" >软件工具</a> (16)
+</li>
+</ul>
+</li>
+	<li class="cat-item cat-item-266"><a href="http://www.php-oa.com/category/%e7%94%9f%e6%b4%bb" >生活</a> (83)
+<ul class='children'>
+	<li class="cat-item cat-item-251"><a href="http://www.php-oa.com/category/%e7%94%9f%e6%b4%bb/%e4%bf%ae%e8%a1%8c%e6%88%90%e9%95%bf" >修行成长</a> (16)
+</li>
+	<li class="cat-item cat-item-315"><a href="http://www.php-oa.com/category/%e7%94%9f%e6%b4%bb/%e5%85%b4%e8%b6%a3%e5%a8%b1%e4%b9%90" >兴趣娱乐</a> (12)
+</li>
+	<li class="cat-item cat-item-442"><a href="http://www.php-oa.com/category/%e7%94%9f%e6%b4%bb/%e8%8b%b1%e6%96%87%e5%ad%a6%e4%b9%a0" >英文学习</a> (7)
+</li>
+</ul>
+</li>
+	<li class="cat-item cat-item-1196"><a href="http://www.php-oa.com/category/%e9%a1%b9%e7%9b%ae%e7%ae%a1%e7%90%86" >项目管理</a> (1)
+</li>
+	<li class="cat-item cat-item-1"><a href="http://www.php-oa.com/category/uncategorized" >默认</a> (94)
+</li>
+		</ul>
+<h3>近期评论</h3><ul id="recentcomments"><li class="recentcomments"><span class="comment-author-link">u</span>发表在《<a href="http://www.php-oa.com/2014/07/15/http-post-mojolicious.html#comment-118855">HTTP 的 POST 参数提交和上传的不同与 Mojolicious 的实现.</a>》</li><li class="recentcomments"><span class="comment-author-link"><a href='http://vinta.ws/code/cache-headers-in-django.html' rel='external nofollow' class='url'>Cache headers in Django | I failed the Turing Test</a></span>发表在《<a href="http://www.php-oa.com/2008/12/03/http-head.html#comment-118846">几个常用 Http 头详解和优先级对比(no-cache,expires,max-age)</a>》</li><li class="recentcomments"><span class="comment-author-link">dreampaowj</span>发表在《<a href="http://www.php-oa.com/2010/09/26/perl-mogilefs-2.html#comment-118819">MogileFS 的安装(MogileFS 系列2)</a>》</li><li class="recentcomments"><span class="comment-author-link"><a href='http://www.php-oa.com/' rel='external nofollow' class='url'>扶凯</a></span>发表在《<a href="http://www.php-oa.com/2010/09/26/perl-mogilefs-2.html#comment-118703">MogileFS 的安装(MogileFS 系列2)</a>》</li><li class="recentcomments"><span class="comment-author-link">freelingchang</span>发表在《<a href="http://www.php-oa.com/2009/02/03/iostat.html#comment-118699">iostat来对linux硬盘IO性能进行了解</a>》</li><li class="recentcomments"><span class="comment-author-link">dreampaowj</span>发表在《<a href="http://www.php-oa.com/2010/09/26/perl-mogilefs-2.html#comment-118698">MogileFS 的安装(MogileFS 系列2)</a>》</li><li class="recentcomments"><span class="comment-author-link"><a href='http://www.php-oa.com' rel='external nofollow' class='url'>扶 凯</a></span>发表在《<a href="http://www.php-oa.com/youguanwo#comment-118697">有关我</a>》</li><li class="recentcomments"><span class="comment-author-link"><a href='http://www.php-oa.com/' rel='external nofollow' class='url'>扶凯</a></span>发表在《<a href="http://www.php-oa.com/2010/09/26/perl-mogilefs-2.html#comment-118695">MogileFS 的安装(MogileFS 系列2)</a>》</li></ul><h3>Perl</h3>
+	<ul class='xoxo blogroll'>
+<li><a href="http://www.fayland.org/" title="一个超级喜欢 Perl 的人">fayland</a></li>
+<li><a href="http://flw.tools/" rel="friend">flw</a></li>
+<li><a href="http://www.iiiday.com" title="目光呆滞, 头脑昏迷">走走.停停</a></li>
+<li><a href="http://blog.yikuyiku.com" title="陈钢的博客">陈钢-新浪</a></li>
+
+	</ul>
+
+<h3>技术</h3>
+	<ul class='xoxo blogroll'>
+<li><a href="http://www.nmm-hd.org" title="NMM视频技术论坛">NMM视频技术论坛</a></li>
+<li><a href="http://chenlinux.com/">三斗室</a></li>
+<li><a href="http://www.wangchong.me">王翀</a></li>
+<li><a href="http://huaidan.org/" title="关注网络安全">鬼仔&#039;s Blog</a></li>
+
+	</ul>
+
+<h3>链接</h3>
+	<ul class='xoxo blogroll'>
+<li><a href="http://www.lsanotes.cn/" title="服务器系统架构 运维日志">LSA Notes</a></li>
+<li><a href="http://blog.mruu.cn" title="我的大学同学，非 常不错的UI设计师">MRuu Blog</a></li>
+<li><a href="http://blog.wxd5981.com" title="wxd5981">wxd5981</a></li>
+<li><a href="http://blog.s135.com/" title="张宴&#8211;新浪互动社区事业部">张宴-金山</a></li>
+<li><a href="http://jacky.scanmon.com" title="月影鹏鹏">月影鹏鹏</a></li>
+
+	</ul>
+
+	</div>
+</div><!--#sidebar /--->
+
+			</div>
+			<footer id="footer">
+			<ul class="footer-content">
+			<li class="elegant-subtitle">	
+				<span>
+                    <a href="http://www.miibeian.gov.cn" target="_blank" style="font-size:9pt">京ICP备14022537号</a>&nbsp;&nbsp;
+					Copyright &copy; 2007-2015 扶凯.
+				</span>
+                <span>Powered by <a href="http://www.wordpress.org/" rel="external">WordPress</a>.  </span>
+				<span> <script language="javascript" type="text/javascript" src="http://s19.cnzz.com/stat.php?id=3207370&web_id=3207370" ></script> </span>
+			</li>
+			</ul>
+			</footer><!--#sidebar /--->
+		</div>
+		<!-- /container -->
+	</body>
+</html>

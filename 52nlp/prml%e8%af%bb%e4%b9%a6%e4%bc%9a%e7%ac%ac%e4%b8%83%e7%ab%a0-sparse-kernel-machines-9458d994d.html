@@ -1,0 +1,747 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<title>PRML读书会第七章 Sparse Kernel Machines | 我爱自然语言处理</title>
+<link rel="profile" href="http://gmpg.org/xfn/11" />
+<link rel="stylesheet" type="text/css" media="all" href="http://www.52nlp.cn/wp-content/themes/twentytenorg/style.css" />
+<link rel="pingback" href="http://www.52nlp.cn/xmlrpc.php" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; Feed" href="http://www.52nlp.cn/feed" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; 评论Feed" href="http://www.52nlp.cn/comments/feed" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; PRML读书会第七章 Sparse Kernel Machines评论Feed" href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e4%b8%83%e7%ab%a0-sparse-kernel-machines/feed" />
+<link rel='stylesheet' id='yarppWidgetCss-css'  href='http://www.52nlp.cn/wp-content/plugins/yet-another-related-posts-plugin/style/widget.css?ver=4.0.1' type='text/css' media='all' />
+<link rel='stylesheet' id='codecolorer-css'  href='http://www.52nlp.cn/wp-content/plugins/codecolorer/codecolorer.css?ver=0.9.9' type='text/css' media='screen' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.52nlp.cn/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.52nlp.cn/wp-includes/wlwmanifest.xml" /> 
+<link rel='prev' title='PRML读书会第六章   Kernel Methods' href='http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%85%ad%e7%ab%a0-kernel-methods' />
+<link rel='next' title='PRML读书会第八章  Graphical Models' href='http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%85%ab%e7%ab%a0-graphical-models' />
+<meta name="generator" content="WordPress 4.0.1" />
+<link rel='canonical' href='http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e4%b8%83%e7%ab%a0-sparse-kernel-machines' />
+<link rel='shortlink' href='http://www.52nlp.cn/?p=7371' />
+<!-- wp thread comment 1.4.9.4.002 -->
+<style type="text/css" media="screen">
+.editComment, .editableComment, .textComment{
+	display: inline;
+}
+.comment-childs{
+	border: 1px solid #999;
+	margin: 5px 2px 2px 4px;
+	padding: 4px 2px 2px 4px;
+	background-color: white;
+}
+.chalt{
+	background-color: #E2E2E2;
+}
+#newcomment{
+	border:1px dashed #777;width:90%;
+}
+#newcommentsubmit{
+	color:red;
+}
+.adminreplycomment{
+	border:1px dashed #777;
+	width:99%;
+	margin:4px;
+	padding:4px;
+}
+.mvccls{
+	color: #999;
+}
+			
+</style>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: { equationNumbers: { autoNumber: "AMS" } },
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+    inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+    displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+    processEscapes: true
+  },
+  "HTML-CSS": { availableFonts: ["TeX"] }
+});
+</script><script type="text/javascript" src="http://www.52nlp.cn/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</head>
+
+<body class="single single-post postid-7371 single-format-standard">
+<div id="wrapper" class="hfeed">
+	<div id="header">
+		<div id="masthead">
+			<div id="branding" role="banner">
+								<div id="site-title">
+					<span>
+						<a href="http://www.52nlp.cn/" title="我爱自然语言处理" rel="home">我爱自然语言处理</a>
+					</span>
+				</div>
+				<div id="site-description">I Love Natural Language Processing</div>
+
+										<img src="http://www.52nlp.cn/wp-content/themes/twentytenorg/images/headers/path.jpg" width="940" height="198" alt="" />
+								</div><!-- #branding -->
+
+			<div id="access" role="navigation">
+			  				<div class="skip-link screen-reader-text"><a href="#content" title="跳至正文">跳至正文</a></div>
+								<div class="menu"><ul><li ><a href="http://www.52nlp.cn/">首页</a></li><li class="page_item page-item-2"><a href="http://www.52nlp.cn/about">关于</a></li><li class="page_item page-item-2557 page_item_has_children"><a href="http://www.52nlp.cn/resources">资源</a><ul class='children'><li class="page_item page-item-1271"><a href="http://www.52nlp.cn/resources/wpmatheditor">WpMathEditor</a></li></ul></li></ul></div>
+ 
+				<div class="menu"><ul><li class="page_item page-item-2"></li><li class="page_item page-item-2"><a href="http://coursegraph.com" title="课程图谱" target="_blank">课程图谱</a></li><li class="page_item page-item-2"><a href="http://www.nlpjob.com" title="求职" target="_blank">求职招聘</a></li></ul></div>
+			</div><!-- #access -->
+		</div><!-- #masthead -->
+	</div><!-- #header -->
+
+	<div id="main">
+
+		<div id="container">
+			<div id="content" role="main">
+
+			
+
+				<div id="nav-above" class="navigation">
+					<div class="nav-previous"><a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%85%ad%e7%ab%a0-kernel-methods" rel="prev"><span class="meta-nav">&larr;</span> PRML读书会第六章   Kernel Methods</a></div>
+					<div class="nav-next"><a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%85%ab%e7%ab%a0-graphical-models" rel="next">PRML读书会第八章  Graphical Models <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-above -->
+
+				<div id="post-7371" class="post-7371 post type-post status-publish format-standard hentry category-pattern-recognition-and-machine-learning-2 category-344 tag-kernel tag-kernel-methods tag-kkt tag-pattern-recognition-and-machine-learning tag-prml tag-revelance-vector-machine tag-rvm tag-smo tag-sparse-kernel-machines tag-svm- tag-1042 tag-1043 tag-497 tag-1044 tag-1046 tag-1045 tag-344 tag-961 tag-960 tag-496">
+					<h1 class="entry-title">PRML读书会第七章 Sparse Kernel Machines</h1>
+
+					<div class="entry-meta">
+						<span class="meta-prep meta-prep-author">发表于</span> <a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e4%b8%83%e7%ab%a0-sparse-kernel-machines" title="21:05" rel="bookmark"><span class="entry-date">2015年01月30号</span></a> <span class="meta-sep">由</span> <span class="author vcard"><a class="url fn n" href="http://www.52nlp.cn/author/prml" title="查看所有由 prml 发布的文章">prml</a></span>					</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+						<p style="text-align: center"><strong>PRML</strong><strong>读书会第七章 Sparse Kernel Machines</strong></p>
+<p style="text-align: center"><strong>主讲人 网神</strong></p>
+<p style="text-align: center"><strong>（新浪微博: <a href="http://weibo.com/ghtimaq">@豆角茄子麻酱凉面</a>）</strong></p>
+<p>网神(66707180) 18:59:22<br />
+大家好，今天一起交流下PRML第7章。第六章核函数里提到，有一类机器学习算法，不是对参数做点估计或求其分布，而是保留训练样本，在预测阶段，计算待预测样本跟训练样本的相似性来做预测，例如KNN方法。<br />
+将线性模型转换成对偶形式，就可以利用核函数来计算相似性，同时避免了直接做高维度的向量内积运算。本章是稀疏向量机，同样基于核函数，用训练样本直接对新样本做预测，而且只使用了少量训练样本，所以具有稀疏性，叫sparse kernel machine。<br />
+本章包括SVM和RVM(revelance vector machine)两部分，首先讲SVM，支持向量机。首先看SVM用于二元分类，并先假设两类数据是线性可分的。<br />
+二元分类线性模型可以用这个式子表示：<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-0.png"><img class="alignnone wp-image-7374" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-0.png" alt="prml7-0" width="150" height="20" /></a>。其中<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-1.png"><img class="alignnone wp-image-7375" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-1.png" alt="prml7-1" width="50" height="20" /></a>是基函数，这些都跟第三章和第四章是一样的。<br />
+两类数据线性可分，当<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-2.png"><img class="alignnone wp-image-7376" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-2.png" alt="prml7-2" width="59" height="23" /></a>时,分类结果是<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-3.png"><img class="alignnone wp-image-7377" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-3.png" alt="prml7-3" width="48" height="24" /></a>; <a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-4.png"><img class="alignnone wp-image-7378" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-4.png" alt="prml7-4" width="57" height="22" /></a>时,分类结果<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-5.png"><img class="alignnone wp-image-7379" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-5.png" alt="prml7-5" width="45" height="25" /></a>;也就是对所有训练样本总是有<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-6.png"><img class="alignnone wp-image-7380" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-6.png" alt="prml7-6" width="64" height="20" /></a>.要做的就是确定决策边界y(x)=0<br />
+为了确定决策边界<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-7.png"><img class="alignnone wp-image-7382" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-7.png" alt="prml7-7" width="99" height="19" /></a>，SVM引入margin的概念。margin定义为决策边界y(x)到最近的样本的垂直距离。如下图所示：<span id="more-7371"></span></p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-8.png"><img class="aligncenter wp-image-7383" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-8.png" alt="prml7-8" width="400" height="280" /></a></p>
+<p>SVM的目标是寻找一个margin最大的决策边界。 我们来看如何确定目标函数：<br />
+首先给出一个样本点x到决策边界<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-9.png"><img class="alignnone wp-image-7384" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-9.png" alt="prml7-9" width="87" height="21" /></a>的垂直距离公式是什么，先给出答案：|y(x)|/||w||<br />
+这个距离怎么来的，在第四章有具体介绍。看下图:</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-10.png"><img class="aligncenter wp-image-7385" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-10.png" alt="prml7-10" width="400" height="316" /></a></p>
+<p>图例，我们看点x到y=0的距离r是多少：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-11.png"><img class="aligncenter wp-image-7386" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-11.png" alt="prml7-11" width="450" height="135" /></a></p>
+<p>上面我们得到了任意样本点x到y(x)=0的距离，要做的是最大化这个距离。<br />
+同时，要满足条件 <a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-12.png"><img class="alignnone wp-image-7387" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-12.png" alt="prml7-12" width="65" height="22" /></a><br />
+所以目标函数是:<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-13.png"><img class="alignnone wp-image-7388" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-13.png" alt="prml7-13" width="242" height="51" /></a><br />
+求w和b，使所有样本中，与y=0距离最小的距离 最大化，整个式子就是最小距离最大化</p>
+<p>这个函数优化很复杂，需要做一个转换</p>
+<p>可以看到，对w和b进行缩放 <a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-14.png"><img class="alignnone wp-image-7389" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-14.png" alt="prml7-14" width="231" height="16" /></a>，距离 <a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-15.png"><img class="alignnone wp-image-7390" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-15.png" alt="prml7-15" width="66" height="44" /></a>并不会变化<br />
+根据这个属性，调整w和b,使到决策面最近的点满足：<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-16.png"><img class="alignnone wp-image-7391" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-16.png" alt="prml7-16" width="150" height="31" /></a><br />
+从而左右样本点都满足 <a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-17.png"><img class="alignnone wp-image-7392" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-17.png" alt="prml7-17" width="157" height="26" /></a><br />
+这样，前面的目标函数可以变为：<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-18.png"><img class="alignnone wp-image-7393" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-18.png" alt="prml7-18" width="200" height="38" /></a><br />
+同时满足约束条件：<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-19.png"><img class="alignnone wp-image-7394" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-19.png" alt="prml7-19" width="150" height="30" /></a><br />
+这是一个不等式约束的二次规划问题，用拉格朗日乘子法来求解<br />
+构造如下的拉格朗日函数：<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-20.png"><img class="alignnone wp-image-7395" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-20.png" alt="prml7-20" width="312" height="46" /></a><br />
+<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-21.png"><img class="alignnone wp-image-7397" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-21.png" alt="prml7-21" width="25" height="23" /></a>是拉格朗日乘子 ，这个函数分别对w和b求导，令导数等于0，可以得到w和b的表达式：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-22.png"><img class="aligncenter wp-image-7398" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-22.png" alt="prml7-22" width="237" height="137" /></a></p>
+<p>将w带入前面的拉格朗如函数L(w,b,a)，就可以消去w和b，变成a的函数<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-23.png"><img class="alignnone wp-image-7399" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-23.png" alt="prml7-23" width="35" height="21" /></a>，这个函数是拉格朗日函数的对偶函数：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-24.png"><img class="aligncenter wp-image-7400" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-24.png" alt="prml7-24" width="400" height="60" /></a></p>
+<p>为什么要转换成对偶函数，主要是变形后可以借助核函数，来解决线性不可分的问题，尤其是基函数的维度特别高的情况。求解这个对偶函数，得到参数<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-21.png"><img class="alignnone wp-image-7397" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-21.png" alt="prml7-21" width="25" height="23" /></a>，就确定了分类模型<br />
+把 <a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-25.png"><img class="alignnone wp-image-7401" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-25.png" alt="prml7-25" width="150" height="45" /></a> 带入 <a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-26.png"><img class="alignnone wp-image-7402" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-26.png" alt="prml7-26" width="200" height="35" /></a>，就是用核函数表示的分类模型：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-27.png"><img class="aligncenter wp-image-7403" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-27.png" alt="prml7-27" width="236" height="54" /></a></p>
+<p>这就是最终的分类模型，完全由训练样本 <a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-28.png"><img class="alignnone wp-image-7404" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-28.png" alt="prml7-28" width="22" height="18" /></a>，n=1&#8230;N决定。<br />
+SVM具有稀疏性，这里面对大部分训练样本，<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-29.png"><img class="alignnone wp-image-7405" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-29.png" alt="prml7-29" width="28" height="24" /></a>都等于0，从而大部分样本在新样本预测时都不起作用。<br />
+我们来看看为什么大部分训练样本，<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-29.png"><img class="alignnone wp-image-7405" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-29.png" alt="prml7-29" width="28" height="24" /></a>都等于0。这主要是由KKT条件决定的。我们从直观上看下KKT条件是怎么回事：</p>
+<p>KKT是对拉格朗日乘子法的扩展，将其从约束为等式的情况扩展为约束为不等式的情况。所以先看下约束为等式的情况：例如求函数<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-30.png"><img class="alignnone wp-image-7406" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-30.png" alt="prml7-30" width="66" height="22" /></a>的极大值，同时满足约束 <a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-31.png"><img class="alignnone wp-image-7407" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-31.png" alt="prml7-31" width="78" height="20" /></a>，拉格朗日乘子法前面已经介绍，引入拉式乘子，构造拉式函数，然后求导，解除的值就是极值。这里从直观上看一下，为什么这个值就是满足条件的极值。设想取不同的z值，使<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-32.png"><img class="alignnone wp-image-7408" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-32.png" alt="prml7-32" width="74" height="21" /></a>，就可以得到f(x1,x2)的不同等高线，如图:</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-33.png"><img class="aligncenter wp-image-7409" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-33.png" alt="prml7-33" width="352" height="299" /></a></p>
+<p>构成图中的曲线，图中标记的g=c，对于这种情况，改成g-c=0就可以了.假设g与f的某些等高线相交，交点就是同时满足约束条件和目标函数的值，但不一定是极大值。。有两种相交形式，一种是穿过，一种是相切。因为穿过意味着在该条等高线内部还存在着其他等高线与g相交，新等高线与目标函数的交点的值更大。只有相切时，才可能取得最大值。因此，在极大值处，f的梯度与g的梯度是平行的，因为梯度都垂直于g或f曲线，也就是存在lamda，使得 <a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-36.png"><img class="alignnone wp-image-7411" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-36.png" alt="prml7-36" width="84" height="25" /></a>，这个式子正是拉格朗日函数 <a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-37.png"><img class="alignnone wp-image-7412" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-37.png" alt="prml7-37" width="127" height="20" /></a> 对x求导的结果。<br />
+接下来看看约束条件为不等式的情况，例如约束为 <a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-38.png"><img class="alignnone wp-image-7413" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-38.png" alt="prml7-38" width="60" height="27" /></a>，先看个图：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-39.png"><img class="aligncenter wp-image-7414" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-39.png" alt="prml7-39" width="397" height="304" /></a></p>
+<p>图里的约束是g&lt;0，不影响解释KKT条件。不等式约束分两种情况，假设极值点是x` ，当<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-40.png"><img class="alignnone wp-image-7415" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-40.png" alt="prml7-40" width="61" height="18" /></a>时，也就是图中左边那部分，此时该约束条件是inactive的，对于极值点的确定不起作用。因此拉格朗日函数<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-37.png"><img class="alignnone wp-image-7412" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-37.png" alt="prml7-37" width="140" height="22" /></a>中，lamda等于0，极值完全由f一个人确定，相当于lamda等于0.当<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-42.png"><img class="alignnone wp-image-7416" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-42.png" alt="prml7-42" width="58" height="23" /></a>时，也就是图中右边部分，极值出现在g的边界处,这跟约束条件为等式时是一样的。<br />
+总之，对于约束条件为不等式的拉格朗日乘子法，总有 <a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-43.png"><img class="alignnone wp-image-7417" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-43.png" alt="prml7-43" width="77" height="20" /></a>，不是lamda等于0，就是g=0<br />
+这个结论叫KKT条件，总结起来就是:</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-44.png"><img class="aligncenter wp-image-7418" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-44.png" alt="prml7-44" width="124" height="117" /></a></p>
+<p>再返回来看SVM的目标函数构造的拉格朗日函数：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-45.png"><img class="aligncenter wp-image-7419" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-45.png" alt="prml7-45" width="400" height="56" /></a></p>
+<p>根据KKT条件，有 <a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-46.png"><img class="alignnone wp-image-7420" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-46.png" alt="prml7-46" width="300" height="27" /></a>，所以对于<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-47.png"><img class="alignnone wp-image-7421" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-47.png" alt="prml7-47" width="58" height="20" /></a>大于1的那些样本点，其对应<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-48.png"><img class="alignnone wp-image-7422" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-48.png" alt="prml7-48" width="38" height="23" /></a>的都等于0。只有<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-47.png"><img class="alignnone wp-image-7421" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-47.png" alt="prml7-47" width="58" height="20" /></a>等于1的那些样本点对保留下来，这些点就是支持向量。<br />
+这部分大家有什么意见和问题吗？</p>
+<p>============================讨论===============================</p>
+<p>Fire(564122106) 20:01:56<br />
+他为什么要符合KKT条件啊</p>
+<p>网神(66707180) 20:02:33<br />
+因为只有符合KKT条件，才能有解，否则拉格朗日函数没解，我的理解是这样的<br />
+Fire(564122106) 20:03:54<br />
+我上次看到一个版本说只有符合KKT条件    对偶解才和原始解才相同，不知道怎么解释。<br />
+kxkr&lt;lxfkxkr@126.com&gt; 20:04:18<br />
+貌似统计学习方法 附录里面 讲了这个<br />
+Wolf      &lt;wuwja@foxmail.com&gt; 20:04:19<br />
+an为0为什么和kkt条件相关<br />
+kxkr&lt;lxfkxkr@126.com&gt; 20:04:20<br />
+不过忘记了 ，我上次看到一个版本说只有符合KKT条件，对偶解才和原始解相同。<br />
+YYKuaiXian(335015891) 20:04:40<br />
+Ng的讲义就是用这种说法<br />
+苦瓜炒鸡蛋(852383636) 20:04:47<br />
+因为大部分的样本都不是sv</p>
+<p>Wolf      &lt;wuwja@foxmail.com&gt; 20:05:05<br />
+如果两类正好分布在margin上，那么所有的点都是sv<br />
+YYKuaiXian(335015891) 20:05:40</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-60.png"><img class="aligncenter wp-image-7424" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-60.png" alt="prml7-60" width="400" height="225" /></a></p>
+<p>Wolf      &lt;wuwja@foxmail.com&gt; 20:05:54<br />
+只有符合kkt条件，primary问题和due问题的解才是一样的，否则胖子里面的瘦子总比瘦子里面的胖子大。<br />
+kxkr&lt;lxfkxkr@126.com&gt; 20:07:03<br />
+这个比喻 好！<br />
+高老头(1316103319) 20:07:08<br />
+对偶问题和原问题是什么关系，一个问题怎么找到它的对偶问题？<br />
+Wolf      &lt;wuwja@foxmail.com&gt; 20:07:19<br />
+所以kkt条件和sv为什么大部分为0没有直接关系，sv为0个人觉得是分界面的性质决定的，分界面是一个低维流形。<br />
+Fire(564122106) 20:08:38</p>
+<p>我也感觉sv是和样本数据性质有关的<br />
+Wolf      &lt;wuwja@foxmail.com&gt; 20:09:26<br />
+比如在二维的时候，分界面是一个线性函数，导致sv比较少，当投影到高维空间，分界面变成了一个超平面，导致sv变多了，另外，很多样本变成sv也是svm慢的一个原因。<br />
+网神(66707180) 20:09:37<br />
+sv本质上是svm选择的错误函数决定的，在正确一边分类边界以外的样本点，错误为0，在边界以内或在错误一边，错误大于0.<br />
+苦瓜炒鸡蛋(852383636) 20:11:04<br />
+sv确定的超平面 而非是超平面确定的sv<br />
+Wolf      &lt;wuwja@foxmail.com&gt; 20:11:30<br />
+sv确定的超平面 而非是超平面确定的sv，一样的，hinge为什么会导致稀疏？什么样的优化问题才有对偶问题，我也在疑问。对于一些规划问题（线性规划，二次规划）可以将求最大值（最小值）的问题转化为求最小值最大值的问题。</p>
+<p>网神(66707180) 20:12:24<br />
+kkt是从一个侧面解释稀疏，从另一个侧面，也就是错误函数是hinge函数，也可以得出稀疏的性质。svm跟逻辑回归做对比， hinge损失导致稀疏，我们先讲下这吧，svm的错误函数可以这么写:</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-50.png"><img class="alignnone wp-image-7425" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-50.png" alt="prml7-50" width="224" height="78" /></a></p>
+<p>其中<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-51.png"><img class="alignnone wp-image-7426" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-51.png" alt="prml7-51" width="186" height="31" /></a><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-52.png"><img class="alignnone wp-image-7427" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-52.png" alt="prml7-52" width="220" height="20" /></a></p>
+<p>这就是hinge错误函数，图形如图中的蓝色线</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-54.png"><img class="aligncenter wp-image-7428" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-54.png" alt="prml7-54" width="300" height="242" /></a></p>
+<p>而逻辑回归的错误函数是：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-55.png"><img class="alignleft wp-image-7429" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-55.png" alt="prml7-55" width="188" height="59" /></a></p>
+<p>&nbsp;</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-56.png"><img class="alignnone wp-image-7430" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-56.png" alt="prml7-56" width="200" height="27" /></a></p>
+<p>如图中的红色线，红色线跟蓝色线走势相近 ，区别是hinge函数在<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-57.png"><img class="alignnone wp-image-7431" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-57.png" alt="prml7-57" width="226" height="38" /></a>,图中z&gt;1时，错误等于0，也就是yt&gt;1的那些点都不产生损失. 这个性质可以带来稀疏的解。</p>
+<p>========================讨论结束===============================</p>
+<p>我接着讲了，后面还有挺多内容，刚才说的都是两类训练样本可以完全分开的情况，比如下面这个图，采用了高斯核函数的支持向量机，可以很清楚的看到决策边界，支持向量：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-61.png"><img class="aligncenter wp-image-7433" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-61.png" alt="prml7-61" width="400" height="300" /></a></p>
+<p>但实际中两类数据的分布会有重叠的情况，另外也有噪音的存在，导致两类训练数据如果一定要完全分开，泛化性能会很差。因此svm引入一些机制，允许训练时一些样本被误分类.我们要修改目标函数，允许样本点位于错误的一边，但会增加一个惩罚项，其大小随着数据点到边界的距离而增大这个惩罚项叫松弛变量, slack variables，记为 <a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-62.png"><img class="alignnone wp-image-7434" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-62.png" alt="prml7-62" width="25" height="26" /></a>，并且大于等于0.其中下标n=1,..,N，也就是每个训练样本对应一个<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-62.png"><img class="alignnone wp-image-7434" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-62.png" alt="prml7-62" width="25" height="26" /></a>，对于位于正确的margin边界上或以内的数据点，其松弛变量 <a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-65.png"><img class="alignnone wp-image-7435" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-65.png" alt="prml7-65" width="47" height="21" /></a>，其他样本点<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-68.png"><img class="alignnone wp-image-7436" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-68.png" alt="prml7-68" width="95" height="20" /></a><br />
+这样，如果样本点位于决策边界y(x)=0上, <a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-69.png"><img class="alignnone wp-image-7437" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-69.png" alt="prml7-69" width="48" height="21" /></a><br />
+如果被错分，位于错误的一边, <a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-70.png"><img class="alignnone wp-image-7438" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-70.png" alt="prml7-70" width="34" height="20" /></a> ，因此目标函数的限制条件由<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-71.png"><img class="alignnone wp-image-7439" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-71.png" alt="prml7-71" width="136" height="19" /></a>修改为<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-73.png"><img class="alignnone wp-image-7440" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-73.png" alt="prml7-73" width="130" height="20" /></a>，目标函数修从最小化<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-751.png"><img class="alignnone wp-image-7441" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-751.png" alt="prml7-75" width="46" height="36" /></a>改为最小化 <a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-76.png"><img class="alignnone wp-image-7442" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-76.png" alt="prml7-76" width="100" height="39" /></a>，其中参数C用于控制松弛变量和margin之间的trade-off，因为对于错分的点，有<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-77.png"><img class="alignnone wp-image-7443" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-77.png" alt="prml7-77" width="45" height="25" /></a> ，所以<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-771.png"><img class="alignnone wp-image-7444" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-771.png" alt="prml7-77" width="45" height="25" /></a>是错分样本数的一个上限upper bound ，所以C相当于一个正则稀疏，控制着最小错分数和模型复杂度的trade-off.<br />
+SVM在实际使用中，需要调整的参数很少，C是其中之一。<br />
+看这个目标函数，可以看到，C越大，松弛变量就越倍惩罚，就会训练出越复杂的模型，来保证尽量少的样本被错分。当C趋于无穷时，每个样本点就会被模型正确分类。<br />
+我们现在求解这个新的目标函数，加上约束条件，拉格朗日函数如下：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-80.png"><img class="aligncenter wp-image-7445" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-80.png" alt="prml7-80" width="400" height="46" /></a><br />
+其中<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-81.png"><img class="alignnone wp-image-7446" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-81.png" alt="prml7-81" width="22" height="24" /></a>和<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-82.png"><img class="alignnone wp-image-7447" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-82.png" alt="prml7-82" width="24" height="24" /></a>是拉式乘子，分别对w, b和{<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-83.png"><img class="alignnone wp-image-7448" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-83.png" alt="prml7-83" width="15" height="21" /></a>}求导，令导数等于0，得到w, b,<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-83.png"><img class="alignnone wp-image-7448" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-83.png" alt="prml7-83" width="18" height="25" /></a>的表示，带入L(w,b,a)，消去这些变量，得到以拉格朗日乘子为变量的对偶函数：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-84.png"><img class="aligncenter wp-image-7449" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-84.png" alt="prml7-84" width="350" height="62" /></a></p>
+<p>新的对偶函数跟前面的对偶函数形式相同，只有约束条件有不同。 这就是正则化的SVM。<br />
+接下来提一下对偶函数的解法，对偶函数都是二次函数，而且是凸函数，这是svm的优势，具有全局最优解，该二次规划问题的求解难度是参数<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-81.png"><img class="alignnone wp-image-7446" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-81.png" alt="prml7-81" width="22" height="24" /></a>的数量很大，等于训练样本的数量 。书上回顾了一些方法，介绍不详细，主要思想是chunking，我总结一下，总结的不一定准确:<br />
+1.去掉<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-90.png"><img class="alignnone wp-image-7451" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-90.png" alt="prml7-90" width="22" height="28" /></a>=0对应的核函数矩阵的行和列，将二次优化问题划分成多个小的优化问题；<br />
+2.按固定大小划分成小的优化问题。<br />
+3.SVM中最流行的是SMO, sequentialminimal optimization。每次只考虑两个拉格朗日乘子.<br />
+SVM中维度灾难问题：核函数相当于高维(甚至无线维)的特征空间的内积，避免了显示的高维空间运算，貌似是避免了维度过高引起的维度灾难问题。 但实际上并没有避免。书上举了个例子 ，看这个二维多项式核函数：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-91.png"><img class="aligncenter wp-image-7452" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-91.png" alt="prml7-91" width="481" height="88" /></a></p>
+<p>这个核函数表示一个六维空间的内积。<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-92.png"><img class="alignnone wp-image-7453" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-92.png" alt="prml7-92" width="46" height="21" /></a>是从输入空间到六维空间的映射.映射后，六个维度每个维度的值是由固定参数的，也就是映射后，六维特征是有固定的形式。因此，原二维数据x都被限制到了六维空间的一个nonlinear manifold中。这个manifold之外就没有数据.<br />
+网神(66707180) 20:48:59<br />
+大家有什么问题吗？<br />
+高老头(1316103319) 20:49:58<br />
+manifold是什么意思？<br />
+网神(66707180) 20:50:26<br />
+我的理解是空间里一个特定的区域，原空间的数据，如果采样不够均匀，映射后的空间，仍然不会均匀，不会被打散到空间的各个角落，而只会聚集在某个区域。</p>
+<p>接下来讲下SVM用于回归问题.</p>
+<p>在线性回归中，一个正则化错误函数如下：<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-93.png"><img class="alignnone wp-image-7454" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-93.png" alt="prml7-93" width="169" height="47" /></a><br />
+为了获得稀疏解，将前面的二次错误函数用<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-94.png"><img class="alignnone wp-image-7455" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-94.png" alt="prml7-94" width="90" height="14" /></a>错误函数代替</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-95.png"><img class="aligncenter wp-image-7456" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-95.png" alt="prml7-95" width="347" height="44" /></a></p>
+<p>这个错误函数在y(x)和t的差小于时等于0.错误函数变为:</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-97.png"><img class="aligncenter wp-image-7457" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-97.png" alt="prml7-97" width="234" height="58" /></a></p>
+<p>我们再引入松弛变量，对每个样本，有两个松弛变量，分别对应 <a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-98.png"><img class="alignnone wp-image-7458" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-98.png" alt="prml7-98" width="180" height="21" /></a><br />
+如图:</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-99.png"><img class="aligncenter wp-image-7459" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-99.png" alt="prml7-99" width="400" height="279" /></a></p>
+<p>没引入松弛变量前，样本值t预测正确的条件是<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-100.png"><img class="alignnone wp-image-7461" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-100.png" alt="prml7-100" width="120" height="17" /></a><br />
+引入松弛变量后，变为:<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-101.png"><img class="alignnone wp-image-7462" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-101.png" alt="prml7-101" width="168" height="49" /></a><br />
+错误函数变为：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-102.png"><img class="alignnone wp-image-7463" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-102.png" alt="prml7-102" width="216" height="63" /></a></p>
+<p>加上约束条件<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-103.png"><img class="alignnone wp-image-7464" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-103.png" alt="prml7-103" width="99" height="21" /></a>，就可以写出拉格朗日函数<br />
+下面就跟前面的分类一样了.<br />
+关于统计学习理论，书上简单提了一下PAC(probably approximately correct)和VC维，简单总结一下书上的内容：PAC的目的是理解多大的数据集可以给出好的泛化性，以及研究损失的上限。PAC里的一个关键概念是VC维，用于提供一个函数空间复杂度的度量，将PAC理论推广到了无限大的函数空间上。</p>
+<p>============================讨论===============================</p>
+<p>Fire(564122106) 21:05:56<br />
+有哪位大神想过对svm提速的啊，svm在非线性大数据的情况下，速度还是比较慢的啊<br />
+网神(66707180) 21:07:36<br />
+svm分布式训练的方案研究过吗？<br />
+Fire(564122106) 21:09:29<br />
+没有，不过将来肯定要研究的！现在只是单机，现在有在单机的情况下，分布式进入内存的方案，有兴趣的可以看下：Selective Block Minimization for Faster Convergence of Limited Memory Large_Scale Linear Models 这个有介绍，我共享下啊。<br />
+苦瓜炒鸡蛋(852383636) 21:11:05<br />
+韩家炜的一个学生 提出了一个  仿照层次聚类的思想  改进的svm 速度好像挺快的</p>
+<p>Making SVMs Scalable to Large Data Sets using Hierarchical Cluster Indexing    这个就是那篇论文的题目  发在  Data Mining and Knowledge Discovery</p>
+<p>Fire(564122106) 21:16:29<br />
+哦 我看下，我现在看的都是台湾林的<br />
+Fire 分享文件 21:14:33<br />
+&#8220;Selective Block Minimization for Faster Convergence of Limited Memory Large_Scale Linear Models.pdf&#8221; 下载<br />
+苦瓜炒鸡蛋(852383636) 21:17:41<br />
+有那个大神 在用svm做聚类，Support Vector Clustering   这篇能做  就是时间复杂度太高了<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-105.png"><img class="alignnone wp-image-7465" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-105.png" alt="prml7-105" width="47" height="28" /></a></p>
+<p>========================讨论结束===============================</p>
+<p>网神(66707180) 8:54:01<br />
+咱们开始讲RVM，前面讲了SVM，SVM有一些缺点，比如输出是decision而不是概率分布，SVM是为二元分类设计的，多类别分类不太实用，虽然有不少策略可以用于多元分类，但也各有问题参数C需要人工选择，通过多次训练来调整，感觉实际应用中这些缺点不算什么大缺点，但是RVM可以避免这些缺点。<br />
+RVM是一种贝叶斯方式的稀疏核方法，可以用于回归和分类，除了避免SVM的主要缺点，还可以更稀疏，而泛化能力不会降低 。先看RVM回归，RVM回归的模型跟前面第三章形式相同，属于线性模型，但是参数w的先验分布有所不同。<br />
+这个不同导致了稀疏性，等下再看这个不同<br />
+线性回归模型如下：<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-110.png"><img class="alignnone wp-image-7467" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-110.png" alt="prml7-110" width="252" height="30" /></a><br />
+其中<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-111.png"><img class="alignnone wp-image-7468" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-111.png" alt="prml7-111" width="45" height="22" /></a>，是噪音的精度precision<br />
+均值y(x)定义为：<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-112.png"><img class="alignnone wp-image-7469" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-112.png" alt="prml7-112" width="200" height="46" /></a><br />
+RVM作为一种稀疏核方法，它是如何跟核函数搭上边的，就是基函数 <a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-113.png"><img class="alignnone wp-image-7470" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-113.png" alt="prml7-113" width="45" height="22" /></a>采用了核函数的形式<br />
+每个核与一个训练样本对应，也就是：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-115.png"><img class="aligncenter wp-image-7471" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-115.png" alt="prml7-115" width="233" height="63" /></a><br />
+这个形式跟SVM用于回归的模型形式是相同的，看前面的式子(7.64)最后求得的SVM回归模型是：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-116.png"><img class="aligncenter wp-image-7472" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-116.png" alt="prml7-116" width="265" height="56" /></a></p>
+<p>可以看到，RVM回归和SVM回归模型相同，只是前面的系数从<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-117.png"><img class="alignnone wp-image-7473" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-117.png" alt="prml7-117" width="87" height="23" /></a>，接下来分析如何确定RVM模型中的参数w，下面的分析过程跟任何基函数都适用，不限于核函数。<br />
+确定w的过程可以总结为：先假设w的先验分布，一般是高斯分布；然后给出似然函数，先验跟似然函数相乘的到w的后验分布，最大化后验分布，得到参数w 。<br />
+先看w的先验，w的先验是以0为均值，以<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-118.png"><img class="alignnone wp-image-7474" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-118.png" alt="prml7-118" width="18" height="18" /></a>为精度的高斯分布，但是跟第三章线性回归的区别是，RVM为每个<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-119.png"><img class="alignnone wp-image-7475" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-119.png" alt="prml7-119" width="29" height="23" /></a>分别引入一个精度<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-120.png"><img class="alignnone wp-image-7476" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-120.png" alt="prml7-120" width="25" height="20" /></a>，而不是<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-119.png"><img class="alignnone wp-image-7475" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-119.png" alt="prml7-119" width="29" height="23" /></a>所有用一个的共享的精度<br />
+所以w的先验是：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-121.png"><img class="aligncenter wp-image-7478" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-121.png" alt="prml7-121" width="200" height="44" /></a></p>
+<p>对于线性回归模型，根据这个先验和似然函数可以得到其后验分布：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-122.png"><img class="aligncenter wp-image-7479" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-122.png" alt="prml7-122" width="261" height="29" /></a><br />
+均值和方差分别是：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-130.png"><img class="aligncenter wp-image-7480" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-130.png" alt="prml7-130" width="200" height="58" /></a></p>
+<p>这是第三章的结论，推导过程就不说了<br />
+其中<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-132.png"><img class="alignnone wp-image-7481" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-132.png" alt="prml7-132" width="22" height="20" /></a>是NxM的矩阵，<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-134.png"><img class="alignnone wp-image-7482" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-134.png" alt="prml7-134" width="100" height="25" /></a>，A是对角矩阵<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-135.png"><img class="alignnone wp-image-7483" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-135.png" alt="prml7-135" width="100" height="21" /></a><br />
+对于RVM，因为基函数是核函数，所以<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-136.png"><img class="alignnone wp-image-7484" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-136.png" alt="prml7-136" width="49" height="20" /></a>，K是NxN维的核矩阵，其元素是<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-137.png"><img class="alignnone wp-image-7485" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-137.png" alt="prml7-137" width="71" height="25" /></a><br />
+接下来需要确定超参数<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-1381.png"><img class="alignnone wp-image-7487" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-1381.png" alt="prml7-138" width="25" height="20" /></a>和<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-139.png"><img class="alignnone wp-image-7488" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-139.png" alt="prml7-139" width="24" height="22" /></a>。一个是w先验的精度，一个是线性模型p(t|x,w)的精度<br />
+确定的方法叫做evidence approximation方法，又叫type-2 maximum likelihood，这在第三章有详细介绍，这里简单说一下思路：<br />
+该方法基于一个假设，即两个参数是的后验分布<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-140.png"><img class="alignnone wp-image-7489" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-140.png" alt="prml7-140" width="67" height="16" /></a>是sharply peaked的 ，其中心值是<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-141.png"><img class="alignnone wp-image-7490" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-141.png" alt="prml7-141" width="56" height="19" /></a> ，根据贝叶斯定理，<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-145.png"><img class="alignnone wp-image-7491" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-145.png" alt="prml7-145" width="200" height="22" /></a>，先验<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-146.png"><img class="alignnone wp-image-7492" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-146.png" alt="prml7-146" width="54" height="17" /></a>是relatively flat的，所以只要看<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-147.png"><img class="alignnone wp-image-7493" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-147.png" alt="prml7-147" width="60" height="18" /></a>，<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-141.png"><img class="alignnone wp-image-7490" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-141.png" alt="prml7-141" width="56" height="19" /></a>就是使的<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-147.png"><img class="alignnone wp-image-7493" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-147.png" alt="prml7-147" width="60" height="18" /></a>最大的值。<br />
+<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-147.png"><img class="alignnone wp-image-7493" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-147.png" alt="prml7-147" width="60" height="18" /></a>是对w进行积分的边界分布：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-149.png"><img class="aligncenter wp-image-7494" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-149.png" alt="prml7-149" width="300" height="44" /></a></p>
+<p>这个分布是两个高斯分布的卷积，其log最大似然函数是:</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-150.png"><img class="aligncenter wp-image-7495" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-150.png" alt="prml7-150" width="400" height="61" /></a></p>
+<p>其中C是NxN矩阵，<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-151.png"><img class="alignnone wp-image-7496" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-151.png" alt="prml7-151" width="120" height="20" /></a><br />
+<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-153.png"><img class="alignnone wp-image-7497" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-153.png" alt="prml7-153" width="184" height="22" /></a>这一步，以及C的值，是第三章的内容，大家看前面吧。<br />
+我们可以通过最大化似然函数，求得<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-141.png"><img class="alignnone wp-image-7490" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-141.png" alt="prml7-141" width="56" height="19" /></a>，书上提到了两种方法，一种是EM，一种是直接求导迭代。前者第九章尼采已经讲了，这里看下后者。<br />
+首先我们分别求这个log似然函数对所有参数<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-1381.png"><img class="alignnone wp-image-7487" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-1381.png" alt="prml7-138" width="25" height="20" /></a>和<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-139.png"><img class="alignnone wp-image-7488" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-139.png" alt="prml7-139" width="25" height="23" /></a>求偏导，并令偏导等于0，求得参数的表达式：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-155.png"><img class="aligncenter wp-image-7498" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-155.png" alt="prml7-155" width="352" height="148" /></a></p>
+<p>其中<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-159.png"><img class="alignnone wp-image-7499" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-159.png" alt="prml7-159" width="30" height="15" /></a>是w的后验均值m的第i个元素,</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-160.png"><img class="alignnone wp-image-7500" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-160.png" alt="prml7-160" width="20" height="20" /></a>是度量<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-161.png"><img class="alignnone wp-image-7503" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-161.png" alt="prml7-161" width="25" height="22" /></a>被样本集合影响的程度<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-162.png"><img class="alignnone wp-image-7501" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-162.png" alt="prml7-162" width="120" height="21" /></a><br />
+<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-163.png"><img class="alignnone wp-image-7502" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-163.png" alt="prml7-163" width="30" height="19" /></a>是w的后验方差<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-164.png"><img class="alignnone wp-image-7504" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-164.png" alt="prml7-164" width="20" height="23" /></a>的对角线上的元素。<br />
+求<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-141.png"><img class="alignnone wp-image-7490" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-141.png" alt="prml7-141" width="56" height="19" /></a>是一个迭代的过程：<br />
+先选一个<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-141.png"><img class="alignnone wp-image-7490" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-141.png" alt="prml7-141" width="56" height="19" /></a>的初值，然后用下面这个公式得到后验的均值和方差：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-171.png"><img class="aligncenter wp-image-7506" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-171.png" alt="prml7-171" width="239" height="70" /></a><br />
+然后再同这个这个公式重新计算<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-141.png"><img class="alignnone wp-image-7490" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-141.png" alt="prml7-141" width="76" height="25" /></a></p>
+<p>&nbsp;</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-175.png"><img class="aligncenter wp-image-7507" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-175.png" alt="prml7-175" width="300" height="126" /></a></p>
+<p>这样迭代计算，一直到到达一个人为确定的收敛条件，这就是确定<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-141.png"><img class="alignnone wp-image-7490" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-141.png" alt="prml7-141" width="56" height="19" /></a>的过程。<br />
+通过计算，最后的结果中，大部分参数<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-177.png"><img class="alignnone wp-image-7508" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-177.png" alt="prml7-177" width="35" height="24" /></a>都是非常大甚至无穷大的值，从而根据w后验均值和方差的公式，其均值和方差都等于0，这样<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-178.png"><img class="alignnone wp-image-7509" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-178.png" alt="prml7-178" width="28" height="23" /></a>的值就是0，其对应的基函数就不起作用了 ，从而达到了稀疏的目的。这就是RVM稀疏的原因。<br />
+需要实际推导一下整个过程，才能明白为什么大部分<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-177.png"><img class="alignnone wp-image-7508" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-177.png" alt="prml7-177" width="35" height="24" /></a>都趋于无穷大。那些<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-1781.png"><img class="alignnone wp-image-7510" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-1781.png" alt="prml7-178" width="28" height="23" /></a>不为0的<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-180.png"><img class="alignnone wp-image-7511" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-180.png" alt="prml7-180" width="25" height="22" /></a>叫做relevance vectors，相当于SVM中的支持向量。需要强调，这种获得稀疏性的机制可以用于任何基函数的线性组合中。这种获得稀疏性的机制似乎非常普遍的。<br />
+求得超参数，就可以通过下面式子得到新样本的分布：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-181.png"><img class="aligncenter wp-image-7512" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-181.png" alt="prml7-181" width="400" height="50" /></a></p>
+<p>下面看一个图示：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-182.png"><img class="aligncenter wp-image-7513" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-182.png" alt="prml7-182" width="350" height="255" /></a></p>
+<p>可以看到，其相关向量的数量比SVM少了很多，跟SVM相比的缺点是，RVM的优化函数不是凸函数，训练时间比SVM长，书上接下来专门对RVM的稀疏性进行分析，并且介绍了一种更快的求<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-141.png"><img class="alignnone wp-image-7490" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-141.png" alt="prml7-141" width="56" height="19" /></a>的方法：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-185.png"><img class="wp-image-7514 aligncenter" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-185.png" alt="prml7-185" width="489" height="273" /></a></p>
+<p>我接着讲RVM分类，我们看逻辑回归分类的模型:</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-189.png"><img class="aligncenter wp-image-7516" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-189.png" alt="prml7-189" width="233" height="32" /></a></p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-190.png"><img class="alignnone wp-image-7517" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-190.png" alt="prml7-190" width="30" height="24" /></a>是sigmoid函数，我们引入w的先验分布，跟RVM回归相同，每个<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-191.png"><img class="alignnone wp-image-7518" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-191.png" alt="prml7-191" width="25" height="21" /></a>对应一个不同的精度<br />
+这种先验叫做ARD先验，跟RVM回归相比，在求<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-147.png"><img class="alignnone wp-image-7493" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-147.png" alt="prml7-147" width="60" height="18" /></a>的分布时，不再对w进行积分。<br />
+我们看在RVM回归时，是这么求<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-147.png"><img class="alignnone wp-image-7493" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-147.png" alt="prml7-147" width="60" height="18" /></a>的：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-149.png"><img class="aligncenter wp-image-7494" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-149.png" alt="prml7-149" width="300" height="44" /></a></p>
+<p>从而得到：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-150.png"><img class="aligncenter wp-image-7495" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-150.png" alt="prml7-150" width="400" height="61" /></a></p>
+<p>在RVM分类时，因为涉用到sigmod函数,计算积分很难，具体的为什么难，在第四章4.5节有更多的介绍，我们这里用Laplace approximation来求<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-147.png"><img class="alignnone wp-image-7493" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-147.png" alt="prml7-147" width="60" height="18" /></a>的近似高斯分布，Laplace approximation我叫拉普拉斯近似，后面都写中文了。<br />
+先看下拉普拉斯近似的原理，拉普拉斯近似的目的是找到连续变量的分布函数的高斯近似分布，也就是用高斯分布 近似模拟一个不是高斯分布的分布。<br />
+假设一个单变量z，其分布是<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-200.png"><img class="alignnone wp-image-7519" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-200.png" alt="prml7-200" width="89" height="39" /></a>，分母上的Z是归一化系数<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-201.png"><img class="alignnone wp-image-7520" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-201.png" alt="prml7-201" width="79" height="24" /></a>，目标是找到一个可以近似p(z)的高斯分布q(z)。<br />
+第一步是先找到p(z)的mode(众数) ，众数mode是一个统计学的概念，可以代表一组数据，不受极端数据的影响，比如可以选择中位数做一组实数的众数，对于高斯分布，众数就是其峰值。一组数据可能没有众数也可能有几个众数。<br />
+拉普拉斯分布第一步要找到p(z)的众数<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-203.png"><img class="alignnone wp-image-7521" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-203.png" alt="prml7-203" width="23" height="21" /></a>，这是p(z)的一个极大值点，可能是局部的，因为p(z)可能有多个局部极大值。在该点，一阶导数等于0，<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-205.png"><img class="alignnone wp-image-7523" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-205.png" alt="prml7-205" width="73" height="26" /></a>，后面再说怎么找<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-203.png"><img class="alignnone wp-image-7521" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-203.png" alt="prml7-203" width="23" height="21" /></a>。找到<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-203.png"><img class="alignnone wp-image-7521" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-203.png" alt="prml7-203" width="23" height="21" /></a>后，用<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-208.png"><img class="alignnone wp-image-7524" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-208.png" alt="prml7-208" width="47" height="22" /></a>的泰勒展开来构造一个二次函数：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-210.png"><img class="aligncenter wp-image-7525" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-210.png" alt="prml7-210" width="246" height="47" /></a></p>
+<p>其中A是f(z)在<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-203.png"><img class="alignnone wp-image-7521" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-203.png" alt="prml7-203" width="23" height="21" /></a>的二阶导数再取负数。上式中，没有一阶导数部分，因为<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-203.png"><img class="alignnone wp-image-7521" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-203.png" alt="prml7-203" width="23" height="21" /></a>是局部极大值，一阶导数为0，把上式两边取指数，得到：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-221.png"><img class="wp-image-7526 aligncenter" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-221.png" alt="prml7-221" width="242" height="43" /></a></p>
+<p>把<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-224.png"><img class="alignnone wp-image-7527" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-224.png" alt="prml7-224" width="30" height="26" /></a>换成归一化系数，得到近似的高斯分布：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-225.png"><img class="aligncenter wp-image-7528" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-225.png" alt="prml7-225" width="258" height="49" /></a></p>
+<p>拉普拉斯分布得到的近似高斯分布的一个图示：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-226.png"><img class="aligncenter wp-image-7529" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-226.png" alt="prml7-226" width="460" height="199" /></a></p>
+<p>注意，高斯近似存在的条件是，原分布的二阶导数取负数、也就是高斯近似的精确度A&gt;0，也就是驻点<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-203.png"><img class="alignnone wp-image-7521" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-203.png" alt="prml7-203" width="23" height="21" /></a>必须是局部极大值，f(x)在改点出的导数为负数。当z是一个M维向量时，近似方法跟单变量的不同只是二阶导数的负数A变成了MxM维的海森矩阵的负数。<br />
+多维变量近似后的高斯分布如下：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-250.png"><img class="aligncenter wp-image-7530" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-250.png" alt="prml7-250" width="400" height="58" /></a></p>
+<p>A是海森矩阵的负数.mode众数<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-203.png"><img class="alignnone wp-image-7521" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-203.png" alt="prml7-203" width="23" height="21" /></a>一般是通过数值优化算法来寻找的，不讲了。<br />
+再回来看用拉普拉斯分布来近似RVM分类中的<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-147.png"><img class="alignnone wp-image-7493" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-147.png" alt="prml7-147" width="60" height="18" /></a>：<br />
+刚才拉普拉斯分布忘了说一个公式，就是求得q(z)后，确定<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-200.png"><img class="alignnone wp-image-7519" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-200.png" alt="prml7-200" width="89" height="39" /></a>中的分母，也就是归一化系数的公式：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-252.png"><img class="aligncenter wp-image-7531" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-252.png" alt="prml7-252" width="350" height="127" /></a></p>
+<p>这个一会有用。先看RVM中对w的后验分布的近似，先求后验分布的mode众数，通过最大化log后验分布<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-253.png"><img class="alignnone wp-image-7532" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-253.png" alt="prml7-253" width="95" height="22" /></a>来求mode.先写出这个log后验分布：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-255.png"><img class="aligncenter wp-image-7533" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-255.png" alt="prml7-255" width="461" height="82" /></a></p>
+<p>其中<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-135.png"><img class="alignnone wp-image-7483" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-135.png" alt="prml7-135" width="98" height="20" /></a><br />
+最后求得的高斯近似的均值(也就是原分布的mode)和精度如下：</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-256.png"><img class="aligncenter wp-image-7534" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-256.png" alt="prml7-256" width="227" height="66" /></a></p>
+<p>现在用这个w后验高斯近似来求边界似然<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-258.png"><img class="alignnone wp-image-7535" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-258.png" alt="prml7-258" width="276" height="30" /></a><br />
+根据前面那个求归一化系数Z的公式Z=<a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-259.png"><img class="alignnone wp-image-7536" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-259.png" alt="prml7-259" width="94" height="41" /></a><br />
+有:</p>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-260.png"><img class="aligncenter wp-image-7537" src="http://www.52nlp.cn/wp-content/uploads/2015/01/prml7-260.png" alt="prml7-260" width="350" height="75" /></a></p>
+<p>RVM这部分大量基于第二章高斯分布和第三、四两章，公式推导很多，需要前后关联才能看明白。</p>
+<p>注：PRML读书会系列文章由 <a href="http://weibo.com/dmalgorithms">@Nietzsche_复杂网络机器学习</a> 同学授权发布，转载请注明原作者和相关的主讲人，谢谢。</p>
+<p>PRML读书会讲稿PDF版本以及更多资源下载地址：<a href="http://vdisk.weibo.com/u/1841149974">http://vdisk.weibo.com/u/1841149974</a></p>
+<p>本文链接地址：<a href="http://www.52nlp.cn/prml读书会第七章-sparse-kernel-machines">http://www.52nlp.cn/prml读书会第七章-sparse-kernel-machines</a></p>
+<div class='yarpp-related'>
+<p>相关文章:<ol>
+<li><a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%85%ad%e7%ab%a0-kernel-methods" rel="bookmark" title="PRML读书会第六章   Kernel Methods">PRML读书会第六章   Kernel Methods </a></li>
+<li><a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%8d%81%e5%9b%9b%e7%ab%a0-combining-models" rel="bookmark" title="PRML读书会第十四章 Combining Models">PRML读书会第十四章 Combining Models </a></li>
+<li><a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e4%ba%94%e7%ab%a0-neural-networks" rel="bookmark" title="PRML读书会第五章  Neural Networks">PRML读书会第五章  Neural Networks </a></li>
+<li><a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%85%ab%e7%ab%a0-graphical-models" rel="bookmark" title="PRML读书会第八章  Graphical Models">PRML读书会第八章  Graphical Models </a></li>
+<li><a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%9b%9b%e7%ab%a0-linear-models-for-classification" rel="bookmark" title="PRML读书会第四章 Linear Models for Classification">PRML读书会第四章 Linear Models for Classification </a></li>
+<li><a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e4%b8%80%e7%ab%a0-introduction" rel="bookmark" title="PRML读书会第一章  Introduction">PRML读书会第一章  Introduction </a></li>
+<li><a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%8d%81%e7%ab%a0-approximate-inference" rel="bookmark" title="PRML读书会第十章  Approximate Inference">PRML读书会第十章  Approximate Inference </a></li>
+<li><a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%8d%81%e4%ba%8c%e7%ab%a0-continuous-latent-variables" rel="bookmark" title="PRML读书会第十二章 Continuous Latent Variables">PRML读书会第十二章 Continuous Latent Variables </a></li>
+<li><a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%8d%81%e4%b8%89%e7%ab%a0sequential-data" rel="bookmark" title="PRML读书会第十三章 Sequential Data">PRML读书会第十三章 Sequential Data </a></li>
+<li><a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e5%89%8d%e8%a8%80" rel="bookmark" title="PRML读书会前言">PRML读书会前言 </a></li>
+</ol></p>
+</div>
+											</div><!-- .entry-content -->
+
+
+					<div class="entry-utility">
+						此条目发表在 <a href="http://www.52nlp.cn/category/pattern-recognition-and-machine-learning-2" rel="category tag">PRML</a>, <a href="http://www.52nlp.cn/category/%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0" rel="category tag">机器学习</a> 分类目录，贴了 <a href="http://www.52nlp.cn/tag/kernel" rel="tag">kernel</a>, <a href="http://www.52nlp.cn/tag/kernel-methods" rel="tag">kernel methods</a>, <a href="http://www.52nlp.cn/tag/kkt" rel="tag">KKT</a>, <a href="http://www.52nlp.cn/tag/kkt%e6%9d%a1%e4%bb%b6" rel="tag">KKT条件</a>, <a href="http://www.52nlp.cn/tag/pattern-recognition-and-machine-learning" rel="tag">Pattern Recognition And Machine Learning</a>, <a href="http://www.52nlp.cn/tag/prml" rel="tag">PRML</a>, <a href="http://www.52nlp.cn/tag/prml%e8%af%bb%e4%b9%a6%e4%bc%9a" rel="tag">PRML读书会</a>, <a href="http://www.52nlp.cn/tag/revelance-vector-machine" rel="tag">revelance vector machine</a>, <a href="http://www.52nlp.cn/tag/rvm" rel="tag">RVM</a>, <a href="http://www.52nlp.cn/tag/smo" rel="tag">SMO</a>, <a href="http://www.52nlp.cn/tag/sparse-kernel-machines" rel="tag">Sparse Kernel Machines</a>, <a href="http://www.52nlp.cn/tag/svm%ef%bc%8c-%e6%94%af%e6%8c%81%e5%90%91%e9%87%8f%e6%9c%ba" rel="tag">SVM， 支持向量机</a>, <a href="http://www.52nlp.cn/tag/%e4%ba%8c%e5%85%83%e5%88%86%e7%b1%bb" rel="tag">二元分类</a>, <a href="http://www.52nlp.cn/tag/%e5%86%b3%e7%ad%96%e8%be%b9%e7%95%8c" rel="tag">决策边界</a>, <a href="http://www.52nlp.cn/tag/%e5%88%86%e7%b1%bb" rel="tag">分类</a>, <a href="http://www.52nlp.cn/tag/%e6%8b%89%e6%a0%bc%e6%9c%97%e6%97%a5" rel="tag">拉格朗日</a>, <a href="http://www.52nlp.cn/tag/%e6%8b%89%e6%a0%bc%e6%9c%97%e6%97%a5%e5%87%bd%e6%95%b0" rel="tag">拉格朗日函数</a>, <a href="http://www.52nlp.cn/tag/%e6%8b%89%e6%a0%bc%e6%9c%97%e6%97%a5%e6%96%b9%e6%b3%95" rel="tag">拉格朗日方法</a>, <a href="http://www.52nlp.cn/tag/%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0" rel="tag">机器学习</a>, <a href="http://www.52nlp.cn/tag/%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0%e4%b9%a6%e7%b1%8d" rel="tag">机器学习书籍</a>, <a href="http://www.52nlp.cn/tag/%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0%e8%af%bb%e4%b9%a6%e4%bc%9a" rel="tag">机器学习读书会</a>, <a href="http://www.52nlp.cn/tag/%e9%80%bb%e8%be%91%e5%9b%9e%e5%bd%92" rel="tag">逻辑回归</a> 标签。将<a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e4%b8%83%e7%ab%a0-sparse-kernel-machines" title="链向 PRML读书会第七章 Sparse Kernel Machines 的固定链接" rel="bookmark">固定链接</a>加入收藏夹。											</div><!-- .entry-utility -->
+				</div><!-- #post-## -->
+
+				<div id="nav-below" class="navigation">
+					<div class="nav-previous"><a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%85%ad%e7%ab%a0-kernel-methods" rel="prev"><span class="meta-nav">&larr;</span> PRML读书会第六章   Kernel Methods</a></div>
+					<div class="nav-next"><a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%85%ab%e7%ab%a0-graphical-models" rel="next">PRML读书会第八章  Graphical Models <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-below -->
+
+				
+			<div id="comments">
+
+
+
+
+								<div id="respond" class="comment-respond">
+				<h3 id="reply-title" class="comment-reply-title">发表评论 <small><a rel="nofollow" id="cancel-comment-reply-link" href="/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e4%b8%83%e7%ab%a0-sparse-kernel-machines#respond" style="display:none;">取消回复</a></small></h3>
+									<form action="http://www.52nlp.cn/wp-comments-post.php" method="post" id="commentform" class="comment-form">
+																			<p class="comment-notes">电子邮件地址不会被公开。 必填项已用<span class="required">*</span>标注</p>							<p class="comment-form-author"><label for="author">姓名 <span class="required">*</span></label> <input id="author" name="author" type="text" value="" size="30" aria-required='true' /></p>
+<p class="comment-form-email"><label for="email">电子邮件 <span class="required">*</span></label> <input id="email" name="email" type="text" value="" size="30" aria-required='true' /></p>
+<p class="comment-form-url"><label for="url">站点</label> <input id="url" name="url" type="text" value="" size="30" /></p>
+												<p class="comment-form-comment"><label for="comment">评论</label> <textarea id="comment" name="comment" cols="45" rows="8" aria-required="true"></textarea></p>						<p class="form-allowed-tags">您可以使用这些<abbr title="HyperText Markup Language">HTML</abbr>标签和属性： <code>&lt;a href=&quot;&quot; title=&quot;&quot;&gt; &lt;abbr title=&quot;&quot;&gt; &lt;acronym title=&quot;&quot;&gt; &lt;b&gt; &lt;blockquote cite=&quot;&quot;&gt; &lt;cite&gt; &lt;code&gt; &lt;del datetime=&quot;&quot;&gt; &lt;em&gt; &lt;i&gt; &lt;q cite=&quot;&quot;&gt; &lt;strike&gt; &lt;strong&gt; </code></p>						<p class="form-submit">
+							<input name="submit" type="submit" id="submit" value="发表评论" />
+							<input type='hidden' name='comment_post_ID' value='7371' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+						</p>
+						<p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="74744db5b7" /></p><p style="display: none;"><input type="hidden" id="ak_js" name="ak_js" value="189"/></p><p><input type="hidden" id="comment_reply_ID" name="comment_reply_ID" value="0" /><input type="hidden" id="comment_reply_dp" name="comment_reply_dp" value="0" /></p><div id="cancel_reply" style="display:none;"><a href="javascript:void(0)" onclick="movecfm(null,0,1,null);" style="color:red;">点击取消回复</a></div><script type="text/javascript">
+/* <![CDATA[ */
+var commentformid = "commentform";
+var USERINFO = false;
+var atreply = "none";
+/* ]]> */
+</script>
+<script type="text/javascript" src="http://www.52nlp.cn/wp-content/plugins/wp-thread-comment/wp-thread-comment.js.php?jsver=common"></script>
+					</form>
+							</div><!-- #respond -->
+			
+</div><!-- #comments -->
+
+
+			</div><!-- #content -->
+		</div><!-- #container -->
+
+﻿
+		<div id="primary" class="widget-area" role="complementary">
+			<ul class="xoxo">
+<!-- begin l_sidebar -->
+	<div id="l_sidebar">
+<p>卓越网：<a href="http://www.amazon.cn/mn/searchApp?source=garypyang-23&searchType=1&keywords=自然语言处理" title="自然语言处理书籍"target=_blank>自然语言处理书籍</a><br>
+<li id="search-3" class="widget-container widget_search"><h3 class="widget-title">站内搜索</h3><form role="search" method="get" id="searchform" class="searchform" action="http://www.52nlp.cn/">
+				<div>
+					<label class="screen-reader-text" for="s">搜索：</label>
+					<input type="text" value="" name="s" id="s" />
+					<input type="submit" id="searchsubmit" value="搜索" />
+				</div>
+			</form></li><li id="text-4" class="widget-container widget_text"><h3 class="widget-title">NLPJob新鲜职位推荐:</h3>			<div class="textwidget"><p></p>
+<script src="http://www.nlpjob.com/api/api.php?action=getJobs
+&type=0&category=0&count=8&random=1&days_behind=7&response=js" type="text/javascript"></script>
+
+<script type="text/javascript">showJobs('jobber-container', 'jobber-list');</script></div>
+		</li><li id="text-3" class="widget-container widget_text"><h3 class="widget-title">52nlp新浪微博</h3>			<div class="textwidget"><p><iframe id="sina_widget_2104931705" style="width:100%; height:500px;" frameborder="0" scrolling="no" src="http://v.t.sina.com.cn/widget/widget_blog.php?uid=2104931705&height=500&skin=wd_01&showpic=1"></iframe></p>
+<p><!-- JiaThis Button BEGIN --><br />
+<script type="text/javascript" src="http://v3.jiathis.com/code/jiathis_r.js?uid=1340292124103344&move=0&amp;btn=r3.gif" charset="utf-8"></script><br />
+<!-- JiaThis Button END --></p>
+</div>
+		</li><li id="categories-309398091" class="widget-container widget_categories"><h3 class="widget-title">分类目录</h3>		<ul>
+	<li class="cat-item cat-item-72"><a href="http://www.52nlp.cn/category/mit-nlp" title="麻省理工学院开放式课程&quot;自然语言处理“的相关翻译文章">MIT自然语言处理</a> (23)
+</li>
+	<li class="cat-item cat-item-976"><a href="http://www.52nlp.cn/category/pattern-recognition-and-machine-learning-2" >PRML</a> (15)
+</li>
+	<li class="cat-item cat-item-469"><a href="http://www.52nlp.cn/category/topic-model" >Topic Model</a> (10)
+</li>
+	<li class="cat-item cat-item-87"><a href="http://www.52nlp.cn/category/wordpress" >wordpress</a> (6)
+</li>
+	<li class="cat-item cat-item-317"><a href="http://www.52nlp.cn/category/%e4%b8%93%e9%a2%98" >专题</a> (6)
+</li>
+	<li class="cat-item cat-item-263"><a href="http://www.52nlp.cn/category/chinese-information-processing" >中文信息处理</a> (20)
+</li>
+	<li class="cat-item cat-item-62"><a href="http://www.52nlp.cn/category/word-segmentation" >中文分词</a> (36)
+</li>
+	<li class="cat-item cat-item-420"><a href="http://www.52nlp.cn/category/%e5%b9%b6%e8%a1%8c%e7%ae%97%e6%b3%95" >并行算法</a> (1)
+</li>
+	<li class="cat-item cat-item-268"><a href="http://www.52nlp.cn/category/%e6%8b%9b%e8%81%98" >招聘</a> (4)
+</li>
+	<li class="cat-item cat-item-560"><a href="http://www.52nlp.cn/category/%e6%8e%a8%e8%8d%90%e7%b3%bb%e7%bb%9f" >推荐系统</a> (3)
+</li>
+	<li class="cat-item cat-item-354"><a href="http://www.52nlp.cn/category/%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98" >数据挖掘</a> (2)
+</li>
+	<li class="cat-item cat-item-241"><a href="http://www.52nlp.cn/category/text-classification" >文本分类</a> (3)
+</li>
+	<li class="cat-item cat-item-193"><a href="http://www.52nlp.cn/category/maximum-entropy-model" >最大熵模型</a> (7)
+</li>
+	<li class="cat-item cat-item-344"><a href="http://www.52nlp.cn/category/%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0" >机器学习</a> (29)
+</li>
+	<li class="cat-item cat-item-1"><a href="http://www.52nlp.cn/category/machine-translation" >机器翻译</a> (54)
+</li>
+	<li class="cat-item cat-item-195"><a href="http://www.52nlp.cn/category/%e6%9d%a1%e4%bb%b6%e9%9a%8f%e6%9c%ba%e5%9c%ba" >条件随机场</a> (3)
+</li>
+	<li class="cat-item cat-item-153"><a href="http://www.52nlp.cn/category/tagging" >标注</a> (13)
+</li>
+	<li class="cat-item cat-item-885"><a href="http://www.52nlp.cn/category/%e7%a7%91%e5%ad%a6%e8%ae%a1%e7%ae%97" >科学计算</a> (1)
+</li>
+	<li class="cat-item cat-item-538"><a href="http://www.52nlp.cn/category/%e7%bb%9f%e8%ae%a1%e5%ad%a6" >统计学</a> (10)
+</li>
+	<li class="cat-item cat-item-126"><a href="http://www.52nlp.cn/category/translation-model" >翻译模型</a> (2)
+</li>
+	<li class="cat-item cat-item-51"><a href="http://www.52nlp.cn/category/nlp" >自然语言处理</a> (227)
+</li>
+	<li class="cat-item cat-item-106"><a href="http://www.52nlp.cn/category/computational-linguistics" >计算语言学</a> (39)
+</li>
+	<li class="cat-item cat-item-22"><a href="http://www.52nlp.cn/category/dictionary" >词典</a> (8)
+</li>
+	<li class="cat-item cat-item-221"><a href="http://www.52nlp.cn/category/semantics" >语义学</a> (1)
+</li>
+	<li class="cat-item cat-item-161"><a href="http://www.52nlp.cn/category/semantic-web" >语义网</a> (3)
+</li>
+	<li class="cat-item cat-item-37"><a href="http://www.52nlp.cn/category/corpus" >语料库</a> (12)
+</li>
+	<li class="cat-item cat-item-86"><a href="http://www.52nlp.cn/category/language-model" >语言模型</a> (23)
+</li>
+	<li class="cat-item cat-item-156"><a href="http://www.52nlp.cn/category/speech-recognition" >语音识别</a> (4)
+</li>
+	<li class="cat-item cat-item-314"><a href="http://www.52nlp.cn/category/%e8%b4%9d%e5%8f%b6%e6%96%af%e6%a8%a1%e5%9e%8b" >贝叶斯模型</a> (1)
+</li>
+	<li class="cat-item cat-item-110"><a href="http://www.52nlp.cn/category/reprint" >转载</a> (28)
+</li>
+	<li class="cat-item cat-item-451"><a href="http://www.52nlp.cn/category/%e9%97%ae%e7%ad%94%e7%b3%bb%e7%bb%9f" >问答系统</a> (1)
+</li>
+	<li class="cat-item cat-item-3"><a href="http://www.52nlp.cn/category/informal-essay" >随笔</a> (63)
+</li>
+	<li class="cat-item cat-item-60"><a href="http://www.52nlp.cn/category/hidden-markov-model" >隐马尔科夫模型</a> (36)
+</li>
+		</ul>
+</li><li id="archives-2" class="widget-container widget_archive"><h3 class="widget-title">文章归档</h3>		<ul>
+	<li><a href='http://www.52nlp.cn/2015/01'>2015年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/12'>2014年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/11'>2014年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/09'>2014年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/07'>2014年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/06'>2014年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/05'>2014年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/04'>2014年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/01'>2014年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/12'>2013年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/06'>2013年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/05'>2013年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/04'>2013年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/03'>2013年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/02'>2013年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/01'>2013年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/12'>2012年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/11'>2012年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/10'>2012年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/09'>2012年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/08'>2012年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/07'>2012年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/06'>2012年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/05'>2012年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/04'>2012年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/03'>2012年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/01'>2012年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/12'>2011年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/11'>2011年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/10'>2011年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/09'>2011年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/08'>2011年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/07'>2011年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/06'>2011年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/05'>2011年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/04'>2011年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/03'>2011年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/02'>2011年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/01'>2011年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/12'>2010年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/11'>2010年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/10'>2010年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/09'>2010年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/08'>2010年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/07'>2010年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/06'>2010年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/05'>2010年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/04'>2010年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/03'>2010年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/02'>2010年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/01'>2010年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/12'>2009年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/11'>2009年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/10'>2009年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/09'>2009年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/08'>2009年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/07'>2009年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/06'>2009年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/05'>2009年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/04'>2009年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/03'>2009年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/02'>2009年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/01'>2009年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2008/12'>2008年十二月</a></li>
+		</ul>
+</li>		<li id="recent-posts-2" class="widget-container widget_recent_entries">		<h3 class="widget-title">最新文章</h3>		<ul>
+					<li>
+				<a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%8d%81%e5%9b%9b%e7%ab%a0-combining-models">PRML读书会第十四章 Combining Models</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%8d%81%e4%b8%89%e7%ab%a0sequential-data">PRML读书会第十三章 Sequential Data</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%8d%81%e4%ba%8c%e7%ab%a0-continuous-latent-variables">PRML读书会第十二章 Continuous Latent Variables</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%8d%81%e4%b8%80%e7%ab%a0-sampling-methods">PRML读书会第十一章  Sampling Methods</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%8d%81%e7%ab%a0-approximate-inference">PRML读书会第十章  Approximate Inference</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e4%b9%9d%e7%ab%a0-mixture-models-and-em">PRML读书会第九章  Mixture Models and EM</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%85%ab%e7%ab%a0-graphical-models">PRML读书会第八章  Graphical Models</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e4%b8%83%e7%ab%a0-sparse-kernel-machines">PRML读书会第七章 Sparse Kernel Machines</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%85%ad%e7%ab%a0-kernel-methods">PRML读书会第六章   Kernel Methods</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e4%ba%94%e7%ab%a0-neural-networks">PRML读书会第五章  Neural Networks</a>
+						</li>
+				</ul>
+		</li><li id="recentcomments" class="widget-container widget_recentcomments"><h3 class="widget-title">最近评论</h3><ul><li class="rc-navi rc-clearfix"><span class="rc-loading">正在加载...</span></li><li id="rc-comment-temp" class="rc-item rc-comment rc-clearfix"><div class="rc-info"></div><div class="rc-timestamp"></div><div class="rc-excerpt"></div></li><li id="rc-ping-temp" class="rc-item rc-ping rc-clearfix"><span class="rc-label"></span></li></ul></li>			</ul>
+		</div><!-- #primary .widget-area -->
+
+
+		<div id="secondary" class="widget-area" role="complementary">
+			<ul class="xoxo">
+				<li id="linkcat-103" class="widget-container widget_links"><h3 class="widget-title">NLP相关网站</h3>
+	<ul class='xoxo blogroll'>
+<li><a href="http://www.aclweb.org/" rel="co-worker" title="The Association for Computational Linguistics" target="_blank">ACL</a></li>
+<li><a href="http://aclweb.org/anthology-new/" rel="co-worker" title="A Digital Archive of Research Papers in Computational Linguistics" target="_blank">ACL Anthology</a></li>
+<li><a href="http://belobog.si.umich.edu/clair/anthology/index.cgi" rel="colleague" target="_blank">ACL Anthology Network</a></li>
+<li><a href="http://aclweb.org/aclwiki/index.php?title=Main_Page" rel="colleague" title="the Wiki of the Association for Computational Linguistics" target="_blank">ACL Wiki</a></li>
+<li><a href="http://www.clsp.jhu.edu/" rel="colleague" target="_blank">CLSP</a></li>
+<li><a href="http://www.cwbbase.com/" rel="colleague" title="这是一个略具规模的中文语义词库, 也是稍有特色的汉语语义词典" target="_blank">CWB中文词库</a></li>
+<li><a href="http://www.euromatrix.net/" rel="colleague" target="_blank">EuroMatrix</a></li>
+<li><a href="http://www.freebase.com" rel="colleague" target="_blank">Freebase</a></li>
+<li><a href="http://www.clsp.jhu.edu/workshops/" rel="colleague" target="_blank">JHU Workshop</a></li>
+<li><a href="http://www.ldc.upenn.edu/" rel="colleague" title="Linguistic Data Consortium" target="_blank">LDC</a></li>
+<li><a href="http://www.statmt.org/moses/" rel="colleague" title="A factored phrase-based beam-search decoder for machine translation" target="_blank">Moses</a></li>
+<li><a href="http://nlpers.blogspot.com/" rel="colleague" title="国外一个非常不错的自然语言处理博客" target="_blank">nlper</a></li>
+<li><a href="http://www.nlpjob.com" target="_blank">NLPJob</a></li>
+<li><a href="http://www.powerset.com/" rel="colleague" target="_blank">Powerset</a></li>
+<li><a href="http://www.speech.sri.com/projects/srilm/" rel="colleague" title="- The SRI Language Modeling Toolkit" target="_blank">SRILM</a></li>
+<li><a href="http://www.statmt.org/" rel="colleague" title="This website is dedicated to research in statistical machine translation" target="_blank">Statistical Machine Translation</a></li>
+<li><a href="http://textanalysisonline.com/" target="_blank">Text Analysis</a></li>
+<li><a href="http://textminingonline.com/" target="_blank">Text Mining</a></li>
+<li><a href="http://textsummarization.net/" target="_blank">Text Summarization</a></li>
+<li><a href="http://w3china.org/index.htm" rel="friend" title="致力于促进W3C技术的广泛应用, 传播关于未来Web的知识与技术" target="_blank">中国万维网联盟</a></li>
+<li><a href="http://www.cipsc.org.cn/" rel="co-worker" title="Chinese Information Processing Society of China" target="_blank">中国中文信息学会</a></li>
+<li><a href="http://www.nlp.org.cn/" rel="colleague" title="中文自然语言处理开放平台" target="_blank">中文自然语言处理开放平台</a></li>
+<li><a href="http://www.mt-archive.info/" rel="colleague" title="Repository and bibliography of articles, books and papers on topics" target="_blank">机器翻译档案计划</a></li>
+<li><a href="http://www.statmt.org/europarl/" rel="colleague" target="_blank">欧洲议会平行语料库</a></li>
+<li><a href="http://www.keenage.com/" title="HowNet" target="_blank">知网</a></li>
+<li><a href="http://www.nlpir.org/" rel="friend" title="由张华平博士发起，由北京理工大学网络搜索与挖掘实验室运营，旨在推动NLP(自然语言处理)与IR(信息检索)领域的共享与共赢" target="_blank">自然语言处理与信息检索共享平台</a></li>
+<li><a href="http://mitel.ict.ac.cn/" rel="co-worker" title="中科院计算所多语言交互技术实验室" target="_blank">计算所多语言交互技术实验室</a></li>
+
+	</ul>
+</li>
+<li id="linkcat-2" class="widget-container widget_links"><h3 class="widget-title">友情链接</h3>
+	<ul class='xoxo blogroll'>
+<li><a href="http://blog.youxu.info/" title="一个计算机专业的 Ph.D. 学生徐宥的个人博客" target="_blank">4G spaces</a></li>
+<li><a href="http://blog.52nlp.org" rel="me" title="我爱自然语言处理完全镜像" target="_blank">52nlpblog</a></li>
+<li><a href="http://www.52nlp.com" rel="me" title="52nlp的英文站" target="_blank">52nlpcom</a></li>
+<li><a href="http://hi.baidu.com/drkevinzhang" rel="friend" title="ICTCLAS 张华平博士的空间" target="_blank">ICTCLAS 张华平博士的空间</a></li>
+<li><a href="http://blog.so8848.com/" rel="friend" title="信息检索博客" target="_blank">Information Retrieval Blog</a></li>
+<li><a href="http://interop123.com/default.aspx" rel="friend" title="崔晓源师兄关于NET技术的站点" target="_blank">NET互操作技术社区</a></li>
+<li><a href="http://bbs.w3china.org/" rel="friend" title="中国万维网联盟讨论区" target="_blank">W3CHINA讨论区</a></li>
+<li><a href="http://www.ailab.cn/" rel="friend" target="_blank">人工智能网</a></li>
+<li><a href="http://mindhacks.cn/" rel="friend" title="一个很有思想的价值博客!" target="_blank">刘未鹏之Mind Hacks</a></li>
+<li><a href="http://www.cnblogs.com/finallyliuyu/" rel="friend" target="_blank">原地转圈的驴子</a></li>
+<li><a href="http://xunren.thuir.org/" target="_blank">微博寻人（梁博）</a></li>
+<li><a href="http://52opencourse.com" rel="friend" title="我爱公开课，高质量公开课交流平台" target="_blank">我爱公开课</a></li>
+<li><a href="http://iregex.org/" rel="friend" target="_blank">我爱正则表达式</a></li>
+<li><a href="http://courseminer.com" target="_blank">挖课</a></li>
+<li><a href="http://www.flickering.cn/" target="_blank">火光摇曳</a></li>
+<li><a href="http://www.sciencenet.cn/u/timy/" rel="friend" title="章成志老师的博客" target="_blank">章成志的博客</a></li>
+<li><a href="http://blog.csdn.net/v_JULY_v/" target="_blank">结构之法 算法之道</a></li>
+<li><a href="http://www.lingcc.com/" rel="friend" title="关注编译器,虚拟机,编程语言及技术,IT职业和程序员生活" target="_blank">编译点滴</a></li>
+<li><a href="http://www.52nlp.org" rel="me" title="52nlp的官方网站" target="_blank">自然语言处理</a></li>
+<li><a href="http://www.ieee.org.cn/" rel="friend" title="计算机科学论坛" target="_blank">计算机科学论坛</a></li>
+<li><a href="http://coursegraph.com/">课程图谱</a></li>
+<li><a href="http://blog.coursegraph.com" rel="friend">课程图谱博客</a></li>
+
+	</ul>
+</li>
+<li id="meta-4" class="widget-container widget_meta"><h3 class="widget-title">功能</h3>			<ul>
+						<li><a href="http://www.52nlp.cn/wp-login.php">登录</a></li>
+			<li><a href="http://www.52nlp.cn/feed">文章<abbr title="Really Simple Syndication">RSS</abbr></a></li>
+			<li><a href="http://www.52nlp.cn/comments/feed">评论<abbr title="Really Simple Syndication">RSS</abbr></a></li>
+<li><a href="https://cn.wordpress.org/" title="基于WordPress，一个优美、先进的个人信息发布平台。">WordPress.org</a></li>			</ul>
+</li>			</ul>
+		</div><!-- #secondary .widget-area -->
+
+	</div><!-- #main -->
+
+	<div id="footer" role="contentinfo">
+		<div id="colophon">
+
+
+
+			<div id="site-info">
+				<a href="http://www.52nlp.cn/" title="我爱自然语言处理" rel="home">
+					我爱自然语言处理				</a>
+			</div><!-- #site-info -->
+
+			<div id="site-generator">
+								<a href="http://cn.wordpress.org/"
+						title="优雅的个人发布平台" rel="generator">
+					自豪地采用 WordPress。				</a>
+			</div><!-- #site-generator -->
+
+		</div><!-- #colophon -->
+	</div><!-- #footer -->
+
+</div><!-- #wrapper -->
+
+<script>
+/* <![CDATA[ */
+var rcGlobal = {
+	serverUrl		:'http://www.52nlp.cn',
+	infoTemp		:'%REVIEWER% 在 %POST%',
+	loadingText		:'正在加载',
+	noCommentsText	:'没有任何评论',
+	newestText		:'&laquo; 最新的',
+	newerText		:'&laquo; 上一页',
+	olderText		:'下一页 &raquo;',
+	showContent		:'',
+	external		:'',
+	avatarSize		:'0',
+	avatarPosition	:'left',
+	anonymous		:'匿名'
+};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://www.52nlp.cn/wp-content/plugins/akismet/_inc/form.js?ver=3.0.4'></script>
+<link rel='stylesheet' id='yarppRelatedCss-css'  href='http://www.52nlp.cn/wp-content/plugins/yet-another-related-posts-plugin/style/related.css?ver=4.0.1' type='text/css' media='all' />
+<script type='text/javascript' src='http://www.52nlp.cn/wp-content/plugins/wp-recentcomments/js/wp-recentcomments.js?ver=2.2.7'></script>
+	<p align="center"> 本站架设在 <a href="http://www.52nlp.cn/digitalocean%E4%BD%BF%E7%94%A8%E5%B0%8F%E8%AE%B0">DigitalOcean</a> 上, 采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本站内容必须也遵循“署名-非商业用途-保持一致”的创作共用协议.</p>
+<!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(["trackPageView"]);
+  _paq.push(["enableLinkTracking"]);
+
+  (function() {
+    var u=(("https:" == document.location.protocol) ? "https" : "http") + "://162.243.252.121/piwik/";
+    _paq.push(["setTrackerUrl", u+"piwik.php"]);
+    _paq.push(["setSiteId", "5"]);
+    var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0]; g.type="text/javascript";
+    g.defer=true; g.async=true; g.src=u+"piwik.js"; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Piwik Code -->
+</body>
+</html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Python 批量写入 Elasticsearch 脚本</title>
+    <meta name="author" content="陈子">
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!-- Le styles -->
+    <link href="/assets/themes/twitter/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/themes/twitter/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+    <link href="/assets/themes/twitter/css/pygments/default.css" rel="stylesheet" type="text/css">
+    <!-- Le fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+  </head>
+  <body>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="/">三斗室</a>
+          <ul class="nav">
+      	<li><a href="/archive.html">归档</a></li>
+      	<li><a href="/categories.html">分类</a></li>
+      	<li><a href="/errata.html">《网站运维技术与实践》勘误</a></li>
+      	<li><a href="/pages.html">Pages</a></li>
+      	<li><a href="/projects.html">学习记录</a></li>
+      	<li><a href="/tags.html">标签</a></li>
+            <li><a href="http://chenlinux.com/poetry/index.html" />诗文集</a></li>
+            <li><link title="RSS 2.0" type="application/rss+xml" href="http://chenlinux.com/feed.xml" rel="alternate" /><a href="http://chenlinux.com/feed.xml" target="_blank">RSS订阅</a></li>
+          </ul>
+          <ul class="nav pull-right"><li><a href="/about.html">有关我</a></li></ul>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+    <div class="row">
+      <div class="span7">
+<div class="row">
+  <div class="page-header">
+    <h1>Python 批量写入 Elasticsearch 脚本 <small></small></h1>
+    <div class="date"><span>11 February 2015</span></div>
+    <ul class="tag_box pull-right">
+    	<li><a href="/tags.html#python-ref">python <span>11</span></a></li>
+    	<li><a href="/tags.html#pypy-ref">pypy <span>1</span></a></li>
+    	<li><a href="/tags.html#elasticsearch-ref">elasticsearch <span>29</span></a></li>
+    </ul>
+  </div>
+  <div style='background-color: #FFF;'>
+    <p>Elasticsearch 官方和社区提供了各种各样的客户端库，在之前的博客中，我陆陆续续提到和演示过 Perl 的，Javascript 的，Ruby 的。上周写了一版 Python 的，考虑到好像很难找到现成的示例，如何用 python 批量写数据进 Elasticsearch，今天一并贴上来。</p>
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="c">#!/usr/bin/env pypy</span>
+<span class="c">#coding:utf-8</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">elasticsearch</span> <span class="kn">import</span> <span class="n">Elasticsearch</span>
+<span class="kn">from</span> <span class="nn">elasticsearch</span> <span class="kn">import</span> <span class="n">helpers</span>
+<span class="kn">from</span> <span class="nn">elasticsearch</span> <span class="kn">import</span> <span class="n">ConnectionTimeout</span>
+<span class="n">es</span> <span class="o">=</span> <span class="n">Elasticsearch</span><span class="p">([</span><span class="s">&#39;192.168.0.2&#39;</span><span class="p">,</span> <span class="s">&#39;192.168.0.3&#39;</span><span class="p">],</span> <span class="n">sniff_on_start</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">sniff_on_connection_fail</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">max_retries</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">retry_on_timeout</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">()</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&#39;elasticsearch&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARN</span><span class="p">)</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s">&#39;urllib3&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARN</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">parse_www</span><span class="p">(</span><span class="n">logline</span><span class="p">):</span>
+	<span class="k">try</span><span class="p">:</span>
+		<span class="n">time_local</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">http_user_agent</span><span class="p">,</span> <span class="n">staTus</span><span class="p">,</span> <span class="n">remote_addr</span><span class="p">,</span> <span class="n">http_referer</span><span class="p">,</span> <span class="n">request_time</span><span class="p">,</span> <span class="n">body_bytes_sent</span><span class="p">,</span> <span class="n">http_x_forwarded_proto</span><span class="p">,</span> <span class="n">http_x_forwarded_for</span><span class="p">,</span> <span class="n">http_host</span><span class="p">,</span> <span class="n">http_cookie</span><span class="p">,</span> <span class="n">upstream_response_time</span> <span class="o">=</span> <span class="n">logline</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;`&#39;</span><span class="p">)</span>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="n">upstream_response_time</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">upstream_response_time</span><span class="p">)</span>
+		<span class="k">except</span><span class="p">:</span>
+			<span class="n">upstream_response_time</span> <span class="o">=</span> <span class="bp">None</span>
+		<span class="n">method</span><span class="p">,</span> <span class="n">uri</span><span class="p">,</span> <span class="n">verb</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39; &#39;</span><span class="p">)</span>
+		<span class="n">arg</span> <span class="o">=</span> <span class="p">{}</span>
+		<span class="k">try</span><span class="p">:</span>
+			<span class="n">url_path</span><span class="p">,</span> <span class="n">url_args</span> <span class="o">=</span> <span class="n">uri</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;?&#39;</span><span class="p">)</span>
+			<span class="k">for</span> <span class="n">args</span> <span class="ow">in</span> <span class="n">url_args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;&amp;&#39;</span><span class="p">):</span>
+				<span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;=&#39;</span><span class="p">)</span>
+				<span class="n">arg</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
+		<span class="k">except</span><span class="p">:</span>
+			<span class="n">url_path</span> <span class="o">=</span> <span class="n">uri</span>
+		<span class="c"># Why %z do not implement?</span>
+	        <span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">time_local</span><span class="p">,</span> <span class="s">&#39;[</span><span class="si">%d</span><span class="s">/%b/%Y:%H:%M:%S +0800]&#39;</span><span class="p">)</span>
+		<span class="n">ret</span> <span class="o">=</span> <span class="p">{</span>
+			<span class="s">&quot;@timestamp&quot;</span><span class="p">:</span> <span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&#39;</span><span class="si">%F</span><span class="s">T%T+0800&#39;</span><span class="p">),</span>
+			<span class="s">&quot;host&quot;</span><span class="p">:</span> <span class="s">&quot;127.0.0.1&quot;</span><span class="p">,</span>
+			<span class="s">&quot;method&quot;</span><span class="p">:</span> <span class="n">method</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s">&#39;&quot;&#39;</span><span class="p">),</span>
+			<span class="s">&quot;url_path&quot;</span><span class="p">:</span> <span class="n">url_path</span><span class="p">,</span>
+			<span class="s">&quot;url_args&quot;</span><span class="p">:</span> <span class="n">arg</span><span class="p">,</span>
+			<span class="s">&quot;verb&quot;</span><span class="p">:</span> <span class="n">verb</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s">&#39;&quot;&#39;</span><span class="p">),</span>
+			<span class="s">&quot;http_user_agent&quot;</span><span class="p">:</span> <span class="n">http_user_agent</span><span class="p">,</span>
+			<span class="s">&quot;status&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">staTus</span><span class="p">),</span>
+			<span class="s">&quot;remote_addr&quot;</span><span class="p">:</span> <span class="n">remote_addr</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s">&#39;[]&#39;</span><span class="p">),</span>
+			<span class="s">&quot;http_referer&quot;</span><span class="p">:</span> <span class="n">http_referer</span><span class="p">,</span>
+			<span class="s">&quot;request_time&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">request_time</span><span class="p">),</span>
+			<span class="s">&quot;body_bytes_sent&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">body_bytes_sent</span><span class="p">),</span>
+			<span class="s">&quot;http_x_forwarded_proto&quot;</span><span class="p">:</span> <span class="n">http_x_forwarded_proto</span><span class="p">,</span>
+			<span class="s">&quot;http_x_forwarded_for&quot;</span><span class="p">:</span> <span class="n">http_x_forwarded_for</span><span class="p">,</span>
+			<span class="s">&quot;http_host&quot;</span><span class="p">:</span> <span class="n">http_host</span><span class="p">,</span>
+			<span class="s">&quot;http_cookie&quot;</span><span class="p">:</span> <span class="n">http_cookie</span><span class="p">,</span>
+			<span class="s">&quot;upstream_response_time&quot;</span><span class="p">:</span> <span class="n">upstream_response_time</span>
+		<span class="p">}</span>
+		<span class="k">return</span> <span class="p">{</span><span class="s">&quot;_index&quot;</span><span class="p">:</span><span class="s">&quot;logstash-mweibo-www-&quot;</span><span class="o">+</span><span class="n">date</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&#39;%Y.%m.</span><span class="si">%d</span><span class="s">&#39;</span><span class="p">),</span> <span class="s">&quot;_type&quot;</span><span class="p">:</span><span class="s">&quot;nginx&quot;</span><span class="p">,</span><span class="s">&quot;_source&quot;</span><span class="p">:</span><span class="n">ret</span><span class="p">}</span>
+	<span class="k">except</span><span class="p">:</span>
+		<span class="k">return</span> <span class="p">{</span><span class="s">&quot;_index&quot;</span><span class="p">:</span><span class="s">&quot;logstash-mweibo-www-&quot;</span><span class="o">+</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&#39;%Y.%m.</span><span class="si">%d</span><span class="s">&#39;</span><span class="p">),</span> <span class="s">&quot;_type&quot;</span><span class="p">:</span><span class="s">&quot;nginx&quot;</span><span class="p">,</span><span class="s">&quot;_source&quot;</span><span class="p">:{</span><span class="s">&quot;message&quot;</span><span class="p">:</span><span class="n">logline</span><span class="p">}}</span>
+<span class="k">def</span> <span class="nf">get_log</span><span class="p">():</span>
+    <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="n">log_buffer</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">stdin</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="p">:</span>
+            <span class="n">helpers</span><span class="o">.</span><span class="n">bulk</span><span class="p">(</span><span class="n">es</span><span class="p">,</span> <span class="n">log_buffer</span><span class="p">)</span>
+            <span class="k">del</span> <span class="n">log_buffer</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">log_buffer</span><span class="p">)]</span>
+            <span class="k">break</span>
+        <span class="k">if</span> <span class="n">line</span><span class="p">:</span>
+            <span class="n">ret</span> <span class="o">=</span> <span class="n">parse_www</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">rstrip</span><span class="p">())</span>
+            <span class="n">log_buffer</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+            <span class="k">while</span> <span class="p">(</span> <span class="nb">len</span><span class="p">(</span><span class="n">log_buffer</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2000</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">log_buffer</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2000</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">):</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">helpers</span><span class="o">.</span><span class="n">bulk</span><span class="p">(</span><span class="n">es</span><span class="p">,</span> <span class="n">log_buffer</span><span class="p">)</span>
+                <span class="k">except</span> <span class="n">ConnectionTimeout</span><span class="p">:</span>
+                    <span class="k">print</span><span class="p">(</span><span class="s">&quot;try again&quot;</span><span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="k">del</span> <span class="n">log_buffer</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">log_buffer</span><span class="p">)]</span>
+                <span class="k">break</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">startime</span> <span class="o">&gt;</span> <span class="n">timeout</span> <span class="p">):</span>
+                <span class="n">helpers</span><span class="o">.</span><span class="n">bulk</span><span class="p">(</span><span class="n">es</span><span class="p">,</span> <span class="n">log_buffer</span><span class="p">)</span>
+                <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+                <span class="k">del</span> <span class="n">log_buffer</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="nb">len</span><span class="p">(</span><span class="n">log_buffer</span><span class="p">)]</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">get_log</span><span class="p">()</span></code></pre></div>
+<p>和 Perl、Ruby 的客户端不同，Python 的客户端只支持两种 transport 方式，urllib3 或者 thrift。也就是说，木有像事件驱动啊之类的办法。</p>
+<p>测试一下，这个脚本如果不发送数据，一秒处理日志条数在15k，发送数据，一秒只有2k。确实比较让人失望，于是决定换成 pypy 试试——我司不少日志处理脚本都是用 pypy 运行的。</p>
+<p>服务器上使用 pypy ，是通过 EPEL 安装的，之前都只用核心模块，这次需要安装 elasticsearch 模块。所以需要先给 pypy 加上 pip：</p>
+<pre><code>wget https://raw.github.com/pypa/pip/master/contrib/get-pip.py
+pypy get-pip.py
+</code></pre>
+<p>网上大多说之前还要下载一个叫 distribute_setup.py 的脚本来运行，实测不需要，而且这个脚本的下载链接也失效了。</p>
+<p>然后通过 pip 安装 elasticsearch 包即可：</p>
+<pre><code>/usr/lib64/pypy-2.0.2/bin/pip install elasticsearch
+</code></pre>
+<p>测试，pypy 比 python 处理日志速度快一倍，写 ES 速度快一半。不过 3300eps 依然很慢就是了。</p>
+<h2 id="section">测试中碰到的其他问题</h2>
+<p>可以看到脚本里已经设置了多次重试和超时重连，不过依然会收到写入超时和失败的返回，原来 Elasticsearch 默认对每个 node 做 segment merge 的时候，有磁盘保护措施，速度上限限制在 20MB/s。这在压测的时候就容易触发。</p>
+<blockquote>
+  <p>[2015-01-10 09:41:51,273][INFO ][index.engine.internal ] [node1][logstash-2015.01.10][2] now throttling indexing: numMergesInFlight=6,maxNumMerges=5</p>
+</blockquote>
+<p>修改配置重启即可：</p>
+<div class="highlight"><pre><code class="language-yaml" data-lang="yaml"><span class="l-Scalar-Plain">indices.store.throttle.type：merge</span>
+<span class="l-Scalar-Plain">indices.store.throttle.max_bytes_per_sec：500mb</span></code></pre></div>
+<p>关于这个问题，ES 也有讨论：<a href="https://github.com/elasticsearch/elasticsearch/issues/6081">Should we lower the default merge IO throttle rate?</a>。或许未来会有更灵活的策略。</p>
+<p>更多 ES 性能测试和优化建议，参考：<a href="http://www.elasticsearch.org/guide/en/elasticsearch/guide/current/indexing-performance.html">http://www.elasticsearch.org/guide/en/elasticsearch/guide/current/indexing-performance.html</a></p>
+    <hr>
+    <div class="pagination">
+      <ul>
+        <li class="prev"><a href="/2015/02/10/logstash-outputs-elasticsearch-http-memory-leak" title="LogStash::Outputs::ElaticSearch 使用 http 协议时的内存泄露问题">&larr; Previous</a></li>
+        <li><a href="/archive.html">Archive</a></li>
+        <li class="next"><a href="/2015/02/12/rsyslog-forwarder-testing" title="rsyslog 的 TCP 转发性能测试">Next &rarr;</a></li>
+      </ul>
+    </div>
+    <hr>
+  <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_tsina">新浪微博</a>
+<a class="jiathis_button_weixin">微信</a>
+<a class="jiathis_button_renren">人人网</a>
+<a class="jiathis_button_ydnote">有道云笔记</a>
+<a class="jiathis_button_gmail">Gmail邮箱</a>
+<a class="jiathis_button_twitter">Twitter</a>
+<a class="jiathis_button_googleplus">Google+</a>
+<a class="jiathis_button_hi">百度空间</a>
+<a class="jiathis_button_fb">Facebook</a>
+<a class="jiathis_button_douban">豆瓣</a>
+<a href="http://www.jiathis.com/share?uid=1589850" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+var jiathis_config={
+	data_track_clickback:true,
+	summary:"",
+	ralateuid:{
+		"tsina":"1035836154"
+	},
+	shortUrl:false,
+	hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1589850" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" id="UYScript" src="http://v1.uyan.cc/js/iframe.js?UYUserId=1589850" async=""></script>
+<!-- UY END -->
+  </div>
+</div>
+      </div>
+      <div class="span4">
+          <div class="well sidebar-nav">
+             <ul id="relate_blog" class="nav nav-list">
+               <li class="nav-header">最近文章</li>
+                 <li><a href="/2015/02/14/spark-streaming-transform">spark streaming 的 transform 操作示例</a></li>
+                 <li><a href="/2015/02/14/spark-streaming-state">spark streaming 的 state 操作示例</a></li>
+                 <li><a href="/2015/02/13/spark-streaming-sql">spark streaming 和 spark sql 结合示例</a></li>
+                 <li><a href="/2015/02/12/rsyslog-forwarder-testing">rsyslog 的 TCP 转发性能测试</a></li>
+                 <li><a href="/2015/02/10/logstash-outputs-elasticsearch-http-memory-leak">LogStash::Outputs::ElaticSearch 使用 http 协议时的内存泄露问题</a></li>
+                 <li><a href="/2015/01/22/logstash-maxmind-java">JRuby 调用 maxmind-java 测试</a></li>
+                 <li><a href="/2015/01/21/extends-zabbix-web">扩展 Zabbix Web 页面功能</a></li>
+                 <li><a href="/2015/01/06/implement-script-field-for-kibana3">给 Kibana3 添加脚本化字段支持</a></li>
+                 <li><a href="/2014/12/26/report-of-this-year">2014 年度个人总结</a></li>
+            </ul>
+          </div>
+        <div class="well sidebar-nav">
+          <iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=1&ptype=1&speed=0&skin=2&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=1035836154&verifier=a26926d5&dpc=1"></iframe>
+        </div>
+        <div class="well sidebar-nav">
+            <div id="uyan_list_time_frame"></div>
+            <script type="text/javascript" id="UYScriptTime" src="http://v1.uyan.cc/js/iframe_time_list.js?UYUserId=1589850&rankType=time" async=""></script>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(英文)</li>
+              <li><a href="http://codeascraft.com/" title="Etsy 运维团队博客">Code as Craft</a></li>
+              <li><a href="http://devopsanywhere.blogspot.jp/" title="">devopsanywhere</a></li>
+              <li><a href="http://www.jedi.be/blog/" title="">Jong En Dynamische Informatica</a></li>
+              <li><a href="http://www.planetdevops.net/" title="">planetdevops</a></li>
+              <li><a href="http://www.kitchensoap.com/" title="《网站运维》作者，Etsy 运维">Kitchen Soap</a></li>
+              <li><a href="http://blog.johngoulah.com" title="Musings of linux, open source, cloud computing and systems">John Goulah</a></li>
+              <li><a href="http://serverfault.com/" title="stackexchange下属的系统工程师问答网站">serverfault</a></li>
+              <li><a href="http://www.thegeekstuff.com/" title="各种超酷Linux命令用法">TheGeekStuff</a></li>
+              <li><a href="http://neilb.org/" title="The good,the bad,and the beautiful">neilb</a></li>
+              <li><a href="http://www.reddit.com/r/perl/" title="">reddit perl 频道</a></li>
+              <li><a href="http://jpetazzo.github.io/" title="">~jpetazzo</a></li>
+              <li><a href="http://www.perfplanet.com/" title="News and views from the web performance blogosphere">Performance Planet</a></li>
+              <li><a href="http://cuddletech.com/blog/" title="Use UNIX or die">Cuddle Tech</a></li>
+              <li><a href="http://showmetheco.de/" title="Viacheslav Tykhanovskyi(PocketIO/Text::Haml)">No time to wait</a></li>
+              <li><a href="http://blog.dataloop.io/" title="A new SaaS monitoring tool for DevOps & Operations">Dataloop.IO</a></li>
+              <li><a href="http://www.ducea.com/" title="">MDLog:/sysadmin</a></li>
+              <li><a href="http://planeteria.org/perl6/" title="Perl6 文集">Planet Perl 6</a></li>
+              <li><a href="http://www.metaforsoftware.com/blog/" title="">metafor</a></li>
+              <li><a href="http://blog.kablamo.org/" title="Eric Johnson，一个游走在伦敦和北京的 Perler">kablamo</a></li>
+              <li><a href="http://aphyr.com/posts" title="call me maybe 吐槽系列">Aphyr</a></li>
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(中文)</li>
+              <li><a href="http://www.nginxs.com/" title="">eric</a></li>
+              <li><a href="http://www.hellodb.net/" title="Ali DBA 张瑞">Hello DBA</a></li>
+              <li><a href="http://blog.nosqlfan.com/" title="not only sql信息集散地">NoSQLfan</a></li>
+              <li><a href="http://ourmysql.com/" title="">OurMySQL</a></li>
+              <li><a href="http://timo.piqiu.me/" title="TIMO IS MY OASIS">Timo</a></li>
+              <li><a href="http://www.liurongxing.com/" title="">刘荣星</a></li>
+              <li><a href="http://www.cnadn.net/" title="F5工程师">应用交付学习之路</a></li>
+              <li><a href="http://scmbob.org/" title="杭州NSN工程师，shell高人~">扛一肩记忆</a></li>
+              <li><a href="http://www.php-oa.com/" title="音悦台技术经理">扶凯</a></li>
+              <li><a href="http://www.lark.net.cn/" title="王剑">lark's cloud</a></li>
+              <li><a href="http://log.heartoutside.com/" title="HeartOutSide">HeartOutside</a></li>
+              <li><a href="http://blog.liulantao.com/" title="刘兰涛">Lax</a></li>
+              <li><a href="http://niubie.me/" title="莫言">莫言</a></li>
+              <li><a href="http://noops.me/" title="小米运维部">NoOps</a></li>
+              <li><a href="http://www.searchtech.pro/" title="">云端分布式搜索技术</a></li>
+              <li><a href="http://www.usefulshare.com" title="当当网安全运维">UsefulShare</a></li>
+              <li><a href="http://junqili.com/" title="深入研究puppet">纸飞机</a></li>
+              <li><a href="http://www.chinaxing.org/" title="">ChinaXing</a></li>
+              <li><a href="http://bubbyroom.com/" title="守住每一天">Liuyu's blog</a></li>
+              <li><a href="http://blog.aka-cool.net/" title="">Aka.Why</a></li>
+              <li><a href="http://blog.l8ii.com/" title="刘侨">LairdNote</a></li>
+              <li><a href="http://flw.tools/" title="">flw的工具箱</a></li>
+              <li><a href="http://blog.mcshell.org/" title="">mcshell</a></li>
+              <li><a href="http://novoland.github.io/" title="">克鲁斯卡尔的博客</a></li>
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="booklists" class="nav nav-list">
+          <li class="nav-header">我写的第一本技术书籍</li>
+          <li><a href='http://product.china-pub.com/3769604'><img src='http://images.china-pub.com/ebook3765001-3770000/3769604/shupi.jpg' border='0' alt='网站运维技术与实践'/></a></li>
+          <li class="nav-header">我写的两本电子书籍</li>
+          <li><a href='http://chenryn.gitbooks.io/logstash-best-practice/'><img src='https://sm3lir.cloudimage.io/s/cdn/x/https://www.gitbook.io/cover/book/chenryn/logstash-best-practice?build=1416299695472' border='0' alt='LogStash 最佳实践'/></a></li>
+          <li><a href='http://kibana.logstash.es/'><img src='https://sm3lir.cloudimage.io/s/cdn/x/https://www.gitbook.io/cover/book/chenryn/kibana-guide-cn?build=1415872457562' border='0' alt='Kibana 中文指南'/></a></li>
+        </div>
+      </div>
+    </div> <!-- row -->
+      <footer>
+        <p>&copy; 陈子 2012 
+          with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
+          and <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap</a>
+        </p>
+      </footer>
+    </div> <!-- /container -->
+  </body>
+</html>

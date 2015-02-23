@@ -1,0 +1,734 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<title>PRML读书会第八章  Graphical Models | 我爱自然语言处理</title>
+<link rel="profile" href="http://gmpg.org/xfn/11" />
+<link rel="stylesheet" type="text/css" media="all" href="http://www.52nlp.cn/wp-content/themes/twentytenorg/style.css" />
+<link rel="pingback" href="http://www.52nlp.cn/xmlrpc.php" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; Feed" href="http://www.52nlp.cn/feed" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; 评论Feed" href="http://www.52nlp.cn/comments/feed" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; PRML读书会第八章  Graphical Models评论Feed" href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%85%ab%e7%ab%a0-graphical-models/feed" />
+<link rel='stylesheet' id='yarppWidgetCss-css'  href='http://www.52nlp.cn/wp-content/plugins/yet-another-related-posts-plugin/style/widget.css?ver=4.0.1' type='text/css' media='all' />
+<link rel='stylesheet' id='codecolorer-css'  href='http://www.52nlp.cn/wp-content/plugins/codecolorer/codecolorer.css?ver=0.9.9' type='text/css' media='screen' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.52nlp.cn/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.52nlp.cn/wp-includes/wlwmanifest.xml" /> 
+<link rel='prev' title='PRML读书会第七章 Sparse Kernel Machines' href='http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e4%b8%83%e7%ab%a0-sparse-kernel-machines' />
+<link rel='next' title='PRML读书会第九章  Mixture Models and EM' href='http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e4%b9%9d%e7%ab%a0-mixture-models-and-em' />
+<meta name="generator" content="WordPress 4.0.1" />
+<link rel='canonical' href='http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%85%ab%e7%ab%a0-graphical-models' />
+<link rel='shortlink' href='http://www.52nlp.cn/?p=7603' />
+<!-- wp thread comment 1.4.9.4.002 -->
+<style type="text/css" media="screen">
+.editComment, .editableComment, .textComment{
+	display: inline;
+}
+.comment-childs{
+	border: 1px solid #999;
+	margin: 5px 2px 2px 4px;
+	padding: 4px 2px 2px 4px;
+	background-color: white;
+}
+.chalt{
+	background-color: #E2E2E2;
+}
+#newcomment{
+	border:1px dashed #777;width:90%;
+}
+#newcommentsubmit{
+	color:red;
+}
+.adminreplycomment{
+	border:1px dashed #777;
+	width:99%;
+	margin:4px;
+	padding:4px;
+}
+.mvccls{
+	color: #999;
+}
+			
+</style>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: { equationNumbers: { autoNumber: "AMS" } },
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+    inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+    displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+    processEscapes: true
+  },
+  "HTML-CSS": { availableFonts: ["TeX"] }
+});
+</script><script type="text/javascript" src="http://www.52nlp.cn/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</head>
+
+<body class="single single-post postid-7603 single-format-standard">
+<div id="wrapper" class="hfeed">
+	<div id="header">
+		<div id="masthead">
+			<div id="branding" role="banner">
+								<div id="site-title">
+					<span>
+						<a href="http://www.52nlp.cn/" title="我爱自然语言处理" rel="home">我爱自然语言处理</a>
+					</span>
+				</div>
+				<div id="site-description">I Love Natural Language Processing</div>
+
+										<img src="http://www.52nlp.cn/wp-content/themes/twentytenorg/images/headers/path.jpg" width="940" height="198" alt="" />
+								</div><!-- #branding -->
+
+			<div id="access" role="navigation">
+			  				<div class="skip-link screen-reader-text"><a href="#content" title="跳至正文">跳至正文</a></div>
+								<div class="menu"><ul><li ><a href="http://www.52nlp.cn/">首页</a></li><li class="page_item page-item-2"><a href="http://www.52nlp.cn/about">关于</a></li><li class="page_item page-item-2557 page_item_has_children"><a href="http://www.52nlp.cn/resources">资源</a><ul class='children'><li class="page_item page-item-1271"><a href="http://www.52nlp.cn/resources/wpmatheditor">WpMathEditor</a></li></ul></li></ul></div>
+ 
+				<div class="menu"><ul><li class="page_item page-item-2"></li><li class="page_item page-item-2"><a href="http://coursegraph.com" title="课程图谱" target="_blank">课程图谱</a></li><li class="page_item page-item-2"><a href="http://www.nlpjob.com" title="求职" target="_blank">求职招聘</a></li></ul></div>
+			</div><!-- #access -->
+		</div><!-- #masthead -->
+	</div><!-- #header -->
+
+	<div id="main">
+
+		<div id="container">
+			<div id="content" role="main">
+
+			
+
+				<div id="nav-above" class="navigation">
+					<div class="nav-previous"><a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e4%b8%83%e7%ab%a0-sparse-kernel-machines" rel="prev"><span class="meta-nav">&larr;</span> PRML读书会第七章 Sparse Kernel Machines</a></div>
+					<div class="nav-next"><a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e4%b9%9d%e7%ab%a0-mixture-models-and-em" rel="next">PRML读书会第九章  Mixture Models and EM <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-above -->
+
+				<div id="post-7603" class="post-7603 post type-post status-publish format-standard hentry category-pattern-recognition-and-machine-learning-2 category-344 tag-factor tag-graphical-models tag-mrf tag-pattern-recognition-and-machine-learning tag-pgm tag-prml tag-1011 tag-1058 tag-1057 tag-1055 tag-344 tag-961 tag-960 tag-583 tag-1054 tag-995 tag-1051 tag-1053 tag-1052">
+					<h1 class="entry-title">PRML读书会第八章  Graphical Models</h1>
+
+					<div class="entry-meta">
+						<span class="meta-prep meta-prep-author">发表于</span> <a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%85%ab%e7%ab%a0-graphical-models" title="12:03" rel="bookmark"><span class="entry-date">2015年01月31号</span></a> <span class="meta-sep">由</span> <span class="author vcard"><a class="url fn n" href="http://www.52nlp.cn/author/prml" title="查看所有由 prml 发布的文章">prml</a></span>					</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+						<p style="text-align: center;background: white"><span style="font-family: 微软雅黑;font-size: 15pt"><strong>PRML读书会<span style="color: black">第八章 Graphical Models<br />
+</span></strong></span></p>
+<p style="text-align: center;background: white"><span style="color: black;font-family: 微软雅黑;font-size: 15pt"><strong>主讲人 网神<br />
+</strong></span></p>
+<p style="text-align: center;background: white"><span style="color: black;font-family: 微软雅黑;font-size: 12pt"><strong>（新浪微博: <a href="http://weibo.com/ghtimaq">@豆角茄子麻酱凉面</a>）<br />
+</strong></span></p>
+<p style="background: white"><span style="color: black;font-family: 微软雅黑;font-size: 9pt">网神(66707180) 18:52:10<br />
+</span></p>
+<p style="background: white"><span style="color: black;font-family: 微软雅黑;font-size: 9pt">今天的内容主要是：<br />
+</span></p>
+<p style="background: white"><span style="color: black;font-family: 微软雅黑;font-size: 9pt">1.贝叶斯网络和马尔科夫随机场的概念，联合概率分解，条件独立表示；2.图的概率推断inference。<br />
+</span></p>
+<p style="background: white"><span style="color: black;font-family: 微软雅黑;font-size: 9pt">图模型是用图的方式表示概率推理 ，将概率模型可视化，方便展示变量之间的关系，概率图分为有向图和无向图。有向图主要是贝叶斯网络，无向图主要是马尔科夫随机场。对两类图，prml都讲了如何将联合概率分解为条件概率，以及如何表示和判断条件依赖。<br />
+先说贝叶斯网络，贝叶斯网络是有向图，用节点表示随机变量，用箭头表示变量之间的依赖关系。一个例子:<br />
+</span><span id="more-7603"></span></p>
+<p style="background: white"><img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra1.jpg" alt="" /><span style="color: black;font-family: 微软雅黑;font-size: 9pt"><br />
+这是一个有向无环图，这个图表示的概率模型如下:<br />
+p(x1,x2,&#8230;x7)= <img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra2.jpg" alt="" />形式化一下，贝叶斯网络表示的联合分布是：<br />
+<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra3.jpg" alt="" /><br />
+</span></p>
+<p style="background: white"><span style="color: black;font-family: 微软雅黑;font-size: 9pt">其中<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra4.jpg" alt="" />是xk的所有父节点。<br />
+</span></p>
+<p style="background: white"><span style="color: black;font-family: 微软雅黑;font-size: 9pt">以上是贝叶斯网络将联合概率分解为条件概率的方法，比较直观易懂，就不多说了。下面说一下条件独立的表示和判断方法。条件独立是，给定a,b,c三个节点，如果p(a,b|c)=p(a|c)p(b|c)，则说给定c，a和b条件独立。当然 a, b, c也可以是三组节点，这里只以单个节点为例。用图表示，有三种情况 。<br />
+第一种情况如图：<br />
+<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra5.jpg" alt="" /><br />
+c位于两个箭头的尾部，称作tail-to-tail，这种情况，c未知的时候，a，b是不独立的。c已知的时候，a,b条件独立。来看为什么，首先，这个图联合概率如下：<br />
+在c未知的时候,p(a,b)如下求解:<br />
+<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra6.jpg" alt="" /><br />
+可以看出，无法得出:p(a,b)=p(a)p(b)，所以a,b不独立。<br />
+如果c已知，则：<br />
+</span></p>
+<p style="background: white"><img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra7.jpg" alt="" /><span style="color: black;font-family: 微软雅黑;font-size: 9pt"><br />
+所以a,b条件独立于c。条件独立用以下符号表示：<br />
+<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra8.jpg" alt="" /><br />
+a,b不独立的符号表示:：<br />
+<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra9.jpg" alt="" /><br />
+这是图表示的条件独立的第一种形式，叫做tail-to-tail。第二种是tail-to-head，如图：<br />
+<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra10.jpg" alt="" /><br />
+这种情况也是c未知时，a和b不独立。c已知时，a和b条件独立于c，推导如下：<br />
+<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra11.jpg" alt="" /><br />
+第三种情况是head-to-head，如图：<br />
+<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra12.jpg" alt="" /><br />
+这种情况反过来了，c未知时，a和b是独立的；但当c已知时，a和b不满足条件独立，<br />
+因为：<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra13.jpg" alt="" /><br />
+计算该概率的边界概率，得<br />
+<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra14.jpg" alt="" /><br />
+所以a和b相互独立.<br />
+但c已知时：<br />
+<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra15.jpg" alt="" /><br />
+无法得到p(a,b|c)=p(a|c)p(b|c)<br />
+将这三种情况总结，就是贝叶斯网络的一个重要概念，D-separation，这个概念的内容就是:<br />
+A,B,C三组节点，如果A中的任意节点与B的任意节点的所有路径上，存在以下节点，就说A和B被C阻断:<br />
+1, A到B的路径上存在tail-to-tail或head-to-tail形式的节点，并且该节点属于C<br />
+2. 路径上存在head-to-head的节点，并且该节点不属于C<br />
+举个例子：<br />
+</span></p>
+<p style="background: white"><img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra16.jpg" alt="" /><span style="color: black;font-family: 微软雅黑;font-size: 9pt"><br />
+左边图上，节点f和节点e都不是d-separation.因为f是tail-to-tail，但f不是已知的，因此f不属于C.<br />
+e是head-to-head，但e的子节点c是已知的，所以e也不属于C。<br />
+speedmancs&lt;speedmancs@qq.com&gt; 19:23:05<br />
+2漏了一点，该节点包括所有后继<br />
+网神(66707180) 19:23:21<br />
+右边图，f和e都是d-separation.理由与上面相反.对，是漏了这一点。看到这个例子才想起来，这部分大家有什么问题没？<br />
+speedmancs&lt;speedmancs@qq.com&gt; 19:24:54<br />
+这个还是抽象了一些，我之前看的prml这一章，没看懂，后来看了PGM前三章，主要看了那个学生成绩的那个例子，就明白了。姑妄记之，其实蛮不好记的。讲得挺好的，继续。<br />
+网神(66707180) 19:27:14<br />
+因为有了这些条件独立的规则，可以将图理解成一个filter。<br />
+既给定一系列随机变量，其联合分布p(x1,x2&#8230;,xn)理论上可以分解成各种条件分布的乘积，但过一遍图，不满足图表示依赖关系和条件独立的分布就被过滤掉。所以图模型，用不同随机变量的连接表示各种关系，可以表示复杂的分布模型。<br />
+接下来是马尔科夫随机场，是无向图，也叫马尔科夫网络，马尔科夫网络也有条件独立属性。<br />
+用MRF(malkov random field)表示马尔科夫网络，MRF因为是无向的，所以不存在tail-to-tail这些概念。MRF的条件独立如图：<br />
+<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra17.jpg" alt="" /><br />
+如果A的任意节点和B的任意节点的任意路径上，都存在至少一个节点属于C<br />
+speedmancs&lt;speedmancs@qq.com&gt; 19:33:16<br />
+无向图的条件独立 比有向图简单多了。<br />
+网神(66707180) 19:33:18<br />
+那么A和B条件独立于C，可以理解为，如果C的节点都是已知的，就阻断了A和B的所有路径。<br />
+网神(66707180) 19:33:49<br />
+嗯，MRF的 概率分解就概念比较多了，不像有向图那么直观，MRF联合概率分解成条件概率。用到了clique的概念，我翻译成&#8221;团&#8221;，就是图的一个子图，子图上两两节点都有连接. 例如这个图，最大团有两个，分别是(x1,x2,x3)和(x2,x3,x4)：<br />
+<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra18.jpg" alt="" /><br />
+MRF的联合概率分解另一个概念是potential function，联合概率分解成一系列potential函数的乘积:<br />
+<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra19.jpg" alt="" /><br />
+</span></p>
+<p style="background: white"><img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra20.jpg" alt="" /><span style="color: black;font-family: 微软雅黑;font-size: 9pt">是一个最大团的所有节点，一个potential函数<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra21.jpg" alt="" />，是最大团的一个函数.<br />
+这个函数具体的定义是依赖具体应用的，一会举个例子.<br />
+上面式子里那个Z是normalization常量：<br />
+<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra22.jpg" alt="" /><br />
+speedmancs&lt;speedmancs@qq.com&gt; 19:42:47<br />
+这个Z很麻烦<br />
+网神(66707180) 19:43:15<br />
+在这个式子里<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra23.jpg" alt="" />，p(x)是一系列potential函数的乘积。换一种理解方式，定义将potential函数表示成指数函数:<br />
+<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra24.jpg" alt="" /><br />
+这样p(x)就可以表示成一系列E(Xc)的和的指数函数，E(Xc)叫做能量函数，这么转换之后，可以将图理解成一个能量的集合，他的值等于各个最大团的能量的和.先举个例子看看potential函数和能量函数在具体应用中是什么样的，大家再讨论。<br />
+要把噪声图片尽量还原成 原图，用图的方式表示噪声图和还原后的图，每个像素点是一个节点:<br />
+<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra25.jpg" alt="" /><br />
+上面那层Yi，是噪声图，紫色表示这些是已知的，是观察值。下面那层Xi是未知的，要求出Xi，使Xi作为像素值得到的图，尽量接近无噪声图片。每个xi的值，与yi相关，也与相邻的xj相关。这里边，最大团是(xi, yi)和(xi, xj)，两类最大团。<br />
+对于(xi, yi)，选择能量函数E(xi,yi)=<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra26.jpg" alt="" />；对于(xi,xj)，选择能量函数E(xi, xj)=<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra27.jpg" alt="" /><br />
+两个能量函数的意思都是，如果xi和yi (或xi和xj)的值相同，则能量小；如果不同，则能量大.<br />
+整个图的能量如下：<br />
+<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra28.jpg" alt="" /><br />
+</span></p>
+<p style="background: white"><img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra29.jpg" alt="" /><span style="color: black;font-family: 微软雅黑;font-size: 9pt">是一个偏置项<br />
+speedmancs&lt;speedmancs@qq.com&gt; 19:56:55<br />
+偏置项是一种先验吧<br />
+网神(66707180) 19:57:28<br />
+有了这个能量函数，接下来就是求出Xi，使得能量E(x,y)最小。求最小，书上简单说了一下，我的理解也是用梯度下降类似的方法。<br />
+speedmancs&lt;speedmancs@qq.com&gt; 19:57:34<br />
+这里表示-1的点更多吧。<br />
+网神(66707180) 19:58:20<br />
+对偏执项的作用，书上这么解释：Such a term has the effect of biasing the model towards pixel values that have one particular sign in preference to the other.<br />
+speedmancs&lt;speedmancs@qq.com&gt; 19:59:29<br />
+恩，对，让能量最小<br />
+网神(66707180) 19:59:39<br />
+</span></p>
+<p style="background: white"><span style="color: black;font-family: 微软雅黑;font-size: 9pt">为了使E(x,y)尽量小，是尽量让xi选择-1，而不是1。E(x,y)越小，得到的图就越接近无噪声的图，因为：<br />
+</span></p>
+<p style="background: white"><span style="color: black;font-family: 微软雅黑;font-size: 9pt"><br />
+<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra30.jpg" alt="" /><br />
+所以E(x,y)越小，p(x,y)就越大。<br />
+η&lt;liyitan2144@163.com&gt; 20:01:13<br />
+是不是可以这样看，<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra31.jpg" alt="" />表示平滑；<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra32.jpg" alt="" />表示似然。<br />
+网神(66707180) 20:02:18<br />
+liyitan2144说得好，<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra33.gif" alt="" /><br />
+speedmancs&lt;speedmancs@qq.com&gt; 20:02:33<br />
+恩，所以这是一个 产生式模型。<br />
+网神(66707180) 20:02:59<br />
+有向图和无向图的概率分解 和 条件独立 都说完了.有向图和无向图是可以互相转换的，有向图转换成无向图，如果每个节点都只有少于等于1个父节点，比较简单。如果有超过1个父节点，就需要在转换之后的无向图上增加一些边，来避免都是有向图上的一些关系，这部分就不细说了。<br />
+下面要说图的inference了。前面大家有啥要讨论的？先讨论一下吧。<br />
+</span></p>
+<p><span style="color: #333333"><span style="font-family: Arial">============================</span><span style="font-family: 宋体">讨论</span><span style="font-family: Arial">=================================<br />
+</span></span></p>
+<p style="background: white"><span style="color: black;font-family: 微软雅黑;font-size: 9pt">speedmancs&lt;speedmancs@qq.com&gt; 20:06:45<br />
+刚才那个例子中，那几个beta, h等参数如何得到？<br />
+网神(66707180) 20:07:30<br />
+那个是用迭代求解的方法，求得这几个参数，书上提到了两种方法，一种ICM,iterated conditional modes<br />
+一种max-product方法，其中max-product方法效果比较好,在后面的inference一节里详细讲了这个方法，而ICM方法只是提了一下，原理没有细说.两种方法的效果看下图,左边是ICM的结果，右边是max-product的方法：<br />
+<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra34.jpg" alt="" /><br />
+</span></p>
+<p style="background: white"><span style="color: black;font-family: 微软雅黑;font-size: 9pt">speedmancs&lt;speedmancs@qq.com&gt; 20:15:07<br />
+稍微插一句，刚才那个denoise的例子，最好的那个结果是graph cut，而且那几个beta参数是事先固定了。<br />
+η&lt;liyitan2144@163.com&gt; 20:16:12<br />
+graph cut是指？<br />
+kxkr&lt;lxfkxkr@126.com&gt; 20:16:30<br />
+<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra35.jpg" alt="" />kxkr&lt;lxfkxkr@126.com&gt; 20:17:18<br />
+<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra36.jpg" alt="" /><br />
+</span></p>
+<p style="background: white"><span style="color: black;font-family: 微软雅黑;font-size: 9pt">网神(66707180) 20:18:11<br />
+这个例子只是为了说明能量函数和潜函数.所以不一定是最佳方法，这两段截屏是prml上的，咋没看到捏<br />
+kxkr&lt;lxfkxkr@126.com&gt; 20:19:05<br />
+那几个参数如何得到 文中好像并没有说，只是说了ICM、graph-cut能够得到最后的去噪图像，第一段 在 figure8.30，第二个截图在 section8.4，figure8.32下面。<br />
+网神(66707180) 20:20:15<br />
+看到了，先不管这个吧，主要知道能量函数是啥样的就行了<br />
+kxkr&lt;lxfkxkr@126.com&gt; 20:21:25<br />
+嗯<br />
+</span></p>
+<p><span style="color: #333333"><span style="font-family: Arial">========================</span><span style="font-family: 宋体">讨论结束</span><span style="font-family: Arial">==============f===================<br />
+</span></span></p>
+<p style="background: white"><span style="color: black;font-family: 微软雅黑;font-size: 9pt">网神(66707180) 20:22:24<br />
+</span></p>
+<p style="background: white"><span style="color: black;font-family: 微软雅黑;font-size: 9pt">接着说inference了，inference就是已知一些变量的值，求另一些变量的概率<br />
+</span></p>
+<p style="background: white"><img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra37.jpg" alt="" /><span style="color: black;font-family: 微软雅黑;font-size: 9pt"><br />
+比如上图，已知y，求x的概率<br />
+这个简单的图可以用典型的贝叶斯法则来求<br />
+<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra38.jpg" alt="" /><br />
+对于复杂点的情况，比如链式图：<br />
+<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra39.jpg" alt="" /><br />
+为了求p(xn)，就是求xn的边界概率。这里都假设x的值是离散的。如果是连续的，就是积分，为了求这个边界概率，做这个累加动作，如果x的取值是k个，则要做k的(N-1)次方次计算，利用图结构，可以简化计算，这个简化方法就不讲了。<br />
+下面讲通用的图inference的方法，就是factor graph方法，链式图或树形图，都比较好求边界概率。<br />
+所以factor graph就是把复杂的图转换成树形图，针对树形图来求.先说一下什么是树形图，树形图有两种情况：<br />
+1. 每个节点只有一个父节点。<br />
+2. 如果有的节点有多个父节点，必须图上每个节点之间只有一条路径。<br />
+这是树形图的三种情况：<br />
+</span></p>
+<p><span style="font-family: 宋体;font-size: 12pt"><br />
+<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra40.jpg" alt="" /><br />
+</span></p>
+<p style="background: white"><span style="color: black;font-family: 微软雅黑;font-size: 9pt">对于无向图，只要无环，都可以看做树形图；对于有向图，必须每两个节点之间只有一条路径；中间那种是典型的树.右边那种多个有多个节点的叫polytree。<br />
+这种书结构的图，都比较好求边界概率. 具体怎么求，就不说了。<br />
+这里主要说怎么把复杂的图转换成树形图.，这种转换引入factor节点，从而将普通的图转换成factor图.<br />
+先看个例子：<br />
+<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra41.jpg" alt="" /><br />
+对于这个有向图，p(x1,x2,x3)=p(x1)p(x2|x1)p(x3|x1,x2)，等号右边的三个概率作为三个factor<br />
+每个factor作为一个节点，加入新的factor图中：<br />
+<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra42.jpg" alt="" /><br />
+上面的x1,x2,x3是原图的随机变量 ，下面的fa,fb,fc,fd是factor节点，只有随即变量节点和factor节点之间有连接，每类节点自身互不连接，每个factor连接的变量节点，是相互依赖的节点。<br />
+kxkr&lt;lxfkxkr@126.com&gt; 20:42:10<br />
+就是一个clique中的节点吧<br />
+网神(66707180) 20:42:19<br />
+对，严格的说，也不是。<br />
+kxkr&lt;lxfkxkr@126.com&gt; 20:44:15<br />
+对于有向图 ？<br />
+</span></p>
+<p style="background: white"><span style="color: black;font-family: 微软雅黑;font-size: 9pt">网神(66707180) 20:45:10<br />
+x1,x2,x3是一个最大团. 可以只用一个factor节点，如中间那个图<br />
+kxkr&lt;lxfkxkr@126.com&gt; 20:45:17<br />
+嗯<br />
+网神(66707180) 20:45:22<br />
+也可以用多个factor节点，如右边图，但什么情况下用一个factor什么情况用多个factor，我没想明白<br />
+kxkr&lt;lxfkxkr@126.com&gt; 20:47:10<br />
+嗯，继续<br />
+网神(66707180) 20:47:21<br />
+转换成factor图后，就是树形图了，符合前面树形图的两种情况，这时候，要求一个节点或一组节点的边界概率，用一种叫做sum-product的方法，已求一个节点的边界概率为例.<br />
+η&lt;liyitan2144@163.com&gt; 20:49:50<br />
+<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra43.jpg" alt="" />虽然也对具体的应用情景不清楚，但是一个factor能表达的信息比使用多个factor能表达的信息多.<br />
+网神(66707180) 20:51:06<br />
+单个的factor表达的信息多，而且节点越少，计算越简单，所以是不是尽量用少的factor？max-product求单个节点的边界概率，其思想是以该节点为root。<br />
+η&lt;liyitan2144@163.com&gt; 20:52:38<br />
+但是，从设计模型的角度看，节点少了，一个节点设计的复杂程度就大了，不一定容易设计，拆解成多个factor，每个factor都很简单，设计方便。<br />
+kxkr&lt;lxfkxkr@126.com&gt; 20:54:37<br />
+文中貌似倾向于一个单个的factor<br />
+<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra44.jpg" alt="" />η&lt;liyitan2144@163.com&gt; 20:56:57<br />
+这貌似是在表达一个通用的方法，和是把大的clique的factor拆解成小的多个factor没有关系。<br />
+kxkr&lt;lxfkxkr@126.com&gt; 20:57:53<br />
+拆成多个factor是不是会造成参数变多，不容易求呢，继续吧，这个有待实践。η&lt;liyitan2144@163.com&gt; 21:00:00<br />
+参数应该会变多吧，不过模型其实简单了，确实有待实践，我觉得这和具体应用有关，比如在一副图像里面，如果仅仅表达&#8221;像素&#8221;的相似度，我们完全可以使用小factor。<br />
+网神(66707180) 21:00:39<br />
+我继续，prml这章图模型只讲了基础的概念，没讲常用的图模型实例，HMM和CRF这两大主流图模型方法还没讲，感觉不够直观.<br />
+</span></p>
+<p style="background: white"><span style="color: black;font-family: 微软雅黑;font-size: 9pt">我继续说inference. 转换成factor图后，求节点xi的边缘概率。把xi作为root节点,把求root边界概率理解成一个信息(message)传递的过程，从叶子节点传递概率信息到root节点.传递的规则是：<br />
+从叶子节点开始，如果叶子是变量节点，发送1给父节点,如果叶子是factor节点，发送f(x)给父节点.<br />
+对于非叶子节点，如果是变量节点，将其收到的message相乘，发给父节点，如果是factor节点，将其收到的message和自身f(x)相乘，然后做一个sum，发给父节点。<br />
+举个例子：<br />
+<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra45.jpg" alt="" /><br />
+这个图中求x3的边缘概率，message传递的过程是:<br />
+<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra46.jpg" alt="" /><br />
+<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra47.jpg" alt="" />中的<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra48.jpg" alt="" />表示从节点x1传递到fa，最后p(x3)是等于<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra49.jpg" alt="" />，因为只有一个fb节点向其传入信息，如果要求x2的边界概率,因为x2有三个节点出入信息,分别是：<br />
+</span></p>
+<p style="background: white"><img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra50.jpg" alt="" /><img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra51.jpg" alt="" /><img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra52.jpg" alt="" /><span style="font-family: 微软雅黑;font-size: 9pt"><span style="color: black"><br />
+所以p(x2)就等于这三个信息的乘积<br />
+<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra53.jpg" alt="" /></span><span style="color: red"><br />
+</span><span style="color: black">这个结果与边界分布的定义是相符的，x2的边界定义如下：<br />
+<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra54.jpg" alt="" /><img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra55.jpg" alt="" /><br />
+<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra56.jpg" alt="" />通过这个，可以推导出上面的边界分布. 推导如下：<br />
+<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra57.jpg" alt="" /><br />
+</span></span></p>
+<p style="background: white"><span style="color: black;font-family: 微软雅黑;font-size: 9pt">上面就是用sum-product来求边缘分布的方法。<br />
+不知道讲的是否明白，不明白就看书吧，一起研究<img src="http://www.52nlp.cn/wp-content/uploads/2015/01/013115_0402_PRMLGra58.gif" alt="" />今天就讲到这了，大家有啥问题讨论下。<br />
+huajh7(284696304) 21:34:52<br />
+补充几点，一是 temporal model ,如Dynamical Bayesian newtwork(DBN), plate models ，这是图模型的表达能力; 二是belief Bropagation ，包括exact 和approximation ，loopy时的收敛性; Inference包括MCMC,变分法。这是图模型在tree和graph的推理能力。三是Structure Learning ，BIC score等。这是图模型的学习能力。</span></p>
+<p>注：PRML读书会系列文章由 <a href="http://weibo.com/dmalgorithms">@Nietzsche_复杂网络机器学习</a> 同学授权发布，转载请注明原作者和相关的主讲人，谢谢。</p>
+<p>PRML读书会讲稿PDF版本以及更多资源下载地址：<a href="http://vdisk.weibo.com/u/1841149974">http://vdisk.weibo.com/u/1841149974</a></p>
+<p>本文链接地址：<a href="http://www.52nlp.cn/prml读书会第八章-graphical-models">http://www.52nlp.cn/prml读书会第八章-graphical-models</a></p>
+<div class='yarpp-related'>
+<p>相关文章:<ol>
+<li><a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%9b%9b%e7%ab%a0-linear-models-for-classification" rel="bookmark" title="PRML读书会第四章 Linear Models for Classification">PRML读书会第四章 Linear Models for Classification </a></li>
+<li><a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%8d%81%e5%9b%9b%e7%ab%a0-combining-models" rel="bookmark" title="PRML读书会第十四章 Combining Models">PRML读书会第十四章 Combining Models </a></li>
+<li><a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e4%b8%89%e7%ab%a0-linear-models-for-regression" rel="bookmark" title="PRML读书会第三章 Linear Models for Regression">PRML读书会第三章 Linear Models for Regression </a></li>
+<li><a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e4%b9%9d%e7%ab%a0-mixture-models-and-em" rel="bookmark" title="PRML读书会第九章  Mixture Models and EM">PRML读书会第九章  Mixture Models and EM </a></li>
+<li><a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e4%ba%94%e7%ab%a0-neural-networks" rel="bookmark" title="PRML读书会第五章  Neural Networks">PRML读书会第五章  Neural Networks </a></li>
+<li><a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e4%b8%80%e7%ab%a0-introduction" rel="bookmark" title="PRML读书会第一章  Introduction">PRML读书会第一章  Introduction </a></li>
+<li><a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e4%b8%83%e7%ab%a0-sparse-kernel-machines" rel="bookmark" title="PRML读书会第七章 Sparse Kernel Machines">PRML读书会第七章 Sparse Kernel Machines </a></li>
+<li><a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%85%ad%e7%ab%a0-kernel-methods" rel="bookmark" title="PRML读书会第六章   Kernel Methods">PRML读书会第六章   Kernel Methods </a></li>
+<li><a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%8d%81%e4%b8%80%e7%ab%a0-sampling-methods" rel="bookmark" title="PRML读书会第十一章  Sampling Methods">PRML读书会第十一章  Sampling Methods </a></li>
+<li><a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%8d%81%e4%b8%89%e7%ab%a0sequential-data" rel="bookmark" title="PRML读书会第十三章 Sequential Data">PRML读书会第十三章 Sequential Data </a></li>
+</ol></p>
+</div>
+											</div><!-- .entry-content -->
+
+
+					<div class="entry-utility">
+						此条目发表在 <a href="http://www.52nlp.cn/category/pattern-recognition-and-machine-learning-2" rel="category tag">PRML</a>, <a href="http://www.52nlp.cn/category/%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0" rel="category tag">机器学习</a> 分类目录，贴了 <a href="http://www.52nlp.cn/tag/factor%e8%8a%82%e7%82%b9" rel="tag">factor节点</a>, <a href="http://www.52nlp.cn/tag/graphical-models" rel="tag">Graphical Models</a>, <a href="http://www.52nlp.cn/tag/mrf" rel="tag">MRF</a>, <a href="http://www.52nlp.cn/tag/pattern-recognition-and-machine-learning" rel="tag">Pattern Recognition And Machine Learning</a>, <a href="http://www.52nlp.cn/tag/pgm" rel="tag">PGM</a>, <a href="http://www.52nlp.cn/tag/prml" rel="tag">PRML</a>, <a href="http://www.52nlp.cn/tag/prml%e8%af%bb%e4%b9%a6%e4%bc%9a" rel="tag">PRML读书会</a>, <a href="http://www.52nlp.cn/tag/%e5%9b%be%e6%a8%a1%e5%9e%8b" rel="tag">图模型</a>, <a href="http://www.52nlp.cn/tag/%e6%97%a0%e5%90%91%e5%9b%be" rel="tag">无向图</a>, <a href="http://www.52nlp.cn/tag/%e6%9c%89%e5%90%91%e5%9b%be" rel="tag">有向图</a>, <a href="http://www.52nlp.cn/tag/%e6%9c%89%e5%90%91%e6%97%a0%e7%8e%af%e5%9b%be" rel="tag">有向无环图</a>, <a href="http://www.52nlp.cn/tag/%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0" rel="tag">机器学习</a>, <a href="http://www.52nlp.cn/tag/%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0%e4%b9%a6%e7%b1%8d" rel="tag">机器学习书籍</a>, <a href="http://www.52nlp.cn/tag/%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0%e8%af%bb%e4%b9%a6%e4%bc%9a" rel="tag">机器学习读书会</a>, <a href="http://www.52nlp.cn/tag/%e6%a6%82%e7%8e%87%e5%9b%be%e6%a8%a1%e5%9e%8b" rel="tag">概率图模型</a>, <a href="http://www.52nlp.cn/tag/%e6%a6%82%e7%8e%87%e6%8e%a8%e6%96%ad" rel="tag">概率推断</a>, <a href="http://www.52nlp.cn/tag/%e8%b4%9d%e5%8f%b6%e6%96%af" rel="tag">贝叶斯</a>, <a href="http://www.52nlp.cn/tag/%e8%b4%9d%e5%8f%b6%e6%96%af%e7%bd%91%e7%bb%9c" rel="tag">贝叶斯网络</a>, <a href="http://www.52nlp.cn/tag/%e9%a9%ac%e5%b0%94%e7%a7%91%e5%a4%ab" rel="tag">马尔科夫</a>, <a href="http://www.52nlp.cn/tag/%e9%a9%ac%e5%b0%94%e7%a7%91%e5%a4%ab%e9%9a%8f%e6%9c%ba%e5%9c%ba" rel="tag">马尔科夫随机场</a> 标签。将<a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%85%ab%e7%ab%a0-graphical-models" title="链向 PRML读书会第八章  Graphical Models 的固定链接" rel="bookmark">固定链接</a>加入收藏夹。											</div><!-- .entry-utility -->
+				</div><!-- #post-## -->
+
+				<div id="nav-below" class="navigation">
+					<div class="nav-previous"><a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e4%b8%83%e7%ab%a0-sparse-kernel-machines" rel="prev"><span class="meta-nav">&larr;</span> PRML读书会第七章 Sparse Kernel Machines</a></div>
+					<div class="nav-next"><a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e4%b9%9d%e7%ab%a0-mixture-models-and-em" rel="next">PRML读书会第九章  Mixture Models and EM <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-below -->
+
+				
+			<div id="comments">
+
+
+
+
+								<div id="respond" class="comment-respond">
+				<h3 id="reply-title" class="comment-reply-title">发表评论 <small><a rel="nofollow" id="cancel-comment-reply-link" href="/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%85%ab%e7%ab%a0-graphical-models#respond" style="display:none;">取消回复</a></small></h3>
+									<form action="http://www.52nlp.cn/wp-comments-post.php" method="post" id="commentform" class="comment-form">
+																			<p class="comment-notes">电子邮件地址不会被公开。 必填项已用<span class="required">*</span>标注</p>							<p class="comment-form-author"><label for="author">姓名 <span class="required">*</span></label> <input id="author" name="author" type="text" value="" size="30" aria-required='true' /></p>
+<p class="comment-form-email"><label for="email">电子邮件 <span class="required">*</span></label> <input id="email" name="email" type="text" value="" size="30" aria-required='true' /></p>
+<p class="comment-form-url"><label for="url">站点</label> <input id="url" name="url" type="text" value="" size="30" /></p>
+												<p class="comment-form-comment"><label for="comment">评论</label> <textarea id="comment" name="comment" cols="45" rows="8" aria-required="true"></textarea></p>						<p class="form-allowed-tags">您可以使用这些<abbr title="HyperText Markup Language">HTML</abbr>标签和属性： <code>&lt;a href=&quot;&quot; title=&quot;&quot;&gt; &lt;abbr title=&quot;&quot;&gt; &lt;acronym title=&quot;&quot;&gt; &lt;b&gt; &lt;blockquote cite=&quot;&quot;&gt; &lt;cite&gt; &lt;code&gt; &lt;del datetime=&quot;&quot;&gt; &lt;em&gt; &lt;i&gt; &lt;q cite=&quot;&quot;&gt; &lt;strike&gt; &lt;strong&gt; </code></p>						<p class="form-submit">
+							<input name="submit" type="submit" id="submit" value="发表评论" />
+							<input type='hidden' name='comment_post_ID' value='7603' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+						</p>
+						<p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="e3599f1543" /></p><p style="display: none;"><input type="hidden" id="ak_js" name="ak_js" value="86"/></p><p><input type="hidden" id="comment_reply_ID" name="comment_reply_ID" value="0" /><input type="hidden" id="comment_reply_dp" name="comment_reply_dp" value="0" /></p><div id="cancel_reply" style="display:none;"><a href="javascript:void(0)" onclick="movecfm(null,0,1,null);" style="color:red;">点击取消回复</a></div><script type="text/javascript">
+/* <![CDATA[ */
+var commentformid = "commentform";
+var USERINFO = false;
+var atreply = "none";
+/* ]]> */
+</script>
+<script type="text/javascript" src="http://www.52nlp.cn/wp-content/plugins/wp-thread-comment/wp-thread-comment.js.php?jsver=common"></script>
+					</form>
+							</div><!-- #respond -->
+			
+</div><!-- #comments -->
+
+
+			</div><!-- #content -->
+		</div><!-- #container -->
+
+﻿
+		<div id="primary" class="widget-area" role="complementary">
+			<ul class="xoxo">
+<!-- begin l_sidebar -->
+	<div id="l_sidebar">
+<p>卓越网：<a href="http://www.amazon.cn/mn/searchApp?source=garypyang-23&searchType=1&keywords=自然语言处理" title="自然语言处理书籍"target=_blank>自然语言处理书籍</a><br>
+<li id="search-3" class="widget-container widget_search"><h3 class="widget-title">站内搜索</h3><form role="search" method="get" id="searchform" class="searchform" action="http://www.52nlp.cn/">
+				<div>
+					<label class="screen-reader-text" for="s">搜索：</label>
+					<input type="text" value="" name="s" id="s" />
+					<input type="submit" id="searchsubmit" value="搜索" />
+				</div>
+			</form></li><li id="text-4" class="widget-container widget_text"><h3 class="widget-title">NLPJob新鲜职位推荐:</h3>			<div class="textwidget"><p></p>
+<script src="http://www.nlpjob.com/api/api.php?action=getJobs
+&type=0&category=0&count=8&random=1&days_behind=7&response=js" type="text/javascript"></script>
+
+<script type="text/javascript">showJobs('jobber-container', 'jobber-list');</script></div>
+		</li><li id="text-3" class="widget-container widget_text"><h3 class="widget-title">52nlp新浪微博</h3>			<div class="textwidget"><p><iframe id="sina_widget_2104931705" style="width:100%; height:500px;" frameborder="0" scrolling="no" src="http://v.t.sina.com.cn/widget/widget_blog.php?uid=2104931705&height=500&skin=wd_01&showpic=1"></iframe></p>
+<p><!-- JiaThis Button BEGIN --><br />
+<script type="text/javascript" src="http://v3.jiathis.com/code/jiathis_r.js?uid=1340292124103344&move=0&amp;btn=r3.gif" charset="utf-8"></script><br />
+<!-- JiaThis Button END --></p>
+</div>
+		</li><li id="categories-309398091" class="widget-container widget_categories"><h3 class="widget-title">分类目录</h3>		<ul>
+	<li class="cat-item cat-item-72"><a href="http://www.52nlp.cn/category/mit-nlp" title="麻省理工学院开放式课程&quot;自然语言处理“的相关翻译文章">MIT自然语言处理</a> (23)
+</li>
+	<li class="cat-item cat-item-976"><a href="http://www.52nlp.cn/category/pattern-recognition-and-machine-learning-2" >PRML</a> (15)
+</li>
+	<li class="cat-item cat-item-469"><a href="http://www.52nlp.cn/category/topic-model" >Topic Model</a> (10)
+</li>
+	<li class="cat-item cat-item-87"><a href="http://www.52nlp.cn/category/wordpress" >wordpress</a> (6)
+</li>
+	<li class="cat-item cat-item-317"><a href="http://www.52nlp.cn/category/%e4%b8%93%e9%a2%98" >专题</a> (6)
+</li>
+	<li class="cat-item cat-item-263"><a href="http://www.52nlp.cn/category/chinese-information-processing" >中文信息处理</a> (20)
+</li>
+	<li class="cat-item cat-item-62"><a href="http://www.52nlp.cn/category/word-segmentation" >中文分词</a> (36)
+</li>
+	<li class="cat-item cat-item-420"><a href="http://www.52nlp.cn/category/%e5%b9%b6%e8%a1%8c%e7%ae%97%e6%b3%95" >并行算法</a> (1)
+</li>
+	<li class="cat-item cat-item-268"><a href="http://www.52nlp.cn/category/%e6%8b%9b%e8%81%98" >招聘</a> (4)
+</li>
+	<li class="cat-item cat-item-560"><a href="http://www.52nlp.cn/category/%e6%8e%a8%e8%8d%90%e7%b3%bb%e7%bb%9f" >推荐系统</a> (3)
+</li>
+	<li class="cat-item cat-item-354"><a href="http://www.52nlp.cn/category/%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98" >数据挖掘</a> (2)
+</li>
+	<li class="cat-item cat-item-241"><a href="http://www.52nlp.cn/category/text-classification" >文本分类</a> (3)
+</li>
+	<li class="cat-item cat-item-193"><a href="http://www.52nlp.cn/category/maximum-entropy-model" >最大熵模型</a> (7)
+</li>
+	<li class="cat-item cat-item-344"><a href="http://www.52nlp.cn/category/%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0" >机器学习</a> (29)
+</li>
+	<li class="cat-item cat-item-1"><a href="http://www.52nlp.cn/category/machine-translation" >机器翻译</a> (54)
+</li>
+	<li class="cat-item cat-item-195"><a href="http://www.52nlp.cn/category/%e6%9d%a1%e4%bb%b6%e9%9a%8f%e6%9c%ba%e5%9c%ba" >条件随机场</a> (3)
+</li>
+	<li class="cat-item cat-item-153"><a href="http://www.52nlp.cn/category/tagging" >标注</a> (13)
+</li>
+	<li class="cat-item cat-item-885"><a href="http://www.52nlp.cn/category/%e7%a7%91%e5%ad%a6%e8%ae%a1%e7%ae%97" >科学计算</a> (1)
+</li>
+	<li class="cat-item cat-item-538"><a href="http://www.52nlp.cn/category/%e7%bb%9f%e8%ae%a1%e5%ad%a6" >统计学</a> (10)
+</li>
+	<li class="cat-item cat-item-126"><a href="http://www.52nlp.cn/category/translation-model" >翻译模型</a> (2)
+</li>
+	<li class="cat-item cat-item-51"><a href="http://www.52nlp.cn/category/nlp" >自然语言处理</a> (227)
+</li>
+	<li class="cat-item cat-item-106"><a href="http://www.52nlp.cn/category/computational-linguistics" >计算语言学</a> (39)
+</li>
+	<li class="cat-item cat-item-22"><a href="http://www.52nlp.cn/category/dictionary" >词典</a> (8)
+</li>
+	<li class="cat-item cat-item-221"><a href="http://www.52nlp.cn/category/semantics" >语义学</a> (1)
+</li>
+	<li class="cat-item cat-item-161"><a href="http://www.52nlp.cn/category/semantic-web" >语义网</a> (3)
+</li>
+	<li class="cat-item cat-item-37"><a href="http://www.52nlp.cn/category/corpus" >语料库</a> (12)
+</li>
+	<li class="cat-item cat-item-86"><a href="http://www.52nlp.cn/category/language-model" >语言模型</a> (23)
+</li>
+	<li class="cat-item cat-item-156"><a href="http://www.52nlp.cn/category/speech-recognition" >语音识别</a> (4)
+</li>
+	<li class="cat-item cat-item-314"><a href="http://www.52nlp.cn/category/%e8%b4%9d%e5%8f%b6%e6%96%af%e6%a8%a1%e5%9e%8b" >贝叶斯模型</a> (1)
+</li>
+	<li class="cat-item cat-item-110"><a href="http://www.52nlp.cn/category/reprint" >转载</a> (28)
+</li>
+	<li class="cat-item cat-item-451"><a href="http://www.52nlp.cn/category/%e9%97%ae%e7%ad%94%e7%b3%bb%e7%bb%9f" >问答系统</a> (1)
+</li>
+	<li class="cat-item cat-item-3"><a href="http://www.52nlp.cn/category/informal-essay" >随笔</a> (63)
+</li>
+	<li class="cat-item cat-item-60"><a href="http://www.52nlp.cn/category/hidden-markov-model" >隐马尔科夫模型</a> (36)
+</li>
+		</ul>
+</li><li id="archives-2" class="widget-container widget_archive"><h3 class="widget-title">文章归档</h3>		<ul>
+	<li><a href='http://www.52nlp.cn/2015/01'>2015年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/12'>2014年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/11'>2014年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/09'>2014年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/07'>2014年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/06'>2014年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/05'>2014年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/04'>2014年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/01'>2014年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/12'>2013年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/06'>2013年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/05'>2013年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/04'>2013年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/03'>2013年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/02'>2013年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/01'>2013年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/12'>2012年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/11'>2012年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/10'>2012年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/09'>2012年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/08'>2012年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/07'>2012年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/06'>2012年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/05'>2012年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/04'>2012年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/03'>2012年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/01'>2012年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/12'>2011年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/11'>2011年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/10'>2011年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/09'>2011年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/08'>2011年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/07'>2011年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/06'>2011年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/05'>2011年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/04'>2011年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/03'>2011年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/02'>2011年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/01'>2011年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/12'>2010年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/11'>2010年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/10'>2010年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/09'>2010年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/08'>2010年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/07'>2010年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/06'>2010年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/05'>2010年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/04'>2010年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/03'>2010年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/02'>2010年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/01'>2010年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/12'>2009年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/11'>2009年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/10'>2009年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/09'>2009年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/08'>2009年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/07'>2009年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/06'>2009年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/05'>2009年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/04'>2009年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/03'>2009年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/02'>2009年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/01'>2009年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2008/12'>2008年十二月</a></li>
+		</ul>
+</li>		<li id="recent-posts-2" class="widget-container widget_recent_entries">		<h3 class="widget-title">最新文章</h3>		<ul>
+					<li>
+				<a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%8d%81%e5%9b%9b%e7%ab%a0-combining-models">PRML读书会第十四章 Combining Models</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%8d%81%e4%b8%89%e7%ab%a0sequential-data">PRML读书会第十三章 Sequential Data</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%8d%81%e4%ba%8c%e7%ab%a0-continuous-latent-variables">PRML读书会第十二章 Continuous Latent Variables</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%8d%81%e4%b8%80%e7%ab%a0-sampling-methods">PRML读书会第十一章  Sampling Methods</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%8d%81%e7%ab%a0-approximate-inference">PRML读书会第十章  Approximate Inference</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e4%b9%9d%e7%ab%a0-mixture-models-and-em">PRML读书会第九章  Mixture Models and EM</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%85%ab%e7%ab%a0-graphical-models">PRML读书会第八章  Graphical Models</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e4%b8%83%e7%ab%a0-sparse-kernel-machines">PRML读书会第七章 Sparse Kernel Machines</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%85%ad%e7%ab%a0-kernel-methods">PRML读书会第六章   Kernel Methods</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e4%ba%94%e7%ab%a0-neural-networks">PRML读书会第五章  Neural Networks</a>
+						</li>
+				</ul>
+		</li><li id="recentcomments" class="widget-container widget_recentcomments"><h3 class="widget-title">最近评论</h3><ul><li class="rc-navi rc-clearfix"><span class="rc-loading">正在加载...</span></li><li id="rc-comment-temp" class="rc-item rc-comment rc-clearfix"><div class="rc-info"></div><div class="rc-timestamp"></div><div class="rc-excerpt"></div></li><li id="rc-ping-temp" class="rc-item rc-ping rc-clearfix"><span class="rc-label"></span></li></ul></li>			</ul>
+		</div><!-- #primary .widget-area -->
+
+
+		<div id="secondary" class="widget-area" role="complementary">
+			<ul class="xoxo">
+				<li id="linkcat-103" class="widget-container widget_links"><h3 class="widget-title">NLP相关网站</h3>
+	<ul class='xoxo blogroll'>
+<li><a href="http://www.aclweb.org/" rel="co-worker" title="The Association for Computational Linguistics" target="_blank">ACL</a></li>
+<li><a href="http://aclweb.org/anthology-new/" rel="co-worker" title="A Digital Archive of Research Papers in Computational Linguistics" target="_blank">ACL Anthology</a></li>
+<li><a href="http://belobog.si.umich.edu/clair/anthology/index.cgi" rel="colleague" target="_blank">ACL Anthology Network</a></li>
+<li><a href="http://aclweb.org/aclwiki/index.php?title=Main_Page" rel="colleague" title="the Wiki of the Association for Computational Linguistics" target="_blank">ACL Wiki</a></li>
+<li><a href="http://www.clsp.jhu.edu/" rel="colleague" target="_blank">CLSP</a></li>
+<li><a href="http://www.cwbbase.com/" rel="colleague" title="这是一个略具规模的中文语义词库, 也是稍有特色的汉语语义词典" target="_blank">CWB中文词库</a></li>
+<li><a href="http://www.euromatrix.net/" rel="colleague" target="_blank">EuroMatrix</a></li>
+<li><a href="http://www.freebase.com" rel="colleague" target="_blank">Freebase</a></li>
+<li><a href="http://www.clsp.jhu.edu/workshops/" rel="colleague" target="_blank">JHU Workshop</a></li>
+<li><a href="http://www.ldc.upenn.edu/" rel="colleague" title="Linguistic Data Consortium" target="_blank">LDC</a></li>
+<li><a href="http://www.statmt.org/moses/" rel="colleague" title="A factored phrase-based beam-search decoder for machine translation" target="_blank">Moses</a></li>
+<li><a href="http://nlpers.blogspot.com/" rel="colleague" title="国外一个非常不错的自然语言处理博客" target="_blank">nlper</a></li>
+<li><a href="http://www.nlpjob.com" target="_blank">NLPJob</a></li>
+<li><a href="http://www.powerset.com/" rel="colleague" target="_blank">Powerset</a></li>
+<li><a href="http://www.speech.sri.com/projects/srilm/" rel="colleague" title="- The SRI Language Modeling Toolkit" target="_blank">SRILM</a></li>
+<li><a href="http://www.statmt.org/" rel="colleague" title="This website is dedicated to research in statistical machine translation" target="_blank">Statistical Machine Translation</a></li>
+<li><a href="http://textanalysisonline.com/" target="_blank">Text Analysis</a></li>
+<li><a href="http://textminingonline.com/" target="_blank">Text Mining</a></li>
+<li><a href="http://textsummarization.net/" target="_blank">Text Summarization</a></li>
+<li><a href="http://w3china.org/index.htm" rel="friend" title="致力于促进W3C技术的广泛应用, 传播关于未来Web的知识与技术" target="_blank">中国万维网联盟</a></li>
+<li><a href="http://www.cipsc.org.cn/" rel="co-worker" title="Chinese Information Processing Society of China" target="_blank">中国中文信息学会</a></li>
+<li><a href="http://www.nlp.org.cn/" rel="colleague" title="中文自然语言处理开放平台" target="_blank">中文自然语言处理开放平台</a></li>
+<li><a href="http://www.mt-archive.info/" rel="colleague" title="Repository and bibliography of articles, books and papers on topics" target="_blank">机器翻译档案计划</a></li>
+<li><a href="http://www.statmt.org/europarl/" rel="colleague" target="_blank">欧洲议会平行语料库</a></li>
+<li><a href="http://www.keenage.com/" title="HowNet" target="_blank">知网</a></li>
+<li><a href="http://www.nlpir.org/" rel="friend" title="由张华平博士发起，由北京理工大学网络搜索与挖掘实验室运营，旨在推动NLP(自然语言处理)与IR(信息检索)领域的共享与共赢" target="_blank">自然语言处理与信息检索共享平台</a></li>
+<li><a href="http://mitel.ict.ac.cn/" rel="co-worker" title="中科院计算所多语言交互技术实验室" target="_blank">计算所多语言交互技术实验室</a></li>
+
+	</ul>
+</li>
+<li id="linkcat-2" class="widget-container widget_links"><h3 class="widget-title">友情链接</h3>
+	<ul class='xoxo blogroll'>
+<li><a href="http://blog.youxu.info/" title="一个计算机专业的 Ph.D. 学生徐宥的个人博客" target="_blank">4G spaces</a></li>
+<li><a href="http://blog.52nlp.org" rel="me" title="我爱自然语言处理完全镜像" target="_blank">52nlpblog</a></li>
+<li><a href="http://www.52nlp.com" rel="me" title="52nlp的英文站" target="_blank">52nlpcom</a></li>
+<li><a href="http://hi.baidu.com/drkevinzhang" rel="friend" title="ICTCLAS 张华平博士的空间" target="_blank">ICTCLAS 张华平博士的空间</a></li>
+<li><a href="http://blog.so8848.com/" rel="friend" title="信息检索博客" target="_blank">Information Retrieval Blog</a></li>
+<li><a href="http://interop123.com/default.aspx" rel="friend" title="崔晓源师兄关于NET技术的站点" target="_blank">NET互操作技术社区</a></li>
+<li><a href="http://bbs.w3china.org/" rel="friend" title="中国万维网联盟讨论区" target="_blank">W3CHINA讨论区</a></li>
+<li><a href="http://www.ailab.cn/" rel="friend" target="_blank">人工智能网</a></li>
+<li><a href="http://mindhacks.cn/" rel="friend" title="一个很有思想的价值博客!" target="_blank">刘未鹏之Mind Hacks</a></li>
+<li><a href="http://www.cnblogs.com/finallyliuyu/" rel="friend" target="_blank">原地转圈的驴子</a></li>
+<li><a href="http://xunren.thuir.org/" target="_blank">微博寻人（梁博）</a></li>
+<li><a href="http://52opencourse.com" rel="friend" title="我爱公开课，高质量公开课交流平台" target="_blank">我爱公开课</a></li>
+<li><a href="http://iregex.org/" rel="friend" target="_blank">我爱正则表达式</a></li>
+<li><a href="http://courseminer.com" target="_blank">挖课</a></li>
+<li><a href="http://www.flickering.cn/" target="_blank">火光摇曳</a></li>
+<li><a href="http://www.sciencenet.cn/u/timy/" rel="friend" title="章成志老师的博客" target="_blank">章成志的博客</a></li>
+<li><a href="http://blog.csdn.net/v_JULY_v/" target="_blank">结构之法 算法之道</a></li>
+<li><a href="http://www.lingcc.com/" rel="friend" title="关注编译器,虚拟机,编程语言及技术,IT职业和程序员生活" target="_blank">编译点滴</a></li>
+<li><a href="http://www.52nlp.org" rel="me" title="52nlp的官方网站" target="_blank">自然语言处理</a></li>
+<li><a href="http://www.ieee.org.cn/" rel="friend" title="计算机科学论坛" target="_blank">计算机科学论坛</a></li>
+<li><a href="http://coursegraph.com/">课程图谱</a></li>
+<li><a href="http://blog.coursegraph.com" rel="friend">课程图谱博客</a></li>
+
+	</ul>
+</li>
+<li id="meta-4" class="widget-container widget_meta"><h3 class="widget-title">功能</h3>			<ul>
+						<li><a href="http://www.52nlp.cn/wp-login.php">登录</a></li>
+			<li><a href="http://www.52nlp.cn/feed">文章<abbr title="Really Simple Syndication">RSS</abbr></a></li>
+			<li><a href="http://www.52nlp.cn/comments/feed">评论<abbr title="Really Simple Syndication">RSS</abbr></a></li>
+<li><a href="https://cn.wordpress.org/" title="基于WordPress，一个优美、先进的个人信息发布平台。">WordPress.org</a></li>			</ul>
+</li>			</ul>
+		</div><!-- #secondary .widget-area -->
+
+	</div><!-- #main -->
+
+	<div id="footer" role="contentinfo">
+		<div id="colophon">
+
+
+
+			<div id="site-info">
+				<a href="http://www.52nlp.cn/" title="我爱自然语言处理" rel="home">
+					我爱自然语言处理				</a>
+			</div><!-- #site-info -->
+
+			<div id="site-generator">
+								<a href="http://cn.wordpress.org/"
+						title="优雅的个人发布平台" rel="generator">
+					自豪地采用 WordPress。				</a>
+			</div><!-- #site-generator -->
+
+		</div><!-- #colophon -->
+	</div><!-- #footer -->
+
+</div><!-- #wrapper -->
+
+<script>
+/* <![CDATA[ */
+var rcGlobal = {
+	serverUrl		:'http://www.52nlp.cn',
+	infoTemp		:'%REVIEWER% 在 %POST%',
+	loadingText		:'正在加载',
+	noCommentsText	:'没有任何评论',
+	newestText		:'&laquo; 最新的',
+	newerText		:'&laquo; 上一页',
+	olderText		:'下一页 &raquo;',
+	showContent		:'',
+	external		:'',
+	avatarSize		:'0',
+	avatarPosition	:'left',
+	anonymous		:'匿名'
+};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://www.52nlp.cn/wp-content/plugins/akismet/_inc/form.js?ver=3.0.4'></script>
+<link rel='stylesheet' id='yarppRelatedCss-css'  href='http://www.52nlp.cn/wp-content/plugins/yet-another-related-posts-plugin/style/related.css?ver=4.0.1' type='text/css' media='all' />
+<script type='text/javascript' src='http://www.52nlp.cn/wp-content/plugins/wp-recentcomments/js/wp-recentcomments.js?ver=2.2.7'></script>
+	<p align="center"> 本站架设在 <a href="http://www.52nlp.cn/digitalocean%E4%BD%BF%E7%94%A8%E5%B0%8F%E8%AE%B0">DigitalOcean</a> 上, 采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本站内容必须也遵循“署名-非商业用途-保持一致”的创作共用协议.</p>
+<!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(["trackPageView"]);
+  _paq.push(["enableLinkTracking"]);
+
+  (function() {
+    var u=(("https:" == document.location.protocol) ? "https" : "http") + "://162.243.252.121/piwik/";
+    _paq.push(["setTrackerUrl", u+"piwik.php"]);
+    _paq.push(["setSiteId", "5"]);
+    var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0]; g.type="text/javascript";
+    g.defer=true; g.async=true; g.src=u+"piwik.js"; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Piwik Code -->
+</body>
+</html>
