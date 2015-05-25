@@ -1,0 +1,721 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<title>斯坦福大学深度学习与自然语言处理第一讲：引言 | 我爱自然语言处理</title>
+<link rel="profile" href="http://gmpg.org/xfn/11" />
+<link rel="stylesheet" type="text/css" media="all" href="http://www.52nlp.cn/wp-content/themes/twentytenorg/style.css" />
+<link rel="pingback" href="http://www.52nlp.cn/xmlrpc.php" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; Feed" href="http://www.52nlp.cn/feed" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; 评论Feed" href="http://www.52nlp.cn/comments/feed" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; 斯坦福大学深度学习与自然语言处理第一讲：引言评论Feed" href="http://www.52nlp.cn/%e6%96%af%e5%9d%a6%e7%a6%8f%e5%a4%a7%e5%ad%a6%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%8e%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86%e7%ac%ac%e4%b8%80%e8%ae%b2%e5%bc%95%e8%a8%80/feed" />
+		<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"http:\/\/s.w.org\/images\/core\/emoji\/72x72\/","ext":".png","source":{"concatemoji":"http:\/\/www.52nlp.cn\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.2.2"}};
+			!function(a,b,c){function d(a){var c=b.createElement("canvas"),d=c.getContext&&c.getContext("2d");return d&&d.fillText?(d.textBaseline="top",d.font="600 32px Arial","flag"===a?(d.fillText(String.fromCharCode(55356,56812,55356,56807),0,0),c.toDataURL().length>3e3):(d.fillText(String.fromCharCode(55357,56835),0,0),0!==d.getImageData(16,16,1,1).data[0])):!1}function e(a){var c=b.createElement("script");c.src=a,c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var f,g;c.supports={simple:d("simple"),flag:d("flag")},c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.simple&&c.supports.flag||(g=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",g,!1),a.addEventListener("load",g,!1)):(a.attachEvent("onload",g),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),f=c.source||{},f.concatemoji?e(f.concatemoji):f.wpemoji&&f.twemoji&&(e(f.twemoji),e(f.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+		<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<link rel='stylesheet' id='yarppWidgetCss-css'  href='http://www.52nlp.cn/wp-content/plugins/yet-another-related-posts-plugin/style/widget.css?ver=4.2.2' type='text/css' media='all' />
+<link rel='stylesheet' id='wp-syntax-css-css'  href='http://www.52nlp.cn/wp-content/plugins/wp-syntax/css/wp-syntax.css?ver=1.0' type='text/css' media='all' />
+<link rel='stylesheet' id='codecolorer-css'  href='http://www.52nlp.cn/wp-content/plugins/codecolorer/codecolorer.css?ver=0.9.9' type='text/css' media='screen' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.52nlp.cn/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.52nlp.cn/wp-includes/wlwmanifest.xml" /> 
+<link rel='prev' title='用MeCab打造一套实用的中文分词系统(三)：MeCab-Chinese' href='http://www.52nlp.cn/%e7%94%a8mecab%e6%89%93%e9%80%a0%e4%b8%80%e5%a5%97%e5%ae%9e%e7%94%a8%e7%9a%84%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e7%b3%bb%e7%bb%9f%e4%b8%89%ef%bc%9amecab-chinese' />
+<meta name="generator" content="WordPress 4.2.2" />
+<link rel='canonical' href='http://www.52nlp.cn/%e6%96%af%e5%9d%a6%e7%a6%8f%e5%a4%a7%e5%ad%a6%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%8e%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86%e7%ac%ac%e4%b8%80%e8%ae%b2%e5%bc%95%e8%a8%80' />
+<link rel='shortlink' href='http://www.52nlp.cn/?p=8339' />
+<!-- wp thread comment 1.4.9.4.002 -->
+<style type="text/css" media="screen">
+.editComment, .editableComment, .textComment{
+	display: inline;
+}
+.comment-childs{
+	border: 1px solid #999;
+	margin: 5px 2px 2px 4px;
+	padding: 4px 2px 2px 4px;
+	background-color: white;
+}
+.chalt{
+	background-color: #E2E2E2;
+}
+#newcomment{
+	border:1px dashed #777;width:90%;
+}
+#newcommentsubmit{
+	color:red;
+}
+.adminreplycomment{
+	border:1px dashed #777;
+	width:99%;
+	margin:4px;
+	padding:4px;
+}
+.mvccls{
+	color: #999;
+}
+			
+</style>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: { equationNumbers: { autoNumber: "AMS" } },
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+    inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+    displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+    processEscapes: true
+  },
+  "HTML-CSS": { availableFonts: ["TeX"] }
+});
+</script><script type="text/javascript" src="http://www.52nlp.cn/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</head>
+
+<body class="single single-post postid-8339 single-format-standard">
+<div id="wrapper" class="hfeed">
+	<div id="header">
+		<div id="masthead">
+			<div id="branding" role="banner">
+								<div id="site-title">
+					<span>
+						<a href="http://www.52nlp.cn/" title="我爱自然语言处理" rel="home">我爱自然语言处理</a>
+					</span>
+				</div>
+				<div id="site-description">I Love Natural Language Processing</div>
+
+										<img src="http://www.52nlp.cn/wp-content/themes/twentytenorg/images/headers/path.jpg" width="940" height="198" alt="" />
+								</div><!-- #branding -->
+
+			<div id="access" role="navigation">
+			  				<div class="skip-link screen-reader-text"><a href="#content" title="跳至正文">跳至正文</a></div>
+								<div class="menu"><ul><li ><a href="http://www.52nlp.cn/">首页</a></li><li class="page_item page-item-2"><a href="http://www.52nlp.cn/about">关于</a></li><li class="page_item page-item-2557 page_item_has_children"><a href="http://www.52nlp.cn/resources">资源</a><ul class='children'><li class="page_item page-item-1271"><a href="http://www.52nlp.cn/resources/wpmatheditor">WpMathEditor</a></li></ul></li></ul></div>
+ 
+				<div class="menu"><ul><li class="page_item page-item-2"></li><li class="page_item page-item-2"><a href="http://coursegraph.com" title="课程图谱" target="_blank">课程图谱</a></li><li class="page_item page-item-2"><a href="http://www.nlpjob.com" title="求职" target="_blank">求职招聘</a></li></ul></div>
+			</div><!-- #access -->
+		</div><!-- #masthead -->
+	</div><!-- #header -->
+
+	<div id="main">
+
+		<div id="container">
+			<div id="content" role="main">
+
+			
+
+				<div id="nav-above" class="navigation">
+					<div class="nav-previous"><a href="http://www.52nlp.cn/%e7%94%a8mecab%e6%89%93%e9%80%a0%e4%b8%80%e5%a5%97%e5%ae%9e%e7%94%a8%e7%9a%84%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e7%b3%bb%e7%bb%9f%e4%b8%89%ef%bc%9amecab-chinese" rel="prev"><span class="meta-nav">&larr;</span> 用MeCab打造一套实用的中文分词系统(三)：MeCab-Chinese</a></div>
+					<div class="nav-next"></div>
+				</div><!-- #nav-above -->
+
+				<div id="post-8339" class="post-8339 post type-post status-publish format-standard hentry category-344 category-1153 category-nlp tag-deep-learning tag-deep-nlp tag-dl tag-numpy tag-python tag-richard-socher tag-rnn tag-sgd tag-vsm tag-480 tag-1169 tag-1166 tag-573 tag-1159 tag-1163 tag-398 tag-416 tag-344 tag-6 tag-483 tag-1158 tag-1018 tag-1173 tag-1160 tag-513 tag-1157 tag-915 tag-nlp tag-1168 tag-1164 tag-1167 tag-1165 tag-speech-recognition tag-451 tag-1161 tag-1162">
+					<h1 class="entry-title">斯坦福大学深度学习与自然语言处理第一讲：引言</h1>
+
+					<div class="entry-meta">
+						<span class="meta-prep meta-prep-author">发表于</span> <a href="http://www.52nlp.cn/%e6%96%af%e5%9d%a6%e7%a6%8f%e5%a4%a7%e5%ad%a6%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%8e%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86%e7%ac%ac%e4%b8%80%e8%ae%b2%e5%bc%95%e8%a8%80" title="17:52" rel="bookmark"><span class="entry-date">2015年05月21号</span></a> <span class="meta-sep">由</span> <span class="author vcard"><a class="url fn n" href="http://www.52nlp.cn/author/admin" title="查看所有由 52nlp 发布的文章">52nlp</a></span>					</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+						<p>斯坦福大学在三月份开设了一门“深度学习与自然语言处理”的课程：<a href="http://cs224d.stanford.edu/">CS224d: Deep Learning for Natural Language Processing</a>，授课老师是青年才俊 <a href="http://www.socher.org/">Richard Socher</a>，他本人是德国人，大学期间涉足<a href="http://www.52nlp.cn/">自然语言处理</a>，在德国读研时又专攻计算机视觉，之后在斯坦福大学攻读博士学位，拜师NLP领域的巨牛 <a href="http://coursegraph.com/coursera_nlp">Chris Manning</a> 和 <a href="http://www.52nlp.cn/tag/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0">Deep Learning</a> 领域的巨牛 <a href="http://coursegraph.com/coursera_ml">Andrew Ng</a>，其博士论文是《<a href="http://nlp.stanford.edu/~socherr/thesis.pdf">Recursive Deep Learning for Natural Language Processing and Computer Vision</a>》，也算是多年求学生涯的完美一击。毕业后以联合创始人及CTO的身份创办了<a href="http://www.metamind.io/">MetaMind</a>，作为AI领域的新星创业公司，MetaMind创办之初就拿了800万美元的风投，值得关注。</p>
+<p>回到这们课程CS224d,其实可以翻译为“面向自然语言处理的深度学习（Deep Learning for Natural Language Processing）”，这门课程是面向斯坦福学生的校内课程，不过课程的<a href="http://cs224d.stanford.edu/syllabus.html">相关材料</a>都放到了网上，包括课程视频，课件，相关知识，预备知识，作业等等，相当齐备。课程大纲相当有章法和深度，从基础讲起，再讲到深度学习在NLP领域的具体应用，包括命名实体识别，机器翻译，句法分析器，情感分析等。Richard Socher此前在ACL 2012和NAACL 2013 做过一个Tutorial，<a href="http://www.socher.org/index.php/DeepLearningTutorial/DeepLearningTutorial">Deep Learning for NLP (without Magic)</a>，感兴趣的同学可以先参考一下: <a href="http://52opencourse.com/301/deep-learning-for-nlp-without-magic-acl-2012-tutorial-%E7%9B%B8%E5%85%B3%E8%A7%86%E9%A2%91%E5%8F%8A%E8%AF%BE%E4%BB%B6">Deep Learning for NLP (without Magic) &#8211; ACL 2012 Tutorial &#8211; 相关视频及课件</a> 。另外，由于这门课程的视频放在Youtube上，@<a href="http://weibo.com/u/1402400261">爱可可-爱生活</a> 老师维护了一个网盘链接：<a href="http://pan.baidu.com/s/1pJyrXaF">http://pan.baidu.com/s/1pJyrXaF</a> ，同步更新相关资料，可以关注。<br />
+<span id="more-8339"></span></p>
+<p>第一讲：引言-自然语言处理与深度学习简介(Intro to NLP and Deep Learning)</p>
+<p>推荐阅读材料：</p>
+<ol>
+<li>线性代数相关知识点回顾：[<a href="http://cs229.stanford.edu/section/cs229-linalg.pdf">Linear Algebra Review</a>]</li>
+<li>概率相关知识点回顾：[<a href="http://cs229.stanford.edu/section/cs229-prob.pdf">Probability Review</a>]</li>
+<li>凸优化相关知识点回顾: [<a href="http://cs229.stanford.edu/section/cs229-cvxopt.pdf">Convex Optimization Review</a>]</li>
+<li>优化相关的另一篇介绍（来自于斯坦福CS231课程资料），随机梯度下降相关[<a href="http://cs231n.github.io/optimization-1/">More Optimization (SGD) Review</a>]</li>
+<li>语义向量空间模型的一篇综述[<a href="http://www.jair.org/media/2934/live-2934-4846-jair.pdf">From Frequency to Meaning: Vector Space Models of Semantics</a>]</li>
+<li>课程第一部分的Notes，涉及第一讲和第二讲[<a href="http://cs224d.stanford.edu/lecture_notes/LectureNotes1.pdf">Lecture Notes 1</a>]</li>
+<li>python及numpy简介[<a href="http://cs231n.github.io/python-numpy-tutorial/">python tutorial</a>]</li>
+<li>第一讲Slides[<a href="http://cs224d.stanford.edu/lectures/CS224d-Lecture1.pdf">slides</a>]</li>
+<li>第一讲视频[<a href="https://www.youtube.com/watch?v=sU_Yu_USrNc">video</a>]</li>
+</ol>
+<p>以下是第一讲的相关笔记，主要参考自课程的slides，视频和其他相关资料。</p>
+<p><a href="http://www.52nlp.cn/natural-language-processing-and-machine-translation-faq">什么是自然语言处理</a>（NLP）</p>
+<ul>
+<li>自然语言处理是一门交叉学科，包括计算机科学，人工智能和语言学</li>
+<li>目标：让计算机去处理或“理解”自然语言, 完成一些有用的任务例如问答系统，机器翻译</li>
+<li>完全理解或者表示语言的意义（甚至去定义它）都是一个虚幻的目标</li>
+<li>完美的理解语言是一个“<a href="http://en.wikipedia.org/wiki/AI-complete">AI-complete</a>”的问题</li>
+</ul>
+<p>自然语言处理的层次<br />
+<a href="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-上午9.31.57.png"><img src="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-上午9.31.57.png" alt="NLP层次" width="600" height="451" class="aligncenter size-full wp-image-8381" /></a></p>
+<p>自然语言处理的应用</p>
+<ul>
+<li>应用范围从简单到复杂</li>
+<li>拼写检查, 关键词提取&#038;搜索，同义词查找&#038;替换</li>
+<li>从网页中提取有用的信息例如产品价格，日期，地址，人名或公司名等</li>
+<li>分类，例如对教科书的文本进行分级，对长文本进行正负情绪判断</li>
+<li>机器翻译</li>
+<li>口语对话系统</li>
+<li>复杂的问答系统</li>
+</ul>
+<p>工业届里的NLP应用</p>
+<ul>
+<li>搜索引擎</li>
+<li>在线广告</li>
+<li>自动的或辅助的翻译技术</li>
+<li>市场营销或者金融交易领域的情感分析</li>
+<li>语音识别</li>
+</ul>
+<p>NLP为什么这么难</p>
+<ul>
+<li>语言在表达上就很复杂，使用的时候要综合考虑使用情境</li>
+<li>Jane hit June and then she [fell/ran].</li>
+<li>歧义问题：“I	made her duck”</li>
+</ul>
+<p>什么是深度学习（DL）</p>
+<ul>
+<li>深度学习是机器学习的一个分支</li>
+<li>大多数机器学习方法很有效主要依靠人工精心设计的特征，例如下表是一个命名实体识别任务中设计的特征模板(Finkel,	2010)</li>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-上午10.57.04.png"><img src="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-上午10.57.04.png" alt="NER特征模板" width="320" height="248" class="aligncenter size-full wp-image-8386" /></a></p>
+<li>最终这些机器学习问题会变成优化问题：优化这些特征权重以达到最好的预测效果</li>
+</ul>
+<p>机器学习 vs 深度学习<br />
+<a href="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-上午11.00.54.png"><img src="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-上午11.00.54.png" alt="机器学习&amp;深度学习" width="512" height="376" class="aligncenter size-full wp-image-8388" /></a></p>
+<p>什么是深度学习（DL）续</p>
+<ul>
+<li>表示学习 or 表达学习（Representation Learning）尝试自动的学习合适的特征及其表征</li>
+<li>深度学习（Deep Learning) 算法尝试学习（多层次）的表征以及输出</li>
+<li>从一个“原生”的输入x(例如“单词”）</li>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-上午11.21.09.png"><img src="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-上午11.21.09.png" alt="深度学习表征" width="286" height="485" class="aligncenter size-full wp-image-8391" /></a>
+</ul>
+<p>深度学习的历史</p>
+<ul>
+<li>这门课主要关注至今为止在解决NLP问题上有效果的深度学习技术</li>
+<li>关于深度学习模型的相关历史，推荐参考《<a href="http://arxiv.org/abs/1404.7828">Deep Learning in Neural Networks: An Overview</a>》
+</ul>
+<p>探索深度学习的原因</p>
+<ul>
+<li>人工设计的特征常常定义过多，不完整并且需要花费大量的时间去设计和验证</li>
+<li>自动学习的特征容易自适应，并且可以很快的学习</li>
+<li>深度学习提供了一个弹性的，通用的学习框架用来表征自然的，视觉的和语言的信息。</li>
+<li>深度学习可以用来学习非监督的（来自于生文本）和有监督的（带有特别标记的文本，例如正向和负向标记）</li>
+<li>在2006年深度学习技术开始在一些任务中表现出众，为什么现在才热起来？</li>
+<ul>
+<li>深度学习技术受益于越来越多的数据</li>
+<li>更快的机器与更多核CPU/GPU对深度学习的普及起了很大的促进作用</li>
+<li>新的模型，算法和idea层出不穷</li>
+</ul>
+<li>通过深度学习技术提升效果首先发生在语音识别和机器视觉领域，然后开始过渡到NLP领域</li>
+</ul>
+<p>面向语音识别的深度学习</p>
+<ul>
+<li>“深度学习”在大数据集上的第一个突破性进展发生在语音识别领域</li>
+<li>Paper：<a href="http://research.microsoft.com:8082/pubs/144412/dbn4lvcsr-transaslp.pdf">Context-Dependent Pre-trained Deep Neural Networks for Large Vocabulary Speech Recognition</a> Dahl et al. (2010) </li>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-下午3.41.29.png"><img src="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-下午3.41.29.png" alt="语音识别深度学习" width="477" height="239" class="aligncenter size-full wp-image-8400" /></a>
+</ul>
+<p>面向计算机视觉的深度学习</p>
+<ul>
+<li>很多深度学习研究小组把大量的精力放在计算机视觉上（直到现在也是）</li>
+<li>突破性的Paper: <a href="http://www.cs.toronto.edu/~fritz/absps/imagenet.pdf">ImageNet Classification with Deep Convolutional Neural Networks</a> by Krizhevsky et al. 2012</li>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-下午3.47.16.png"><img src="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-下午3.47.16.png" alt="计算机视觉图像识别深度学习" width="453" height="575" class="aligncenter size-full wp-image-8402" /></a>
+</ul>
+<p>Deep Learning + NLP = Deep NLP	</p>
+<ul>
+<li>综合使用一些深度学习的方法来解决NLP的相关问题</li>
+<li>近几年在NLP的一些应用领域效果有了较大的提升</li>
+<ul>
+<li>层次：语音，词形，句法，语义</li>
+<li>应用：机器翻译，情感分析，问答系统</li>
+</ul>
+</ul>
+<p>音位学层次的表示</p>
+<ul>
+<li>传统的方法：音素</li>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-下午4.46.32.png"><img src="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-下午4.46.32.png" alt="音素层次的表示" width="660" height="269" class="aligncenter size-full wp-image-8406" /></a></p>
+<li>深度学习：通过声音特征并将这些特征表示为向量直接来预测音素（或词语）</li>
+</ul>
+<p>形态学层次的表示</p>
+<ul>
+<li>传统的方法：语素，例如前缀，词干，后缀等</li>
+<li>深度学习：</li>
+<ul>
+<li>每个语素都用向量表示</li>
+<li>神经网络用于向量的两两合并</li>
+<li>Thang et al. 2013</li>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-下午4.55.06.png"><img src="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-下午4.55.06.png" alt="形态学层次的深度学习" width="336" height="333" class="aligncenter size-full wp-image-8408" /></a>
+</ul>
+</ul>
+<p>句法层次的表示</p>
+<ul>
+<li>传统的方法：将一个短语或句子划分到多个句法标记，例如NP，VP等</li>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-下午4.58.47.png"><img src="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-下午4.58.47.png" alt="词类划分" width="392" height="306" class="aligncenter size-full wp-image-8410" /></a></p>
+<li>深度学习</li>
+<ul>
+<li>每个单词或者短语都是一个向量</li>
+<li>神经网络用于向量的两两合并</li>
+<li>Socher et al. 2011</li>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-下午5.02.10.png"><img src="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-下午5.02.10.png" alt="深度学习神经网络句法分析" width="358" height="307" class="aligncenter size-full wp-image-8411" /></a>
+</ul>
+</ul>
+<p>语义层次的表示</p>
+<ul>
+<li>传统的方法：	Lambda算子 or <a href="http://zh.wikipedia.org/wiki/%CE%9B%E6%BC%94%E7%AE%97">Lambda演算</a>(Lambda calculus)</li>
+<ul>
+<li>非常精细的函数设计</li>
+<li>需要指定其他函数的输入</li>
+<li>没有相似性的概念或者模糊语言</li>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-下午5.13.26.png"><img src="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-下午5.13.26.png" alt="语义lambda演算" width="394" height="242" class="aligncenter size-full wp-image-8413" /></a>
+</ul>
+<li>深度学习</li>
+<ul>
+<li>每个单词或者短语或者逻辑表达式都是一个向量</li>
+<li>神经网络用于向量的两两合并</li>
+<li>Bowman et al. 2014</li>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-下午5.14.52.png"><img src="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-下午5.14.52.png" alt="语义学习深度学习" width="433" height="236" class="aligncenter size-full wp-image-8414" /></a>
+</ul>
+</ul>
+<p>NLP应用：<a href="http://52opencourse.com/235/%E6%96%AF%E5%9D%A6%E7%A6%8F%E5%A4%A7%E5%AD%A6%E8%87%AA%E7%84%B6%E8%AF%AD%E8%A8%80%E5%A4%84%E7%90%86%E7%AC%AC%E4%B8%83%E8%AF%BE-%E6%83%85%E6%84%9F%E5%88%86%E6%9E%90%EF%BC%88sentiment-analysis%EF%BC%89">情感分析</a></p>
+<ul>
+<li>传统的方法：精选的情感词典+词袋模型（忽略词序）+人工设计的特征（很难覆盖所有的信息）</li>
+<li>深度学习：和上述词素，句法和语义相似的深度学习模型&#8211;><a href="http://nikhilbuduma.com/2015/01/11/a-deep-dive-into-recurrent-neural-networks/">RNN</a></li>
+<li>Demo: <a href="http://nlp.stanford.edu/sentiment/">http://nlp.stanford.edu/sentiment/</a></li>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-下午5.24.11.png"><img src="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-下午5.24.11.png" alt="RNN情感分析demo" width="729" height="266" class="aligncenter size-full wp-image-8416" /></a>
+</ul>
+<p>NLP应用：<a href="http://www.52nlp.cn/tag/%E9%97%AE%E7%AD%94%E7%B3%BB%E7%BB%9F">问答系统</a></p>
+<ul>
+<li>传统的方法：用了非常多的特征工程去获取相关的知识，例如正则表达式，Berant et al. (2014) </li>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-下午5.28.08.png"><img src="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-下午5.28.08.png" alt="问答系统知识获取" width="735" height="138" class="aligncenter size-full wp-image-8418" /></a></p>
+<li>深度学习：和上述词素，句法，语义，情感分析相似的深度学习模型</li>
+<li>知识可以储备在向量中</li>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-下午5.29.41.png"><img src="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-下午5.29.41.png" alt="问答系统向量表示" width="480" height="300" class="aligncenter size-full wp-image-8419" /></a>
+</ul>
+<p>NLP应用：<a href="http://www.52nlp.cn/tag/%E6%9C%BA%E5%99%A8%E7%BF%BB%E8%AF%91">机器翻译</a></p>
+<ul>
+<li>过去尝试过很多层次的机器翻译方法</li>
+<li>传统的机器翻译系统是一个非常大的复杂系统</li>
+<li>可以思考一下在深度学习中中间语（interlingua）对于翻译系统是如何起作用的？</li>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-下午5.33.08.png"><img src="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-下午5.33.08.png" alt="机器翻译传统方法" width="467" height="389" class="aligncenter size-full wp-image-8421" /></a></p>
+<li>深度学习：</li>
+<ul>
+<li>源句子首先映射为向量，然后在输出的时候进行句子生成</li>
+<p><a href="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-下午5.36.59.png"><img src="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-下午5.36.59.png" alt="深度学习机器翻译" width="803" height="233" class="aligncenter size-full wp-image-8423" /></a></p>
+<li><a href="http://papers.nips.cc/paper/5346-information-based-learning-by-agents-in-unbounded-state-spaces">Sequence to Sequence Learning with Neural Networks by Sutskever</a> et al. 2014</li>
+<li>方法很新但是可以替换传统非常复杂的机器翻译架构</li>
+</ul>
+</ul>
+<p>可以发现所有NLP层次的表示都涉及到向量（Vectors), 下一讲将讲到如何来学习词向量以及这些向量表示了什么？<br />
+<a href="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-下午5.42.58.png"><img src="http://www.52nlp.cn/wp-content/uploads/2015/05/屏幕快照-2015-05-21-下午5.42.58.png" alt="词向量" width="421" height="332" class="aligncenter size-full wp-image-8426" /></a></p>
+<p>注：原创文章，转载请注明出处“<a href="http://www.52nlp.cn">我爱自然语言处理</a>”：<a href="http://www.52nlp.cn">http://www.52nlp.cn</a></p>
+<p>本文链接地址：<a href="http://www.52nlp.cn/?p=8339">斯坦福大学深度学习与自然语言处理第一讲：引言</a></p>
+<div class='yarpp-related'>
+<p>相关文章:<ol>
+<li><a href="http://www.52nlp.cn/%e6%96%af%e5%9d%a6%e7%a6%8f%e5%a4%a7%e5%ad%a6%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0%e7%ac%ac%e4%b9%9d%e8%af%be%e7%a5%9e%e7%bb%8f%e7%bd%91%e7%bb%9c%e7%9a%84%e5%ad%a6%e4%b9%a0neural-networks-le" rel="bookmark" title="斯坦福大学机器学习第九课“神经网络的学习(Neural Networks: Learning)”">斯坦福大学机器学习第九课“神经网络的学习(Neural Networks: Learning)” </a></li>
+<li><a href="http://www.52nlp.cn/%e6%96%af%e5%9d%a6%e7%a6%8f%e5%a4%a7%e5%ad%a6%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0%e7%ac%ac%e5%85%ab%e8%af%be%e7%a5%9e%e7%bb%8f%e7%bd%91%e7%bb%9c%e7%9a%84%e8%a1%a8%e7%a4%baneural-networks-re" rel="bookmark" title="斯坦福大学机器学习第八课“神经网络的表示(Neural Networks: Representation)”">斯坦福大学机器学习第八课“神经网络的表示(Neural Networks: Representation)” </a></li>
+<li><a href="http://www.52nlp.cn/%e6%96%af%e5%9d%a6%e7%a6%8f%e5%a4%a7%e5%ad%a6%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0%e7%ac%ac%e5%8d%81%e8%af%be%e5%ba%94%e7%94%a8%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0%e7%9a%84%e5%bb%ba%e8%ae%aea" rel="bookmark" title="斯坦福大学机器学习第十课“应用机器学习的建议(Advice for applying machine learning)”">斯坦福大学机器学习第十课“应用机器学习的建议(Advice for applying machine learning)” </a></li>
+<li><a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e4%ba%94%e7%ab%a0-neural-networks" rel="bookmark" title="PRML读书会第五章  Neural Networks">PRML读书会第五章  Neural Networks </a></li>
+<li><a href="http://www.52nlp.cn/%e5%a6%82%e4%bd%95%e8%ae%a1%e7%ae%97%e4%b8%a4%e4%b8%aa%e6%96%87%e6%a1%a3%e7%9a%84%e7%9b%b8%e4%bc%bc%e5%ba%a6%e4%b8%89" rel="bookmark" title="如何计算两个文档的相似度（三）">如何计算两个文档的相似度（三） </a></li>
+<li><a href="http://www.52nlp.cn/some-natural-language-processing-and-computational-linguistics-courses-material" rel="bookmark" title="一些自然语言处理及计算语言学相关的课件">一些自然语言处理及计算语言学相关的课件 </a></li>
+<li><a href="http://www.52nlp.cn/%e6%9d%a1%e4%bb%b6%e9%9a%8f%e6%9c%ba%e5%9c%ba%e6%96%87%e7%8c%ae%e9%98%85%e8%af%bb%e6%8c%87%e5%8d%97" rel="bookmark" title="条件随机场文献阅读指南">条件随机场文献阅读指南 </a></li>
+<li><a href="http://www.52nlp.cn/free-online-stanford-course-on-nlp" rel="bookmark" title="Free Online Stanford Course on NLP">Free Online Stanford Course on NLP </a></li>
+<li><a href="http://www.52nlp.cn/coursera%e5%85%ac%e5%bc%80%e8%af%be%e7%ac%94%e8%ae%b0-%e6%96%af%e5%9d%a6%e7%a6%8f%e5%a4%a7%e5%ad%a6%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0%e7%ac%ac%e4%b8%80%e8%af%be%e5%bc%95%e8%a8%80introduct" rel="bookmark" title="Coursera公开课笔记: 斯坦福大学机器学习第一课“引言(Introduction)”">Coursera公开课笔记: 斯坦福大学机器学习第一课“引言(Introduction)” </a></li>
+<li><a href="http://www.52nlp.cn/%e7%ab%8b%e5%a7%94%e9%9a%8f%e7%ac%94-%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0%e5%92%8c%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86" rel="bookmark" title="立委随笔：机器学习和自然语言处理">立委随笔：机器学习和自然语言处理 </a></li>
+</ol></p>
+</div>
+											</div><!-- .entry-content -->
+
+
+					<div class="entry-utility">
+						此条目发表在 <a href="http://www.52nlp.cn/category/%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0" rel="category tag">机器学习</a>, <a href="http://www.52nlp.cn/category/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0" rel="category tag">深度学习</a>, <a href="http://www.52nlp.cn/category/nlp" rel="category tag">自然语言处理</a> 分类目录，贴了 <a href="http://www.52nlp.cn/tag/deep-learning" rel="tag">Deep Learning</a>, <a href="http://www.52nlp.cn/tag/deep-learning%e5%85%ac%e5%bc%80%e8%af%be" rel="tag">Deep Learning公开课</a>, <a href="http://www.52nlp.cn/tag/deep-nlp" rel="tag">Deep NLP</a>, <a href="http://www.52nlp.cn/tag/dl" rel="tag">DL</a>, <a href="http://www.52nlp.cn/tag/numpy" rel="tag">numpy</a>, <a href="http://www.52nlp.cn/tag/python" rel="tag">python</a>, <a href="http://www.52nlp.cn/tag/richard-socher" rel="tag">Richard Socher</a>, <a href="http://www.52nlp.cn/tag/rnn" rel="tag">RNN</a>, <a href="http://www.52nlp.cn/tag/sgd" rel="tag">SGD</a>, <a href="http://www.52nlp.cn/tag/vsm" rel="tag">VSM</a>, <a href="http://www.52nlp.cn/tag/%e5%85%ac%e5%bc%80%e8%af%be" rel="tag">公开课</a>, <a href="http://www.52nlp.cn/tag/%e5%87%b8%e4%bc%98%e5%8c%96" rel="tag">凸优化</a>, <a href="http://www.52nlp.cn/tag/%e5%8f%a5%e6%b3%95" rel="tag">句法</a>, <a href="http://www.52nlp.cn/tag/%e5%90%91%e9%87%8f%e7%a9%ba%e9%97%b4%e6%a8%a1%e5%9e%8b" rel="tag">向量空间模型</a>, <a href="http://www.52nlp.cn/tag/%e5%9b%be%e5%83%8f%e5%a4%84%e7%90%86" rel="tag">图像处理</a>, <a href="http://www.52nlp.cn/tag/%e5%bd%a2%e6%80%81%e5%ad%a6" rel="tag">形态学</a>, <a href="http://www.52nlp.cn/tag/%e6%83%85%e6%84%9f%e5%88%86%e6%9e%90" rel="tag">情感分析</a>, <a href="http://www.52nlp.cn/tag/%e6%96%af%e5%9d%a6%e7%a6%8f%e5%a4%a7%e5%ad%a6" rel="tag">斯坦福大学</a>, <a href="http://www.52nlp.cn/tag/%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0" rel="tag">机器学习</a>, <a href="http://www.52nlp.cn/tag/%e6%9c%ba%e5%99%a8%e7%bf%bb%e8%af%91" rel="tag">机器翻译</a>, <a href="http://www.52nlp.cn/tag/%e6%a2%af%e5%ba%a6%e4%b8%8b%e9%99%8d" rel="tag">梯度下降</a>, <a href="http://www.52nlp.cn/tag/%e6%a6%82%e7%8e%87" rel="tag">概率</a>, <a href="http://www.52nlp.cn/tag/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0" rel="tag">深度学习</a>, <a href="http://www.52nlp.cn/tag/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e6%8a%80%e6%9c%af" rel="tag">深度学习技术</a>, <a href="http://www.52nlp.cn/tag/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e6%a8%a1%e5%9e%8b" rel="tag">深度学习模型</a>, <a href="http://www.52nlp.cn/tag/%e7%a5%9e%e7%bb%8f%e7%bd%91%e7%bb%9c" rel="tag">神经网络</a>, <a href="http://www.52nlp.cn/tag/%e7%ba%bf%e6%80%a7%e4%bb%a3%e6%95%b0" rel="tag">线性代数</a>, <a href="http://www.52nlp.cn/tag/%e8%87%aa%e7%84%b6%e8%af%ad%e4%b9%89%e5%a4%84%e7%90%86" rel="tag">自然语义处理</a>, <a href="http://www.52nlp.cn/tag/nlp" rel="tag">自然语言处理</a>, <a href="http://www.52nlp.cn/tag/%e8%ae%a1%e7%ae%97%e6%9c%ba%e8%a7%86%e8%a7%89" rel="tag">计算机视觉</a>, <a href="http://www.52nlp.cn/tag/%e8%af%8d%e7%b4%a0" rel="tag">词素</a>, <a href="http://www.52nlp.cn/tag/%e8%af%ad%e4%b9%89" rel="tag">语义</a>, <a href="http://www.52nlp.cn/tag/%e8%af%ad%e6%b3%95" rel="tag">语法</a>, <a href="http://www.52nlp.cn/tag/speech-recognition" rel="tag">语音识别</a>, <a href="http://www.52nlp.cn/tag/%e9%97%ae%e7%ad%94%e7%b3%bb%e7%bb%9f" rel="tag">问答系统</a>, <a href="http://www.52nlp.cn/tag/%e9%9f%b3%e4%bd%8d%e5%ad%a6" rel="tag">音位学</a>, <a href="http://www.52nlp.cn/tag/%e9%9f%b3%e7%b4%a0" rel="tag">音素</a> 标签。将<a href="http://www.52nlp.cn/%e6%96%af%e5%9d%a6%e7%a6%8f%e5%a4%a7%e5%ad%a6%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%8e%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86%e7%ac%ac%e4%b8%80%e8%ae%b2%e5%bc%95%e8%a8%80" title="链向 斯坦福大学深度学习与自然语言处理第一讲：引言 的固定链接" rel="bookmark">固定链接</a>加入收藏夹。											</div><!-- .entry-utility -->
+				</div><!-- #post-## -->
+
+				<div id="nav-below" class="navigation">
+					<div class="nav-previous"><a href="http://www.52nlp.cn/%e7%94%a8mecab%e6%89%93%e9%80%a0%e4%b8%80%e5%a5%97%e5%ae%9e%e7%94%a8%e7%9a%84%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e7%b3%bb%e7%bb%9f%e4%b8%89%ef%bc%9amecab-chinese" rel="prev"><span class="meta-nav">&larr;</span> 用MeCab打造一套实用的中文分词系统(三)：MeCab-Chinese</a></div>
+					<div class="nav-next"></div>
+				</div><!-- #nav-below -->
+
+				
+			<div id="comments">
+
+
+			<h3 id="comments-title">《<em>斯坦福大学深度学习与自然语言处理第一讲：引言</em>》有 1 条评论</h3>
+
+
+			<ol class="commentlist">
+					<li class="comment even thread-even depth-1" id="li-comment-182959">
+		<div id="comment-182959">
+		<div class="comment-author vcard">
+						<cite class="fn">幻影骑士</cite> <span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e6%96%af%e5%9d%a6%e7%a6%8f%e5%a4%a7%e5%ad%a6%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%8e%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86%e7%ac%ac%e4%b8%80%e8%ae%b2%e5%bc%95%e8%a8%80/comment-page-1#comment-182959">
+			2015年05月21号22:06</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>终于看到DL在NLP领域的系统课程了，大赞，感谢博主</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,182959,1,'幻影骑士');">回复</a>]</p></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+			</ol>
+
+
+
+						<div id="respond" class="comment-respond">
+				<h3 id="reply-title" class="comment-reply-title">发表评论 <small><a rel="nofollow" id="cancel-comment-reply-link" href="/%e6%96%af%e5%9d%a6%e7%a6%8f%e5%a4%a7%e5%ad%a6%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%8e%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86%e7%ac%ac%e4%b8%80%e8%ae%b2%e5%bc%95%e8%a8%80#respond" style="display:none;">取消回复</a></small></h3>
+									<form action="http://www.52nlp.cn/wp-comments-post.php" method="post" id="commentform" class="comment-form">
+																			<p class="comment-notes"><span id="email-notes">电子邮件地址不会被公开。</span> 必填项已用<span class="required">*</span>标注</p>							<p class="comment-form-author"><label for="author">姓名 <span class="required">*</span></label> <input id="author" name="author" type="text" value="" size="30" aria-required='true' required='required' /></p>
+<p class="comment-form-email"><label for="email">电子邮件 <span class="required">*</span></label> <input id="email" name="email" type="text" value="" size="30" aria-describedby="email-notes" aria-required='true' required='required' /></p>
+<p class="comment-form-url"><label for="url">站点</label> <input id="url" name="url" type="text" value="" size="30" /></p>
+												<p class="comment-form-comment"><label for="comment">评论</label> <textarea id="comment" name="comment" cols="45" rows="8" aria-describedby="form-allowed-tags" aria-required="true" required="required"></textarea></p>						<p class="form-allowed-tags" id="form-allowed-tags">您可以使用这些<abbr title="HyperText Markup Language">HTML</abbr>标签和属性： <code>&lt;a href=&quot;&quot; title=&quot;&quot;&gt; &lt;abbr title=&quot;&quot;&gt; &lt;acronym title=&quot;&quot;&gt; &lt;b&gt; &lt;blockquote cite=&quot;&quot;&gt; &lt;cite&gt; &lt;code&gt; &lt;del datetime=&quot;&quot;&gt; &lt;em&gt; &lt;i&gt; &lt;q cite=&quot;&quot;&gt; &lt;s&gt; &lt;strike&gt; &lt;strong&gt; </code></p>
+						<p class="form-submit"><input name="submit" type="submit" id="submit" class="submit" value="发表评论" /> <input type='hidden' name='comment_post_ID' value='8339' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+</p><p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="d1a05c8418" /></p><p style="display: none;"><input type="hidden" id="ak_js" name="ak_js" value="155"/></p><p><input type="hidden" id="comment_reply_ID" name="comment_reply_ID" value="0" /><input type="hidden" id="comment_reply_dp" name="comment_reply_dp" value="0" /></p><div id="cancel_reply" style="display:none;"><a href="javascript:void(0)" onclick="movecfm(null,0,1,null);" style="color:red;">点击取消回复</a></div><script type="text/javascript">
+/* <![CDATA[ */
+var commentformid = "commentform";
+var USERINFO = false;
+var atreply = "none";
+/* ]]> */
+</script>
+<script type="text/javascript" src="http://www.52nlp.cn/wp-content/plugins/wp-thread-comment/wp-thread-comment.js.php?jsver=common"></script>
+					</form>
+							</div><!-- #respond -->
+			
+</div><!-- #comments -->
+
+
+			</div><!-- #content -->
+		</div><!-- #container -->
+
+﻿
+		<div id="primary" class="widget-area" role="complementary">
+			<ul class="xoxo">
+<!-- begin l_sidebar -->
+	<div id="l_sidebar">
+<p>卓越网：<a href="http://www.amazon.cn/mn/searchApp?source=garypyang-23&searchType=1&keywords=自然语言处理" title="自然语言处理书籍"target=_blank>自然语言处理书籍</a><br>
+<li id="search-3" class="widget-container widget_search"><h3 class="widget-title">站内搜索</h3><form role="search" method="get" id="searchform" class="searchform" action="http://www.52nlp.cn/">
+				<div>
+					<label class="screen-reader-text" for="s">搜索：</label>
+					<input type="text" value="" name="s" id="s" />
+					<input type="submit" id="searchsubmit" value="搜索" />
+				</div>
+			</form></li><li id="text-4" class="widget-container widget_text"><h3 class="widget-title">NLPJob新鲜职位推荐:</h3>			<div class="textwidget"><p></p>
+<script src="http://www.nlpjob.com/api/api.php?action=getJobs
+&type=0&category=0&count=8&random=1&days_behind=7&response=js" type="text/javascript"></script>
+
+<script type="text/javascript">showJobs('jobber-container', 'jobber-list');</script></div>
+		</li><li id="text-3" class="widget-container widget_text"><h3 class="widget-title">52nlp新浪微博</h3>			<div class="textwidget"><p><iframe id="sina_widget_2104931705" style="width:100%; height:500px;" frameborder="0" scrolling="no" src="http://v.t.sina.com.cn/widget/widget_blog.php?uid=2104931705&height=500&skin=wd_01&showpic=1"></iframe></p>
+</div>
+		</li><li id="categories-309398091" class="widget-container widget_categories"><h3 class="widget-title">分类目录</h3>		<ul>
+	<li class="cat-item cat-item-72"><a href="http://www.52nlp.cn/category/mit-nlp" title="麻省理工学院开放式课程&quot;自然语言处理“的相关翻译文章">MIT自然语言处理</a> (23)
+</li>
+	<li class="cat-item cat-item-976"><a href="http://www.52nlp.cn/category/pattern-recognition-and-machine-learning-2" >PRML</a> (15)
+</li>
+	<li class="cat-item cat-item-469"><a href="http://www.52nlp.cn/category/topic-model" >Topic Model</a> (10)
+</li>
+	<li class="cat-item cat-item-87"><a href="http://www.52nlp.cn/category/wordpress" >wordpress</a> (6)
+</li>
+	<li class="cat-item cat-item-317"><a href="http://www.52nlp.cn/category/%e4%b8%93%e9%a2%98" >专题</a> (6)
+</li>
+	<li class="cat-item cat-item-263"><a href="http://www.52nlp.cn/category/chinese-information-processing" >中文信息处理</a> (22)
+</li>
+	<li class="cat-item cat-item-62"><a href="http://www.52nlp.cn/category/word-segmentation" >中文分词</a> (39)
+</li>
+	<li class="cat-item cat-item-420"><a href="http://www.52nlp.cn/category/%e5%b9%b6%e8%a1%8c%e7%ae%97%e6%b3%95" >并行算法</a> (1)
+</li>
+	<li class="cat-item cat-item-268"><a href="http://www.52nlp.cn/category/%e6%8b%9b%e8%81%98" >招聘</a> (4)
+</li>
+	<li class="cat-item cat-item-560"><a href="http://www.52nlp.cn/category/%e6%8e%a8%e8%8d%90%e7%b3%bb%e7%bb%9f" >推荐系统</a> (3)
+</li>
+	<li class="cat-item cat-item-354"><a href="http://www.52nlp.cn/category/%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98" >数据挖掘</a> (2)
+</li>
+	<li class="cat-item cat-item-241"><a href="http://www.52nlp.cn/category/text-classification" >文本分类</a> (3)
+</li>
+	<li class="cat-item cat-item-1149"><a href="http://www.52nlp.cn/category/wen-ben-chu-li-yan-shi-xi-tong" >文本处理演示系统</a> (1)
+</li>
+	<li class="cat-item cat-item-193"><a href="http://www.52nlp.cn/category/maximum-entropy-model" >最大熵模型</a> (7)
+</li>
+	<li class="cat-item cat-item-344"><a href="http://www.52nlp.cn/category/%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0" >机器学习</a> (30)
+</li>
+	<li class="cat-item cat-item-1"><a href="http://www.52nlp.cn/category/machine-translation" >机器翻译</a> (54)
+</li>
+	<li class="cat-item cat-item-195"><a href="http://www.52nlp.cn/category/%e6%9d%a1%e4%bb%b6%e9%9a%8f%e6%9c%ba%e5%9c%ba" >条件随机场</a> (3)
+</li>
+	<li class="cat-item cat-item-153"><a href="http://www.52nlp.cn/category/tagging" >标注</a> (15)
+</li>
+	<li class="cat-item cat-item-1153"><a href="http://www.52nlp.cn/category/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0" >深度学习</a> (1)
+</li>
+	<li class="cat-item cat-item-885"><a href="http://www.52nlp.cn/category/%e7%a7%91%e5%ad%a6%e8%ae%a1%e7%ae%97" >科学计算</a> (1)
+</li>
+	<li class="cat-item cat-item-538"><a href="http://www.52nlp.cn/category/%e7%bb%9f%e8%ae%a1%e5%ad%a6" >统计学</a> (10)
+</li>
+	<li class="cat-item cat-item-126"><a href="http://www.52nlp.cn/category/translation-model" >翻译模型</a> (2)
+</li>
+	<li class="cat-item cat-item-51"><a href="http://www.52nlp.cn/category/nlp" >自然语言处理</a> (232)
+</li>
+	<li class="cat-item cat-item-106"><a href="http://www.52nlp.cn/category/computational-linguistics" >计算语言学</a> (39)
+</li>
+	<li class="cat-item cat-item-22"><a href="http://www.52nlp.cn/category/dictionary" >词典</a> (8)
+</li>
+	<li class="cat-item cat-item-221"><a href="http://www.52nlp.cn/category/semantics" >语义学</a> (1)
+</li>
+	<li class="cat-item cat-item-1121"><a href="http://www.52nlp.cn/category/%e8%af%ad%e4%b9%89%e7%9b%b8%e4%bc%bc%e5%ba%a6" >语义相似度</a> (1)
+</li>
+	<li class="cat-item cat-item-161"><a href="http://www.52nlp.cn/category/semantic-web" >语义网</a> (3)
+</li>
+	<li class="cat-item cat-item-37"><a href="http://www.52nlp.cn/category/corpus" >语料库</a> (12)
+</li>
+	<li class="cat-item cat-item-86"><a href="http://www.52nlp.cn/category/language-model" >语言模型</a> (24)
+</li>
+	<li class="cat-item cat-item-156"><a href="http://www.52nlp.cn/category/speech-recognition" >语音识别</a> (4)
+</li>
+	<li class="cat-item cat-item-314"><a href="http://www.52nlp.cn/category/%e8%b4%9d%e5%8f%b6%e6%96%af%e6%a8%a1%e5%9e%8b" >贝叶斯模型</a> (1)
+</li>
+	<li class="cat-item cat-item-110"><a href="http://www.52nlp.cn/category/reprint" >转载</a> (28)
+</li>
+	<li class="cat-item cat-item-451"><a href="http://www.52nlp.cn/category/%e9%97%ae%e7%ad%94%e7%b3%bb%e7%bb%9f" >问答系统</a> (1)
+</li>
+	<li class="cat-item cat-item-3"><a href="http://www.52nlp.cn/category/informal-essay" >随笔</a> (63)
+</li>
+	<li class="cat-item cat-item-60"><a href="http://www.52nlp.cn/category/hidden-markov-model" >隐马尔科夫模型</a> (37)
+</li>
+		</ul>
+</li><li id="archives-2" class="widget-container widget_archive"><h3 class="widget-title">文章归档</h3>		<ul>
+	<li><a href='http://www.52nlp.cn/2015/05'>2015年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2015/04'>2015年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2015/03'>2015年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2015/01'>2015年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/12'>2014年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/11'>2014年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/09'>2014年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/07'>2014年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/06'>2014年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/05'>2014年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/04'>2014年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/01'>2014年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/12'>2013年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/06'>2013年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/05'>2013年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/04'>2013年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/03'>2013年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/02'>2013年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/01'>2013年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/12'>2012年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/11'>2012年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/10'>2012年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/09'>2012年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/08'>2012年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/07'>2012年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/06'>2012年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/05'>2012年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/04'>2012年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/03'>2012年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/01'>2012年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/12'>2011年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/11'>2011年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/10'>2011年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/09'>2011年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/08'>2011年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/07'>2011年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/06'>2011年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/05'>2011年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/04'>2011年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/03'>2011年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/02'>2011年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/01'>2011年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/12'>2010年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/11'>2010年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/10'>2010年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/09'>2010年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/08'>2010年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/07'>2010年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/06'>2010年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/05'>2010年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/04'>2010年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/03'>2010年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/02'>2010年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/01'>2010年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/12'>2009年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/11'>2009年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/10'>2009年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/09'>2009年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/08'>2009年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/07'>2009年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/06'>2009年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/05'>2009年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/04'>2009年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/03'>2009年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/02'>2009年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/01'>2009年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2008/12'>2008年十二月</a></li>
+		</ul>
+</li>		<li id="recent-posts-2" class="widget-container widget_recent_entries">		<h3 class="widget-title">最新文章</h3>		<ul>
+					<li>
+				<a href="http://www.52nlp.cn/%e6%96%af%e5%9d%a6%e7%a6%8f%e5%a4%a7%e5%ad%a6%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%8e%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86%e7%ac%ac%e4%b8%80%e8%ae%b2%e5%bc%95%e8%a8%80">斯坦福大学深度学习与自然语言处理第一讲：引言</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e7%94%a8mecab%e6%89%93%e9%80%a0%e4%b8%80%e5%a5%97%e5%ae%9e%e7%94%a8%e7%9a%84%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e7%b3%bb%e7%bb%9f%e4%b8%89%ef%bc%9amecab-chinese">用MeCab打造一套实用的中文分词系统(三)：MeCab-Chinese</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e7%94%a8mecab%e6%89%93%e9%80%a0%e4%b8%80%e5%a5%97%e5%ae%9e%e7%94%a8%e7%9a%84%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e7%b3%bb%e7%bb%9f%e4%ba%8c">用MeCab打造一套实用的中文分词系统(二)</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e4%b8%ad%e8%8b%b1%e6%96%87%e7%bb%b4%e5%9f%ba%e7%99%be%e7%a7%91%e8%af%ad%e6%96%99%e4%b8%8a%e7%9a%84word2vec%e5%ae%9e%e9%aa%8c">中英文维基百科语料上的Word2Vec实验</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/hmm%e7%9b%b8%e5%85%b3%e6%96%87%e7%ab%a0%e7%b4%a2%e5%bc%95">HMM相关文章索引</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%8d%81%e5%9b%9b%e7%ab%a0-combining-models">PRML读书会第十四章 Combining Models</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%8d%81%e4%b8%89%e7%ab%a0sequential-data">PRML读书会第十三章 Sequential Data</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%8d%81%e4%ba%8c%e7%ab%a0-continuous-latent-variables">PRML读书会第十二章 Continuous Latent Variables</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%8d%81%e4%b8%80%e7%ab%a0-sampling-methods">PRML读书会第十一章  Sampling Methods</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%8d%81%e7%ab%a0-approximate-inference">PRML读书会第十章  Approximate Inference</a>
+						</li>
+				</ul>
+		</li><li id="recentcomments" class="widget-container widget_recentcomments"><h3 class="widget-title">最近评论</h3><ul><li class="rc-navi rc-clearfix"><span class="rc-loading">正在加载...</span></li><li id="rc-comment-temp" class="rc-item rc-comment rc-clearfix"><div class="rc-info"></div><div class="rc-timestamp"></div><div class="rc-excerpt"></div></li><li id="rc-ping-temp" class="rc-item rc-ping rc-clearfix"><span class="rc-label"></span></li></ul></li>			</ul>
+		</div><!-- #primary .widget-area -->
+
+
+		<div id="secondary" class="widget-area" role="complementary">
+			<ul class="xoxo">
+				<li id="linkcat-103" class="widget-container widget_links"><h3 class="widget-title">NLP相关网站</h3>
+	<ul class='xoxo blogroll'>
+<li><a href="http://www.aclweb.org/" rel="co-worker" title="The Association for Computational Linguistics" target="_blank">ACL</a></li>
+<li><a href="http://aclweb.org/anthology-new/" rel="co-worker" title="A Digital Archive of Research Papers in Computational Linguistics" target="_blank">ACL Anthology</a></li>
+<li><a href="http://belobog.si.umich.edu/clair/anthology/index.cgi" rel="colleague" target="_blank">ACL Anthology Network</a></li>
+<li><a href="http://aclweb.org/aclwiki/index.php?title=Main_Page" rel="colleague" title="the Wiki of the Association for Computational Linguistics" target="_blank">ACL Wiki</a></li>
+<li><a href="http://www.clsp.jhu.edu/" rel="colleague" target="_blank">CLSP</a></li>
+<li><a href="http://www.cwbbase.com/" rel="colleague" title="这是一个略具规模的中文语义词库, 也是稍有特色的汉语语义词典" target="_blank">CWB中文词库</a></li>
+<li><a href="http://www.euromatrix.net/" rel="colleague" target="_blank">EuroMatrix</a></li>
+<li><a href="http://www.freebase.com" rel="colleague" target="_blank">Freebase</a></li>
+<li><a href="http://www.clsp.jhu.edu/workshops/" rel="colleague" target="_blank">JHU Workshop</a></li>
+<li><a href="http://www.ldc.upenn.edu/" rel="colleague" title="Linguistic Data Consortium" target="_blank">LDC</a></li>
+<li><a href="http://www.statmt.org/moses/" rel="colleague" title="A factored phrase-based beam-search decoder for machine translation" target="_blank">Moses</a></li>
+<li><a href="http://nlpers.blogspot.com/" rel="colleague" title="国外一个非常不错的自然语言处理博客" target="_blank">nlper</a></li>
+<li><a href="http://www.nlpjob.com" target="_blank">NLPJob</a></li>
+<li><a href="http://www.powerset.com/" rel="colleague" target="_blank">Powerset</a></li>
+<li><a href="http://www.speech.sri.com/projects/srilm/" rel="colleague" title="&#8211; The SRI Language Modeling Toolkit" target="_blank">SRILM</a></li>
+<li><a href="http://www.statmt.org/" rel="colleague" title="This website is dedicated to research in statistical machine translation" target="_blank">Statistical Machine Translation</a></li>
+<li><a href="http://textanalysisonline.com/" target="_blank">Text Analysis</a></li>
+<li><a href="http://textminingonline.com/" target="_blank">Text Mining</a></li>
+<li><a href="http://textsummarization.net/" target="_blank">Text Summarization</a></li>
+<li><a href="http://w3china.org/index.htm" rel="friend" title="致力于促进W3C技术的广泛应用, 传播关于未来Web的知识与技术" target="_blank">中国万维网联盟</a></li>
+<li><a href="http://www.cipsc.org.cn/" rel="co-worker" title="Chinese Information Processing Society of China" target="_blank">中国中文信息学会</a></li>
+<li><a href="http://www.nlp.org.cn/" rel="colleague" title="中文自然语言处理开放平台" target="_blank">中文自然语言处理开放平台</a></li>
+<li><a href="http://www.mt-archive.info/" rel="colleague" title="Repository and bibliography of articles, books and papers on topics" target="_blank">机器翻译档案计划</a></li>
+<li><a href="http://www.statmt.org/europarl/" rel="colleague" target="_blank">欧洲议会平行语料库</a></li>
+<li><a href="http://www.keenage.com/" title="HowNet" target="_blank">知网</a></li>
+<li><a href="http://www.nlpir.org/" rel="friend" title="由张华平博士发起，由北京理工大学网络搜索与挖掘实验室运营，旨在推动NLP(自然语言处理)与IR(信息检索)领域的共享与共赢" target="_blank">自然语言处理与信息检索共享平台</a></li>
+<li><a href="http://mitel.ict.ac.cn/" rel="co-worker" title="中科院计算所多语言交互技术实验室" target="_blank">计算所多语言交互技术实验室</a></li>
+
+	</ul>
+</li>
+<li id="linkcat-2" class="widget-container widget_links"><h3 class="widget-title">友情链接</h3>
+	<ul class='xoxo blogroll'>
+<li><a href="http://blog.youxu.info/" title="一个计算机专业的 Ph.D. 学生徐宥的个人博客" target="_blank">4G spaces</a></li>
+<li><a href="http://blog.52nlp.org" rel="me" title="我爱自然语言处理完全镜像" target="_blank">52nlpblog</a></li>
+<li><a href="http://www.52nlp.com" rel="me" title="52nlp的英文站" target="_blank">52nlpcom</a></li>
+<li><a href="http://hi.baidu.com/drkevinzhang" rel="friend" title="ICTCLAS 张华平博士的空间" target="_blank">ICTCLAS 张华平博士的空间</a></li>
+<li><a href="http://blog.so8848.com/" rel="friend" title="信息检索博客" target="_blank">Information Retrieval Blog</a></li>
+<li><a href="http://interop123.com/default.aspx" rel="friend" title="崔晓源师兄关于NET技术的站点" target="_blank">NET互操作技术社区</a></li>
+<li><a href="http://bbs.w3china.org/" rel="friend" title="中国万维网联盟讨论区" target="_blank">W3CHINA讨论区</a></li>
+<li><a href="http://www.ailab.cn/" rel="friend" target="_blank">人工智能网</a></li>
+<li><a href="http://mindhacks.cn/" rel="friend" title="一个很有思想的价值博客!" target="_blank">刘未鹏之Mind Hacks</a></li>
+<li><a href="http://www.cnblogs.com/finallyliuyu/" rel="friend" target="_blank">原地转圈的驴子</a></li>
+<li><a href="http://xunren.thuir.org/" target="_blank">微博寻人（梁博）</a></li>
+<li><a href="http://52opencourse.com" rel="friend" title="我爱公开课，高质量公开课交流平台" target="_blank">我爱公开课</a></li>
+<li><a href="http://iregex.org/" rel="friend" target="_blank">我爱正则表达式</a></li>
+<li><a href="http://courseminer.com" target="_blank">挖课</a></li>
+<li><a href="http://www.flickering.cn/" target="_blank">火光摇曳</a></li>
+<li><a href="http://www.sciencenet.cn/u/timy/" rel="friend" title="章成志老师的博客" target="_blank">章成志的博客</a></li>
+<li><a href="http://blog.csdn.net/v_JULY_v/" target="_blank">结构之法 算法之道</a></li>
+<li><a href="http://www.lingcc.com/" rel="friend" title="关注编译器,虚拟机,编程语言及技术,IT职业和程序员生活" target="_blank">编译点滴</a></li>
+<li><a href="http://www.52nlp.org" rel="me" title="52nlp的官方网站" target="_blank">自然语言处理</a></li>
+<li><a href="http://www.ieee.org.cn/" rel="friend" title="计算机科学论坛" target="_blank">计算机科学论坛</a></li>
+<li><a href="http://coursegraph.com/">课程图谱</a></li>
+<li><a href="http://blog.coursegraph.com" rel="friend">课程图谱博客</a></li>
+
+	</ul>
+</li>
+<li id="meta-4" class="widget-container widget_meta"><h3 class="widget-title">功能</h3>			<ul>
+						<li><a href="http://www.52nlp.cn/wp-login.php">登录</a></li>
+			<li><a href="http://www.52nlp.cn/feed">文章<abbr title="Really Simple Syndication">RSS</abbr></a></li>
+			<li><a href="http://www.52nlp.cn/comments/feed">评论<abbr title="Really Simple Syndication">RSS</abbr></a></li>
+<li><a href="https://cn.wordpress.org/" title="基于WordPress，一个优美、先进的个人信息发布平台。">WordPress.org</a></li>			</ul>
+</li>			</ul>
+		</div><!-- #secondary .widget-area -->
+
+	</div><!-- #main -->
+
+	<div id="footer" role="contentinfo">
+		<div id="colophon">
+
+
+
+			<div id="site-info">
+				<a href="http://www.52nlp.cn/" title="我爱自然语言处理" rel="home">
+					我爱自然语言处理				</a>
+			</div><!-- #site-info -->
+
+			<div id="site-generator">
+								<a href="http://cn.wordpress.org/"
+						title="优雅的个人发布平台" rel="generator">
+					自豪地采用 WordPress。				</a>
+			</div><!-- #site-generator -->
+
+		</div><!-- #colophon -->
+	</div><!-- #footer -->
+
+</div><!-- #wrapper -->
+
+<script>
+/* <![CDATA[ */
+var rcGlobal = {
+	serverUrl		:'http://www.52nlp.cn',
+	infoTemp		:'%REVIEWER% 在 %POST%',
+	loadingText		:'正在加载',
+	noCommentsText	:'没有任何评论',
+	newestText		:'&laquo; 最新的',
+	newerText		:'&laquo; 上一页',
+	olderText		:'下一页 &raquo;',
+	showContent		:'',
+	external		:'',
+	avatarSize		:'0',
+	avatarPosition	:'left',
+	anonymous		:'匿名'
+};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://www.52nlp.cn/wp-content/plugins/akismet/_inc/form.js?ver=3.1.1'></script>
+<link rel='stylesheet' id='yarppRelatedCss-css'  href='http://www.52nlp.cn/wp-content/plugins/yet-another-related-posts-plugin/style/related.css?ver=4.2.2' type='text/css' media='all' />
+<script type='text/javascript' src='http://www.52nlp.cn/wp-content/plugins/wp-recentcomments/js/wp-recentcomments.js?ver=2.2.7'></script>
+	<p align="center"> 本站架设在 <a href="http://www.52nlp.cn/digitalocean%E4%BD%BF%E7%94%A8%E5%B0%8F%E8%AE%B0">DigitalOcean</a> 上, 采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本站内容必须也遵循“署名-非商业用途-保持一致”的创作共用协议.</p>
+<!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(["trackPageView"]);
+  _paq.push(["enableLinkTracking"]);
+
+  (function() {
+    var u=(("https:" == document.location.protocol) ? "https" : "http") + "://162.243.252.121/piwik/";
+    _paq.push(["setTrackerUrl", u+"piwik.php"]);
+    _paq.push(["setSiteId", "5"]);
+    var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0]; g.type="text/javascript";
+    g.defer=true; g.async=true; g.src=u+"piwik.js"; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Piwik Code -->
+</body>
+</html>

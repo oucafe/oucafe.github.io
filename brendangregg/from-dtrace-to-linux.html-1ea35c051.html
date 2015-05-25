@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>Tracing Summit 2014: From DTrace To Linux</title>
+        <meta name="viewport" content="width=device-width">
+
+        <!-- syntax highlighting CSS -->
+        <link rel="stylesheet" href="/blog/css/syntax.css">
+
+        <!-- Custom CSS -->
+        <link rel="stylesheet" href="/blog/css/main.css">
+
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-7747513-3']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+    </head>
+    <body>
+
+	<div class="nav">
+	<p class="navhdr">This Site:</p>
+<a href="/index.html">Homepage</a><br>
+<a href="/blog/index.html">Blog</a><br>
+<a href="/sitemap.html">Full Site Map</a><br>
+<a href="/sysperfbook.html">Sys Perf book</a><br>
+<a href="/linuxperf.html">Linux Perf</a><br>
+<a href="/methodology.html">Perf Methods</a><br>
+<a href="/usemethod.html">USE Method</a><br>
+<a href="/tsamethod.html">TSA Method</a><br>
+<a href="/offcpuanalysis.html">Off-CPU Analysis</a><br>
+<a href="/activebenchmarking.html">Active Bench.</a><br>
+<a href="/flamegraphs.html">Flame Graphs</a><br>
+<a href="/heatmaps.html">Heat Maps</a><br>
+<a href="/frequencytrails.html">Frequency Trails</a><br>
+<a href="/colonygraphs.html">Colony Graphs</a><br>
+<a href="/perf.html">perf Examples</a><br>
+<a href="/ktap.html">ktap Examples</a><br>
+<a href="/dtrace.html">DTrace Tools</a><br>
+<a href="/dtracetoolkit.html">DTraceToolkit</a><br>
+<a href="/dtkshdemos.html">DtkshDemos</a><br>
+<a href="/guessinggame.html">Guessing Game</a><br>
+<a href="/specials.html">Specials</a><br>
+<a href="/books.html">Books</a><br>
+<a href="/sites.html">Other Sites</a><br>
+
+	</div>
+
+	<div class="recent">
+	Recent posts:<br>
+	<ul style="padding-left:18px">
+	  
+		   <li>06 Mar 2015 &raquo;<br>
+		   <a href="/blog/2015-03-06/performance-analysis-bsd.html">  
+		   MeetBSD CA: Performance Analysis of BSD</a></li>
+	  
+		   <li>03 Mar 2015 &raquo;<br>
+		   <a href="/blog/2015-03-03/performance-tuning-linux-instances-on-ec2.html">  
+		   Performance Tuning Linux Instances on EC2</a></li>
+	  
+		   <li>28 Feb 2015 &raquo;<br>
+		   <a href="/blog/2015-02-28/from-dtrace-to-linux.html">  
+		   Tracing Summit 2014: From DTrace To Linux</a></li>
+	  
+		   <li>27 Feb 2015 &raquo;<br>
+		   <a href="/blog/2015-02-27/linux-profiling-at-netflix.html">  
+		   SCALE13x: Linux Profiling at Netflix</a></li>
+	  
+		   <li>26 Feb 2015 &raquo;<br>
+		   <a href="/blog/2015-02-26/linux-perf-off-cpu-flame-graph.html">  
+		   Linux perf_events Off-CPU Time Flame Graph</a></li>
+	  
+		   <li>20 Jan 2015 &raquo;<br>
+		   <a href="/blog/2015-01-20/working-at-netflix.html">  
+		   Working at Netflix</a></li>
+	  
+		   <li>31 Dec 2014 &raquo;<br>
+		   <a href="/blog/2014-12-31/linux-page-cache-hit-ratio.html">  
+		   Linux Page Cache Hit Ratio</a></li>
+	  
+		   <li>22 Nov 2014 &raquo;<br>
+		   <a href="/blog/2014-11-22/linux-perf-tools-2014.html">  
+		   Linux Performance Tools 2014</a></li>
+	  
+		   <li>09 Nov 2014 &raquo;<br>
+		   <a href="/blog/2014-11-09/differential-flame-graphs.html">  
+		   Differential Flame Graphs</a></li>
+	  
+		   <li>31 Oct 2014 &raquo;<br>
+		   <a href="/blog/2014-10-31/cpi-flame-graphs.html">  
+		   Catching Your CPUs Napping</a></li>
+	  
+		   <li>27 Sep 2014 &raquo;<br>
+		   <a href="/blog/2014-09-27/from-clouds-to-roots.html">  
+		   From Clouds to Roots: Performance Analysis at Netflix</a></li>
+	  
+		   <li>17 Sep 2014 &raquo;<br>
+		   <a href="/blog/2014-09-17/node-flame-graphs-on-linux.html">  
+		   node.js Flame Graphs on Linux</a></li>
+	  
+		   <li>15 Sep 2014 &raquo;<br>
+		   <a href="/blog/2014-09-15/the-msrs-of-ec2.html">  
+		   The MSRs of EC2</a></li>
+	  
+		   <li>11 Sep 2014 &raquo;<br>
+		   <a href="/blog/2014-09-11/perf-kernel-line-tracing.html">  
+		   Linux perf Rides the Rocket</a></li>
+	  
+		   <li>06 Sep 2014 &raquo;<br>
+		   <a href="/blog/2014-09-06/linux-ftrace-tcp-retransmit-tracing.html">  
+		   Linux ftrace TCP Retransmit Tracing</a></li>
+	  
+		   <li>30 Aug 2014 &raquo;<br>
+		   <a href="/blog/2014-08-30/ftrace-the-hidden-light-switch.html">  
+		   ftrace: The Hidden Light Switch</a></li>
+	  
+		   <li>23 Aug 2014 &raquo;<br>
+		   <a href="/blog/2014-08-23/linux-perf-tools-linuxcon-na-2014.html">  
+		   Linux Performance Tools at LinuxCon North America 2014</a></li>
+	  
+		   <li>28 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-28/execsnoop-for-linux.html">  
+		   execsnoop For Linux: See Short-Lived Processes</a></li>
+	  
+		   <li>25 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-25/opensnoop-for-linux.html">  
+		   opensnoop For Linux</a></li>
+	  
+		   <li>23 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-23/linux-iosnoop-latency-heat-maps.html">  
+		   Linux iosnoop Latency Heat Maps</a></li>
+	  
+	</ul>
+	<a href="/blog/index.html">Blog index</a><br>
+	<a href="/blog/about.html">About</a><br>
+	<a href="/blog/rss.xml">RSS</a><br>
+	</div>
+
+        <div class="site">
+          <div class="header">
+            <h1 class="title"><a href="/blog/index.html">Brendan Gregg's Blog</a></h1>
+            <a class="extra" href="/blog/index.html">home</a>
+          </div>
+
+          <h2 class="big">Tracing Summit 2014: From DTrace To Linux</h2>
+<p class="meta">28 Feb 2015</p>
+
+<div class="post">
+<p>What can Linux learn from DTrace: what went well, and what didn&#39;t go well, on its path to success? This was the topic for my talk at the Tracing Summit late last year in Düsseldorf, where I discussed not just the DTrace technology, but lessons from marketing and adoption of a system tracer, and an inside look at how DTrace was really deployed and used in production environments.</p>
+
+<p>The slides are on <a href="http://www.slideshare.net/brendangregg/from-dtrace-to-linux">slideshare</a>:</p>
+
+<p><center><iframe src="http://www.slideshare.net/slideshow/embed_code/40198020" width="425" height="355" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:1px solid #CCC; border-width:1px; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe></center></p>
+
+<p>The talk was also videoed, which is on <a href="https://www.youtube.com/watch?v=TMXZcgnhXvg">youtube</a>:</p>
+
+<p><center><iframe width="560" height="315" src="https://www.youtube.com/embed/TMXZcgnhXvg" frameborder="0" allowfullscreen></iframe></center></p>
+
+<p>I addressed the key question: why doesn&#39;t Linux have DTrace?</p>
+
+<p>One way answer to this is to look at ftrace and perf_events, which are Linux technologies built-in to the kernel, and provide many similar capabilities to DTrace. These technologies didn&#39;t exist when DTrace was launched in 2005, when everyone learned not only that DTrace existed, but that it created an observability gap for Linux. But it&#39;s no longer 2005: the observability gap is now much smaller and shrinking. Linux is catching up.</p>
+
+<div style="float:right;padding-left:10px;padding-bottom:1px"><img src="/blog/images/2015/dtrace_laser_pony_golf_balls.jpg" width=192 border=0></a></div>
+
+<p>But there&#39;s another answer to this, which is an important and previously untold story that Linux needs to learn. DTrace is more than just a great technology: DTrace had marketing. DTrace was pushed by sales folk. DTrace had training classes, and instructors. DTrace had evangelists. DTrace had user-friendly scripts (many of which I wrote). DTrace had a community.</p>
+
+<p>By comparison, technologies like ftrace and perf_events in Linux are so far little more than just the technologies, documented in the kernel tree. No Linux backer is spending big to market them. And why should they? Sun Microsystems, the creator of DTrace, was fighting for its survival. It could justify spending millions marketing and selling its differentiators, including DTrace. I called it the &quot;trace race&quot;. I knew many of the Sun staff involved &ndash; and they did a heck of a job (thank you). Such a scenario may never be repeated.</p>
+
+<p>Marketing serves a role: it helps people become aware of technologies, and motivates them to try them out. I know many Linux users who didn&#39;t know about ftrace until I started blogging and speaking about it. And that&#39;s what we as a community need to do: use the technologies, and share the use cases. We won&#39;t have the backing of corporate marketing and sales, but we can use social media.</p>
+
+<p>There&#39;s many more lessons in the talk, which I recommend watching. It&#39;s my only talk where I covered more than just technology, but many non-technical factors involved in a product&#39;s success.</p>
+
+<p>I&#39;ve been contributing to Linux tracing myself, by participating in the communities (eg, <a href="http://vger.kernel.org/vger-lists.html#linux-perf-users">linux-perf-users</a> mailing list), testing new features (eg, eBPF), publishing tools and documentation (eg, <a href="https://github.com/brendangregg/perf-tools">perf-tools</a>, and blog posts here), and talking about these technologies at conferences. This includes my recent <a href="/blog/2015-02-27/linux-profiling-at-netflix.html">Linux Profiling at Netflix</a> talk at SCALE13x, where I covered perf_events, and my LISA 2014 talk, where I covered my mostly ftrace-based perf-tools. I&#39;ll be posting more on this blog about Linux tracing during the year. </p>
+
+<p>Slides and video for all the Tracing Summit talks are on the <a href="thanks%20to%20the%20%5BEfficiOS%5D%20folk%20for%20filming%20them">Tracing Summit wiki</a>. A couple of my favorites were Yannick Brosseau&#39;s &quot;Using tracing at Facebook scale&quot;, and Francis Giraldeau&#39;s &quot;Discover what your app is waiting with kernel tracing&quot;. Thanks to the organizers for putting on a great event! (And if you watched the talk, yes, Deirdré Straughan helped me a little with this post as well.)</p>
+
+</div>
+
+
+
+<br><hr>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+var disqus_shortname = 'brendangregg';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+          <div class="footer">
+            <div class="contact">
+                Copyright 2015 Brendan Gregg.<br><a href="/blog/about.html">About this blog</a>
+            </div>
+          </div>
+        </div>
+
+    </body>
+</html>

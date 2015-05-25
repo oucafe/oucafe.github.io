@@ -1,0 +1,753 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<title>用MeCab打造一套实用的中文分词系统(三)：MeCab-Chinese | 我爱自然语言处理</title>
+<link rel="profile" href="http://gmpg.org/xfn/11" />
+<link rel="stylesheet" type="text/css" media="all" href="http://www.52nlp.cn/wp-content/themes/twentytenorg/style.css" />
+<link rel="pingback" href="http://www.52nlp.cn/xmlrpc.php" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; Feed" href="http://www.52nlp.cn/feed" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; 评论Feed" href="http://www.52nlp.cn/comments/feed" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; 用MeCab打造一套实用的中文分词系统(三)：MeCab-Chinese评论Feed" href="http://www.52nlp.cn/%e7%94%a8mecab%e6%89%93%e9%80%a0%e4%b8%80%e5%a5%97%e5%ae%9e%e7%94%a8%e7%9a%84%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e7%b3%bb%e7%bb%9f%e4%b8%89%ef%bc%9amecab-chinese/feed" />
+		<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"http:\/\/s.w.org\/images\/core\/emoji\/72x72\/","ext":".png","source":{"concatemoji":"http:\/\/www.52nlp.cn\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.2.2"}};
+			!function(a,b,c){function d(a){var c=b.createElement("canvas"),d=c.getContext&&c.getContext("2d");return d&&d.fillText?(d.textBaseline="top",d.font="600 32px Arial","flag"===a?(d.fillText(String.fromCharCode(55356,56812,55356,56807),0,0),c.toDataURL().length>3e3):(d.fillText(String.fromCharCode(55357,56835),0,0),0!==d.getImageData(16,16,1,1).data[0])):!1}function e(a){var c=b.createElement("script");c.src=a,c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var f,g;c.supports={simple:d("simple"),flag:d("flag")},c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.simple&&c.supports.flag||(g=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",g,!1),a.addEventListener("load",g,!1)):(a.attachEvent("onload",g),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),f=c.source||{},f.concatemoji?e(f.concatemoji):f.wpemoji&&f.twemoji&&(e(f.twemoji),e(f.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+		<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<link rel='stylesheet' id='yarppWidgetCss-css'  href='http://www.52nlp.cn/wp-content/plugins/yet-another-related-posts-plugin/style/widget.css?ver=4.2.2' type='text/css' media='all' />
+<link rel='stylesheet' id='wp-syntax-css-css'  href='http://www.52nlp.cn/wp-content/plugins/wp-syntax/css/wp-syntax.css?ver=1.0' type='text/css' media='all' />
+<link rel='stylesheet' id='codecolorer-css'  href='http://www.52nlp.cn/wp-content/plugins/codecolorer/codecolorer.css?ver=0.9.9' type='text/css' media='screen' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.52nlp.cn/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.52nlp.cn/wp-includes/wlwmanifest.xml" /> 
+<link rel='prev' title='用MeCab打造一套实用的中文分词系统(二)' href='http://www.52nlp.cn/%e7%94%a8mecab%e6%89%93%e9%80%a0%e4%b8%80%e5%a5%97%e5%ae%9e%e7%94%a8%e7%9a%84%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e7%b3%bb%e7%bb%9f%e4%ba%8c' />
+<link rel='next' title='斯坦福大学深度学习与自然语言处理第一讲：引言' href='http://www.52nlp.cn/%e6%96%af%e5%9d%a6%e7%a6%8f%e5%a4%a7%e5%ad%a6%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%8e%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86%e7%ac%ac%e4%b8%80%e8%ae%b2%e5%bc%95%e8%a8%80' />
+<meta name="generator" content="WordPress 4.2.2" />
+<link rel='canonical' href='http://www.52nlp.cn/%e7%94%a8mecab%e6%89%93%e9%80%a0%e4%b8%80%e5%a5%97%e5%ae%9e%e7%94%a8%e7%9a%84%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e7%b3%bb%e7%bb%9f%e4%b8%89%ef%bc%9amecab-chinese' />
+<link rel='shortlink' href='http://www.52nlp.cn/?p=8278' />
+<!-- wp thread comment 1.4.9.4.002 -->
+<style type="text/css" media="screen">
+.editComment, .editableComment, .textComment{
+	display: inline;
+}
+.comment-childs{
+	border: 1px solid #999;
+	margin: 5px 2px 2px 4px;
+	padding: 4px 2px 2px 4px;
+	background-color: white;
+}
+.chalt{
+	background-color: #E2E2E2;
+}
+#newcomment{
+	border:1px dashed #777;width:90%;
+}
+#newcommentsubmit{
+	color:red;
+}
+.adminreplycomment{
+	border:1px dashed #777;
+	width:99%;
+	margin:4px;
+	padding:4px;
+}
+.mvccls{
+	color: #999;
+}
+			
+</style>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: { equationNumbers: { autoNumber: "AMS" } },
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+    inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+    displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+    processEscapes: true
+  },
+  "HTML-CSS": { availableFonts: ["TeX"] }
+});
+</script><script type="text/javascript" src="http://www.52nlp.cn/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</head>
+
+<body class="single single-post postid-8278 single-format-standard">
+<div id="wrapper" class="hfeed">
+	<div id="header">
+		<div id="masthead">
+			<div id="branding" role="banner">
+								<div id="site-title">
+					<span>
+						<a href="http://www.52nlp.cn/" title="我爱自然语言处理" rel="home">我爱自然语言处理</a>
+					</span>
+				</div>
+				<div id="site-description">I Love Natural Language Processing</div>
+
+										<img src="http://www.52nlp.cn/wp-content/themes/twentytenorg/images/headers/path.jpg" width="940" height="198" alt="" />
+								</div><!-- #branding -->
+
+			<div id="access" role="navigation">
+			  				<div class="skip-link screen-reader-text"><a href="#content" title="跳至正文">跳至正文</a></div>
+								<div class="menu"><ul><li ><a href="http://www.52nlp.cn/">首页</a></li><li class="page_item page-item-2"><a href="http://www.52nlp.cn/about">关于</a></li><li class="page_item page-item-2557 page_item_has_children"><a href="http://www.52nlp.cn/resources">资源</a><ul class='children'><li class="page_item page-item-1271"><a href="http://www.52nlp.cn/resources/wpmatheditor">WpMathEditor</a></li></ul></li></ul></div>
+ 
+				<div class="menu"><ul><li class="page_item page-item-2"></li><li class="page_item page-item-2"><a href="http://coursegraph.com" title="课程图谱" target="_blank">课程图谱</a></li><li class="page_item page-item-2"><a href="http://www.nlpjob.com" title="求职" target="_blank">求职招聘</a></li></ul></div>
+			</div><!-- #access -->
+		</div><!-- #masthead -->
+	</div><!-- #header -->
+
+	<div id="main">
+
+		<div id="container">
+			<div id="content" role="main">
+
+			
+
+				<div id="nav-above" class="navigation">
+					<div class="nav-previous"><a href="http://www.52nlp.cn/%e7%94%a8mecab%e6%89%93%e9%80%a0%e4%b8%80%e5%a5%97%e5%ae%9e%e7%94%a8%e7%9a%84%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e7%b3%bb%e7%bb%9f%e4%ba%8c" rel="prev"><span class="meta-nav">&larr;</span> 用MeCab打造一套实用的中文分词系统(二)</a></div>
+					<div class="nav-next"><a href="http://www.52nlp.cn/%e6%96%af%e5%9d%a6%e7%a6%8f%e5%a4%a7%e5%ad%a6%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%8e%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86%e7%ac%ac%e4%b8%80%e8%ae%b2%e5%bc%95%e8%a8%80" rel="next">斯坦福大学深度学习与自然语言处理第一讲：引言 <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-above -->
+
+				<div id="post-8278" class="post-8278 post type-post status-publish format-standard hentry category-chinese-information-processing category-word-segmentation category-tagging category-nlp tag-crf tag-java tag-mecab tag-mecab-chinese tag-perl tag-python tag-ruby tag-85 tag-82 tag-demo tag-1142 tag-1151 tag-1150 tag-1143 tag-1140 tag-wen-ben-chu-li-yan-shi-xi-tong">
+					<h1 class="entry-title">用MeCab打造一套实用的中文分词系统(三)：MeCab-Chinese</h1>
+
+					<div class="entry-meta">
+						<span class="meta-prep meta-prep-author">发表于</span> <a href="http://www.52nlp.cn/%e7%94%a8mecab%e6%89%93%e9%80%a0%e4%b8%80%e5%a5%97%e5%ae%9e%e7%94%a8%e7%9a%84%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e7%b3%bb%e7%bb%9f%e4%b8%89%ef%bc%9amecab-chinese" title="21:59" rel="bookmark"><span class="entry-date">2015年04月28号</span></a> <span class="meta-sep">由</span> <span class="author vcard"><a class="url fn n" href="http://www.52nlp.cn/author/admin" title="查看所有由 52nlp 发布的文章">52nlp</a></span>					</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+						<p>我在Github上发布了一个MeCab中文分词项目: <a href="https://github.com/panyang/MeCab-Chinese"target=_blank>MeCab-Chinese</a> , 目的是提供一个用于中文分词和词性标注的MeCab词典和模型数据，类似MeCab日文IPA词典（mecab-ipadic），并且提供一些我自己用到的特征模板和脚本，方便大家从源头开始训练一个MeCab中文分词系统。</p>
+<p>自从上次在愚人节的时候发布了一个mecab中文词典和数据模型之后（《<a href="http://www.52nlp.cn/%E7%94%A8mecab%E6%89%93%E9%80%A0%E4%B8%80%E5%A5%97%E5%AE%9E%E7%94%A8%E7%9A%84%E4%B8%AD%E6%96%87%E5%88%86%E8%AF%8D%E7%B3%BB%E7%BB%9F%E4%BA%8C">用MeCab打造一套实用的中文分词系统(二)</a>》), 收到了一些反馈，而这些反馈又促使我深入的review了一下mecab，重新设计特征及特征模板，加入了一些新的词典数据，重新训练模型，感兴趣的同学可以先试试这个0.2版本： mecab-chinesedic-binary （链接: <a href="http://pan.baidu.com/s/1gdxnvFX">http://pan.baidu.com/s/1gdxnvFX</a> 密码: kq9g）<br />
+注：目前所有发布的版本均默认utf-8编码，并且在Mac OS和Linux Ubuntu下测试有效，windows没有测试，感兴趣的同学可自行测试）</p>
+<p>了解和安装mecab仍请参考：<br />
+<a href="http://www.52nlp.cn/%E6%97%A5%E6%96%87%E5%88%86%E8%AF%8D%E5%99%A8-mecab-%E6%96%87%E6%A1%A3">日文分词器 Mecab 文档</a><br />
+<a href="http://www.52nlp.cn/%E7%94%A8mecab%E6%89%93%E9%80%A0%E4%B8%80%E5%A5%97%E5%AE%9E%E7%94%A8%E7%9A%84%E4%B8%AD%E6%96%87%E5%88%86%E8%AF%8D%E7%B3%BB%E7%BB%9F">用MeCab打造一套实用的中文分词系统</a></p>
+<p>这里再补充一点，由于google code废弃的缘故，MeCab这个项目已经搬迁至github，但是一些资源反而不如之前那么好找了，可参考两个MeCab作者维护的页面:<br />
+MeCab日文文档： <a href="http://taku910.github.io/mecab/">http://taku910.github.io/mecab/</a><br />
+MeCab github 页面：<a href="https://github.com/taku910/mecab">https://github.com/taku910/mecab</a></p>
+<p>MeCab目前最新的版本是2013-02-18更新的MeCab 0.996，我在Mac OS和Linux Ubuntu下用的是这个版本，在MeCab-Chinese下，做了一个备份，感兴趣的同学可以从这里下载: <a href="https://github.com/panyang/MeCab-Chinese/blob/master/mecab/mecab-0.996.tar.gz">MeCab 0.996</a><br />
+<span id="more-8278"></span></p>
+<p>在安装完毕MeCab之后，请下载这个模型词典数据，解压之后，可以这样执行：<br />
+mecab -d mecab-chinesedic-binary<br />
+自从上次在愚人节的时候发布了一个mecab中文词典和数据模型之后<br />
+自从	p,p,BE,2,自从,zi_cong,自從<br />
+上次	t,t,BE,2,上次,shang_ci,上次<br />
+在	p,p,S,1,在,zai,在<br />
+愚人	n,n,BE,2,愚人,yu_ren,愚人<br />
+节	n,n,S,1,节,jie,節<br />
+的	u,u,S,1,的,de,的<br />
+时候	n,n,BE,2,时候,shi_hou,時候<br />
+发布	v,v,BE,2,发布,fa_bu,發佈<br />
+了	u,u,S,1,了,le,了<br />
+一个	m,m,BE,2,一个,yi_ge,一個<br />
+mecab	unk,unk,*,*,*,*,*<br />
+中文	n,nz,BE,2,中文,zhong_wen,中文<br />
+词典	n,n,BE,2,词典,ci_dian,詞典<br />
+和	c,c,S,1,和,he,和<br />
+数据	n,n,BE,2,数据,shu_ju,數據<br />
+模型	n,n,BE,2,模型,mo_xing,模型<br />
+之后	f,f,BE,2,之后,zhi_hou,之後<br />
+EOS</p>
+<p>如果想得到单行的中文分词输出结果，可以这样执行：<br />
+mecab -d mecab-chinesedic-binary -O wakati<br />
+自从上次在愚人节的时候发布了一个mecab中文词典和数据模型之后<br />
+自从 上次 在 愚人 节 的 时候 发布 了 一个 mecab 中文 词典 和 数据 模型 之后 </p>
+<p>如果想得到词性标注的输出结果，可以这样执行：<br />
+mecab -d mecab-chinesedic-binary -O pos<br />
+自从上次在愚人节的时候发布了一个mecab中文词典和数据模型之后<br />
+自从/p 上次/t 在/p 愚人/n 节/n 的/u 时候/n 发布/v 了/u 一个/m mecab/unk 中文/nz 词典/n 和/c 数据/n 模型/n 之后/f </p>
+<p>注意词性标记可以参考：《<a href="http://wenku.baidu.com/view/ded725fafab069dc502201bc.html">现代汉语语料库加工规范——词语切分与词性标注</a>》。</p>
+<p>由于增加了拼音和繁体两个特征，这里还有两个副产品可以输出，一个是输出中文分词之后的对应拼音：<br />
+mecab -d mecab-chinesedic-binary -O pinyin<br />
+自从上次在愚人节的时候发布了一个mecab中文词典和数据模型之后<br />
+自从/zi_cong 上次/shang_ci 在/zai 愚人/yu_ren 节/jie 的/de 时候/shi_hou 发布/fa_bu 了/le 一个/yi_ge mecab/unk 中文/zhong_wen 词典/ci_dian 和/he 数据/shu_ju 模型/mo_xing 之后/zhi_hou </p>
+<p>另外一个是输出中文分词之后简体词到繁体词的转换:<br />
+mecab -d mecab-chinesedic-binary -O fan<br />
+自从上次在愚人节的时候发布了一个mecab中文词典和数据模型之后<br />
+自从/自從 上次/上次 在/在 愚人/愚人 节/節 的/的 时候/時候 发布/發佈 了/了 一个/一個 mecab/unk 中文/中文 词典/詞典 和/和 数据/數據 模型/模型 之后/之後 </p>
+<p>因为之前有同学留言如何输出词性标记，这个输出时可以指定格式或者在dicrc里面自定义，所以我在这个版本的dicrc里加了上述三种类型的输出：</p>
+<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:620px;"><table cellspacing="0" cellpadding="0"><tbody><tr><td class="line-numbers"><div>1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br />9<br />10<br />11<br />12<br />13<br />14<br />15<br />16<br />17<br />18<br />19<br />20<br /></div></td><td><div class="text codecolorer">cost-factor = 800<br />
+bos-feature = BOS/EOS,*,*,*,*,*,*<br />
+eval-size = 7<br />
+unk-eval-size = 4<br />
+config-charset = UTF-8<br />
+<br />
+; pos<br />
+node-format-pos = %m/%f[1]\s<br />
+unk-format-pos = %m/unk\s<br />
+eos-format-pos &nbsp;= \n<br />
+<br />
+; pinyin<br />
+node-format-pinyin = %m/%f[5]\s<br />
+unk-format-pinyin = %m/unk\s<br />
+eos-format-pinyin &nbsp;= \n<br />
+<br />
+; fan<br />
+node-format-fan = %m/%f[6]\s<br />
+unk-format-fan = %m/unk\s<br />
+eos-format-fan &nbsp;= \n</div></td></tr></tbody></table></div>
+<p>感兴趣的同学可以参考《<a href="http://www.52nlp.cn/%E6%97%A5%E6%96%87%E5%88%86%E8%AF%8D%E5%99%A8-mecab-%E6%96%87%E6%A1%A3#format.html">日文分词器 Mecab 文档</a>》里第四节关于输出格式的一些说明。</p>
+<p>在backoff2005 人民日报语料库上的测试结果：</p>
+<p>=== SUMMARY:<br />
+=== TOTAL INSERTIONS:	3637<br />
+=== TOTAL DELETIONS:	1643<br />
+=== TOTAL SUBSTITUTIONS:	4969<br />
+=== TOTAL NCHANGE:	10249<br />
+=== TOTAL TRUE WORD COUNT:	104372<br />
+=== TOTAL TEST WORD COUNT:	106366<br />
+=== TOTAL TRUE WORDS RECALL:	0.937<br />
+=== TOTAL TEST WORDS PRECISION:	0.919<br />
+=== F MEASURE:	0.928<br />
+=== OOV Rate:	0.058<br />
+=== OOV Recall Rate:	0.495<br />
+=== IV Recall Rate:	0.964<br />
+###	pku_test.result	3637	1643	4969	10249	104372	106366	0.937	0.919	0.928	0.058	0.495	0.964</p>
+<p>召回率93.7%，准确率91.9%, F值为92.8%, 比上一个版本略好一些，另外感兴趣的同学也可以通过这个版本的<a href="http://www.52nlp.com/zhong-wen-fen-ci">中文分词Demo</a> 进行测试。</p>
+<p>==============================================================</p>
+<p>如果觉得仅仅使用MeCab进行中文分词和词性标注还不过瘾，想自己train一个mecab分词所用的模型和词典，那么可以继续。之前在这里写过一篇<a href="http://www.52nlp.cn/%E7%94%A8mecab%E6%89%93%E9%80%A0%E4%B8%80%E5%A5%97%E5%AE%9E%E7%94%A8%E7%9A%84%E4%B8%AD%E6%96%87%E5%88%86%E8%AF%8D%E7%B3%BB%E7%BB%9F">《用MeCab打造一套实用的中文分词系统》</a> ，但是回过头来再看，其实问题多多，特别是特征模板这块儿，有很多歉考虑的地方，不过整个套路应该是没问题的，所以依然有一定的参考价值。</p>
+<p>这个版本里定义了7个特征：<br />
+*词性1级分类（其实仅仅为了方便，取词性标记首字母而已）<br />
+*词性2（这是真实的词性）<br />
+*字标注tag(BEMS)<br />
+*中文词字数<br />
+*中文词基本型<br />
+*拼音<br />
+*繁体</p>
+<p>所以训练语料需转换为如下的形式：</p>
+<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:620px;"><table cellspacing="0" cellpadding="0"><tbody><tr><td class="line-numbers"><div>1<br />2<br />3<br />4<br />5<br />6<br />7<br /></div></td><td><div class="text codecolorer">中文&nbsp; n,nz,BE,2,中文,zhong_wen,中文<br />
+词典&nbsp; n,n,BE,2,词典,ci_dian,詞典<br />
+和 c,c,S,1,和,he,和<br />
+数据&nbsp; n,n,BE,2,数据,shu_ju,數據<br />
+模型&nbsp; n,n,BE,2,模型,mo_xing,模型<br />
+之后&nbsp; f,f,BE,2,之后,zhi_hou,之後<br />
+EOS</div></td></tr></tbody></table></div>
+<p>而词典文件需转换为如下的形式：</p>
+<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:620px;"><table cellspacing="0" cellpadding="0"><tbody><tr><td class="line-numbers"><div>1<br />2<br />3<br />4<br />5<br />6<br /></div></td><td><div class="text codecolorer">中文,0,0,0,n,nz,BE,2,中文,zhong_wen,中文<br />
+词典,0,0,0,n,n,BE,2,词典,ci_dian,詞典<br />
+和,0,0,0,c,c,S,1,和,he,和<br />
+数据,0,0,0,n,BE,2,数据,shu_ju,數據<br />
+模型,0,0,0,n,n,BE,2,模型,mo_xing,模型<br />
+之后,0,0,0,f,f,BE,2,之后,zhi_hou,之後</div></td></tr></tbody></table></div>
+<p>关于这个版本对应的配置文件可以在<a href="https://github.com/panyang/MeCab-Chinese/tree/master/train/v0.2/seed">MeCab-Chinese</a>上查看, 其中dicrc和上述一致，这里就不说了。这里分别说一下几个配置文件。</p>
+<p><a href="https://github.com/panyang/MeCab-Chinese/blob/master/train/v0.2/seed/char.def">char.def</a> 和 <a href="https://github.com/panyang/MeCab-Chinese/blob/master/train/v0.2/seed/unk.def">unk.def</a> 用于未登录词的处理，这里基本复用了mecab日文ipadic里的两个文件，做了少许修改：</p>
+<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:620px;"><table cellspacing="0" cellpadding="0"><tbody><tr><td class="line-numbers"><div>1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br />9<br />10<br />11<br /></div></td><td><div class="text codecolorer">DEFAULT,0,0,0,unk,unk,*,*,*,*,*<br />
+SPACE,0,0,0,unk,unk,*,*,*,*,*<br />
+KANJI,0,0,0,unk,unk,*,*,*,*,*<br />
+SYMBOL,0,0,0,unk,unk,*,*,*,*,*<br />
+NUMERIC,0,0,0,unk,unk,*,*,*,*,*<br />
+ALPHA,0,0,0,unk,unk,*,*,*,*,*<br />
+HIRAGANA,0,0,0,unk,unk,*,*,*,*,*<br />
+GREEK,0,0,0,unk,unk,*,*,*,*,*<br />
+CYRILLIC,0,0,0,unk,unk,*,*,*,*,*<br />
+KANJINUMERIC,0,0,0,unk,unk,*,*,*,*,*<br />
+KATAKANA,0,0,0,unk,unk,*,*,*,*,*</div></td></tr></tbody></table></div>
+<p><a href="https://github.com/panyang/MeCab-Chinese/blob/master/train/v0.2/seed/rewrite.def">rewrite.def</a>， 做了最小化的精简:</p>
+<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:620px;"><table cellspacing="0" cellpadding="0"><tbody><tr><td class="line-numbers"><div>1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br /></div></td><td><div class="text codecolorer">[unigram rewrite]<br />
+*,*,*,*,*,*,* \$1,\$2,\$3,\$4,\$5,\$6,\$7<br />
+<br />
+[left rewrite]<br />
+*,*,*,* &nbsp;\$1,\$2,\$3,\$4<br />
+<br />
+[right rewrite]<br />
+*,*,*,* &nbsp;\$1,\$2,\$3,\$4</div></td></tr></tbody></table></div>
+<p><a href="https://github.com/panyang/MeCab-Chinese/blob/master/train/v0.2/seed/feature.def">feature.def</a>是crf特征模板，重新基于特征定义了一下：</p>
+<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:620px;height:450px;"><table cellspacing="0" cellpadding="0"><tbody><tr><td class="line-numbers"><div>1<br />2<br />3<br />4<br />5<br />6<br />7<br />8<br />9<br />10<br />11<br />12<br />13<br />14<br />15<br />16<br />17<br />18<br />19<br />20<br />21<br />22<br />23<br />24<br />25<br />26<br />27<br />28<br />29<br />30<br />31<br />32<br />33<br />34<br />35<br />36<br />37<br />38<br />39<br />40<br />41<br />42<br />43<br />44<br />45<br />46<br />47<br />48<br />49<br />50<br />51<br />52<br />53<br />54<br />55<br />56<br />57<br />58<br />59<br />60<br />61<br />62<br />63<br />64<br />65<br />66<br />67<br />68<br />69<br />70<br />71<br />72<br />73<br />74<br />75<br />76<br />77<br />78<br />79<br />80<br />81<br />82<br />83<br />84<br />85<br />86<br />87<br /></div></td><td><div class="text codecolorer"># POS Unigram<br />
+UNIGRAM U1:%F[0]<br />
+UNIGRAM U2:%F[0],%F?[1]<br />
+UNIGRAM U3:%F[0],%F[1],%F[2]<br />
+<br />
+# Word-POS<br />
+UNIGRAM W0:%F[4]<br />
+UNIGRAM W1:%F[0]/%F[4]<br />
+UNIGRAM W2:%F[1]/%F[4]<br />
+UNIGRAM W3:%F[2]/%F[4]<br />
+UNIGRAM W4:%F[0],%F?[1]/%F[4]<br />
+UNIGRAM W5:%F[1],%F?[2]/%F[4]<br />
+UNIGRAM W6:%F[0],%F[1],%F?[2]/%F[4]<br />
+<br />
+# Word-Freq<br />
+UNIGRAM WF0:%F[3]<br />
+UNIGRAM WF1:%F[3]/%F[4]<br />
+<br />
+# POS-Freq<br />
+UNIGRAM PF1:%F[0]/%F[3]<br />
+UNIGRAM PF2:%F[1]/%F[3]<br />
+UNIGRAM PF3:%F[0],%F?[1]/%F[3]<br />
+UNIGRAM PF4:%F[1],%F?[2]/%F[3]<br />
+UNIGRAM PF5:%F[0],%F[1],%F?[2]/%F[3]<br />
+<br />
+# Read-POS<br />
+UNIGRAM RP0:%F[5]<br />
+UNIGRAM RP1:%F[0]/%F[5]<br />
+UNIGRAM RP2:%F[1]/%F[5]<br />
+UNIGRAM RP3:%F[2]/%F[5]<br />
+UNIGRAM RP4:%F[0],%F?[1]/%F[5]<br />
+UNIGRAM RP5:%F[1],%F?[2]/%F[5]<br />
+UNIGRAM RP6:%F[0],%F[1],%F?[2]/%F[5]<br />
+<br />
+# Fan-POS<br />
+UNIGRAM RP0:%F[6]<br />
+UNIGRAM RP1:%F[0]/%F[6]<br />
+UNIGRAM RP2:%F[1]/%F[6]<br />
+UNIGRAM RP3:%F[2]/%F[6]<br />
+UNIGRAM RP4:%F[0],%F?[1]/%F[6]<br />
+UNIGRAM RP5:%F[1],%F?[2]/%F[6]<br />
+UNIGRAM RP6:%F[0],%F[1],%F?[2]/%F[6]<br />
+<br />
+# Word-Read-POS<br />
+UNIGRAM R1:%F[4],%F[5]<br />
+UNIGRAM R2:%F[0],%F[4],%F[5]<br />
+UNIGRAM R3:%F[1],%F[4],%F[5]<br />
+UNIGRAM R4:%F[2],%F[4],%F[5]<br />
+UNIGRAM R5:%F[0],%F?[1],%F[4],%F[5]<br />
+UNIGRAM R6:%F[1],%F?[2],%F[4],%F[5]<br />
+UNIGRAM R7:%F[0],%F[1],%F?[2],%F[4],%F[5]<br />
+<br />
+# Word-Fan-POS<br />
+UNIGRAM F1:%F[4],%F[6]<br />
+UNIGRAM F2:%F[0],%F[4],%F[6]<br />
+UNIGRAM F3:%F[1],%F[4],%F[6]<br />
+UNIGRAM F4:%F[2],%F[4],%F[6]<br />
+UNIGRAM F5:%F[0],%F?[1],%F[4],%F[6]<br />
+UNIGRAM F6:%F[1],%F?[2],%F[4],%F[6]<br />
+UNIGRAM F7:%F[0],%F[1],%F?[2],%F[4],%F[6]<br />
+<br />
+# char type<br />
+UNIGRAM T0:%t<br />
+UNIGRAM T1:%F[0]/%t<br />
+UNIGRAM T2:%F[0],%F?[1]/%t<br />
+UNIGRAM T3:%F[0],%F[1],%F?[2]/%t<br />
+UNIGRAM T4:%F[0],%F[1],%F[2],%F?[3]/%t<br />
+UNIGRAM T5:%F[0],%F[1],%F[2],%F[3],%F[4]/%t<br />
+<br />
+#<br />
+# bigram<br />
+#<br />
+<br />
+BIGRAM B00:%L[0]/%R[0]<br />
+BIGRAM B01:%L[0],%L?[1]/%R[0]<br />
+BIGRAM B02:%L[0]/%R[0],%R?[1]<br />
+BIGRAM B03:%L[0]/%R[0],%R[1],%R?[2]<br />
+BIGRAM B04:%L[0],%L?[1]/%R[0],%R[1],%R?[2]<br />
+BIGRAM B05:%L[0]/%R[0],%R[1],%R[2],%R?[3]<br />
+BIGRAM B06:%L[0],%L?[1]/%R[0],%R[1],%R[2],%R?[3]<br />
+BIGRAM B07:%L[0],%L[1],%L?[2]/%R[0]<br />
+BIGRAM B08:%L[0],%L[1],%L?[2]/%R[0],%R?[1]<br />
+BIGRAM B09:%L[0],%L[1],%L[2],%L?[3]/%R[0]<br />
+BIGRAM B10:%L[0],%L[1],%L[2],%L?[3]/%R[0],%R?[1]<br />
+BIGRAM B11:%L[0],%L[1],%L?[2]/%R[0],%R[1],%R?[2]<br />
+BIGRAM B12:%L[0],%L[1],%L?[2]/%R[0],%R[1],%R[2],%R?[3]<br />
+BIGRAM B13:%L[0],%L[1],%L[2],%L?[3]/%R[0],%R[1],%R?[2]</div></td></tr></tbody></table></div>
+<p>最后提供两个脚本，你只需按如下形式准备词典和训练语料即可：</p>
+<p>词典格式：中文词/中文词性标记（这里不限制使用某个特定的词性标记）, 例如：<br />
+中文/n<br />
+词典/n<br />
+和/c<br />
+数据/n<br />
+模型/n</p>
+<p>语料格式：带词性标注即可<br />
+中文/n 词典/n 和/c 数据/n 模型/n</p>
+<p>具体可以参考<a href="https://github.com/panyang/MeCab-Chinese/tree/master/train/v0.2/script">script</a>的两个脚本文件: make_mecab_seed_data.py 和 make_mecab_train_data.py</p>
+<p>注意，这里用的是这个汉字到拼音的转换方案，使用脚本前需要先安装: <a href="https://github.com/cleverdeng/pinyin.py">https://github.com/cleverdeng/pinyin.py</a></p>
+<p>另外汉字简体到繁体的转换代码已经拷贝和数据已经放到script目录下，不需要安装了，这个来源于：<a href="https://github.com/skydark/nstools">https://github.com/skydark/nstools</a></p>
+<p>执行上述两个脚本的时候都需要在script目录下执行，需要load一些数据。</p>
+<p>ok，MeCab-Chinese的一些介绍就到此为止了，欢迎大家一起参与共建MeCab-Chinese。</p>
+<p>注：原创文章，转载请注明出处“<a href="http://www.52nlp.cn">我爱自然语言处理</a>”：<a href="http://www.52nlp.cn">www.52nlp.cn</a></p>
+<p>本文链接地址：<a href="http://www.52nlp.cn/?p=8278">用mecab打造一套实用的中文分词系统三：mecab-chinese</a></p>
+<div class='yarpp-related'>
+<p>相关文章:<ol>
+<li><a href="http://www.52nlp.cn/%e7%94%a8mecab%e6%89%93%e9%80%a0%e4%b8%80%e5%a5%97%e5%ae%9e%e7%94%a8%e7%9a%84%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e7%b3%bb%e7%bb%9f%e4%ba%8c" rel="bookmark" title="用MeCab打造一套实用的中文分词系统(二)">用MeCab打造一套实用的中文分词系统(二) </a></li>
+<li><a href="http://www.52nlp.cn/%e7%94%a8mecab%e6%89%93%e9%80%a0%e4%b8%80%e5%a5%97%e5%ae%9e%e7%94%a8%e7%9a%84%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e7%b3%bb%e7%bb%9f" rel="bookmark" title="用MeCab打造一套实用的中文分词系统">用MeCab打造一套实用的中文分词系统 </a></li>
+<li><a href="http://www.52nlp.cn/%e6%97%a5%e6%96%87%e5%88%86%e8%af%8d%e5%99%a8-mecab-%e6%96%87%e6%a1%a3" rel="bookmark" title="日文分词器 Mecab 文档">日文分词器 Mecab 文档 </a></li>
+<li><a href="http://www.52nlp.cn/abcnlp-ab-natural-chinese-languange-processing" rel="bookmark" title="abcNLP: AB-Natural Chinese Languange Processing">abcNLP: AB-Natural Chinese Languange Processing </a></li>
+<li><a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e6%9c%80%e5%a4%a7%e5%8c%b9%e9%85%8d%e6%b3%95%e6%89%a9%e5%b1%952" rel="bookmark" title="中文分词入门之最大匹配法扩展2">中文分词入门之最大匹配法扩展2 </a></li>
+<li><a href="http://www.52nlp.cn/python%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86%e5%ae%9e%e8%b7%b5-%e5%9c%a8nltk%e4%b8%ad%e4%bd%bf%e7%94%a8%e6%96%af%e5%9d%a6%e7%a6%8f%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%99%a8" rel="bookmark" title="Python自然语言处理实践: 在NLTK中使用斯坦福中文分词器">Python自然语言处理实践: 在NLTK中使用斯坦福中文分词器 </a></li>
+<li><a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%952" rel="bookmark" title="中文分词入门之字标注法2">中文分词入门之字标注法2 </a></li>
+<li><a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e8%b5%84%e6%ba%90" rel="bookmark" title="中文分词入门之资源">中文分词入门之资源 </a></li>
+<li><a href="http://www.52nlp.cn/itenyh%e7%89%88-%e7%94%a8hmm%e5%81%9a%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%9b%9b%ef%bc%9aa-pure-hmm-%e5%88%86%e8%af%8d%e5%99%a8" rel="bookmark" title="Itenyh版-用HMM做中文分词四：A Pure-HMM 分词器">Itenyh版-用HMM做中文分词四：A Pure-HMM 分词器 </a></li>
+<li><a href="http://www.52nlp.cn/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e5%85%a5%e9%97%a8%e4%b9%8b%e5%ad%97%e6%a0%87%e6%b3%a8%e6%b3%954" rel="bookmark" title="中文分词入门之字标注法4">中文分词入门之字标注法4 </a></li>
+</ol></p>
+</div>
+											</div><!-- .entry-content -->
+
+
+					<div class="entry-utility">
+						此条目发表在 <a href="http://www.52nlp.cn/category/chinese-information-processing" rel="category tag">中文信息处理</a>, <a href="http://www.52nlp.cn/category/word-segmentation" rel="category tag">中文分词</a>, <a href="http://www.52nlp.cn/category/tagging" rel="category tag">标注</a>, <a href="http://www.52nlp.cn/category/nlp" rel="category tag">自然语言处理</a> 分类目录，贴了 <a href="http://www.52nlp.cn/tag/crf%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d" rel="tag">CRF中文分词</a>, <a href="http://www.52nlp.cn/tag/java%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d" rel="tag">Java中文分词</a>, <a href="http://www.52nlp.cn/tag/mecab" rel="tag">Mecab</a>, <a href="http://www.52nlp.cn/tag/mecab-chinese" rel="tag">MeCab-Chinese</a>, <a href="http://www.52nlp.cn/tag/mecab%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d" rel="tag">MeCab中文分词</a>, <a href="http://www.52nlp.cn/tag/mecab%e8%af%8d%e6%80%a7%e6%a0%87%e6%b3%a8" rel="tag">MeCab词性标注</a>, <a href="http://www.52nlp.cn/tag/perl%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d" rel="tag">Perl中文分词</a>, <a href="http://www.52nlp.cn/tag/python%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d" rel="tag">Python中文分词</a>, <a href="http://www.52nlp.cn/tag/ruby%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d" rel="tag">Ruby中文分词</a>, <a href="http://www.52nlp.cn/tag/%e4%b8%ad%e6%96%87%e4%bf%a1%e6%81%af%e5%a4%84%e7%90%86" rel="tag">中文信息处理</a>, <a href="http://www.52nlp.cn/tag/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d" rel="tag">中文分词</a>, <a href="http://www.52nlp.cn/tag/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8ddemo" rel="tag">中文分词Demo</a>, <a href="http://www.52nlp.cn/tag/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8djava" rel="tag">中文分词Java</a>, <a href="http://www.52nlp.cn/tag/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8dperl" rel="tag">中文分词Perl</a>, <a href="http://www.52nlp.cn/tag/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8dpython" rel="tag">中文分词Python</a>, <a href="http://www.52nlp.cn/tag/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8druby" rel="tag">中文分词Ruby</a>, <a href="http://www.52nlp.cn/tag/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e6%a8%a1%e5%9e%8b" rel="tag">中文分词模型</a>, <a href="http://www.52nlp.cn/tag/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e6%bc%94%e7%a4%ba" rel="tag">中文分词演示</a>, <a href="http://www.52nlp.cn/tag/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e6%bc%94%e7%a4%ba%e7%b3%bb%e7%bb%9f" rel="tag">中文分词演示系统</a>, <a href="http://www.52nlp.cn/tag/%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e8%af%8d%e5%85%b8" rel="tag">中文分词词典</a>, <a href="http://www.52nlp.cn/tag/%e4%b8%ad%e6%96%87%e8%af%8d%e6%80%a7%e6%a0%87%e6%b3%a8" rel="tag">中文词性标注</a>, <a href="http://www.52nlp.cn/tag/wen-ben-chu-li-yan-shi-xi-tong" rel="tag">文本处理演示系统</a> 标签。将<a href="http://www.52nlp.cn/%e7%94%a8mecab%e6%89%93%e9%80%a0%e4%b8%80%e5%a5%97%e5%ae%9e%e7%94%a8%e7%9a%84%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e7%b3%bb%e7%bb%9f%e4%b8%89%ef%bc%9amecab-chinese" title="链向 用MeCab打造一套实用的中文分词系统(三)：MeCab-Chinese 的固定链接" rel="bookmark">固定链接</a>加入收藏夹。											</div><!-- .entry-utility -->
+				</div><!-- #post-## -->
+
+				<div id="nav-below" class="navigation">
+					<div class="nav-previous"><a href="http://www.52nlp.cn/%e7%94%a8mecab%e6%89%93%e9%80%a0%e4%b8%80%e5%a5%97%e5%ae%9e%e7%94%a8%e7%9a%84%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e7%b3%bb%e7%bb%9f%e4%ba%8c" rel="prev"><span class="meta-nav">&larr;</span> 用MeCab打造一套实用的中文分词系统(二)</a></div>
+					<div class="nav-next"><a href="http://www.52nlp.cn/%e6%96%af%e5%9d%a6%e7%a6%8f%e5%a4%a7%e5%ad%a6%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%8e%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86%e7%ac%ac%e4%b8%80%e8%ae%b2%e5%bc%95%e8%a8%80" rel="next">斯坦福大学深度学习与自然语言处理第一讲：引言 <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-below -->
+
+				
+			<div id="comments">
+
+
+
+
+						<div id="respond" class="comment-respond">
+				<h3 id="reply-title" class="comment-reply-title">发表评论 <small><a rel="nofollow" id="cancel-comment-reply-link" href="/%e7%94%a8mecab%e6%89%93%e9%80%a0%e4%b8%80%e5%a5%97%e5%ae%9e%e7%94%a8%e7%9a%84%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e7%b3%bb%e7%bb%9f%e4%b8%89%ef%bc%9amecab-chinese#respond" style="display:none;">取消回复</a></small></h3>
+									<form action="http://www.52nlp.cn/wp-comments-post.php" method="post" id="commentform" class="comment-form">
+																			<p class="comment-notes"><span id="email-notes">电子邮件地址不会被公开。</span> 必填项已用<span class="required">*</span>标注</p>							<p class="comment-form-author"><label for="author">姓名 <span class="required">*</span></label> <input id="author" name="author" type="text" value="" size="30" aria-required='true' required='required' /></p>
+<p class="comment-form-email"><label for="email">电子邮件 <span class="required">*</span></label> <input id="email" name="email" type="text" value="" size="30" aria-describedby="email-notes" aria-required='true' required='required' /></p>
+<p class="comment-form-url"><label for="url">站点</label> <input id="url" name="url" type="text" value="" size="30" /></p>
+												<p class="comment-form-comment"><label for="comment">评论</label> <textarea id="comment" name="comment" cols="45" rows="8" aria-describedby="form-allowed-tags" aria-required="true" required="required"></textarea></p>						<p class="form-allowed-tags" id="form-allowed-tags">您可以使用这些<abbr title="HyperText Markup Language">HTML</abbr>标签和属性： <code>&lt;a href=&quot;&quot; title=&quot;&quot;&gt; &lt;abbr title=&quot;&quot;&gt; &lt;acronym title=&quot;&quot;&gt; &lt;b&gt; &lt;blockquote cite=&quot;&quot;&gt; &lt;cite&gt; &lt;code&gt; &lt;del datetime=&quot;&quot;&gt; &lt;em&gt; &lt;i&gt; &lt;q cite=&quot;&quot;&gt; &lt;s&gt; &lt;strike&gt; &lt;strong&gt; </code></p>
+						<p class="form-submit"><input name="submit" type="submit" id="submit" class="submit" value="发表评论" /> <input type='hidden' name='comment_post_ID' value='8278' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+</p><p style="display: none;"><input type="hidden" id="akismet_comment_nonce" name="akismet_comment_nonce" value="a68d1d311c" /></p><p style="display: none;"><input type="hidden" id="ak_js" name="ak_js" value="153"/></p><p><input type="hidden" id="comment_reply_ID" name="comment_reply_ID" value="0" /><input type="hidden" id="comment_reply_dp" name="comment_reply_dp" value="0" /></p><div id="cancel_reply" style="display:none;"><a href="javascript:void(0)" onclick="movecfm(null,0,1,null);" style="color:red;">点击取消回复</a></div><script type="text/javascript">
+/* <![CDATA[ */
+var commentformid = "commentform";
+var USERINFO = false;
+var atreply = "none";
+/* ]]> */
+</script>
+<script type="text/javascript" src="http://www.52nlp.cn/wp-content/plugins/wp-thread-comment/wp-thread-comment.js.php?jsver=common"></script>
+					</form>
+							</div><!-- #respond -->
+			
+</div><!-- #comments -->
+
+
+			</div><!-- #content -->
+		</div><!-- #container -->
+
+﻿
+		<div id="primary" class="widget-area" role="complementary">
+			<ul class="xoxo">
+<!-- begin l_sidebar -->
+	<div id="l_sidebar">
+<p>卓越网：<a href="http://www.amazon.cn/mn/searchApp?source=garypyang-23&searchType=1&keywords=自然语言处理" title="自然语言处理书籍"target=_blank>自然语言处理书籍</a><br>
+<li id="search-3" class="widget-container widget_search"><h3 class="widget-title">站内搜索</h3><form role="search" method="get" id="searchform" class="searchform" action="http://www.52nlp.cn/">
+				<div>
+					<label class="screen-reader-text" for="s">搜索：</label>
+					<input type="text" value="" name="s" id="s" />
+					<input type="submit" id="searchsubmit" value="搜索" />
+				</div>
+			</form></li><li id="text-4" class="widget-container widget_text"><h3 class="widget-title">NLPJob新鲜职位推荐:</h3>			<div class="textwidget"><p></p>
+<script src="http://www.nlpjob.com/api/api.php?action=getJobs
+&type=0&category=0&count=8&random=1&days_behind=7&response=js" type="text/javascript"></script>
+
+<script type="text/javascript">showJobs('jobber-container', 'jobber-list');</script></div>
+		</li><li id="text-3" class="widget-container widget_text"><h3 class="widget-title">52nlp新浪微博</h3>			<div class="textwidget"><p><iframe id="sina_widget_2104931705" style="width:100%; height:500px;" frameborder="0" scrolling="no" src="http://v.t.sina.com.cn/widget/widget_blog.php?uid=2104931705&height=500&skin=wd_01&showpic=1"></iframe></p>
+</div>
+		</li><li id="categories-309398091" class="widget-container widget_categories"><h3 class="widget-title">分类目录</h3>		<ul>
+	<li class="cat-item cat-item-72"><a href="http://www.52nlp.cn/category/mit-nlp" title="麻省理工学院开放式课程&quot;自然语言处理“的相关翻译文章">MIT自然语言处理</a> (23)
+</li>
+	<li class="cat-item cat-item-976"><a href="http://www.52nlp.cn/category/pattern-recognition-and-machine-learning-2" >PRML</a> (15)
+</li>
+	<li class="cat-item cat-item-469"><a href="http://www.52nlp.cn/category/topic-model" >Topic Model</a> (10)
+</li>
+	<li class="cat-item cat-item-87"><a href="http://www.52nlp.cn/category/wordpress" >wordpress</a> (6)
+</li>
+	<li class="cat-item cat-item-317"><a href="http://www.52nlp.cn/category/%e4%b8%93%e9%a2%98" >专题</a> (6)
+</li>
+	<li class="cat-item cat-item-263"><a href="http://www.52nlp.cn/category/chinese-information-processing" >中文信息处理</a> (22)
+</li>
+	<li class="cat-item cat-item-62"><a href="http://www.52nlp.cn/category/word-segmentation" >中文分词</a> (39)
+</li>
+	<li class="cat-item cat-item-420"><a href="http://www.52nlp.cn/category/%e5%b9%b6%e8%a1%8c%e7%ae%97%e6%b3%95" >并行算法</a> (1)
+</li>
+	<li class="cat-item cat-item-268"><a href="http://www.52nlp.cn/category/%e6%8b%9b%e8%81%98" >招聘</a> (4)
+</li>
+	<li class="cat-item cat-item-560"><a href="http://www.52nlp.cn/category/%e6%8e%a8%e8%8d%90%e7%b3%bb%e7%bb%9f" >推荐系统</a> (3)
+</li>
+	<li class="cat-item cat-item-354"><a href="http://www.52nlp.cn/category/%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98" >数据挖掘</a> (2)
+</li>
+	<li class="cat-item cat-item-241"><a href="http://www.52nlp.cn/category/text-classification" >文本分类</a> (3)
+</li>
+	<li class="cat-item cat-item-1149"><a href="http://www.52nlp.cn/category/wen-ben-chu-li-yan-shi-xi-tong" >文本处理演示系统</a> (1)
+</li>
+	<li class="cat-item cat-item-193"><a href="http://www.52nlp.cn/category/maximum-entropy-model" >最大熵模型</a> (7)
+</li>
+	<li class="cat-item cat-item-344"><a href="http://www.52nlp.cn/category/%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0" >机器学习</a> (30)
+</li>
+	<li class="cat-item cat-item-1"><a href="http://www.52nlp.cn/category/machine-translation" >机器翻译</a> (54)
+</li>
+	<li class="cat-item cat-item-195"><a href="http://www.52nlp.cn/category/%e6%9d%a1%e4%bb%b6%e9%9a%8f%e6%9c%ba%e5%9c%ba" >条件随机场</a> (3)
+</li>
+	<li class="cat-item cat-item-153"><a href="http://www.52nlp.cn/category/tagging" >标注</a> (15)
+</li>
+	<li class="cat-item cat-item-1153"><a href="http://www.52nlp.cn/category/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0" >深度学习</a> (1)
+</li>
+	<li class="cat-item cat-item-885"><a href="http://www.52nlp.cn/category/%e7%a7%91%e5%ad%a6%e8%ae%a1%e7%ae%97" >科学计算</a> (1)
+</li>
+	<li class="cat-item cat-item-538"><a href="http://www.52nlp.cn/category/%e7%bb%9f%e8%ae%a1%e5%ad%a6" >统计学</a> (10)
+</li>
+	<li class="cat-item cat-item-126"><a href="http://www.52nlp.cn/category/translation-model" >翻译模型</a> (2)
+</li>
+	<li class="cat-item cat-item-51"><a href="http://www.52nlp.cn/category/nlp" >自然语言处理</a> (232)
+</li>
+	<li class="cat-item cat-item-106"><a href="http://www.52nlp.cn/category/computational-linguistics" >计算语言学</a> (39)
+</li>
+	<li class="cat-item cat-item-22"><a href="http://www.52nlp.cn/category/dictionary" >词典</a> (8)
+</li>
+	<li class="cat-item cat-item-221"><a href="http://www.52nlp.cn/category/semantics" >语义学</a> (1)
+</li>
+	<li class="cat-item cat-item-1121"><a href="http://www.52nlp.cn/category/%e8%af%ad%e4%b9%89%e7%9b%b8%e4%bc%bc%e5%ba%a6" >语义相似度</a> (1)
+</li>
+	<li class="cat-item cat-item-161"><a href="http://www.52nlp.cn/category/semantic-web" >语义网</a> (3)
+</li>
+	<li class="cat-item cat-item-37"><a href="http://www.52nlp.cn/category/corpus" >语料库</a> (12)
+</li>
+	<li class="cat-item cat-item-86"><a href="http://www.52nlp.cn/category/language-model" >语言模型</a> (24)
+</li>
+	<li class="cat-item cat-item-156"><a href="http://www.52nlp.cn/category/speech-recognition" >语音识别</a> (4)
+</li>
+	<li class="cat-item cat-item-314"><a href="http://www.52nlp.cn/category/%e8%b4%9d%e5%8f%b6%e6%96%af%e6%a8%a1%e5%9e%8b" >贝叶斯模型</a> (1)
+</li>
+	<li class="cat-item cat-item-110"><a href="http://www.52nlp.cn/category/reprint" >转载</a> (28)
+</li>
+	<li class="cat-item cat-item-451"><a href="http://www.52nlp.cn/category/%e9%97%ae%e7%ad%94%e7%b3%bb%e7%bb%9f" >问答系统</a> (1)
+</li>
+	<li class="cat-item cat-item-3"><a href="http://www.52nlp.cn/category/informal-essay" >随笔</a> (63)
+</li>
+	<li class="cat-item cat-item-60"><a href="http://www.52nlp.cn/category/hidden-markov-model" >隐马尔科夫模型</a> (37)
+</li>
+		</ul>
+</li><li id="archives-2" class="widget-container widget_archive"><h3 class="widget-title">文章归档</h3>		<ul>
+	<li><a href='http://www.52nlp.cn/2015/05'>2015年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2015/04'>2015年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2015/03'>2015年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2015/01'>2015年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/12'>2014年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/11'>2014年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/09'>2014年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/07'>2014年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/06'>2014年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/05'>2014年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/04'>2014年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2014/01'>2014年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/12'>2013年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/06'>2013年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/05'>2013年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/04'>2013年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/03'>2013年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/02'>2013年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2013/01'>2013年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/12'>2012年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/11'>2012年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/10'>2012年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/09'>2012年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/08'>2012年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/07'>2012年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/06'>2012年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/05'>2012年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/04'>2012年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/03'>2012年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2012/01'>2012年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/12'>2011年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/11'>2011年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/10'>2011年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/09'>2011年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/08'>2011年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/07'>2011年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/06'>2011年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/05'>2011年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/04'>2011年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/03'>2011年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/02'>2011年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2011/01'>2011年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/12'>2010年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/11'>2010年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/10'>2010年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/09'>2010年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/08'>2010年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/07'>2010年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/06'>2010年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/05'>2010年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/04'>2010年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/03'>2010年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/02'>2010年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2010/01'>2010年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/12'>2009年十二月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/11'>2009年十一月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/10'>2009年十月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/09'>2009年九月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/08'>2009年八月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/07'>2009年七月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/06'>2009年六月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/05'>2009年五月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/04'>2009年四月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/03'>2009年三月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/02'>2009年二月</a></li>
+	<li><a href='http://www.52nlp.cn/2009/01'>2009年一月</a></li>
+	<li><a href='http://www.52nlp.cn/2008/12'>2008年十二月</a></li>
+		</ul>
+</li>		<li id="recent-posts-2" class="widget-container widget_recent_entries">		<h3 class="widget-title">最新文章</h3>		<ul>
+					<li>
+				<a href="http://www.52nlp.cn/%e6%96%af%e5%9d%a6%e7%a6%8f%e5%a4%a7%e5%ad%a6%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%8e%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86%e7%ac%ac%e4%b8%80%e8%ae%b2%e5%bc%95%e8%a8%80">斯坦福大学深度学习与自然语言处理第一讲：引言</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e7%94%a8mecab%e6%89%93%e9%80%a0%e4%b8%80%e5%a5%97%e5%ae%9e%e7%94%a8%e7%9a%84%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e7%b3%bb%e7%bb%9f%e4%b8%89%ef%bc%9amecab-chinese">用MeCab打造一套实用的中文分词系统(三)：MeCab-Chinese</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e7%94%a8mecab%e6%89%93%e9%80%a0%e4%b8%80%e5%a5%97%e5%ae%9e%e7%94%a8%e7%9a%84%e4%b8%ad%e6%96%87%e5%88%86%e8%af%8d%e7%b3%bb%e7%bb%9f%e4%ba%8c">用MeCab打造一套实用的中文分词系统(二)</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e4%b8%ad%e8%8b%b1%e6%96%87%e7%bb%b4%e5%9f%ba%e7%99%be%e7%a7%91%e8%af%ad%e6%96%99%e4%b8%8a%e7%9a%84word2vec%e5%ae%9e%e9%aa%8c">中英文维基百科语料上的Word2Vec实验</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/hmm%e7%9b%b8%e5%85%b3%e6%96%87%e7%ab%a0%e7%b4%a2%e5%bc%95">HMM相关文章索引</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%8d%81%e5%9b%9b%e7%ab%a0-combining-models">PRML读书会第十四章 Combining Models</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%8d%81%e4%b8%89%e7%ab%a0sequential-data">PRML读书会第十三章 Sequential Data</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%8d%81%e4%ba%8c%e7%ab%a0-continuous-latent-variables">PRML读书会第十二章 Continuous Latent Variables</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%8d%81%e4%b8%80%e7%ab%a0-sampling-methods">PRML读书会第十一章  Sampling Methods</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/prml%e8%af%bb%e4%b9%a6%e4%bc%9a%e7%ac%ac%e5%8d%81%e7%ab%a0-approximate-inference">PRML读书会第十章  Approximate Inference</a>
+						</li>
+				</ul>
+		</li><li id="recentcomments" class="widget-container widget_recentcomments"><h3 class="widget-title">最近评论</h3><ul><li class="rc-navi rc-clearfix"><span class="rc-loading">正在加载...</span></li><li id="rc-comment-temp" class="rc-item rc-comment rc-clearfix"><div class="rc-info"></div><div class="rc-timestamp"></div><div class="rc-excerpt"></div></li><li id="rc-ping-temp" class="rc-item rc-ping rc-clearfix"><span class="rc-label"></span></li></ul></li>			</ul>
+		</div><!-- #primary .widget-area -->
+
+
+		<div id="secondary" class="widget-area" role="complementary">
+			<ul class="xoxo">
+				<li id="linkcat-103" class="widget-container widget_links"><h3 class="widget-title">NLP相关网站</h3>
+	<ul class='xoxo blogroll'>
+<li><a href="http://www.aclweb.org/" rel="co-worker" title="The Association for Computational Linguistics" target="_blank">ACL</a></li>
+<li><a href="http://aclweb.org/anthology-new/" rel="co-worker" title="A Digital Archive of Research Papers in Computational Linguistics" target="_blank">ACL Anthology</a></li>
+<li><a href="http://belobog.si.umich.edu/clair/anthology/index.cgi" rel="colleague" target="_blank">ACL Anthology Network</a></li>
+<li><a href="http://aclweb.org/aclwiki/index.php?title=Main_Page" rel="colleague" title="the Wiki of the Association for Computational Linguistics" target="_blank">ACL Wiki</a></li>
+<li><a href="http://www.clsp.jhu.edu/" rel="colleague" target="_blank">CLSP</a></li>
+<li><a href="http://www.cwbbase.com/" rel="colleague" title="这是一个略具规模的中文语义词库, 也是稍有特色的汉语语义词典" target="_blank">CWB中文词库</a></li>
+<li><a href="http://www.euromatrix.net/" rel="colleague" target="_blank">EuroMatrix</a></li>
+<li><a href="http://www.freebase.com" rel="colleague" target="_blank">Freebase</a></li>
+<li><a href="http://www.clsp.jhu.edu/workshops/" rel="colleague" target="_blank">JHU Workshop</a></li>
+<li><a href="http://www.ldc.upenn.edu/" rel="colleague" title="Linguistic Data Consortium" target="_blank">LDC</a></li>
+<li><a href="http://www.statmt.org/moses/" rel="colleague" title="A factored phrase-based beam-search decoder for machine translation" target="_blank">Moses</a></li>
+<li><a href="http://nlpers.blogspot.com/" rel="colleague" title="国外一个非常不错的自然语言处理博客" target="_blank">nlper</a></li>
+<li><a href="http://www.nlpjob.com" target="_blank">NLPJob</a></li>
+<li><a href="http://www.powerset.com/" rel="colleague" target="_blank">Powerset</a></li>
+<li><a href="http://www.speech.sri.com/projects/srilm/" rel="colleague" title="&#8211; The SRI Language Modeling Toolkit" target="_blank">SRILM</a></li>
+<li><a href="http://www.statmt.org/" rel="colleague" title="This website is dedicated to research in statistical machine translation" target="_blank">Statistical Machine Translation</a></li>
+<li><a href="http://textanalysisonline.com/" target="_blank">Text Analysis</a></li>
+<li><a href="http://textminingonline.com/" target="_blank">Text Mining</a></li>
+<li><a href="http://textsummarization.net/" target="_blank">Text Summarization</a></li>
+<li><a href="http://w3china.org/index.htm" rel="friend" title="致力于促进W3C技术的广泛应用, 传播关于未来Web的知识与技术" target="_blank">中国万维网联盟</a></li>
+<li><a href="http://www.cipsc.org.cn/" rel="co-worker" title="Chinese Information Processing Society of China" target="_blank">中国中文信息学会</a></li>
+<li><a href="http://www.nlp.org.cn/" rel="colleague" title="中文自然语言处理开放平台" target="_blank">中文自然语言处理开放平台</a></li>
+<li><a href="http://www.mt-archive.info/" rel="colleague" title="Repository and bibliography of articles, books and papers on topics" target="_blank">机器翻译档案计划</a></li>
+<li><a href="http://www.statmt.org/europarl/" rel="colleague" target="_blank">欧洲议会平行语料库</a></li>
+<li><a href="http://www.keenage.com/" title="HowNet" target="_blank">知网</a></li>
+<li><a href="http://www.nlpir.org/" rel="friend" title="由张华平博士发起，由北京理工大学网络搜索与挖掘实验室运营，旨在推动NLP(自然语言处理)与IR(信息检索)领域的共享与共赢" target="_blank">自然语言处理与信息检索共享平台</a></li>
+<li><a href="http://mitel.ict.ac.cn/" rel="co-worker" title="中科院计算所多语言交互技术实验室" target="_blank">计算所多语言交互技术实验室</a></li>
+
+	</ul>
+</li>
+<li id="linkcat-2" class="widget-container widget_links"><h3 class="widget-title">友情链接</h3>
+	<ul class='xoxo blogroll'>
+<li><a href="http://blog.youxu.info/" title="一个计算机专业的 Ph.D. 学生徐宥的个人博客" target="_blank">4G spaces</a></li>
+<li><a href="http://blog.52nlp.org" rel="me" title="我爱自然语言处理完全镜像" target="_blank">52nlpblog</a></li>
+<li><a href="http://www.52nlp.com" rel="me" title="52nlp的英文站" target="_blank">52nlpcom</a></li>
+<li><a href="http://hi.baidu.com/drkevinzhang" rel="friend" title="ICTCLAS 张华平博士的空间" target="_blank">ICTCLAS 张华平博士的空间</a></li>
+<li><a href="http://blog.so8848.com/" rel="friend" title="信息检索博客" target="_blank">Information Retrieval Blog</a></li>
+<li><a href="http://interop123.com/default.aspx" rel="friend" title="崔晓源师兄关于NET技术的站点" target="_blank">NET互操作技术社区</a></li>
+<li><a href="http://bbs.w3china.org/" rel="friend" title="中国万维网联盟讨论区" target="_blank">W3CHINA讨论区</a></li>
+<li><a href="http://www.ailab.cn/" rel="friend" target="_blank">人工智能网</a></li>
+<li><a href="http://mindhacks.cn/" rel="friend" title="一个很有思想的价值博客!" target="_blank">刘未鹏之Mind Hacks</a></li>
+<li><a href="http://www.cnblogs.com/finallyliuyu/" rel="friend" target="_blank">原地转圈的驴子</a></li>
+<li><a href="http://xunren.thuir.org/" target="_blank">微博寻人（梁博）</a></li>
+<li><a href="http://52opencourse.com" rel="friend" title="我爱公开课，高质量公开课交流平台" target="_blank">我爱公开课</a></li>
+<li><a href="http://iregex.org/" rel="friend" target="_blank">我爱正则表达式</a></li>
+<li><a href="http://courseminer.com" target="_blank">挖课</a></li>
+<li><a href="http://www.flickering.cn/" target="_blank">火光摇曳</a></li>
+<li><a href="http://www.sciencenet.cn/u/timy/" rel="friend" title="章成志老师的博客" target="_blank">章成志的博客</a></li>
+<li><a href="http://blog.csdn.net/v_JULY_v/" target="_blank">结构之法 算法之道</a></li>
+<li><a href="http://www.lingcc.com/" rel="friend" title="关注编译器,虚拟机,编程语言及技术,IT职业和程序员生活" target="_blank">编译点滴</a></li>
+<li><a href="http://www.52nlp.org" rel="me" title="52nlp的官方网站" target="_blank">自然语言处理</a></li>
+<li><a href="http://www.ieee.org.cn/" rel="friend" title="计算机科学论坛" target="_blank">计算机科学论坛</a></li>
+<li><a href="http://coursegraph.com/">课程图谱</a></li>
+<li><a href="http://blog.coursegraph.com" rel="friend">课程图谱博客</a></li>
+
+	</ul>
+</li>
+<li id="meta-4" class="widget-container widget_meta"><h3 class="widget-title">功能</h3>			<ul>
+						<li><a href="http://www.52nlp.cn/wp-login.php">登录</a></li>
+			<li><a href="http://www.52nlp.cn/feed">文章<abbr title="Really Simple Syndication">RSS</abbr></a></li>
+			<li><a href="http://www.52nlp.cn/comments/feed">评论<abbr title="Really Simple Syndication">RSS</abbr></a></li>
+<li><a href="https://cn.wordpress.org/" title="基于WordPress，一个优美、先进的个人信息发布平台。">WordPress.org</a></li>			</ul>
+</li>			</ul>
+		</div><!-- #secondary .widget-area -->
+
+	</div><!-- #main -->
+
+	<div id="footer" role="contentinfo">
+		<div id="colophon">
+
+
+
+			<div id="site-info">
+				<a href="http://www.52nlp.cn/" title="我爱自然语言处理" rel="home">
+					我爱自然语言处理				</a>
+			</div><!-- #site-info -->
+
+			<div id="site-generator">
+								<a href="http://cn.wordpress.org/"
+						title="优雅的个人发布平台" rel="generator">
+					自豪地采用 WordPress。				</a>
+			</div><!-- #site-generator -->
+
+		</div><!-- #colophon -->
+	</div><!-- #footer -->
+
+</div><!-- #wrapper -->
+
+<script>
+/* <![CDATA[ */
+var rcGlobal = {
+	serverUrl		:'http://www.52nlp.cn',
+	infoTemp		:'%REVIEWER% 在 %POST%',
+	loadingText		:'正在加载',
+	noCommentsText	:'没有任何评论',
+	newestText		:'&laquo; 最新的',
+	newerText		:'&laquo; 上一页',
+	olderText		:'下一页 &raquo;',
+	showContent		:'',
+	external		:'',
+	avatarSize		:'0',
+	avatarPosition	:'left',
+	anonymous		:'匿名'
+};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://www.52nlp.cn/wp-content/plugins/akismet/_inc/form.js?ver=3.1.1'></script>
+<link rel='stylesheet' id='yarppRelatedCss-css'  href='http://www.52nlp.cn/wp-content/plugins/yet-another-related-posts-plugin/style/related.css?ver=4.2.2' type='text/css' media='all' />
+<script type='text/javascript' src='http://www.52nlp.cn/wp-content/plugins/wp-recentcomments/js/wp-recentcomments.js?ver=2.2.7'></script>
+	<p align="center"> 本站架设在 <a href="http://www.52nlp.cn/digitalocean%E4%BD%BF%E7%94%A8%E5%B0%8F%E8%AE%B0">DigitalOcean</a> 上, 采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本站内容必须也遵循“署名-非商业用途-保持一致”的创作共用协议.</p>
+<!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(["trackPageView"]);
+  _paq.push(["enableLinkTracking"]);
+
+  (function() {
+    var u=(("https:" == document.location.protocol) ? "https" : "http") + "://162.243.252.121/piwik/";
+    _paq.push(["setTrackerUrl", u+"piwik.php"]);
+    _paq.push(["setSiteId", "5"]);
+    var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0]; g.type="text/javascript";
+    g.defer=true; g.async=true; g.src=u+"piwik.js"; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Piwik Code -->
+</body>
+</html>

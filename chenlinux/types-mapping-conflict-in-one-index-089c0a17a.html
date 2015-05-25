@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Elasticsearch 同一索引不同类型下同名字段的映射冲突实例</title>
+    <meta name="author" content="陈子">
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!-- Le styles -->
+    <link href="/assets/themes/twitter/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/themes/twitter/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+    <link href="/assets/themes/twitter/css/pygments/default.css" rel="stylesheet" type="text/css">
+    <!-- Le fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+  </head>
+  <body>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="/">三斗室</a>
+          <ul class="nav">
+      	<li><a href="/archive.html">归档</a></li>
+      	<li><a href="/categories.html">分类</a></li>
+      	<li><a href="/errata.html">《网站运维技术与实践》勘误</a></li>
+      	<li><a href="/pages.html">Pages</a></li>
+      	<li><a href="/projects.html">学习记录</a></li>
+      	<li><a href="/tags.html">标签</a></li>
+            <li><a href="http://chenlinux.com/poetry/index.html" />诗文集</a></li>
+            <li><link title="RSS 2.0" type="application/rss+xml" href="http://chenlinux.com/feed.xml" rel="alternate" /><a href="http://chenlinux.com/feed.xml" target="_blank">RSS订阅</a></li>
+          </ul>
+          <ul class="nav pull-right"><li><a href="/about.html">有关我</a></li></ul>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+    <div class="row">
+      <div class="span7">
+<div class="row">
+  <div class="page-header">
+    <h1>Elasticsearch 同一索引不同类型下同名字段的映射冲突实例 <small></small></h1>
+    <div class="date"><span>03 April 2015</span></div>
+    <ul class="tag_box pull-right">
+    	<li><a href="/tags.html#elasticsearch-ref">elasticsearch <span>32</span></a></li>
+    </ul>
+  </div>
+  <div style='background-color: #FFF;'>
+    <p>这个标题肯定绕晕很多人吧。具体说明一下场景就明白了：Nginx 和 Apache 的访问日志，因为都属于网站访问，所以写入到同一个索引的不同类型下，比方 <code>logstash-accesslog-2015.04.03/nginx</code> 和 <code>logstash-accesslog-2015.04.03/apache</code>。既然都是访问日志，肯定很多字段的内容含义是雷同的，比如 clientip, domain, urlpath 等等。其中 nginx 有一个变量叫 <code>$request_time</code>，apache 有一个变量叫 <code>%T</code>，乍看上去也是同义的，我就统一命名为 &ldquo;requestTime&rdquo; 了。这就是&rdquo;同一索引(logstash-accesslog-YYYY.MM.DD)下不同类型(nginx,apache)的同名字段(requestTime)&rdquo;。</p>
+<p>但事实上，这里有个问题：<strong>nginx 中的以秒为单位，是把毫秒算作小数；apache 中的以秒为单位，是真的只记秒钟整数位！</strong></p>
+<p>所以，这两个类型生成的映射在这个字段上是不一致的。nginx 类型的 requestTime 是 <strong>double</strong>，apache 类型的 requestTime 是 <strong>long</strong>。</p>
+<p>不过平常看起来似乎也没什么影响，写入数据都照常，查看数据的时候默认显示的 JSON 也各自无异。直到我准备用一把 scripted field 的时候，发现计算 <code>doc['requestTime'].value * 1000</code> 得到的数都大的吓人！</p>
+<p>因为类似计算之前在只有 nginx 日志入库的时候曾经正确运行过，所以只能是猜测 apache 日志对此造成了影响，但是即使我把请求修改成限定在 nginx 类型数据中进行，结果也没发生变化。</p>
+<p>仔细阅读 scripting module 的文档，其中提到了 <code>doc['fieldname'].value</code> 和 <code>_source.fieldname</code> 两种写法的区别：<strong>前者会利用内存中的数据，而后者强制读取磁盘上 <code>_source</code> 存储的 JSON 内容，从中释放出相应字段内容。</strong>莫非是 requestTime 字段跟 <code>_source</code> JSON 里存的数据确实不一样，而我们平常搜索查看的都是从 JSON 里释放出来的，所以才会如此？</p>
+<p>为了验证我的猜测，做了一个请求测试：</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="c"># curl es.domain.com:9200/logstash-accesslog-2015.04.03/nginx/_search?q=_id:AUx-QvSBS-dhpiB8_1f1\&amp;pretty -d &#39;{</span>
+    <span class="s2">&quot;fields&quot;</span>: <span class="o">[</span><span class="s2">&quot;requestTime&quot;</span>, <span class="s2">&quot;bodySent&quot;</span><span class="o">]</span>,
+    <span class="s2">&quot;script_fields&quot;</span> : <span class="o">{</span>
+        <span class="s2">&quot;test1&quot;</span> : <span class="o">{</span>
+            <span class="s2">&quot;script&quot;</span> : <span class="s2">&quot;doc[\&quot;requestTime\&quot;].value&quot;</span>
+        <span class="o">}</span>,
+        <span class="s2">&quot;test3&quot;</span> : <span class="o">{</span>
+            <span class="s2">&quot;script&quot;</span> : <span class="s2">&quot;_source.bodySent / _source.requestTime&quot;</span>
+        <span class="o">}</span>,
+        <span class="s2">&quot;test2&quot;</span> : <span class="o">{</span>
+            <span class="s2">&quot;script&quot;</span> : <span class="s2">&quot;doc[\&quot;requestTime\&quot;].value * 1000&quot;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span><span class="err">&#39;</span></code></pre></div>
+<p>得到的结果如下：</p>
+<div class="highlight"><pre><code class="language-json" data-lang="json"><span class="p">{</span>
+  <span class="nt">&quot;took&quot;</span> <span class="p">:</span> <span class="mi">43</span><span class="p">,</span>
+  <span class="nt">&quot;timed_out&quot;</span> <span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+  <span class="nt">&quot;_shards&quot;</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;total&quot;</span> <span class="p">:</span> <span class="mi">56</span><span class="p">,</span>
+    <span class="nt">&quot;successful&quot;</span> <span class="p">:</span> <span class="mi">56</span><span class="p">,</span>
+    <span class="nt">&quot;failed&quot;</span> <span class="p">:</span> <span class="mi">0</span>
+  <span class="p">},</span>
+  <span class="nt">&quot;hits&quot;</span> <span class="p">:</span> <span class="p">{</span>
+    <span class="nt">&quot;total&quot;</span> <span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+    <span class="nt">&quot;max_score&quot;</span> <span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+    <span class="nt">&quot;hits&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="p">{</span>
+      <span class="nt">&quot;_index&quot;</span> <span class="p">:</span> <span class="s2">&quot;logstash-accesslog-2015.04.03&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;_type&quot;</span> <span class="p">:</span> <span class="s2">&quot;nginx&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;_id&quot;</span> <span class="p">:</span> <span class="s2">&quot;AUx-QvSBS-dhpiB8_1f1&quot;</span><span class="p">,</span>
+      <span class="nt">&quot;_score&quot;</span> <span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>
+      <span class="nt">&quot;fields&quot;</span> <span class="p">:</span> <span class="p">{</span>
+        <span class="nt">&quot;test1&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="mi">4603039107142836552</span> <span class="p">],</span>
+        <span class="nt">&quot;test2&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="mi">-8646911284551352000</span> <span class="p">],</span>
+        <span class="nt">&quot;requestTime&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="mf">0.54</span> <span class="p">],</span>
+        <span class="nt">&quot;test3&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="mf">2444.4444444444443</span> <span class="p">],</span>
+        <span class="nt">&quot;bodySent&quot;</span> <span class="p">:</span> <span class="p">[</span> <span class="mi">1320</span> <span class="p">]</span>
+      <span class="p">}</span>
+    <span class="p">}</span> <span class="p">]</span>
+  <span class="p">}</span>
+<span class="p">}</span></code></pre></div>
+<p>果然！直接读取的字段，以及采用 <code>_source.fieldname</code> 方式读取的内容，都是正确的；而采用 <code>doc['fieldname'].value</code> 获取的内存数据，就不对。（0.54 存成 long 型会变成 4603039107142836552。这个 460 还正好能跟 540 凑成 1000，应该是某种特定存法，不过这里我就没深究了）</p>
+<p>再作下一步验证。我们知道，ES 数据的映射是根据第一条数据的类型确定的，之后的数据如何类型跟已经成型的映射不统一，那么写入会失败。现在这个 nginx 和 apache 两个类型在 requestTime 字段上的映射是不一样的，但是内存里却并没有按照映射来处理。那么，我往一个类型下写入另一个类型映射要求的数据，会报错还是会通过呢？</p>
+<div class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="c"># curl -XPOST es.domain.com:9200/test/t1/1 -d &#39;{&quot;key&quot;:1}&#39;</span>
+<span class="o">{</span><span class="s2">&quot;_index&quot;</span>:<span class="s2">&quot;test&quot;</span>,<span class="s2">&quot;_type&quot;</span>:<span class="s2">&quot;t1&quot;</span>,<span class="s2">&quot;_id&quot;</span>:<span class="s2">&quot;1&quot;</span>,<span class="s2">&quot;_version&quot;</span>:1,<span class="s2">&quot;created&quot;</span>:true<span class="o">}</span>
+<span class="c"># curl -XPOST es.domain.com:9200/test/t2/1 -d &#39;{&quot;key&quot;:2.2}&#39;</span>
+<span class="o">{</span><span class="s2">&quot;_index&quot;</span>:<span class="s2">&quot;test&quot;</span>,<span class="s2">&quot;_type&quot;</span>:<span class="s2">&quot;t2&quot;</span>,<span class="s2">&quot;_id&quot;</span>:<span class="s2">&quot;1&quot;</span>,<span class="s2">&quot;_version&quot;</span>:1,<span class="s2">&quot;created&quot;</span>:true<span class="o">}</span>
+<span class="c"># curl -XPOST es.domain.com:9200/test/t1/2 -d &#39;{&quot;key&quot;:2.2}&#39;</span>
+<span class="o">{</span><span class="s2">&quot;_index&quot;</span>:<span class="s2">&quot;test&quot;</span>,<span class="s2">&quot;_type&quot;</span>:<span class="s2">&quot;t1&quot;</span>,<span class="s2">&quot;_id&quot;</span>:<span class="s2">&quot;2&quot;</span>,<span class="s2">&quot;_version&quot;</span>:1,<span class="s2">&quot;created&quot;</span>:true<span class="o">}</span>
+<span class="c"># curl -XPOST es.domain.com:9200/test/t2/2 -d &#39;{&quot;key&quot;:1}&#39;</span>
+<span class="o">{</span><span class="s2">&quot;_index&quot;</span>:<span class="s2">&quot;test&quot;</span>,<span class="s2">&quot;_type&quot;</span>:<span class="s2">&quot;t2&quot;</span>,<span class="s2">&quot;_id&quot;</span>:<span class="s2">&quot;2&quot;</span>,<span class="s2">&quot;_version&quot;</span>:1,<span class="s2">&quot;created&quot;</span>:true<span class="o">}</span>
+<span class="c"># curl -XPOST es.domain.com:9200/test/t1/3 -d &#39;{&quot;key&quot;:&quot;1&quot;}&#39;</span>
+<span class="o">{</span><span class="s2">&quot;_index&quot;</span>:<span class="s2">&quot;test&quot;</span>,<span class="s2">&quot;_type&quot;</span>:<span class="s2">&quot;t1&quot;</span>,<span class="s2">&quot;_id&quot;</span>:<span class="s2">&quot;3&quot;</span>,<span class="s2">&quot;_version&quot;</span>:1,<span class="s2">&quot;created&quot;</span>:true<span class="o">}</span>
+<span class="c"># curl -XPOST es.domain.com:9200/test/t2/3 -d &#39;{&quot;key&quot;:&quot;1&quot;}&#39;</span>
+<span class="o">{</span><span class="s2">&quot;_index&quot;</span>:<span class="s2">&quot;test&quot;</span>,<span class="s2">&quot;_type&quot;</span>:<span class="s2">&quot;t2&quot;</span>,<span class="s2">&quot;_id&quot;</span>:<span class="s2">&quot;3&quot;</span>,<span class="s2">&quot;_version&quot;</span>:1,<span class="s2">&quot;created&quot;</span>:true<span class="o">}</span>
+<span class="c"># curl -XPOST es.domain.com:9200/test/t2/4 -d &#39;{&quot;key&quot;:&quot;abc&quot;}&#39;</span>
+<span class="o">{</span><span class="s2">&quot;error&quot;</span>:<span class="s2">&quot;RemoteTransportException[[10.10.10.10][inet[/10.10.10.10:9300]][indices:data/write/index]]; nested: MapperParsingException[failed to parse [key]]; nested: NumberFormatException[For input string: \&quot;abc\&quot;]; &quot;</span>,<span class="s2">&quot;status&quot;</span>:400<span class="o">}</span>
+<span class="c"># curl -XGET es.domain.com:9200/test/_mapping</span>
+<span class="o">{</span><span class="s2">&quot;test&quot;</span>:<span class="o">{</span><span class="s2">&quot;mappings&quot;</span>:<span class="o">{</span><span class="s2">&quot;t1&quot;</span>:<span class="o">{</span><span class="s2">&quot;properties&quot;</span>:<span class="o">{</span><span class="s2">&quot;key&quot;</span>:<span class="o">{</span><span class="s2">&quot;type&quot;</span>:<span class="s2">&quot;long&quot;</span><span class="o">}}}</span>,<span class="s2">&quot;t2&quot;</span>:<span class="o">{</span><span class="s2">&quot;properties&quot;</span>:<span class="o">{</span><span class="s2">&quot;key&quot;</span>:<span class="o">{</span><span class="s2">&quot;type&quot;</span>:<span class="s2">&quot;double&quot;</span><span class="o">}}}}}}</span></code></pre></div>
+<p>结果出来了，在映射相互冲突以后，实际数据只要是 numeric detect 能通过的，就都通过了！</p>
+<p>BTW: kibana 4 中，已经会对这种情况以黄色感叹号图标做出提示；而根据官方消息，ES 未来会在 2.0 版正式杜绝这种可能。</p>
+    <hr>
+    <div class="pagination">
+      <ul>
+        <li class="prev"><a href="/2015/03/14/spark-streaming-kafka" title="spark streaming 接收 kafka 数据示例">&larr; Previous</a></li>
+        <li><a href="/archive.html">Archive</a></li>
+        <li class="next disabled"><a>Next &rarr;</a>
+      </ul>
+    </div>
+    <hr>
+  <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_tsina">新浪微博</a>
+<a class="jiathis_button_weixin">微信</a>
+<a class="jiathis_button_renren">人人网</a>
+<a class="jiathis_button_ydnote">有道云笔记</a>
+<a class="jiathis_button_gmail">Gmail邮箱</a>
+<a class="jiathis_button_twitter">Twitter</a>
+<a class="jiathis_button_googleplus">Google+</a>
+<a class="jiathis_button_hi">百度空间</a>
+<a class="jiathis_button_fb">Facebook</a>
+<a class="jiathis_button_douban">豆瓣</a>
+<a href="http://www.jiathis.com/share?uid=1589850" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+var jiathis_config={
+	data_track_clickback:true,
+	summary:"",
+	ralateuid:{
+		"tsina":"1035836154"
+	},
+	shortUrl:false,
+	hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1589850" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" id="UYScript" src="http://v1.uyan.cc/js/iframe.js?UYUserId=1589850" async=""></script>
+<!-- UY END -->
+  </div>
+</div>
+      </div>
+      <div class="span4">
+          <div class="well sidebar-nav">
+             <ul id="relate_blog" class="nav nav-list">
+               <li class="nav-header">最近文章</li>
+                 <li><a href="/2015/03/14/spark-streaming-kafka">spark streaming 接收 kafka 数据示例</a></li>
+                 <li><a href="/2015/03/14/kibana3-source-code-analysis">Kibana 3 源码解析</a></li>
+                 <li><a href="/2015/03/06/kibana4-for-slowlog">用 Kibana4 实现 PHP 慢日志函数堆栈分析</a></li>
+                 <li><a href="/2015/02/25/kibana-aggregation-execution-order-and-you">【翻译】kibana 的聚合执行次序</a></li>
+                 <li><a href="/2015/02/25/kibana-4-rc1-is-now-available">【翻译】Kibana 4 RC1 发布</a></li>
+                 <li><a href="/2015/02/25/kibana-4-literally">【翻译】kibana 4 正式就位</a></li>
+                 <li><a href="/2015/02/25/kibana-4-for-investigating-pacs-super-pacs-and-your-neighbors">【翻译】用 kibana 4 调查你邻居可能投票给的人</a></li>
+                 <li><a href="/2015/02/14/spark-streaming-transform">spark streaming 的 transform 操作示例</a></li>
+                 <li><a href="/2015/02/14/spark-streaming-state">spark streaming 的 state 操作示例</a></li>
+            </ul>
+          </div>
+        <div class="well sidebar-nav">
+          <iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=1&ptype=1&speed=0&skin=2&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=1035836154&verifier=a26926d5&dpc=1"></iframe>
+        </div>
+        <div class="well sidebar-nav">
+            <div id="uyan_list_time_frame"></div>
+            <script type="text/javascript" id="UYScriptTime" src="http://v1.uyan.cc/js/iframe_time_list.js?UYUserId=1589850&rankType=time" async=""></script>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(英文)</li>
+              <li><a href="http://codeascraft.com/" title="Etsy 运维团队博客">Code as Craft</a></li>
+              <li><a href="http://devopsanywhere.blogspot.jp/" title="">devopsanywhere</a></li>
+              <li><a href="http://www.jedi.be/blog/" title="">Jong En Dynamische Informatica</a></li>
+              <li><a href="http://www.planetdevops.net/" title="">planetdevops</a></li>
+              <li><a href="http://www.kitchensoap.com/" title="《网站运维》作者，Etsy 运维">Kitchen Soap</a></li>
+              <li><a href="http://blog.johngoulah.com" title="Musings of linux, open source, cloud computing and systems">John Goulah</a></li>
+              <li><a href="http://serverfault.com/" title="stackexchange下属的系统工程师问答网站">serverfault</a></li>
+              <li><a href="http://www.thegeekstuff.com/" title="各种超酷Linux命令用法">TheGeekStuff</a></li>
+              <li><a href="http://neilb.org/" title="The good,the bad,and the beautiful">neilb</a></li>
+              <li><a href="http://www.reddit.com/r/perl/" title="">reddit perl 频道</a></li>
+              <li><a href="http://jpetazzo.github.io/" title="">~jpetazzo</a></li>
+              <li><a href="http://www.perfplanet.com/" title="News and views from the web performance blogosphere">Performance Planet</a></li>
+              <li><a href="http://cuddletech.com/blog/" title="Use UNIX or die">Cuddle Tech</a></li>
+              <li><a href="http://showmetheco.de/" title="Viacheslav Tykhanovskyi(PocketIO/Text::Haml)">No time to wait</a></li>
+              <li><a href="http://blog.dataloop.io/" title="A new SaaS monitoring tool for DevOps & Operations">Dataloop.IO</a></li>
+              <li><a href="http://www.ducea.com/" title="">MDLog:/sysadmin</a></li>
+              <li><a href="http://planeteria.org/perl6/" title="Perl6 文集">Planet Perl 6</a></li>
+              <li><a href="http://www.metaforsoftware.com/blog/" title="">metafor</a></li>
+              <li><a href="http://blog.kablamo.org/" title="Eric Johnson，一个游走在伦敦和北京的 Perler">kablamo</a></li>
+              <li><a href="http://aphyr.com/posts" title="call me maybe 吐槽系列">Aphyr</a></li>
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(中文)</li>
+              <li><a href="http://www.nginxs.com/" title="">eric</a></li>
+              <li><a href="http://www.hellodb.net/" title="Ali DBA 张瑞">Hello DBA</a></li>
+              <li><a href="http://blog.nosqlfan.com/" title="not only sql信息集散地">NoSQLfan</a></li>
+              <li><a href="http://ourmysql.com/" title="">OurMySQL</a></li>
+              <li><a href="http://timo.piqiu.me/" title="TIMO IS MY OASIS">Timo</a></li>
+              <li><a href="http://www.liurongxing.com/" title="">刘荣星</a></li>
+              <li><a href="http://www.cnadn.net/" title="F5工程师">应用交付学习之路</a></li>
+              <li><a href="http://scmbob.org/" title="杭州NSN工程师，shell高人~">扛一肩记忆</a></li>
+              <li><a href="http://www.php-oa.com/" title="音悦台技术经理">扶凯</a></li>
+              <li><a href="http://www.lark.net.cn/" title="王剑">lark's cloud</a></li>
+              <li><a href="http://log.heartoutside.com/" title="HeartOutSide">HeartOutside</a></li>
+              <li><a href="http://blog.liulantao.com/" title="刘兰涛">Lax</a></li>
+              <li><a href="http://niubie.me/" title="莫言">莫言</a></li>
+              <li><a href="http://noops.me/" title="小米运维部">NoOps</a></li>
+              <li><a href="http://www.searchtech.pro/" title="">云端分布式搜索技术</a></li>
+              <li><a href="http://www.usefulshare.com" title="当当网安全运维">UsefulShare</a></li>
+              <li><a href="http://junqili.com/" title="深入研究puppet">纸飞机</a></li>
+              <li><a href="http://www.chinaxing.org/" title="">ChinaXing</a></li>
+              <li><a href="http://bubbyroom.com/" title="守住每一天">Liuyu's blog</a></li>
+              <li><a href="http://blog.aka-cool.net/" title="">Aka.Why</a></li>
+              <li><a href="http://blog.l8ii.com/" title="刘侨">LairdNote</a></li>
+              <li><a href="http://flw.tools/" title="">flw的工具箱</a></li>
+              <li><a href="http://blog.mcshell.org/" title="">mcshell</a></li>
+              <li><a href="http://novoland.github.io/" title="">克鲁斯卡尔的博客</a></li>
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="booklists" class="nav nav-list">
+          <li class="nav-header">我写的技术书籍</li>
+          <li><a href='http://product.china-pub.com/3769604'><img src='http://images.china-pub.com/ebook3765001-3770000/3769604/shupi.jpg' border='0' alt='网站运维技术与实践'/></a></li>
+          <li class="nav-header">我参与翻译的技术书籍</li>
+          <li><a href='http://product.china-pub.com/4582714'><img src='http://images.china-pub.com/ebook4580001-4585000/4582714/shupi.jpg' border='0' alt='Puppet 实战手册'/></a></li>
+          <li class="nav-header">我写的电子书籍</li>
+          <li><a href='http://chenryn.gitbooks.io/logstash-best-practice/'><img src='https://sm3lir.cloudimage.io/s/cdn/x/https://www.gitbook.io/cover/book/chenryn/logstash-best-practice?build=1416299695472' border='0' alt='LogStash 最佳实践'/></a></li>
+          <li><a href='http://kibana.logstash.es/'><img src='https://sm3lir.cloudimage.io/s/cdn/x/https://www.gitbook.io/cover/book/chenryn/kibana-guide-cn?build=1415872457562' border='0' alt='Kibana 中文指南'/></a></li>
+        </div>
+      </div>
+    </div> <!-- row -->
+      <footer>
+        <p>&copy; 陈子 2015 
+          with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
+          and <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap</a>
+        </p>
+      </footer>
+    </div> <!-- /container -->
+  </body>
+</html>

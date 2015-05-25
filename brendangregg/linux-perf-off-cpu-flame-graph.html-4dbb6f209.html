@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>Linux perf_events Off-CPU Time Flame Graph</title>
+        <meta name="viewport" content="width=device-width">
+
+        <!-- syntax highlighting CSS -->
+        <link rel="stylesheet" href="/blog/css/syntax.css">
+
+        <!-- Custom CSS -->
+        <link rel="stylesheet" href="/blog/css/main.css">
+
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-7747513-3']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+    </head>
+    <body>
+
+	<div class="nav">
+	<p class="navhdr">This Site:</p>
+<a href="/index.html">Homepage</a><br>
+<a href="/blog/index.html">Blog</a><br>
+<a href="/sitemap.html">Full Site Map</a><br>
+<a href="/sysperfbook.html">Sys Perf book</a><br>
+<a href="/linuxperf.html">Linux Perf</a><br>
+<a href="/methodology.html">Perf Methods</a><br>
+<a href="/usemethod.html">USE Method</a><br>
+<a href="/tsamethod.html">TSA Method</a><br>
+<a href="/offcpuanalysis.html">Off-CPU Analysis</a><br>
+<a href="/activebenchmarking.html">Active Bench.</a><br>
+<a href="/flamegraphs.html">Flame Graphs</a><br>
+<a href="/heatmaps.html">Heat Maps</a><br>
+<a href="/frequencytrails.html">Frequency Trails</a><br>
+<a href="/colonygraphs.html">Colony Graphs</a><br>
+<a href="/perf.html">perf Examples</a><br>
+<a href="/ktap.html">ktap Examples</a><br>
+<a href="/dtrace.html">DTrace Tools</a><br>
+<a href="/dtracetoolkit.html">DTraceToolkit</a><br>
+<a href="/dtkshdemos.html">DtkshDemos</a><br>
+<a href="/guessinggame.html">Guessing Game</a><br>
+<a href="/specials.html">Specials</a><br>
+<a href="/books.html">Books</a><br>
+<a href="/sites.html">Other Sites</a><br>
+
+	</div>
+
+	<div class="recent">
+	Recent posts:<br>
+	<ul style="padding-left:18px">
+	  
+		   <li>06 Mar 2015 &raquo;<br>
+		   <a href="/blog/2015-03-06/performance-analysis-bsd.html">  
+		   MeetBSD CA: Performance Analysis of BSD</a></li>
+	  
+		   <li>03 Mar 2015 &raquo;<br>
+		   <a href="/blog/2015-03-03/performance-tuning-linux-instances-on-ec2.html">  
+		   Performance Tuning Linux Instances on EC2</a></li>
+	  
+		   <li>28 Feb 2015 &raquo;<br>
+		   <a href="/blog/2015-02-28/from-dtrace-to-linux.html">  
+		   Tracing Summit 2014: From DTrace To Linux</a></li>
+	  
+		   <li>27 Feb 2015 &raquo;<br>
+		   <a href="/blog/2015-02-27/linux-profiling-at-netflix.html">  
+		   SCALE13x: Linux Profiling at Netflix</a></li>
+	  
+		   <li>26 Feb 2015 &raquo;<br>
+		   <a href="/blog/2015-02-26/linux-perf-off-cpu-flame-graph.html">  
+		   Linux perf_events Off-CPU Time Flame Graph</a></li>
+	  
+		   <li>20 Jan 2015 &raquo;<br>
+		   <a href="/blog/2015-01-20/working-at-netflix.html">  
+		   Working at Netflix</a></li>
+	  
+		   <li>31 Dec 2014 &raquo;<br>
+		   <a href="/blog/2014-12-31/linux-page-cache-hit-ratio.html">  
+		   Linux Page Cache Hit Ratio</a></li>
+	  
+		   <li>22 Nov 2014 &raquo;<br>
+		   <a href="/blog/2014-11-22/linux-perf-tools-2014.html">  
+		   Linux Performance Tools 2014</a></li>
+	  
+		   <li>09 Nov 2014 &raquo;<br>
+		   <a href="/blog/2014-11-09/differential-flame-graphs.html">  
+		   Differential Flame Graphs</a></li>
+	  
+		   <li>31 Oct 2014 &raquo;<br>
+		   <a href="/blog/2014-10-31/cpi-flame-graphs.html">  
+		   Catching Your CPUs Napping</a></li>
+	  
+		   <li>27 Sep 2014 &raquo;<br>
+		   <a href="/blog/2014-09-27/from-clouds-to-roots.html">  
+		   From Clouds to Roots: Performance Analysis at Netflix</a></li>
+	  
+		   <li>17 Sep 2014 &raquo;<br>
+		   <a href="/blog/2014-09-17/node-flame-graphs-on-linux.html">  
+		   node.js Flame Graphs on Linux</a></li>
+	  
+		   <li>15 Sep 2014 &raquo;<br>
+		   <a href="/blog/2014-09-15/the-msrs-of-ec2.html">  
+		   The MSRs of EC2</a></li>
+	  
+		   <li>11 Sep 2014 &raquo;<br>
+		   <a href="/blog/2014-09-11/perf-kernel-line-tracing.html">  
+		   Linux perf Rides the Rocket</a></li>
+	  
+		   <li>06 Sep 2014 &raquo;<br>
+		   <a href="/blog/2014-09-06/linux-ftrace-tcp-retransmit-tracing.html">  
+		   Linux ftrace TCP Retransmit Tracing</a></li>
+	  
+		   <li>30 Aug 2014 &raquo;<br>
+		   <a href="/blog/2014-08-30/ftrace-the-hidden-light-switch.html">  
+		   ftrace: The Hidden Light Switch</a></li>
+	  
+		   <li>23 Aug 2014 &raquo;<br>
+		   <a href="/blog/2014-08-23/linux-perf-tools-linuxcon-na-2014.html">  
+		   Linux Performance Tools at LinuxCon North America 2014</a></li>
+	  
+		   <li>28 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-28/execsnoop-for-linux.html">  
+		   execsnoop For Linux: See Short-Lived Processes</a></li>
+	  
+		   <li>25 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-25/opensnoop-for-linux.html">  
+		   opensnoop For Linux</a></li>
+	  
+		   <li>23 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-23/linux-iosnoop-latency-heat-maps.html">  
+		   Linux iosnoop Latency Heat Maps</a></li>
+	  
+	</ul>
+	<a href="/blog/index.html">Blog index</a><br>
+	<a href="/blog/about.html">About</a><br>
+	<a href="/blog/rss.xml">RSS</a><br>
+	</div>
+
+        <div class="site">
+          <div class="header">
+            <h1 class="title"><a href="/blog/index.html">Brendan Gregg's Blog</a></h1>
+            <a class="extra" href="/blog/index.html">home</a>
+          </div>
+
+          <h2 class="big">Linux perf_events Off-CPU Time Flame Graph</h2>
+<p class="meta">26 Feb 2015</p>
+
+<div class="post">
+<p>I&#39;ve been asked how to do these several times, so here&#39;s a quick blog post.</p>
+
+<p><a href="http://www.brendangregg.com/FlameGraphs/cpuflamegraphs.html">CPU Flame Graphs</a> are great for understanding CPU usage, but what about performance issues of latency, when programs are blocked and not running on-CPU? There&#39;s a generic methodology to attack these, which I&#39;ve called <a href="http://www.brendangregg.com/offcpuanalysis.html">Off-CPU Analysis</a>. This involves instrumenting call stacks and timestamps when the scheduler blocks a thread, and when it later wakes it up. There are even <a href="http://www.brendangregg.com/FlameGraphs/offcpuflamegraphs.html">Off-CPU Time Flame Graphs</a> to visualize this blocked time, which are the counterpart to on-CPU flame graphs.</p>
+
+<p>Off-CPU time flame graphs may solve (say) 60% of the issues, with the remainder requiring walking the thread wakeups to find root cause. I explained off-CPU time flame graphs, this wakeup issue, and additional work, in my LISA13 talk on flame graphs (<a href="http://www.slideshare.net/brendangregg/blazing-performance-with-flame-graphs/122">slides</a>, <a href="http://youtu.be/nZfNehCzGdw?t=1h11m52s">youtube</a>).</p>
+
+<p>Here I&#39;ll show one way to do off-CPU time flame graphs using Linux perf_events. Example (click to zoom):</p>
+
+<p><object data="/blog/images/2015/offcpu-perf.svg" type="image/svg+xml" width=720 height=261>
+<img src="/blog/images/2015/offcpu-perf.svg" width=720 height=261 />
+</object></p>
+
+<p>Unlike the CPU flame graph, in this graph the width spans the total duration that a code path was sleeping. A &quot;sleep 1&quot; command was caught, shown on the far right as having slept for 1,000 ms.</p>
+
+<p>I was discussing how to do these with Nicolas on <a href="https://github.com/brendangregg/FlameGraph/issues/47#issuecomment-76298637">github</a>, as he had found that perf_events could almost do this using the <tt>perf inject -s</tt> feature, when I noticed perf_events has added &quot;-f period&quot; to perf script (added in about 3.17). That simplifies things a bit, so the steps can be:</p>
+
+<pre>
+# <b>perf record -e sched:sched_stat_sleep -e sched:sched_switch \
+    -e sched:sched_process_exit -a -g -o perf.data.raw sleep 1</b>
+# <b>perf inject -v -s -i perf.data.raw -o perf.data</b>
+# <b>perf script -f comm,pid,tid,cpu,time,period,event,ip,sym,dso,trace | awk '
+    NF &gt; 4 { exec = $1; period_ms = int($5 / 1000000) }
+    NF &gt; 1 && NF &lt;= 4 && period_ms &gt; 0 { print $2 }
+    NF &lt; 2 && period_ms &gt; 0 { printf "%s\n%d\n\n", exec, period_ms }' | \
+    ./stackcollapse.pl | \
+    ./flamegraph.pl --countname=ms --title="Off-CPU Time Flame Graph" --colors=io &gt; offcpu.svg</b>
+</pre>
+
+<p>The awk I&#39;m using merely turns the perf script output into something stackcollapse.pl understands. This whole perf inject workflow strikes me as a bit weird, and this step could be skipped by doing your own processing of the perf script output (more awk!), to stitch together events. I&#39;d do this if I were on older kernels, that lacked the perf script -f period.</p>
+
+<p>Warning: scheduler events can be very frequent, and the overhead of dumping them to the file system (perf.data) may be prohibitive in production environments. Test carefully. This is also why I put a &quot;sleep 1&quot; in the perf record (the dummy command that sets the duration), to start with a small amount of trace data. If I had to do this in production, I&#39;d consider other tools that could summarize data in-kernel to reduce overhead, including perf_events once it supports more in-kernel programming (eBPF).</p>
+
+<p>There may be some scenarios where the current perf_events overhead is acceptable, especially if you match on a single PID of interest (in perf record, using &quot;-p PID&quot; instead of &quot;-a&quot;).</p>
+
+</div>
+
+
+
+<br><hr>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+var disqus_shortname = 'brendangregg';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+          <div class="footer">
+            <div class="contact">
+                Copyright 2015 Brendan Gregg.<br><a href="/blog/about.html">About this blog</a>
+            </div>
+          </div>
+        </div>
+
+    </body>
+</html>

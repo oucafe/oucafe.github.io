@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>Performance Tuning Linux Instances on EC2</title>
+        <meta name="viewport" content="width=device-width">
+
+        <!-- syntax highlighting CSS -->
+        <link rel="stylesheet" href="/blog/css/syntax.css">
+
+        <!-- Custom CSS -->
+        <link rel="stylesheet" href="/blog/css/main.css">
+
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-7747513-3']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+    </head>
+    <body>
+
+	<div class="nav">
+	<p class="navhdr">This Site:</p>
+<a href="/index.html">Homepage</a><br>
+<a href="/blog/index.html">Blog</a><br>
+<a href="/sitemap.html">Full Site Map</a><br>
+<a href="/sysperfbook.html">Sys Perf book</a><br>
+<a href="/linuxperf.html">Linux Perf</a><br>
+<a href="/methodology.html">Perf Methods</a><br>
+<a href="/usemethod.html">USE Method</a><br>
+<a href="/tsamethod.html">TSA Method</a><br>
+<a href="/offcpuanalysis.html">Off-CPU Analysis</a><br>
+<a href="/activebenchmarking.html">Active Bench.</a><br>
+<a href="/flamegraphs.html">Flame Graphs</a><br>
+<a href="/heatmaps.html">Heat Maps</a><br>
+<a href="/frequencytrails.html">Frequency Trails</a><br>
+<a href="/colonygraphs.html">Colony Graphs</a><br>
+<a href="/perf.html">perf Examples</a><br>
+<a href="/ktap.html">ktap Examples</a><br>
+<a href="/dtrace.html">DTrace Tools</a><br>
+<a href="/dtracetoolkit.html">DTraceToolkit</a><br>
+<a href="/dtkshdemos.html">DtkshDemos</a><br>
+<a href="/guessinggame.html">Guessing Game</a><br>
+<a href="/specials.html">Specials</a><br>
+<a href="/books.html">Books</a><br>
+<a href="/sites.html">Other Sites</a><br>
+
+	</div>
+
+	<div class="recent">
+	Recent posts:<br>
+	<ul style="padding-left:18px">
+	  
+		   <li>06 Mar 2015 &raquo;<br>
+		   <a href="/blog/2015-03-06/performance-analysis-bsd.html">  
+		   MeetBSD CA: Performance Analysis of BSD</a></li>
+	  
+		   <li>03 Mar 2015 &raquo;<br>
+		   <a href="/blog/2015-03-03/performance-tuning-linux-instances-on-ec2.html">  
+		   Performance Tuning Linux Instances on EC2</a></li>
+	  
+		   <li>28 Feb 2015 &raquo;<br>
+		   <a href="/blog/2015-02-28/from-dtrace-to-linux.html">  
+		   Tracing Summit 2014: From DTrace To Linux</a></li>
+	  
+		   <li>27 Feb 2015 &raquo;<br>
+		   <a href="/blog/2015-02-27/linux-profiling-at-netflix.html">  
+		   SCALE13x: Linux Profiling at Netflix</a></li>
+	  
+		   <li>26 Feb 2015 &raquo;<br>
+		   <a href="/blog/2015-02-26/linux-perf-off-cpu-flame-graph.html">  
+		   Linux perf_events Off-CPU Time Flame Graph</a></li>
+	  
+		   <li>20 Jan 2015 &raquo;<br>
+		   <a href="/blog/2015-01-20/working-at-netflix.html">  
+		   Working at Netflix</a></li>
+	  
+		   <li>31 Dec 2014 &raquo;<br>
+		   <a href="/blog/2014-12-31/linux-page-cache-hit-ratio.html">  
+		   Linux Page Cache Hit Ratio</a></li>
+	  
+		   <li>22 Nov 2014 &raquo;<br>
+		   <a href="/blog/2014-11-22/linux-perf-tools-2014.html">  
+		   Linux Performance Tools 2014</a></li>
+	  
+		   <li>09 Nov 2014 &raquo;<br>
+		   <a href="/blog/2014-11-09/differential-flame-graphs.html">  
+		   Differential Flame Graphs</a></li>
+	  
+		   <li>31 Oct 2014 &raquo;<br>
+		   <a href="/blog/2014-10-31/cpi-flame-graphs.html">  
+		   Catching Your CPUs Napping</a></li>
+	  
+		   <li>27 Sep 2014 &raquo;<br>
+		   <a href="/blog/2014-09-27/from-clouds-to-roots.html">  
+		   From Clouds to Roots: Performance Analysis at Netflix</a></li>
+	  
+		   <li>17 Sep 2014 &raquo;<br>
+		   <a href="/blog/2014-09-17/node-flame-graphs-on-linux.html">  
+		   node.js Flame Graphs on Linux</a></li>
+	  
+		   <li>15 Sep 2014 &raquo;<br>
+		   <a href="/blog/2014-09-15/the-msrs-of-ec2.html">  
+		   The MSRs of EC2</a></li>
+	  
+		   <li>11 Sep 2014 &raquo;<br>
+		   <a href="/blog/2014-09-11/perf-kernel-line-tracing.html">  
+		   Linux perf Rides the Rocket</a></li>
+	  
+		   <li>06 Sep 2014 &raquo;<br>
+		   <a href="/blog/2014-09-06/linux-ftrace-tcp-retransmit-tracing.html">  
+		   Linux ftrace TCP Retransmit Tracing</a></li>
+	  
+		   <li>30 Aug 2014 &raquo;<br>
+		   <a href="/blog/2014-08-30/ftrace-the-hidden-light-switch.html">  
+		   ftrace: The Hidden Light Switch</a></li>
+	  
+		   <li>23 Aug 2014 &raquo;<br>
+		   <a href="/blog/2014-08-23/linux-perf-tools-linuxcon-na-2014.html">  
+		   Linux Performance Tools at LinuxCon North America 2014</a></li>
+	  
+		   <li>28 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-28/execsnoop-for-linux.html">  
+		   execsnoop For Linux: See Short-Lived Processes</a></li>
+	  
+		   <li>25 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-25/opensnoop-for-linux.html">  
+		   opensnoop For Linux</a></li>
+	  
+		   <li>23 Jul 2014 &raquo;<br>
+		   <a href="/blog/2014-07-23/linux-iosnoop-latency-heat-maps.html">  
+		   Linux iosnoop Latency Heat Maps</a></li>
+	  
+	</ul>
+	<a href="/blog/index.html">Blog index</a><br>
+	<a href="/blog/about.html">About</a><br>
+	<a href="/blog/rss.xml">RSS</a><br>
+	</div>
+
+        <div class="site">
+          <div class="header">
+            <h1 class="title"><a href="/blog/index.html">Brendan Gregg's Blog</a></h1>
+            <a class="extra" href="/blog/index.html">home</a>
+          </div>
+
+          <h2 class="big">Performance Tuning Linux Instances on EC2</h2>
+<p class="meta">03 Mar 2015</p>
+
+<div class="post">
+<p>At the last AWS re:Invent, I gave a talk on &quot;Performance Tuning EC2 Instances&quot;, where I showed how my team (Performance and Reliability Engineering) tunes Linux EC2 instances at Netflix. This includes instance selection, EC2 features, Linux kernel tuning, and the use of observability.</p>
+
+<p>This is the most comprehensive tuning talk I&#39;ve given, and summarizes the different ways we tune at the instance level. It should be useful for anyone running Linux in the cloud, not just in EC2.</p>
+
+<p>The slides are on <a href="http://www.slideshare.net/brendangregg/performance-tuning-ec2-instances">slideshare</a>:</p>
+
+<p><center><iframe src="http://www.slideshare.net/slideshow/embed_code/41485014" width="425" height="355" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:1px solid #CCC; border-width:1px; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe></center></p>
+
+<p>It was also videoed, which is on <a href="https://www.youtube.com/watch?v=7Cyd22kOqWc">youtube</a>:</p>
+
+<p><center><iframe width="560" height="315" src="https://www.youtube.com/embed/7Cyd22kOqWc" frameborder="0" allowfullscreen></iframe></center></p>
+
+<p>I often share my work on performance observability, but not tuning. Observability is where the bigger wins are, as you can discover and then eliminate unnecessary work. It can also help show that tuning is required. But I&#39;ve also been meaning to share same examples of tuning, and had my chance at AWS re:Invent.</p>
+
+<p>In the 3rd section of the talk, I included the tunables we are using on Ubuntu Trusty, to show examples of what is possible. I&#39;ve included them below for easy browsing. Please watch the video for context.</p>
+
+<p><strong>WARNING: These tunables were developed in late 2014, for Ubuntu Trusty instances on EC2.</strong></p>
+
+<p>CPU</p>
+
+<pre>
+schedtool –B PID
+</pre>
+
+<p>Virtual Memory</p>
+
+<pre>
+vm.swappiness = 0       # from 60
+</pre>
+
+<p>Huge Pages</p>
+
+<pre>
+# echo never > /sys/kernel/mm/transparent_hugepage/enabled  # from madvise
+</pre>
+
+<p>File System</p>
+
+<pre>
+vm.dirty_ratio = 80                     # from 40
+vm.dirty_background_ratio = 5           # from 10
+vm.dirty_expire_centisecs = 12000       # from 3000
+mount -o defaults,noatime,discard,nobarrier …
+</pre>
+
+<p>Storage I/O</p>
+
+<pre>
+/sys/block/*/queue/rq_affinity  2
+/sys/block/*/queue/scheduler        noop
+/sys/block/*/queue/nr_requests  256
+/sys/block/*/queue/read_ahead_kb    256
+mdadm –chunk=64 ...
+</pre>
+
+<p>Networking</p>
+
+<pre>
+net.core.somaxconn = 1000
+net.core.netdev_max_backlog = 5000
+net.core.rmem_max = 16777216
+net.core.wmem_max = 16777216
+net.ipv4.tcp_wmem = 4096 12582912 16777216
+net.ipv4.tcp_rmem = 4096 12582912 16777216
+net.ipv4.tcp_max_syn_backlog = 8096
+net.ipv4.tcp_slow_start_after_idle = 0
+net.ipv4.tcp_tw_reuse = 1
+net.ipv4.ip_local_port_range = 10240 65535
+net.ipv4.tcp_abort_on_overflow = 1    # maybe
+</pre>
+
+<p>Hypervisor (Xen)</p>
+
+<pre>
+echo tsc > /sys/devices/system/clocksource/clocksource0/current_clocksource
+</pre>
+
+<p>Setting the clocksource came from a performance regression we found when moving to Ubuntu Trusty, which can be fixed by switching clocksource to TSC. Best case example (so far): CPU usage reduced by 30%, and average app latency reduced by 43%. Beware of clock drift, as in the (distant) past TSC has been unreliable. </p>
+
+<p>In the talk I described these tunables as our medicine cabinet, and to &quot;consider these best before 2015&quot;. Tuning is a process, not a product. Copy-n-pasting these tunables is a little like taking someone else&#39;s medication; doing so years later is like taking someone else&#39;s <em>expired</em> medication.</p>
+
+<p>As an update: slide 62 shows &quot;Broken Java stacks&quot; in a flame graph, which we now have a workaround for (an OpenJDK patch I wrote). See my <a href="/blog/2015-02-27/linux-profiling-at-netflix.html">Linux Profiling at Netflix</a> post, where I have an example flame graph with working Java stacks.</p>
+
+<p>AWS re:Invent was a massive event, and there were many talks I missed. Fortunately they were recorded, and Adrian Cockcroft published a list of <a href="http://perfcap.blogspot.com/2014/12/interesting-videos-from-aws-reinvent.html">interesting talks</a> which are worth checking out.</p>
+
+</div>
+
+
+
+<br><hr>
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+var disqus_shortname = 'brendangregg';
+(function() {
+    var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+    dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+          <div class="footer">
+            <div class="contact">
+                Copyright 2015 Brendan Gregg.<br><a href="/blog/about.html">About this blog</a>
+            </div>
+          </div>
+        </div>
+
+    </body>
+</html>
