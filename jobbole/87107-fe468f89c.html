@@ -1,0 +1,1913 @@
+<!DOCTYPE html>   
+<!--[if lt IE 7 ]> <html lang="en" class="no-js ie6"> <![endif]-->
+<!--[if IE 7 ]> <html lang="en" class="no-js ie7"> <![endif]-->
+<!--[if IE 8 ]> <html lang="en" class="no-js ie8"> <![endif]-->
+<!--[if IE 9 ]> <html lang="en" class="no-js ie9"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html lang="zh-CN" prefix="og: http://ogp.me/ns#" class="no-js"> <!--<![endif]-->
+
+
+<!-- BEGIN head -->
+<head>
+
+	<!-- Title -->
+	<title>由浅入深探究 MySQL索引结构原理、性能分析与优化 - 博客 - 伯乐在线</title>
+	
+	<!-- Meta Tags -->
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	
+	<!-- Favicon & Mobileicon -->
+	<link rel="shortcut icon" href="http://jbcdn2.b0.upaiyun.com/2013/12/favicon.png" />
+	<link rel="apple-touch-icon" href="http://jbcdn2.b0.upaiyun.com/2013/12/jobbole-blog-logo-mobile.png" />
+	
+	<!-- RSS, Atom & Pingbacks -->
+		<link rel="alternate" title="博客 &#8211; 伯乐在线 RSS Feed" href="http://blog.jobbole.com/feed/" />
+		<link rel="alternate" title="RSS .92" href="http://blog.jobbole.com/feed/rss/" />
+	<link rel="alternate" title="Atom 0.3" href="http://blog.jobbole.com/feed/atom/" />
+	<link rel="pingback" href="http://blog.jobbole.com/xmlrpc.php" />
+	
+	<!-- Theme Hook -->
+	
+<!-- This site is optimized with the Yoast WordPress SEO plugin v1.4.13 - http://yoast.com/wordpress/seo/ -->
+<meta name="description" content="官方介绍索引是帮助MySQL高效获取数据的数据结构。笔者理解索引相当于一本书的目录，通过目录就知道要的资料在哪里，不用一页一页查阅找出需要的资料"/>
+<link rel="canonical" href="http://blog.jobbole.com/87107/" />
+<meta property='og:locale' content='zh_CN'/>
+<meta property='og:type' content='article'/>
+<meta property='og:title' content='由浅入深探究 MySQL索引结构原理、性能分析与优化 - 博客 - 伯乐在线'/>
+<meta property='og:description' content='官方介绍索引是帮助MySQL高效获取数据的数据结构。笔者理解索引相当于一本书的目录，通过目录就知道要的资料在哪里，不用一页一页查阅找出需要的资料'/>
+<meta property='og:url' content='http://blog.jobbole.com/87107/'/>
+<meta property='og:site_name' content='博客 - 伯乐在线'/>
+<meta property='og:image' content='http://ww2.sinaimg.cn/mw690/aa213e02jw1esgahzxvtcj20f906k0tb.jpg'/>
+<meta property='og:image' content='http://ww4.sinaimg.cn/mw690/aa213e02jw1esgahzein4j20f906kt9b.jpg'/>
+<meta property='og:image' content='http://ww2.sinaimg.cn/mw690/aa213e02jw1esgahyz0t1j20ey0ci3zs.jpg'/>
+<meta property='og:image' content='http://ww2.sinaimg.cn/mw690/aa213e02jw1esgahyel2aj20g009m75q.jpg'/>
+<meta property='og:image' content='http://ww2.sinaimg.cn/mw690/aa213e02jw1esgahxw9ppj20g007dwf8.jpg'/>
+<meta property='og:image' content='http://ww3.sinaimg.cn/mw690/aa213e02jw1esgahxa4zyj20lb0j1jun.jpg'/>
+<!-- / Yoast WordPress SEO plugin. -->
+
+<link rel='stylesheet' id='thickbox-css'  href='http://blog.jobbole.com/wp-includes/js/thickbox/thickbox.css?ver=20121105' type='text/css' media='all' />
+<link rel='stylesheet' id='jobbole-wp-css-css'  href='http://blog.jobbole.com/wp-content/plugins/jobbole-wp-plugin/css/jobbole-wp-plugin-1.0.css?ver=3.5.2' type='text/css' media='all' />
+<link rel='stylesheet' id='v48fv_images-css'  href='http://blog.jobbole.com/wp-content/plugins/mu-widgets/library/base/public/css/images.css?ver=1.2.v48fv' type='text/css' media='all' />
+<link rel='stylesheet' id='v48fv_front-css'  href='http://blog.jobbole.com/wp-content/plugins/mu-widgets/library/base/public/css/front.css?ver=1.2.v48fv' type='text/css' media='all' />
+<link rel='stylesheet' id='v48fv_common-css'  href='http://blog.jobbole.com/wp-content/plugins/mu-widgets/library/base/public/css/common.css?ver=1.2.v48fv' type='text/css' media='all' />
+<link rel='stylesheet' id='wp-polls-css'  href='http://blog.jobbole.com/wp-content/plugins/wp-polls/polls-css.css?ver=2.63' type='text/css' media='all' />
+<link rel='stylesheet' id='core3.0-css'  href='http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/styles/shCore.css?ver=3.0' type='text/css' media='all' />
+<link rel='stylesheet' id='core-Default3.0-css'  href='http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/styles/shCoreDefault.css?ver=3.0' type='text/css' media='all' />
+<link rel='stylesheet' id='theme-Default3.0-css'  href='http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/styles/shThemeDefault.css?ver=3.0' type='text/css' media='all' />
+<link rel='stylesheet' id='lightboxStyle-css'  href='http://blog.jobbole.com/wp-content/plugins/lightbox-plus/css/shadowed/colorbox.css?ver=2.6' type='text/css' media='screen' />
+<script type='text/javascript' src='http://blog.jobbole.com/wp-includes/js/jquery/jquery.js?ver=1.8.3'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-includes/js/comment-reply.min.js?ver=3.5.2'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var JobboleAjax = {"ajaxurl":"http:\/\/blog.jobbole.com\/wp-admin\/admin-ajax.php"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/plugins/jobbole-wp-plugin/js/jobbole-wp-plugin-1.0.js?ver=3.5.2'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/modernizr.js?ver=2.5.3'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/js/rc-textarea-hl.js?ver=1.3'></script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://blog.jobbole.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://blog.jobbole.com/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='http://blog.jobbole.com/?p=87107' />
+<script type="text/javascript">
+	window._wp_rp_static_base_url = 'http://dtmvdvtzf8rz0.cloudfront.net/static/';
+	window._wp_rp_wp_ajax_url = "http://blog.jobbole.com/wp-admin/admin-ajax.php";
+	window._wp_rp_plugin_version = '2.8';
+	window._wp_rp_post_id = '87107';
+	window._wp_rp_num_rel_posts = '10';
+</script>
+<style type="text/css">
+.wp-polls .pollbar {
+	margin: 1px;
+	font-size: 6px;
+	line-height: 8px;
+	height: 8px;
+	background: #0CA3C4;
+	border: 1px solid #fff;
+}
+</style>
+
+<!-- WP SyntaxHighlighter Ver.1.7.3 CSS for code Begin -->
+<style type='text/css'>
+.syntaxhighlighter,
+.syntaxhighlighter a,
+.syntaxhighlighter div,
+.syntaxhighlighter code,
+.syntaxhighlighter table,
+.syntaxhighlighter table td,
+.syntaxhighlighter table tr,
+.syntaxhighlighter table tbody,
+.syntaxhighlighter table thead,
+.syntaxhighlighter table caption,
+.syntaxhighlighter textarea {
+font-size: 12px !important; /* Set the font size in pixels */  
+font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace !important; /* Set the font type */  
+}
+.syntaxhighlighter table caption {
+/* For Title(Caption) */  
+font-size: 14px !important; /* Set the font size in pixels */  
+font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace !important; /* Set the font type */  
+}
+.syntaxhighlighter.nogutter td.code .line {
+/* Set the left padding space when no-gutter in ver. 3.0 */  
+padding-left: 3px !important;
+}
+.syntaxhighlighter {
+/* For Chrome/Safari(WebKit) */  
+/* Hide the superfluous vertical scrollbar in ver. 3.0 */  
+overflow-y: hidden !important;
+padding: 1px !important;
+}
+.widget-area.syntaxhighlighter a,
+.widget-area.syntaxhighlighter div,
+.widget-area.syntaxhighlighter code,
+.widget-area.syntaxhighlighter table,
+.widget-area.syntaxhighlighter table td,
+.widget-area.syntaxhighlighter table tr,
+.widget-area.syntaxhighlighter table tbody,
+.widget-area.syntaxhighlighter table thead,
+.widget-area.syntaxhighlighter table caption,
+.widget-area.syntaxhighlighter textarea {
+/* For Widget */  
+font-size: 14px !important; /* Set the font size in pixels */  
+font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace !important; /* Set the font type */  
+}
+.widget-area table caption {
+/* For Widget */  
+/* For Title(Caption) */  
+font-size: 10px !important; /* Set the font size in pixels */  
+font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace !important; /* Set the font type */  
+}
+</style>
+<!-- WP SyntaxHighlighter Ver.1.7.3 CSS for code End -->
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="http://blog.jobbole.com/wp-content/themes/jobboleblogv3/style.css" media="screen" />
+	<style>
+				*::selection { background: #0099cc; }
+		*::-moz-selection { background: #0099cc; }
+		body {
+            background: #ffffff         }
+
+        a,
+        .tabs ul.nav li a:hover,
+        .tabs ul.nav li.active a,
+        .dropcap,
+        .toggle.hover .toggle-title,
+        li.comment cite a:hover,
+        h3.widget-title,
+        .post-meta .meta-title:hover,
+        .the-latest a:hover h4,
+        .aw_socialcounter_widget li a:hover,
+        .aw_tabbed_widget #tab-latest-comments a:hover
+        {
+            color: #0099cc;
+        }
+
+		a:hover { color: #b30000; }
+		input:focus, textarea:focus { border-color: #0099cc; }
+
+		#searchsubmit,
+        .highlight,
+        .aw_tabbed_widget .tabs ul.nav li.active a, footer .aw_tabbed_widget .tabs ul.nav li.active a,
+        #top .aw_tabbed_widget .tabs ul.nav li.active a,
+        .aw_tabbed_widget .tabs ul.nav li a:hover,
+        footer .aw_tabbed_widget .tabs ul.nav li a:hover,
+        #top .aw_tabbed_widget .tabs ul.nav li a:hover,
+        .aw_twitter_widget .twitter-icon, .testimonial-icon,
+        #top-closed:hover,
+        .flex-control-nav a:hover,
+        .flex-control-nav a.flex-active {
+            background-color: #0099cc;
+        }
+
+		.submit { background-color: #0099cc; border-color: #007399; }
+		.submit:hover { background-color: #b30000; border-color: #860000; }
+		#searchsubmit:hover { background-color: #b30000; }
+		.toggle.hover .toggle-icon { border-top-color: #0099cc; }
+		.toggle.hover.active .toggle-icon { border-bottom-color: #0099cc; }
+		.flex-direction-nav li .flex-prev:hover { border-right-color: #0099cc; }
+		.flex-direction-nav li .flex-next:hover { border-left-color: #0099cc; }
+		@media only screen and (min-width: 768px) and (max-width: 959px) {
+			.aw_tabbed_widget .tabs ul.nav li a:hover, .tabs ul.nav li.active a { color: #0099cc; }
+		}
+		@media screen and (max-width: 767px) {
+			.tabs ul.nav li a:hover, .tabs ul.nav li.active a { color: #0099cc; }
+		}
+	</style>
+
+	<!--[if IE 8]>
+		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<script src="http://ie7-js.googlecode.com/svn/version/2.1(beta4)/IE9.js"></script>
+    <![endif]-->
+
+	<!-- Links: RSS + Atom Syndication + Pingback etc. -->
+	<link rel="alternate" type="application/rss+xml" title="博客 &#8211; 伯乐在线 RSS Feed" href="http://blog.jobbole.com/feed/" />
+	<link rel="alternate" type="text/xml" title="RSS .92" href="http://blog.jobbole.com/feed/rss/" />
+	<link rel="alternate" type="application/atom+xml" title="Atom 0.3" href="http://blog.jobbole.com/feed/atom/" />
+	<link rel="pingback" href="http://blog.jobbole.com/xmlrpc.php" />
+
+<!-- END head -->
+</head>
+
+<!-- BEGIN body -->
+<body class="single single-post postid-87107 single-format-standard chrome">
+
+		
+	    <nav id="top-nav" class="menu-nav">
+
+        <!-- BEGIN .container -->
+        <div class="container">
+
+            <div class="grid-8 hide-on-480 hide-on-767">
+                <ul id="menu-main-menu" class="menu left">
+                    <li class="menu-item">
+                        <a href="http://www.jobbole.com">首页</a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="http://top.jobbole.com">头条</a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="http://blog.jobbole.com">博客</a>
+                    </li>
+                    <li class="menu-item">
+                        <span><a href="#">频道 <i class="fa fa-angle-double-down"></i></a></span>
+                        <ul class="sub-menu sf-js-enabled">
+                            <li class="menu-item"><a href="http://web.jobbole.com">Web前端</a></li>
+                            <li class="menu-item"><a href="http://python.jobbole.com">Python开发</a></li>
+                            <li class="menu-item"><a href="http://www.importnew.com/?utm_source=home-top-nav">Java技术</a></li>
+                            <li class="menu-item"><a href="http://android.jobbole.com">Android应用</a></li>
+                            <li class="menu-item"><a href="http://ios.jobbole.com">iOS应用</a></li>
+                        </ul>
+                    </li>
+                    <li class="menu-item">
+                        <a href="http://hao.jobbole.com">资源</a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="http://fanyi.jobbole.com">翻译</a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="http://group.jobbole.com">小组</a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="http://date.jobbole.com"><i class="fa fa-heart-o pinkiconcolor"></i> 相亲</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="grid-4">
+                <ul id="menu-main-menu" class="menu">
+
+                    <li class="menu-item hide-on-768-wider left">
+                        <span><a href="#">切换频道 <i class="fa fa-angle-double-down"></i></a></span>
+                        <ul class="sub-menu sf-js-enabled">
+                            <li class="menu-item"><a href="http://www.jobbole.com">首页</a></li>
+                            <li class="menu-item"><a href="http://top.jobbole.com">头条</a></li>
+                            <li class="menu-item"><a href="http://blog.jobbole.com">博客</a></li>
+                            <li class="menu-item"><a href="http://hao.jobbole.com">资源</a></li>
+                            <li class="menu-item"><a href="http://fanyi.jobbole.com">翻译</a></li>
+                            <li class="menu-item"><a href="http://group.jobbole.com">小组</a></li>
+                            <li class="menu-item"><a href="http://date.jobbole.com">相亲</a></li>
+                            <li class="menu-item"><a href="http://web.jobbole.com">前端</a></li>
+                            <li class="menu-item"><a href="http://python.jobbole.com">Python</a></li>
+                            <li class="menu-item"><a href="http://www.importnew.com/">Java</a></li>
+                            <li class="menu-item"><a href="http://android.jobbole.com">安卓</a></li>
+                            <li class="menu-item"><a href="http://ios.jobbole.com">iOS</a></li>
+                        </ul>
+                    </li>
+
+                                            <li class="menu-item"><a href="http://www.jobbole.com/login?redirect=http://blog.jobbole.com/87107/"><i class="fa fa-sign-in"></i> 登录</a></li>
+                        <li class="menu-item"><a href="http://www.jobbole.com/register"><i class="fa fa-user-plus"></i> 注册</a></li>
+                                        <li class="menu-item"><a href="#"><i class="fa fa-life-ring"></i> 帮助</a></li>
+                </ul>
+            </div>
+            <div class="clear"></div>
+
+        </div>
+        <!-- END .container -->
+
+    </nav>
+    <!-- END #top-nav -->
+  	
+	<!-- BEGIN #wrapper -->
+	<div id="wrapper" class="container">
+
+		<!-- BEGIN header -->
+		<header>
+		
+						
+			<div class="header-wrapper">
+								
+				<!-- BEGIN #logo -->
+				<div id="logo" class="leaderboard-true">
+                    <a href="http://blog.jobbole.com"><img src="http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/img/jobbole-logo.png" alt="博客 &#8211; 伯乐在线" /></a>
+				</div>
+				<!-- END #logo -->
+				
+				<!-- BEGIN #leaderboard -->
+				<div id="leaderboard">
+				
+					<script language=javascript> 
+var randomNumTop = Math.round(Math.random()*4);
+var imageTop=new Array(5);
+imageTop[0]="http://ww1.sinaimg.cn/mw690/bfdcef89gw1es2pv45zshj20k802iab0.jpg";
+imageTop[1]="http://ww2.sinaimg.cn/mw690/bfdcef89gw1es2pv3b8exj20k802iwfd.jpg";
+imageTop[2]="http://ww1.sinaimg.cn/mw690/bfdcef89gw1es2pv2u731j20k802igmb.jpg";
+imageTop[3]="http://ww3.sinaimg.cn/mw690/bfdcef89gw1es2pv27ligj20k802idgs.jpg";
+imageTop[4]="http://ww3.sinaimg.cn/mw690/bfdcef89gw1es2pv1k80jj20k802it9o.jpg";
+var imageUrlTop=imageTop[randomNumTop];
+var urlsTop=new Array(5);
+urlsTop[0]="http://www.imooc.com/activity/androidindex?from=jobboleblog&mc_marking=4fe27dd9db69d53bab273d1d3c6cf27e&mc_channel=jobboleblog&mc_billing=%E5%85%8D%E8%B4%B9%E8%B5%A0%E9%80%81&mc_keywords=&mc_position=&mc_business=";
+urlsTop[1]="http://www.imooc.com/activity/javaerindex?from=jobboleblog&mc_marking=5725cce24eda63001d5a6011725ade41&mc_channel=jobboleblog&mc_billing=%E5%85%8D%E8%B4%B9%E8%B5%A0%E9%80%81&mc_keywords=&mc_position=&mc_business=";
+urlsTop[2]="http://www.imooc.com/course/programdetail/pid/11?from=jobboleblog&mc_marking=f726d606d0ce56f8cebc9b87771de84d&mc_channel=jobboleblog&mc_billing=%E5%85%8D%E8%B4%B9%E8%B5%A0%E9%80%81&mc_keywords=&mc_position=&mc_business=";
+urlsTop[3]="http://www.imooc.com/activity/feerindex?from=jobboleblog&mc_marking=97abfff1b39d6e9c92281898db324d71&mc_channel=jobboleblog&mc_billing=%E5%85%8D%E8%B4%B9%E8%B5%A0%E9%80%81&mc_keywords=&mc_position=&mc_business=";
+urlsTop[4]="http://www.imooc.com/activity/planhtml5?from=jobboleblog&mc_marking=49ed987767cfb761bce2b94cb7cbd5c9&mc_channel=jobboleblog&mc_billing=%E5%85%8D%E8%B4%B9%E8%B5%A0%E9%80%81&mc_keywords=&mc_position=&mc_business=";
+var urlTop = urlsTop[randomNumTop];
+var adHTML = "<a href='"+urlTop+"' target='_blank'><img width='728' height='90'  src='"+imageUrlTop+"' border='0'></a>";
+document.write(adHTML);
+</script>				
+				</div>
+				<!-- END #leaderboard -->
+				
+				<div class="clear"></div>
+			
+			</div>
+			
+						
+			<div class="clear"></div>
+
+            			<!-- BEGIN #main-nav -->
+			<nav id="main-nav" class="grid-12 menu-nav">
+                <div class="menu-sub-menu-container"><ul id="main-nav-menu" class="menu"><li id="menu-item-33290" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-33290"><a href="http://blog.jobbole.com/">首页</a></li>
+<li id="menu-item-33406" class="menu-item menu-item-type-post_type menu-item-object-page current_page_parent menu-item-33406"><a href="http://blog.jobbole.com/all-posts/">最新文章</a></li>
+<li id="menu-item-70342" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-70342"><a href="http://blog.jobbole.com/category/online-courses/">在线课程</a></li>
+<li id="menu-item-33325" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33325"><a href="http://blog.jobbole.com/category/news/">业界</a></li>
+<li id="menu-item-33319" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33319"><a href="http://blog.jobbole.com/category/programmer/">开发</a>
+<ul class="sub-menu">
+	<li id="menu-item-81047" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-81047"><a href="http://web.jobbole.com">Web前端</a></li>
+	<li id="menu-item-81218" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-81218"><a href="http://python.jobbole.com">Python</a></li>
+	<li id="menu-item-81220" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-81220"><a href="http://android.jobbole.com">Android</a></li>
+	<li id="menu-item-81219" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-81219"><a href="http://ios.jobbole.com">iOS</a></li>
+	<li id="menu-item-53194" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-53194"><a href="http://www.importnew.com">Java</a></li>
+	<li id="menu-item-57616" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-57616"><a href="http://blog.jobbole.com/category/c-cpp/">C/C++</a></li>
+	<li id="menu-item-57003" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-57003"><a href="http://blog.jobbole.com/category/php-programmer/">PHP</a></li>
+	<li id="menu-item-55603" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55603"><a href="http://blog.jobbole.com/tag/ruby/">Ruby</a></li>
+	<li id="menu-item-70347" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-70347"><a href="http://blog.jobbole.com/tag/go/">Go</a></li>
+</ul>
+</li>
+<li id="menu-item-33313" class="menu-item menu-item-type-taxonomy menu-item-object-category current-post-ancestor current-menu-parent current-post-parent menu-item-33313"><a href="http://blog.jobbole.com/category/it-tech/">IT技术</a>
+<ul class="sub-menu">
+	<li id="menu-item-55604" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55604"><a href="http://blog.jobbole.com/tag/linux/">Linux</a></li>
+	<li id="menu-item-55607" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55607"><a href="http://blog.jobbole.com/tag/unix/">UNIX</a></li>
+	<li id="menu-item-55605" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55605"><a href="http://blog.jobbole.com/tag/mysql/">MySQL</a></li>
+	<li id="menu-item-55621" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55621"><a href="http://blog.jobbole.com/tag/nosql/">NoSQL</a></li>
+	<li id="menu-item-55622" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55622"><a href="http://blog.jobbole.com/tag/database/">数据库</a></li>
+	<li id="menu-item-55606" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55606"><a href="http://blog.jobbole.com/tag/git/">Git</a></li>
+	<li id="menu-item-55635" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55635"><a href="http://blog.jobbole.com/tag/algorithm/">算法</a></li>
+	<li id="menu-item-55612" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55612"><a href="http://blog.jobbole.com/tag/%e6%b5%8b%e8%af%95/">测试</a></li>
+	<li id="menu-item-55618" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55618"><a href="http://blog.jobbole.com/tag/%e5%ae%89%e5%85%a8/">信息安全</a></li>
+	<li id="menu-item-55636" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55636"><a href="http://blog.jobbole.com/tag/vim/">Vim</a></li>
+</ul>
+</li>
+<li id="menu-item-33323" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33323"><a href="http://blog.jobbole.com/category/design/">设计</a>
+<ul class="sub-menu">
+	<li id="menu-item-55610" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55610"><a href="http://blog.jobbole.com/tag/%e7%bd%91%e9%a1%b5%e8%ae%be%e8%ae%a1/">网页设计</a></li>
+	<li id="menu-item-55608" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55608"><a href="http://blog.jobbole.com/tag/ui/">UI设计</a></li>
+	<li id="menu-item-55609" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55609"><a href="http://blog.jobbole.com/tag/%e4%ba%a4%e4%ba%92%e8%ae%be%e8%ae%a1/">交互设计</a></li>
+	<li id="menu-item-55611" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55611"><a href="http://blog.jobbole.com/tag/%e7%94%a8%e6%88%b7%e4%bd%93%e9%aa%8c/">用户体验</a></li>
+</ul>
+</li>
+<li id="menu-item-33317" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33317"><a href="http://blog.jobbole.com/category/startup/">创业</a></li>
+<li id="menu-item-33390" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33390"><a href="http://blog.jobbole.com/category/career/">IT职场</a></li>
+<li id="menu-item-85528" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-85528"><a href="http://top.jobbole.com">投稿</a></li>
+<li id="menu-item-33388" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33388"><a href="http://blog.jobbole.com/category/other/">更多 »</a>
+<ul class="sub-menu">
+	<li id="menu-item-56110" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-56110"><a href="http://blog.jobbole.com/category/overseas/">在国外</a></li>
+	<li id="menu-item-56094" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-56094"><a href="http://blog.jobbole.com/category/interview/">访谈</a></li>
+	<li id="menu-item-56111" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-56111"><a href="http://blog.jobbole.com/tag/featuredpost/">经典回顾</a></li>
+	<li id="menu-item-33665" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33665"><a href="http://blog.jobbole.com/category/humor-comic/">趣文</a></li>
+	<li id="menu-item-33321" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33321"><a href="http://blog.jobbole.com/category/freelance/">自由职业</a></li>
+	<li id="menu-item-33408" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33408"><a href="http://blog.jobbole.com/category/resources/">工具与资源</a></li>
+	<li id="menu-item-33407" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33407"><a href="http://blog.jobbole.com/category/books/">书籍与教程</a></li>
+</ul>
+</li>
+</ul></div>				<div class="clear"></div>
+			</nav>
+			<!-- END #main-nav -->
+                        <div class="clear"></div>
+
+		</header>
+		<!-- END header -->
+		
+		<div id="breadcrumb" class="grid-12 margin-20"><div class="breadcrumb-wrapper"><!-- Breadcrumb NavXT 4.4.0 -->
+<a title="Go to 伯乐在线." href="http://www.jobbole.com" class="main-home">伯乐在线</a> &gt; <a href="http://blog.jobbole.com" class="home">首页</a> &gt; <a href="http://blog.jobbole.com/all-posts/" class="post-root post-post">所有文章</a> &gt; <a href="http://blog.jobbole.com/category/it-tech/" class="category">IT技术</a> &gt; 由浅入深探究 MySQL索引结构原理、性能分析与优化</div></div><div class="clear"></div>
+
+<!-- BEGIN .grid-8 -->
+<div class="grid-8">
+
+		
+	<!-- BEGIN .post -->
+<div class="post-87107 post type-post status-publish format-standard hentry category-it-tech tag-mysql odd" id="post-87107">
+	
+	<!-- BEGIN .entry-header -->
+	<div class="entry-header">
+	
+				
+		<h1>由浅入深探究 MySQL索引结构原理、性能分析与优化</h1>
+		
+							
+	</div>
+	<!-- BEGIN .entry-header -->
+	
+	<!-- BEGIN .entry-meta -->
+	<div class="entry-meta">
+	
+		<p class="entry-meta-hide-on-mobile">
+
+            2015/05/25 | 分类： <a href="http://blog.jobbole.com/category/it-tech/" title="查看 IT技术 中的全部文章" rel="category tag">IT技术</a> | 
+            
+
+ | 标签： <a href="http://blog.jobbole.com/tag/mysql/">MySQL</a>
+
+</p>
+
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style" style="display: block; margin: 0 0px; clear: both;"><span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_tsina"></a>
+<a class="jiathis_button_weixin"></a>
+<a class="jiathis_button_qzone"></a>
+<a class="jiathis_button_fb"></a>
+<a class="jiathis_button_renren"></a>
+<a class="jiathis_button_douban"></a>
+<a class="jiathis_button_readitlater"></a>
+<a class="jiathis_button_evernote"></a>
+<a class="jiathis_button_ydnote"></a>
+<a href="http://www.jiathis.com/share?uid=1745061" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+<a class="jiathis_counter_style"></a>
+</div>
+<!-- JiaThis Button END -->
+
+
+	</div>
+	<!-- END .entry-meta -->
+
+	<!-- BEGIN .entry -->
+	<div class="entry">
+
+        <script src="http://www.imooc.com/open/courselistrandjs"></script><span style='display:block;margin-bottom:10px;'></span>
+		<div class='copyright-area'>原文出处： <a ref='nofollow' target='_blank' href='http://www.phpben.com/?post=74'>Benwin 的博客</a>&nbsp;&nbsp;&nbsp;欢迎分享原创到<a href='http://top.jobbole.com/?utm_source=jobboleblog-article' target='_blank'>伯乐头条</a></div><p><strong>第一部分：基础知识：</strong></p>
+<p>索引</p>
+<p>官方介绍索引是帮助MySQL高效获取数据的数据结构。笔者理解索引相当于一本书的目录，通过目录就知道要的资料在哪里，不用一页一页查阅找出需要的资料。关键字index</p>
+<p>&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-</p>
+<p>唯一索引</p>
+<p>强调唯一，就是索引值必须唯一，关键字unique index</p>
+<p>创建索引：</p>
+<p>1、create unique index 索引名 on 表名(列名);</p>
+<p>2、alter table 表名 add unique index 索引名 (列名);</p>
+<p>删除索引：</p>
+<p>1、 drop index 索引名 on 表名;</p>
+<p>2、 alter table 表名 drop index 索引名;</p>
+<p>&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-</p>
+<p>主键</p>
+<p>主键就是唯一索引的一种，主键要求建表时指定，一般用auto_increatment列，关键字是primary key</p>
+<p>主键创建：</p>
+<pre class="brush: sql; gutter: true">creat table test2 (id int not null primary key auto_increment);</pre>
+<p>&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-</p>
+<p>全文索引</p>
+<p>InnoDB不支持，Myisam支持性能比较好，一般在 CHAR、VARCHAR 或 TEXT 列上创建。</p>
+<p>Create table 表名( id int not null primary anto_increment,title</p>
+<p>varchar(100),FULLTEXT(title))type=myisam</p>
+<p>&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;</p>
+<p>单列索引与多列索引</p>
+<p>索引可以是单列索引也可以是多列索引(也叫复合索引)。按照上面形式创建出来的索引是单列索引，现在先看看创建多列索引：</p>
+<pre class="brush: sql; gutter: true">create table test3 (id int not null primary key auto_increment,uname char
+(8) not null default &#039;&#039;,password char(12) not null,INDEX(uname,password))type
+=myisam;</pre>
+<p>注意：INDEX(a, b, c)可以当做a或(a, b)的索引来使用，但和b、c或(b,c)的索引来使用这是一个最左前缀的优化方法，在后面会有详细的介绍，你只要知道有这样两个概念</p>
+<p>&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-</p>
+<p>聚集索引</p>
+<p>一种索引，该索引中键值的逻辑顺序决定了表中相应行的物理顺序。聚集索引确定表中数据的物理顺序。Mysql中myisam表是没有聚集索引的，innodb有(主键就是聚集索引)，聚集索引在下面介绍innodb结构的时有详细介绍。</p>
+<p>&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;-</p>
+<p>查看表的索引</p>
+<p>通过命令：Show index from 表名</p>
+<p>如：</p>
+<pre class="brush: sql; gutter: true">mysql&gt; show index from test3;
++-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+----+
+| Table | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part |
+Packed | Null | Index_type | Comment |
++-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+----+
+| test3 | 0 | PRIMARY | 1 | id | A | 0 | NULL |
+NULL | | BTREE | |
++-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+</pre>
+<p>Table：表名</p>
+<p>Key_name：什么类型索引(这了是主键)</p>
+<p>Column_name：索引列的字段名</p>
+<p>Cardinality：索引基数，很关键的一个参数，平均数值组=索引基数/表总数据行，平均数值组越接近1就越有可能利用索引</p>
+<p>Index_type：如果索引是全文索引，则是fulltext,这里是b+tree索引，b+tre也是这篇文章研究的重点之一</p>
+<p>其他的就不详细介绍，更多：</p>
+<p><strong>第二部分：MYISAM和INNODB索引结构</strong></p>
+<p>1、 简单介绍B-tree B+ tree树</p>
+<p>B-tree结构视图</p>
+<p><img class="alignnone" alt="" src="http://ww2.sinaimg.cn/mw690/aa213e02jw1esgahzxvtcj20f906k0tb.jpg" width="549" height="236" /></p>
+<p>一棵m阶的B-tree树，则有以下性质</p>
+<p>(1)Ki表示关键字值，上图中，k1&lt;k2&lt;…&lt;ki&lt;k0&lt;Kn(可以看出，一个节点的左子节点关键字值&lt;该关键字值&lt;右子节点关键字值)</p>
+<p>(2)Pi表示指向子节点的指针，左指针指向左子节点，右指针指向右子节点。即是：p1[指向值]&lt;k1&lt;p2[指向值]&lt;k2……</p>
+<p>(3)所有关键字必须唯一值(这也是创建myisam 和innodb表必须要主键的原因)，每个节点包含一个说明该节点多少个关键字，如上图第二行的i和n</p>
+<p>(4)节点：</p>
+<p>l 每个节点最可以有m个子节点。</p>
+<p>l 根节点若非叶子节点，至少2个子节点，最多m个子节点</p>
+<p>l 每个非根，非叶子节点至少[m/2]子节点或叫子树([]表示向上取整)，最多m个子节点</p>
+<p>(5)关键字：</p>
+<p>l 根节点的关键字个数1~m-1</p>
+<p>l 非根非叶子节点的关键字个数[m/2]-1~m-1,如m=3，则该类节点关键字个数：2-1~2</p>
+<p>(6)关键字数k和指向子节点个数指针p的关系：</p>
+<p>l k+1=p ，注意根据储存数据的具体需求，左右指针为空时要有标志位表示没有</p>
+<p>B+tree结构示意图如下：</p>
+<p><img class="alignnone" alt="" src="http://ww4.sinaimg.cn/mw690/aa213e02jw1esgahzein4j20f906kt9b.jpg" width="549" height="236" /></p>
+<p>B+树是B-树的变体，也是一种多路搜索树：</p>
+<p>l 非叶子结点的子树指针与关键字个数相同</p>
+<p>l 为所有叶子结点增加一个链指针(红点标志的箭头)</p>
+<p>&nbsp;</p>
+<p>B+树是B-树的变体，也是一种多路搜索树：</p>
+<p>l 非叶子结点的子树指针与关键字个数相同</p>
+<p>l 为所有叶子结点增加一个链指针(红点标志的箭头)</p>
+<p>2、 MyisAM索引结构</p>
+<p>MyisAM索引用的B+tree来储存数据，MyisAM索引的指针指向的是键值的地址，地址存储的是数据，如下图：</p>
+<p><img class="alignnone" alt="" src="http://ww2.sinaimg.cn/mw690/aa213e02jw1esgahyz0t1j20ey0ci3zs.jpg" width="538" height="450" /></p>
+<p>(1)结构讲解：上图3阶树，主键是Col2，Col值就是改行数据保存的物理地址，其中红色部分是说明标注。</p>
+<p>l 1标注部分也许会迷惑，前面不是说关键字15右指针的指向键值要大于15，怎么下面还有15关键字？因为B+tree的所以叶子节点包含所有关键字且是按照升序排列(主键索引唯一，辅助索引可以不唯一)，所以等于关键字的数据值在右子树</p>
+<p>l 2标注是相应关键字存储对应数据的物理地址，注意这也是之后和InnoDB索引不同的地方之一</p>
+<p>l 2标注也是一个所说MyiAM表的索引和数据是分离的，索引保存在”表名.MYI”文件内，而数据保存在“表名.MYD”文件内，2标注的物理地址就是“表名.MYD”文件内相应数据的物理地址。(InnoDB表的索引文件和数据文件在一起)</p>
+<p>l 辅助索引和主键索引没什么大的区别，辅助索引的索引值是可以重复的(但InnoDB辅助索引和主键索引有很明显的区别，这里先提醒注意一下)</p>
+<p>3、 Annode索引结构</p>
+<p>(1)首先有一个表，内容和主键索引结构如下两图：</p>
+<p>Col1  Col2  Col3</p>
+<p>1  15  phpben</p>
+<p>2  20  mhycoe</p>
+<p>3  23  phpyu</p>
+<p>4  25  bearpa</p>
+<p>5  40  phpgoo</p>
+<p>6  45  phphao</p>
+<p>7  48  phpxue</p>
+<p>……</p>
+<p><img class="alignnone" alt="" src="http://ww2.sinaimg.cn/mw690/aa213e02jw1esgahyel2aj20g009m75q.jpg" width="576" height="346" /></p>
+<p>结构上：由上图可以看出InnoDB的索引结构很MyisAM的有很明显的区别</p>
+<p>l MyisAM表的索引和数据是分开的，用指针指向数据的物理地址，而InnoDB表中索引和数据是储存在一起。看红框1可一看出一行数据都保存了。</p>
+<p>l 还有一个上图多了三行的隐藏数据列(虚线表)，这是因为MyisAM不支持事务，InnoDB处理事务在性能上并发控制上比较好，看图中的红框2中的DB_TRX_ID是事务ID，自动增长；db_roll_ptr是回滚指针，用于事务出错时数据回滚恢复；db_row_id是记录行号，这个值其实在主键索引中就是主键值，这里标出重复是为了容易介绍，还有的是若不是主键索引(辅助索引)，db_row_id会找表中unique的列作为值，若没有unique列则系统自动创建一个。关于InnoDB跟多事务MVCC点此：http://www.phpben.com/?post=72</p>
+<p>(2)加入上表中Col1是主键(下图标错)，而Col2是辅助索引，则相应的辅助索引结构图：</p>
+<p><img class="alignnone" alt="" src="http://ww2.sinaimg.cn/mw690/aa213e02jw1esgahxw9ppj20g007dwf8.jpg" width="576" height="265" /></p>
+<p>&nbsp;</p>
+<p>可以看出InnoDB辅助索引并没有保存相应的所有列数据，而是保存了主键的键值(图中1、2、3….)这样做利弊也是很明显：</p>
+<p>l 在已有主键索引，避免数据冗余，同时在修改数据的时候只需修改辅助索引值。</p>
+<p>l 但辅助索引查找数据事要检索两次，先找到相应的主键索引值然后在去检索主键索引找到对应的数据。这也是网上很多mysql性能优化时提到的“主键尽可能简短”的原因，主键越长辅助索引也就越大，当然主键索引也越大。</p>
+<p>4、 MyisAM索引与InnoDB索引相比较</p>
+<p>l MyisAM支持全文索引(FULLTEXT)、压缩索引，InnoDB不支持</p>
+<p>l AnnoDB支持事务，MyisAM不支持</p>
+<p>l MyisAM顺序储存数据，索引叶子节点保存对应数据行地址，辅助索引很主键索引相差无几；AnnoDB主键节点同时保存数据行，其他辅助索引保存的是主键索引的值</p>
+<p>l MyisAM键值分离，索引载入内存(key_buffer_size),数据缓存依赖操作系统；InnoDB键值一起保存，索引与数据一起载入InnoDB缓冲池</p>
+<p>l MyisAM主键(唯一)索引按升序来存储存储，InnoDB则不一定</p>
+<p>l MyisAM索引的基数值(Cardinality，show index 命令可以看见)是精确的，InnoDB则是估计值。这里涉及到信息统计的知识，MyisAM统计信息是保存磁盘中，在alter表或Analyze table操作更新此信息，而InnoDB则是在表第一次打开的时候估计值保存在缓存区内</p>
+<p>l MyisAM处理字符串索引时用增量保存的方式，如第一个索引是‘preform’，第二个是‘preformence’，则第二个保存是‘7，ance‘，这个明显的好处是缩短索引，但是缺陷就是不支持倒序提取索引，必须顺序遍历获取索引</p>
+<p>&nbsp;</p>
+<p><strong>第三部分：MYSQL优化</strong></p>
+<p>mysql优化是一个重大课题之一，这里会重点详细的介绍mysql优化，包括表数据类型选择，sql语句优化，系统配置与维护优化三类。</p>
+<p>1、 表数据类型选择</p>
+<p>(1)能小就用小。表数据类型第一个原则是：使用能正确的表示和存储数据的最短类型。这样可以减少对磁盘空间、内存、cpu缓存的使用。</p>
+<p>(2)避免用NULL，这个也是网上优化技术博文传的最多的一个。理由是额外增加字节，还有使索引，索引统计和值更复杂。很多还忽略一</p>
+<p>个count(列)的问题，count(列)是不会统计列值为null的行数。更多关于NULL可参考：http://www.phpben.com/?post=71</p>
+<p>(3)字符串如何选择char和varchar？一般phper能想到就是char是固定大小，varchar能动态储存数据。这里整理一下这两者的区别：</p>
+<p>属性  Char  Varchar</p>
+<p>值域大小  最长字符数是255(不是字节)，不管什么编码，超过此值则自动截取255个字符保存并没有报错。  65535个字节，开始两位存储长度，超过255个字符，用2位储存长度，否则1位，具体字符长度根据编码来确定，如utf8，<span style="color: #333333;font-style: normal">则字符最长是21845个</span></p>
+<p>如何处理字符串末尾空格  去掉末尾空格，取值出来比较的时候自动加上进行比较  Version&lt;=4.1，字符串末尾空格被删掉，version&gt;5.0则保留</p>
+<p>储存空间  固定空间，比喻char(10)不管字符串是否有10个字符都分配10个字符的空间  Varchar内节约空间，但更新可能发生变化，若varchar(10),开始若储存5个字符，当update成7个时有myisam可能把行拆开，innodb可能分页，这样开销就增大</p>
+<p>适用场合    适用于存储很短或固定或长度相似字符，如MD5加密的密码char(33)、昵称char(8)等    当最大长度远大于平均长度并且发生更新的时候。</p>
+<p>&nbsp;</p>
+<p>注意当一些英文或数据的时候，最好用每个字符用字节少的类型，如latin1</p>
+<p>(4)整型、整形优先原则</p>
+<p>Tinyint、smallint、mediumint、int、bigint，分别需要8、16、24、32、64。</p>
+<p>值域范围：-2^(n-1)~ 2^(n-1)-1</p>
+<p>很多程序员在设计数据表的时候很习惯的用int，压根不考虑这个问题</p>
+<p>笔者建议：能用tinyint的绝不用smallint</p>
+<p>误区：int(1) 和int(11)是一样的，唯一区别是mysql客户端显示的时候显示多少位。</p>
+<p>整形优先原则：能用整形的不用其他类型替换，如ip可以转换成整形保存，如商品价格‘50.00元’则保存成50</p>
+<p>(5)精确度与空间的转换。在存储相同数值范围的数据时，浮点数类型通常都会比DECIMAL类型使用更少的空间。FLOAT字段使用4字节存储</p>
+<p>数据。DOUBLE类型需要8 个字节并拥有更高的精确度和更大的数值范围，DECIMAL类型的数据将会转换成DOUBLE类型。</p>
+<p>2、 sql语句优化</p>
+<pre class="brush: sql; gutter: true">mysql&gt; create table one (
+id smallint(10) not null auto_increment primary key,
+username char(8) not null,
+password char(4) not null,
+`level` tinyint (1) default 0,
+last_login char(15) not null,
+index(username,password,last_login))engine=innodb;</pre>
+<p>这是test表，其中id是主键，多列索引(username,password,last_login),里面有10000多条数据.</p>
+<pre class="brush: sql; gutter: true">| Table | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null |
+Index_type | Comment |
++-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+
+| one | 0 | PRIMARY | 1 | id | A |20242 | NULL | NULL | |
+BTREE | |
++-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+
+| one | 1 | username | 1 | username | A |10121 | NULL | NULL | |
+BTREE | |
++-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+
+| one | 1 | username | 2 | password | A |10121 | NULL | NULL | YES |
+BTREE | |
++-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+
+| one | 1 | username | 3 | last_login | A |20242 | NULL | NULL | |
+BTREE | |
++-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+</pre>
+<p>(1) 最左前缀原则</p>
+<p>定义：最左前缀原则指的的是在sql where 字句中一些条件或表达式中出现的列的顺序要保持和多索引的一致或以多列索引顺序出现，只要出现非顺序出现、断层都无法利用到多列索引。</p>
+<p>举例说明：上面给出一个多列索引(username,password,last_login)，当三列在where中出现的顺序如(username,password,last_login)、(username,password)、(username)才能用到索引，如下面几个顺序(password,last_login)、(passwrod)、(last_login)&#8212;这三者不从username开始，(username,last_login)&#8212;断层，少了password，都无法利用到索引。</p>
+<p>因为B+tree多列索引保存的顺序是按照索引创建的顺序，检索索引时按照此顺序检索</p>
+<p>测试：以下测试不精确，这里只是说明如何才能正确按照最左前缀原则使用索引。还有的是以下的测试用的时间0.00sec看不出什么时间区别，因为数据量只有20003条，加上没有在实体机上运行，很多未可预知的影响因素都没考虑进去。当在大数据量，高并发的时候，最左前缀原则对与提高性能方面是不可否认的。</p>
+<p>Ps：最左前缀原则中where字句有or出现还是会遍历全表</p>
+<p>(1.1)能正确的利用索引</p>
+<p>l Where子句表达式顺序是(username)</p>
+<pre class="brush: sql; gutter: true">mysql&gt; explain select * from one where username=&#039;abgvwfnt&#039;;
++----+-------------+-------+------+---------------+----------+---------+-------+------+-------------+
+| id | select_type | table | type | possible_keys | key | key_len | ref |rows | Extra |
++----+-------------+-------+------+---------------+----------+---------+-------+------+-------------+
+| 1 | SIMPLE | one | ref | username | username | 24 | const |5 | Using where |
++----+-------------+-------+------+---------------+----------+---------+-------+------+-------------+
+1 row in set (0.00 sec)</pre>
+<p>l Where子句表达式顺序是(username,password)</p>
+<pre class="brush: sql; gutter: true">mysql&gt; explain select * from one where username=&#039;abgvwfnt&#039; and password=&#039;123456&#039;;
++----+-------------+-------+------+---------------+----------+---------+-------------+------+-------------+
+| id | select_type | table | type | possible_keys | key | key_len | ref | rows | Extra |
++----+-------------+-------+------+---------------+----------+---------+-------------+------+-------------+
+| 1 | SIMPLE | one | ref | username | username | 43 | const,const | 1 | Using where |
++----+-------------+-------+------+---------------+----------+---------+-------------+------+-------------+
+1 row in set (0.00 sec)</pre>
+<p>l Where子句表达式顺序是(username,password, last_login)</p>
+<pre class="brush: sql; gutter: true">mysql&gt; explain select * from one where username=&#039;abgvwfnt&#039; and password=&#039;123456&#039;and last_login=&#039;1338251170&#039;;
++----+-------------+-------+------+---------------+----------+---------+-------------------+------+-------------+
+| id | select_type | table | type | possible_keys | key | key_len | ref| rows | Extra |
++----+-------------+-------+------+---------------+----------+---------+-------------------+------+-------------+
+| 1 | SIMPLE | one | ref | username | username | 83 | const,const,const | 1 | Using where |
++----+-------------+-------+------+---------------+----------+---------+-------------------+------+-------------+
+1 row in set (0.00 sec)</pre>
+<p>上面可以看出type=ref 是多列索引，key_len分别是24、43、83，这说明用到的索引分别是(username), (username,password), (username,password, last_login );row分别是5、1、1检索的数据行都很少，因为这三个查询都按照索引前缀原则，可以利用到索引。</p>
+<p>(1.2)不能正确的利用索引</p>
+<p>l Where子句表达式顺序是(password, last_login)</p>
+<pre class="brush: sql; gutter: true">mysql&gt; explain select * from one where password=&#039;123456&#039;and last_login=&#039;1338251170&#039;;
++----+-------------+-------+------+---------------+------+---------+------+-------+-------------+
+| id | select_type | table | type | possible_keys | key | key_len | ref | rows| Extra |
++----+-------------+-------+------+---------------+------+---------+------+-------+-------------+
+| 1 | SIMPLE | one | ALL | NULL | NULL | NULL | NULL | 20146 | Using where |
++----+-------------+-------+------+---------------+------+---------+------+-------+-------------+
+1 row in set (0.00 sec)</pre>
+<p>l Where 子句表达式顺序是(last_login)</p>
+<pre class="brush: sql; gutter: true">mysql&gt; explain select * from one where last_login=&#039;1338252525&#039;;
++----+-------------+-------+------+---------------+------+---------+------+-------+-------------+
+| id | select_type | table | type | possible_keys | key | key_len | ref | rows| Extra |
++----+-------------+-------+------+---------------+------+---------+------+-------+-------------+
+| 1 | SIMPLE | one | ALL | NULL | NULL | NULL | NULL | 20146 | Using where |
++----+-------------+-------+------+---------------+------+---------+------+-------+-------------+
+1 row in set (0.00 sec)</pre>
+<p>以上的两条语句都不是以username开始，这样是用不了索引，通过type=all(全表扫描)，key_len=null，rows都很大20146</p>
+<p>Ps：one表里只有20003条数据，为什么出现20146，这是优化器对表的一个估算值，不精确的。</p>
+<p>l Where 子句表达式虽然顺序是(username,password, last_login)或(username,password)但第一个是有范围’&lt;’、’&gt;’，’&lt;=’，’&gt;=’等出现</p>
+<pre class="brush: sql; gutter: true">mysql&gt; explain select * from one where username&gt;&#039;abgvwfnt&#039; and password =&#039;123456&#039;and last_login=&#039;1338251170&#039;;
++----+-------------+-------+------+---------------+------+---------+------+-------+-------------+
+| id | select_type | table | type | possible_keys | key | key_len | ref | rows| Extra |
++----+-------------+-------+------+---------------+------+---------+------+-------+-------------+
+| 1 | SIMPLE | one | ALL | username | NULL | NULL | NULL | 20146 | Using where |
++----+-------------+-------+------+---------------+------+---------+------+-------+-------------+
+1 row in set (0.00 sec)</pre>
+<p>这个查询很明显是遍历所有表，一个索引都没用到，非第一列出现范围(password列或last_login列)，则能利用索引到首先出现范围的一列，也就是“where username=&#8217;abgvwfnt&#8217; and password &gt;&#8217;123456&#8242;and last_login=&#8217;1338251170&#8242;;”或则“where username=&#8217;abgvwfnt&#8217; and password &gt;&#8217;123456&#8242;and last_login&lt;&#8217;1338251170&#8242;;”索引长度ref_len=43,索引检索到password列，所以考虑多列索引的时候把那些查询语句用的比较的列放在最后(或非第一位)。</p>
+<p>l 断层，即是where顺序(username, last_login)</p>
+<pre class="brush: sql; gutter: true">mysql&gt; explain select * from one where username=&#039;abgvwfnt&#039; and last_login=&#039;1338252525&#039;;
++----+-------------+-------+------+---------------+----------+---------+-------+------+-------------+
+| id | select_type | table | type | possible_keys | key | key_len | ref | rows | Extra |
++----+-------------+-------+------+---------------+----------+---------+-------+------+-------------+
+| 1 | SIMPLE | one | ref | username | username | 24 | const |5 | Using where |
++----+-------------+-------+------+---------------+----------+---------+-------+------+-------------+
+1 row in set (0.00 sec)</pre>
+<p>注意这里的key_len=24=8*3(8是username的长度，3是utf8编码)，rows=5，和下面一条sql语句搜索出来一样</p>
+<pre class="brush: sql; gutter: true">mysql&gt; select * from one where username=&#039;abgvwfnt&#039;;
++-------+----------+----------+-------+------------+
+| id | username | password | level | last_login |
++-------+----------+----------+-------+------------+
+| 3597 | abgvwfnt | 234567 | 0 | 1338251420 |
+| 7693 | abgvwfnt | 456789 | 0 | 1338251717 |
+| 11789 | abgvwfnt | 456789 | 0 | 1338251992 |
+| 15885 | abgvwfnt | 456789 | 0 | 1338252258 |
+| 19981 | abgvwfnt | 456789 | 0 | 1338252525 |
++-------+----------+----------+-------+------------+
+5 rows in set (0.00 sec)
+
+mysql&gt; select * from one where username=&#039;abgvwfnt&#039; and last_login=&#039;1338252525&#039;;
++-------+----------+----------+-------+------------+
+| id | username | password | level | last_login |
++-------+----------+----------+-------+------------+
+| 19981 | abgvwfnt | 456789 | 0 | 1338252525 |
++-------+----------+----------+-------+------------+
+1 row in set (0.00 sec)</pre>
+<p>这个就是要的返回结果，所以可以知道断层(username,last_login)，这样只用到username索引，把用到索引的数据再重新检查last_login条件，这个相对全表查询来说还是有性能上优化，这也是很多sql优化文章中提到的where 范围查询要放在最后(这不绝对，但可以利用一部分索引)</p>
+<p>(1.3)如果一个查询where子句中确实不需要password列，那就用“补洞”。</p>
+<pre class="brush: sql; gutter: true">mysql&gt; select distinct(password) from one;
++----------+
+| password |
++----------+
+| 234567 |
+| 345678 |
+| 456789 |
+| 123456 |
++----------+
+4 rows in set (0.08 sec)</pre>
+<p>可以看出password列中只有这几个值，当然在现实中不可能密码有这么多一样的，再说数据也可能不断更新，这里只是举例说明补洞的方法</p>
+<pre class="brush: sql; gutter: true">mysql&gt; explain select * from one where username=&#039;abgvwfnt&#039; and password in(&#039;123456&#039;,&#039;234567&#039;,&#039;345678&#039;,&#039;456789&#039;)
+and last_login=&#039;1338251170&#039;;
++----+-------------+-------+-------+---------------+----------+---------+------+------+-------------+
+| id | select_type | table | type | possible_keys | key | key_len | ref | rows | Extra |
++----+-------------+-------+-------+---------------+----------+---------+------+------+-------------+
+| 1 | SIMPLE | one | range | username | username| 83 | NULL |4 | Using where |
++----+-------------+-------+-------+---------------+----------+---------+------+------+-------------+
+1 row in set (0.00 sec)</pre>
+<p>可以看出ref=83 所有的索引都用到了，type=range是因为用了in子句。</p>
+<p>这个被“补洞”列中的值应该是有限的，可预知的，如性别，其值只有男和女(加多一个不男不女也无妨)。</p>
+<p>“补洞”方法也有瓶颈，当很多列，且需要补洞的相应列(可以多列)的值虽有限但很多(如中国城市)的时候，优化器在优化时组合起来的数量是很大，这样的话就要做好基准测试和性能分析，权衡得失，取得一个合理的优化方法。</p>
+<p>(1.4)like</p>
+<pre class="brush: sql; gutter: true">mysql&gt; explain select * from one where username like &#039;abgvwfnt%&#039;;
++----+-------------+-------+-------+---------------+----------+---------+------+------+-------------+
+| id | select_type | table | type | possible_keys | key | key_len | ref |
+rows | Extra |
++----+-------------+-------+-------+---------------+----------+---------+------+------+-------------+
+| 1 | SIMPLE | one | range | username | username | 24 | NULL |
+5 | Using where |
++----+-------------+-------+-------+---------------+----------+---------+------+------+-------------+
+1 row in set (0.00 sec)
+mysql&gt; explain select * from one where username like &#039;%abgvwfnt%&#039;;
++----+-------------+-------+------+---------------+------+---------+------+-------+-------------+
+| id | select_type | table | type | possible_keys | key | key_len | ref | rows| Extra |
++----+-------------+-------+------+---------------+------+---------+------+-------+-------------+
+| 1 | SIMPLE | one | ALL | NULL | NULL | NULL | NULL | 20259 | Using where |
++----+-------------+-------+------+---------------+------+---------+------+-------+-------------+
+1 row in set (0.01 sec)</pre>
+<p>对比就知道like操作abgvwfnt%能用到索引，%abgvwfnt%用不到</p>
+<p>&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;</p>
+<p>(2) Order by 优化</p>
+<p>(2.1)filesort优化算法.</p>
+<p>在mysql version()&lt;4.1之前，优化器采用的是filesort第一种优化算法，先提取键值和指针，排序后再去提取数据，前后要搜索数据两次，第一次若能使用索引则使用，第二次是随机读(当然不同引擎也不同)。mysql version()&gt;=4.1,更新了一个新算法，就是在第一次读的时候也把selcet的列也读出来，然后在sort_buffer_size中排序(不够大则建临时表保存排序顺序)，这算法只需要一次读取数据。所以有这个广为人传的一个优化方法，那就是增大sort_buffer_size。Filesort第二种算法要用到更的空间，sort_buffer_size不够大反而会影响速度，所以mysql开发团队定了个变量max_length_for_sort_data，当算法中读出来的需要列的数据的大小超过该变量的值才使用，所以一般性能分析的时候会尝试把max_length_for_sort_data改小。</p>
+<p>(2.2)单独order by 用不了索引，索引考虑加where 或加limit</p>
+<p>先建一个索引(last_login),建的过程就不给出了</p>
+<pre class="brush: sql; gutter: true">mysql&gt; explain select * from one order by last_login desc;
++----+-------------+-------+------+---------------+------+---------+------+-------+----------------+
+| id | select_type | table | type | possible_keys | key | key_len | ref | rows
+| Extra |
++----+-------------+-------+------+---------------+------+---------+------+-------+----------------+
+| 1 | SIMPLE | one | ALL | NULL | NULL | NULL | NULL | 2046
+3 | Using filesort |
++----+-------------+-------+------+---------------+------+---------+------+-------+----------------+
+1 row in set (0.00 sec)
+
+mysql&gt; explain select * from one order by last_login desc limit 10;
++----+-------------+-------+-------+---------------+------------+---------+------+------+-------+
+| id | select_type | table | type | possible_keys | key | key_len | ref
+| rows | Extra |
++----+-------------+-------+-------+---------------+------------+---------+------+------+-------+
+| 1 | SIMPLE | one | index | NULL | last_login | 4 | NULL
+| 10 | |
++----+-------------+-------+-------+---------------+------------+---------+------+------+-------+
+1 row in set (0.00 sec)</pre>
+<p>开始没limit查询是遍历表的，加了limit后，索引可以使用，看key_len 和key</p>
+<p>(2.3)where + orerby 类型，where满足最左前缀原则，且orderby的列和where子句用到的索引的列的子集。即是(a,b,c)索引，where满足最左前缀原则且order by中列a、b、c的任意组合</p>
+<pre class="brush: sql; gutter: true">mysql&gt; explain select * from one where username=&#039;abgvwfnt&#039; and password =&#039;123456
+&#039; and last_login=&#039;1338251001&#039; order by password desc,last_login desc;
+
++----+-------------+-------+------+---------------+----------+---------+-------------------+------+-------------+
+| id | select_type | table | type | possible_keys | key | key_len | ref
+
+| rows | Extra |
++----+-------------+-------+------+---------------+----------+---------+-------------------+------+-------------+
+| 1 | SIMPLE | one | ref | username | username | 83 | const,c
+onst,const | 1 | Using where |
++----+-------------+-------+------+---------------+----------+---------+-------------------+------+-------------+
+1 row in set (0.00 sec)
+
+mysql&gt; explain select * from one where username=&#039;abgvwfnt&#039; and password =&#039;123456
+&#039; and last_login=&#039;1338251001&#039; order by password desc,level desc;
++----+-------------+-------+------+---------------+----------+---------+-------------------+------+----------------------------+
+| id | select_type | table | type | possible_keys | key | key_len | ref| rows | Extra |
++----+-------------+-------+------+---------------+----------+---------+-------------------+------+-----------------------------+
+| 1 | SIMPLE | one | ref | username | username | 83 | const,c
+onst,const | 1 | Using where; Using filesort |
++----+-------------+-------+------+---------------+----------+---------+-------------------+------+-----------------------------+
+
+1 row in set (0.00 sec)</pre>
+<p>上面两条语句明显的区别是多了一个非索引列level的排序，在extra这列对了Using filesort</p>
+<p>笔者测试结果：where满足最左前缀且order by中的列是该多列索引的子集时(也就是说orerby中没最左前缀原则限制)，不管是否有asc ,desc混合出现，都能用索引来满足order by。</p>
+<p>笔者测试过，因为篇幅比较大，这里就不一一列出。</p>
+<p>Ps:很优化博文都说order by中的列要where中出现的列(是索引)的顺序一致，笔者认为不够严谨。</p>
+<p>(2.3) where + orerby+limit</p>
+<p>这个其实也差不多，只要where最左前缀，orderby也正确，limit在此影响不大</p>
+<p>(2.4)如何考虑order by来建索引</p>
+<p>这个回归到创建索引的问题来，在比较常用的oder by的列和where中常用的列建立多列索引，这样优化起来的广度和扩张性都比较好，当然如果要考虑UNION、JOIN、COUNT、IN等进来就复杂很多了</p>
+<p>(3) 隔离列</p>
+<p>隔离列是只查询语句中把索引列隔离出来，也就是说不能在语句中把列包含进表达式中，如id+1=2、inet_aton(&#8217;210.38.196.138&#8242;)&#8212;ip转换成整数、convert(123,char(3))&#8212;数字转换成字符串、date函数等mysql内置的大多函数。</p>
+<p>非隔离列影响性能很大甚至是致命的，这也就是赶集网石展的《三十六军规》中的一条，虽然他没说明是隔离列。</p>
+<p>以下就测试一下：</p>
+<p>首先建立一个索引(last_login )，这里就不给出建立的代码了，且把last_login改成整型(这里只是为了方便测试，并不是影响条件)</p>
+<pre class="brush: sql; gutter: true">mysql&gt; explain select * from one where last_login = 8388605;
++----+-------------+-------+------+---------------+------------+---------+-------+-------+-------------+
+| id | select_type | table | type | possible_keys | key | key_len | ref | rows | Extra |
++----+-------------+-------+------+---------------+------------+---------+-------+-------+-------------+
+| 1 | SIMPLE | one | ref | last_login | last_login | 3 | const
+| 1 | Using where |
++----+-------------+-------+------+---------------+------------+---------+-------+-------+-------------+
+1 row in set, 1 warning (0.00 sec)
+容易看出建的索引已起效
+mysql&gt; explain select * from one where last_login +1= 8388606 ;
++----+-------------+-------+------+---------------+------+---------+------+-------+-------------+
+| id | select_type | table | type | possible_keys | key | key_len | ref | rows
+| Extra |
++----+-------------+-------+------+---------------+------+---------+------+-------+-------------+
+| 1 | SIMPLE | one | ALL | NULL | NULL | NULL | NULL | 2049
+7 | Using where |
++----+-------------+-------+------+---------------+------+---------+------+-------+-------------+
+1 row in set (0.00 sec)</pre>
+<p>last_login +1=8388608非隔离列的出现导致查找的列20197，说明是遍历整张表且索引不能使用。</p>
+<p>这是因为这条语句要找出所有last_login的数据，然后+1再和20197比较，优化器在这方面比较差，性能很差。</p>
+<p>所以要尽可能的把列隔离出来，如last_login +1=8388606改成login_login=8388607,或者把计算、转换等操作先用php函数处理过再传递给mysql服务器</p>
+<p>(4) OR、IN、UNION ALL，可以尝试用UNION ALL</p>
+<p>(4.1)or会遍历表就算有索引</p>
+<pre class="brush: sql; gutter: true">mysql&gt; explain select * from one where username = &#039;abgvwfnt&#039; or password=&#039;123456&#039;;
++----+-------------+-------+------+---------------+------+---------+------+-------+-------------+
+| id | select_type | table | type | possible_keys | key | key_len | ref | rows| Extra |
++----+-------------+-------+------+---------------+------+---------+------+-------+-------------+
+| 1 | SIMPLE | one | ALL | username | NULL | NULL | NULL | 20259 | Using where |
++----+-------------+-------+------+---------------+------+---------+------+-------+-------------+
+1 row in set (0.00 sec)</pre>
+<p>(4.2)对于in，这个是有争议的，网上很多优化方案中都提到尽量少用in，这不全面，其实在in里面如果是常量的话，可一大胆的用in，这个也是赶集网石展、阿里hellodab的观点(笔者从微博中获知)。应用hellodab一句话“MySQL用IN效率不好，通常是指in中嵌套一个子查询，因为MySQL的查询重写可能会产生一个不好的执行计划，而如果in里面是常量的话，我认为性能没有任何问题，可以放心使用”&#8212;&#8212;&#8212;当然对于这个比较的话，没有实战数据的话很难辩解，就算有，影响性能的因素也很多，也许会每个dba都有不同的测试结果.这也签名最左前缀中“补洞”一个方法</p>
+<p>(4.3)UNION All 直接返回并集，可以避免去重的开销。之所说“尝试”用UNION All 替代 OR来优化sql语句，因为这不是一直能优化的了，这里只是作为一个方法去尝试。</p>
+<p>(5) 索引选择性</p>
+<p>索引选择性是不重复的索引值也叫基数(cardinality)表中数据行数的比值，索引选择性=基数/数据行，基数可以通过“show index from 表名”查看。</p>
+<p>高索引选择性的好处就是mysql查找匹配的时候可以过滤更多的行，唯一索引的选择性最佳，值为1。</p>
+<p>那么对于非唯一索引或者说要被创建索引的列的数据内容很长，那就要选择索引前缀。这里就简单说明一下：</p>
+<pre class="brush: sql; gutter: true">mysql&gt; select count(distinct(username))/count(*) from one;
++------------------------------------+
+| count(distinct(username))/count(*) |
++------------------------------------+
+| 0.2047 |
++------------------------------------+
+1 row in set (0.09 sec)</pre>
+<p>count(distinct(username))/count(*)就是索引选择性的值，这里0.2太小了。</p>
+<p>假如username列数据很长，则可以通过</p>
+<p>select count(distinct(concat(first_name, left(last_name, N))/count(*) from one;测试出接近1的索引选择性，其中N是索引的长度，穷举法去找出N的值，然后再建索引。</p>
+<p>(6) 重复或多余索引</p>
+<p>很多phper开始都以为建索引相对多点性能就好点，压根没考虑到有些索引是重复的，比如建一个(username),(username,password), (username,password,last_login),很明显第一个索引是重复的，因为后两者都能满足其功能。</p>
+<p>要有个意识就是，在满足功能需求的情况下建最少索引。对于INNODB引擎的索引来说，每次修改数据都要把主键索引，辅助索引中相应索引值修改，这可能会出现大量数据迁移，分页，以及碎片的出现。</p>
+<p>3、系统配置与维护优化</p>
+<p>(1) 重要的一些变量</p>
+<p>l key_buffer_size索引块缓存区大小, 针对MyISAM存储引擎,该值越大,性能越好.但是超过操作系统能承受的最大值,反而会使mysql变得不稳定. &#8212;-这是很重要的参数</p>
+<p>l sort_buffer_size 这是索引在排序缓冲区大小，若排序数据大小超过该值，则创建临时文件，注意和myisam_sort_buffer_size的区别&#8212;-这是很重要的参数</p>
+<p>l read_rnd_buffer_size当排序后按排序后的顺序读取行时，则通过该缓冲区读取行，避免搜索硬盘。将该变量设置为较大的值可以大大改进ORDER BY的性能。但是，这是为每个客户端分配的缓冲区，因此你不应将全局变量设置为较大的值。相反，只为需要运行大查询的客户端更改会话变量</p>
+<p>l join_buffer_size用于表间关联(join)的缓存大小</p>
+<p>l tmp_table_size缓存表的大小</p>
+<p>l table_cache允许 MySQL 打开的表的最大个数，并且这些都cache在内存中</p>
+<p>l delay_key_write针对MyISAM存储引擎,延迟更新索引.意思是说,update记录时,先将数据up到磁盘,但不up索引,将索引存在内存里,当表关闭时,将内存索引,写到磁盘</p>
+<p>更多参数查看http://www.phpben.com/?post=70</p>
+<p>(2) optimize、Analyze、check、repair维护操作</p>
+<p>l optimize 数据在插入，更新，删除的时候难免一些数据迁移，分页，之后就出现一些碎片，久而久之碎片积累起来影响性能，这就需要DBA定期的优化数据库减少碎片，这就通过optimize命令。</p>
+<p>如对MyisAM表操作：optimize table 表名</p>
+<p>对于InnoDB表是不支持optimize操作，否则提示“Table does not support optimize, doing recreate + analyze instead”，当然也可以通过命令：alter table one type=innodb; 来替代。</p>
+<p>l Analyze 用来分析和存储表的关键字的分布，使得系统获得准确的统计信息，影响 SQL 的执行计划的生成。对于数据基本没有发生变化的表，是不需要经常进行表分析的。但是如果表的数据量变化很明显，用户感觉实际的执行计划和预期的执行计划不 同的时候，执行一次表分析可能有助于产生预期的执行计划。</p>
+<p>Analyze table 表名</p>
+<p>l Check检查表或者视图是否存在错误，对 MyISAM 和 InnoDB 存储引擎的表有作用。对于 MyISAM 存储引擎的表进行表检查，也会同时更新关键字统计数据</p>
+<p>l Repair optimize需要有足够的硬盘空间，否则可能会破坏表，导致不能操作，那就要用上repair，注意INNODB不支持repair操作</p>
+<p>以上的操作出现的都是如下这是check</p>
+<p>+&#8212;&#8212;&#8212;-+&#8212;&#8212;-+&#8212;&#8212;&#8212;&#8212;&#8211;+&#8212;&#8212;&#8212;&#8212;-+</p>
+<p>| Table | Op | Msg_type| Msg_text |</p>
+<p>+&#8212;&#8212;&#8212;-+&#8212;&#8212;-+&#8212;&#8212;&#8212;&#8212;&#8211;+&#8212;&#8212;&#8212;&#8212;-+</p>
+<p>| test.one | check | status | OK |</p>
+<p>+&#8212;&#8212;&#8212;-+&#8212;&#8212;-+&#8212;&#8212;&#8212;&#8212;&#8211;+&#8212;&#8212;&#8212;&#8212;-+</p>
+<p>其中op是option 可以是repair check optimize，msg_type 表示信息类型，msg_text 表示信息类型，这里就说明表的状态正常。如在innodb表使用repair就出现note | The storage engine for the table doesn&#8217;t support repair</p>
+<p>注意：以上操作最好在数据库访问量最低的时候操作，因为涉及到很多表锁定，扫描，数据迁移等操作，否则可能导致一些功能无法正常使用甚至数据库崩溃。</p>
+<p>(3)表结构的更新与维护</p>
+<p>l 改表结构。当要在数据量千万级的数据表中使用alter更改表结构的时候，这是一个棘手问题。一种方法是在低并发低访问量的时候用平常的alter更改表。另外一种就是建另一个与要修改的表，这个表除了要修改的结构属性外其他的和原表一模一样，这样就能得到一个相应的.frm文件，然后用flush with read lock 锁定读，然后覆盖用新建的.frm文件覆盖原表的.frm，最后unlock table 释放表。</p>
+<p>l 建立新的索引。一般方法这里不说。</p>
+<p>1、 创建没索引的a表，导入数据形成.MYD文件。</p>
+<p>2、 创建包括索引b表，形成.FRM和.MYI文件</p>
+<p>3、 锁定读写</p>
+<p>4、 把b表的.FRM和.MYI文件改成a表名字</p>
+<p>5、 解锁</p>
+<p>6、 用repair创建索引。</p>
+<p>这个方法对于大表也是很有效的。这也是为什么很多dba坚持说“先导数据库在建索引，这样效率更快”</p>
+<p>l 定期检查mysql服务器</p>
+<p>定期使用show status、show processlist等命令检查数据库。这里就不细说，这说起来也篇幅是比较大的，笔者对这个也不是很了解</p>
+<p><strong>第四部分：图说mysql查询执行流程</strong></p>
+<p><img class="alignnone" alt="" src="http://ww3.sinaimg.cn/mw690/aa213e02jw1esgahxa4zyj20lb0j1jun.jpg" width="690" height="616" /></p>
+<p>1、 查询缓存，判断sql语句是否完全匹配，再判断是否有权限，两个判断为假则到解析器解析语句，为真则提取数据结果返回给用户。</p>
+<p>2、 解析器解析。解析器先词法分析，语法分析，检查错误比如引号有没闭合等，然后生成解析树。</p>
+<p>3、 预处理。预处理解决解析器无法决解的语义，如检查表和列是否存在，别名是否有错，生成新的解析树。</p>
+<p>4、 优化器做大量的优化操作。</p>
+<p>5、 生成执行计划。</p>
+<p>6、 查询执行引擎，负责调度引擎获取相应数据</p>
+<p>7、 返回结果。</p>
+<p>参考：</p>
+<p><a href="http://www.cnblogs.com/hustcat/archive/2009/10/28/1591648.html" rel="nofollow">http://www.cnblogs.com/hustcat/archive/2009/10/28/1591648.html</a></p>
+<p><a href="http://www.cnblogs.com/oldhorse/archive/2009/11/16/1604009.html" rel="nofollow">http://www.cnblogs.com/oldhorse/archive/2009/11/16/1604009.html</a></p>
+<p><a href="http://blog.csdn.net/zuiaituantuan/article/details/5909334" rel="nofollow">http://blog.csdn.net/zuiaituantuan/article/details/5909334</a></p>
+<p><a href="http://www.codinglabs.org/html/theory-of-mysql-index.html" rel="nofollow">http://www.codinglabs.org/html/theory-of-mysql-index.html</a></p>
+<p><a href="http://isky000.com/database/mysql_order_by_implement" rel="nofollow">http://isky000.com/database/mysql_order_by_implement</a></p>
+<p><a href="http://dev.mysql.com/doc/refman/5.0/en/server-system-variables.html" rel="nofollow">http://dev.mysql.com/doc/refman/5.0/en/server-system-variables.html</a></p>
+
+        
+        
+    <div class="post-adds">
+        <span data-post-id="87107" class="btn-bluet href-style vote-post-up   register-user-only "><i class="fa  fa-thumbs-o-up"></i> <h10 id="87107votetotal">1</h10> 赞</span>
+        <span data-book-type="1" data-site-id="2" data-item-id="87107" data-item-type="1" class="btn-bluet href-style bookmark-btn  register-user-only "><i class="fa fa-bookmark-o  "></i>  收藏</span>
+
+                <a href="#article-comment"><span class="btn-bluet href-style"><i class="fa fa-comments-o"></i>  评论</span></a>
+        
+            </div>
+
+
+        <!-- BEGIN #author-bio -->
+
+
+<!-- END #author-bio -->
+	</div>
+	<!-- END .entry -->
+
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_24x24">
+<a class="jiathis_button_tsina"></a>
+<a class="jiathis_button_weixin"></a>
+<a class="jiathis_button_qzone"></a>
+<a class="jiathis_button_fb"></a>
+<a class="jiathis_button_renren"></a>
+<a class="jiathis_button_douban"></a>
+<a class="jiathis_button_googleplus"></a>
+<a class="jiathis_button_readitlater"></a>
+<a class="jiathis_button_evernote"></a>
+<a class="jiathis_button_ydnote"></a>
+<a href="http://www.jiathis.com/share?uid=1745061" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+<a class="jiathis_counter_style"></a>
+</div>
+
+
+<script type="text/javascript" >
+var jiathis_config={
+	data_track_clickback:false,
+	title:"《由浅入深探究 MySQL索引结构原理、性能分析与优化》",
+	summary:"官方介绍索引是帮助MySQL高效获取数据的数据结构。笔者理解索引相当于一本书的目录，通过目录就知道要的资料在哪里，不用一页一页查阅找出需要的资料",
+	pic:"http://ww2.sinaimg.cn/mw690/aa213e02jw1esgahzxvtcj20f906k0tb.jpg",
+	appkey:{
+         "tsina":2606191112
+    },
+	ralateuid:{
+		"tsina":1670481425
+	},
+	hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1745061" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+<br/><br/>
+			<div class="textwidget"><p>
+    <a target="_blank" rel="nofollow" href="http://ghtools.sinaapp.com/bole.html"><br />
+        <img style='max-width:300px; max-height: 250px;' src="http://ghtools.sinaapp.com/bole.png" /><br />
+    </a></p>
+</div>
+		
+</div>
+<!-- END .post -->
+    
+<div class="wp_rp_wrap  wp_rp_plain" id="wp_rp_first"><div class="wp_rp_content"><h3 class="related_post_title">相关文章</h3><ul class="related_post wp_rp" style="visibility: visible"><li ><a href="http://blog.jobbole.com/86547/" class="wp_rp_title">一次非常有意思的 SQL 优化经历</a></li><li ><a href="http://blog.jobbole.com/86564/" class="wp_rp_title">MySQL之终端：管理数据库的基本操作</a></li><li ><a href="http://blog.jobbole.com/13876/" class="wp_rp_title">优化MySQL语句的十个建议</a></li><li ><a href="http://blog.jobbole.com/84906/" class="wp_rp_title">10分钟学会理解和解决MySQL乱码问题</a></li><li ><a href="http://blog.jobbole.com/85659/" class="wp_rp_title">MySQL大数据量快速插入方法和语句优化</a></li><li ><a href="http://blog.jobbole.com/62478/" class="wp_rp_title">如何理解 MySQL 中的 <=> 操作符？</a></li><li ><a href="http://blog.jobbole.com/46516/" class="wp_rp_title">从Mysql转到Oracle前需了解的50件事</a></li><li ><a href="http://blog.jobbole.com/16051/" class="wp_rp_title">MySQL性能优化的21条最佳经验</a></li><li ><a href="http://blog.jobbole.com/86594/" class="wp_rp_title">MySQL索引原理及慢查询优化</a></li><li ><a href="http://blog.jobbole.com/14012/" class="wp_rp_title">MySQL数据库备份的10个教程</a></li></ul></div></div>
+
+    
+        <!-- BEGIN .navigation -->
+        <div class="navigation margin-20">
+
+            <div class="alignleft"><a href="http://blog.jobbole.com/87088/" rel="prev">&laquo; 探索C#之微型MapReduce</a></div>
+            <div class="alignright"><a href="http://blog.jobbole.com/87121/" rel="next">理解 MySQL（1）：架构和概念 &raquo;</a></div>
+            <div class="clear"></div>
+
+        </div>
+        <!-- END .navigation -->
+
+    
+	
+            <div id="article-comment" class="dot-box center-align">
+            <button type="button" class="btn btn-non-transparent" data-toggle="modal" data-target="#login-modal">登录后评论</button>
+            <a target="_blank" href="http://www.jobbole.com/register"><button type="button" class="btn btn-primary">新用户注册</button></a>
+        </div>
+    
+
+    <div id="comment_list" class="comments">
+
+        
+    </div>
+		
+
+	
+</div>
+<!-- END .grid-8 -->
+
+<!-- BEGIN #sidebar -->
+<div id="sidebar" class="grid-4">
+
+	    <div class="nav-search-box ">
+                <form method="get" id="searchform" action="http://blog.jobbole.com">
+            <select id="searchselect">
+                                    <option selected value="http://blog.jobbole.com">博客</option>
+                                    <option  value="http://hao.jobbole.com">资源</option>
+                                    <option  value="http://top.jobbole.com">头条</option>
+                                    <option  value="http://group.jobbole.com">小组</option>
+                                    <option  value="http://date.jobbole.com">面向对象</option>
+                                    <option  value="http://web.jobbole.com">WEB前端</option>
+                                    <option  value="http://ios.jobbole.com">IOS</option>
+                                    <option  value="http://python.jobbole.com">Python</option>
+                                    <option  value="http://android.jobbole.com">安卓</option>
+                            </select>
+            <div class="input-wrapper">
+                <input type="text" value="" name="s" id="s" placeholder="输入搜索关键字">
+            </div>
+            <input type="submit" id="searchsubmit" value="搜索">
+        </form>
+    </div>
+<div id="text-34" class="widget widget_text">			<div class="textwidget"><div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://top.jobbole.com?utm_source=jobboleblog-sidebar" target="_blank"><img src="http://jbcdn2.b0.upaiyun.com/2014/07/53a397f357d0212df7f0f4dbb2f33732.jpg" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://top.jobbole.com?utm_source=jobboleblog-sidebar" target="_blank">伯乐头条 &#8211; 分享和发现原创</a><br /> 为作者带来更多读者；为读者筛选优质内容；专注IT互联网。</p>
+</p></div>
+<div class="clear"></div>
+</div>
+</div>
+		</div><div id="text-43" class="widget widget_text">			<div class="textwidget"><p><script language=javascript> 
+var randomNum = Math.round(Math.random()*2);
+var image=new Array(3);
+image[0]="http://ww1.sinaimg.cn/mw690/bfdcef89gw1esl9czo4gfj208c06yjsb.jpg";
+image[1]="http://ww1.sinaimg.cn/mw690/bfdcef89gw1esl9d415cdj208c06yq3x.jpg";
+image[2]="http://ww2.sinaimg.cn/mw690/bfdcef89gw1esl9cfmp60j208c06ywfg.jpg";
+var imageUrl=image[randomNum];
+var urls=new Array(3);
+urls[0]="http://e.jikexueyuan.com/bootstrap.html?hmsr=job_banner_bootstrap_05.28";
+urls[1]="http://e.jikexueyuan.com/python.html?hmsr=job_banner_python_05.28";
+urls[2]="http://e.jikexueyuan.com/cplus.html?hmsr=job_banner_cplus_05.28";
+var url = urls[randomNum];
+var adHTML = "<a href='"+url+"' target='_blank'><img src='"+imageUrl+"' border='0'></a>";
+document.write(adHTML);
+</script></p>
+</div>
+		</div><div class="tabs tabbed_widget"><ul class="nav clearfix"><li><a id="link-tab1" href="#tab1" title="本周热门文章">本周热门文章</a></li><li><a id="link-tab2" href="#tab2" title="本月热门文章">本月热门文章</a></li><li><a id="link-tab3" href="#tab3" title="热门标签">热门标签</a></li></ul><div id="tab1" class="tab"><div class="floated-thumb">
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta ">
+
+                        <p>
+                            <span class="numb">0</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87160/" title="关于 StackOverflow 上评论风格的争议">关于 StackOverflow 上评论风格的争议</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">1</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87158/" title="浅谈排队论">浅谈排队论</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">2</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87068/" title="我用 Go 语言做了一个红白机模拟器">我用 Go 语言做了一个红白机模拟器</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">3</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87216/" title="SourceForge分发的GIMP安装包开始捆绑推广软件">SF分发的GIMP安装包开始捆绑推广软件</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">4</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87067/" title="实时处理日均50亿会话，解析Twitter Answers的架构">解析Twitter Answers的架构</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta ">
+
+                        <p>
+                            <span class="numb">5</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87267/" title="一位俄罗斯程序员移民美国的故事">一位俄罗斯程序员移民美国的故事</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta ">
+
+                        <p>
+                            <span class="numb">6</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87159/" title="SQL on Hadoop 的真相（2）">SQL on Hadoop 的真相（2）</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta ">
+
+                        <p>
+                            <span class="numb">7</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87194/" title="林仕鼎：系统架构领域的一些学习材料">林仕鼎：系统架构领域的一些学习材料</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta ">
+
+                        <p>
+                            <span class="numb">8</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87203/" title="信息图：软件工程师薪福指南">信息图：软件工程师薪福指南</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">9</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87281/" title="为什么打断 15 分钟的代价是 1 个小时">为什么打断 15 分钟的代价是 1 个小时</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                </div></div><div id="tab2" class="tab"><div class="floated-thumb">
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">0</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/86627/" title="关于C++引用的一些注意点">关于C++引用的一些注意点</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta ">
+
+                        <p>
+                            <span class="numb">1</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87160/" title="关于 StackOverflow 上评论风格的争议">关于 StackOverflow 上评论风格的争议</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta ">
+
+                        <p>
+                            <span class="numb">2</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/84506/" title="老码农教你在 StackOverflow 上谈笑风生">老码农教你在 StackOverflow 上谈笑风生</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">3</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/86633/" title="地理围栏算法解析">地理围栏算法解析</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">4</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/86649/" title="新加坡总理公开多年前写的数独程序源码">新加坡总理李显龙晒数独程序源码</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta ">
+
+                        <p>
+                            <span class="numb">5</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/86892/" title="老菜鸟致青春，程序员应该选择 Java 还是 C#">程序员应该选择 Java 还是 C#</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">6</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/86709/" title="用信号量解决进程的同步与互斥探讨">用信号量解决进程的同步与互斥探讨</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">7</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/85139/" title="小宝宝半夜老是哭，程序员爸爸设计了这个APP">小孩半夜总哭，程序员爸爸设计了这个APP</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">8</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/86836/" title="C++的函数重载">C++的函数重载</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">9</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/86996/" title="计算机中的黑魔法：尾递归">计算机中的黑魔法：尾递归</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                </div></div><div id="tab3" class="tab"><p><a href='http://blog.jobbole.com/tag/net/' class='tag-link-1636' title='68 个话题' style='font-size: 11.347826086957px;'>.Net</a>
+<a href='http://blog.jobbole.com/tag/android/' class='tag-link-467' title='143 个话题' style='font-size: 14.594202898551px;'>Android</a>
+<a href='http://blog.jobbole.com/tag/apple/' class='tag-link-180' title='34 个话题' style='font-size: 8.304347826087px;'>apple</a>
+<a href='http://blog.jobbole.com/tag/bug/' class='tag-link-218' title='53 个话题' style='font-size: 10.231884057971px;'>Bug</a>
+<a href='http://blog.jobbole.com/tag/cpp/' class='tag-link-807' title='34 个话题' style='font-size: 8.304347826087px;'>C++</a>
+<a href='http://blog.jobbole.com/tag/chrome/' class='tag-link-527' title='32 个话题' style='font-size: 8.1014492753623px;'>Chrome</a>
+<a href='http://blog.jobbole.com/tag/c-sharp/' class='tag-link-2197' title='35 个话题' style='font-size: 8.5072463768116px;'>C sharp</a>
+<a href='http://blog.jobbole.com/tag/css/' class='tag-link-711' title='65 个话题' style='font-size: 11.144927536232px;'>CSS</a>
+<a href='http://blog.jobbole.com/tag/c/' class='tag-link-757' title='141 个话题' style='font-size: 14.492753623188px;'>C语言</a>
+<a href='http://blog.jobbole.com/tag/facebook/' class='tag-link-164' title='98 个话题' style='font-size: 12.971014492754px;'>Facebook</a>
+<a href='http://blog.jobbole.com/tag/featuredpost/' class='tag-link-2241' title='540 个话题' style='font-size: 20.376811594203px;'>featuredpost</a>
+<a href='http://blog.jobbole.com/tag/git/' class='tag-link-885' title='65 个话题' style='font-size: 11.144927536232px;'>Git</a>
+<a href='http://blog.jobbole.com/tag/github/' class='tag-link-1253' title='58 个话题' style='font-size: 10.63768115942px;'>Github</a>
+<a href='http://blog.jobbole.com/tag/google/' class='tag-link-198' title='250 个话题' style='font-size: 17.028985507246px;'>Google</a>
+<a href='http://blog.jobbole.com/tag/hadoop/' class='tag-link-862' title='32 个话题' style='font-size: 8.1014492753623px;'>Hadoop</a>
+<a href='http://blog.jobbole.com/tag/html5/' class='tag-link-182' title='81 个话题' style='font-size: 12.057971014493px;'>HTML5</a>
+<a href='http://blog.jobbole.com/tag/ie/' class='tag-link-1531' title='35 个话题' style='font-size: 8.5072463768116px;'>IE</a>
+<a href='http://blog.jobbole.com/tag/ie-css-bug/' class='tag-link-2785' title='31 个话题' style='font-size: 8px;'>IE CSS Bug</a>
+<a href='http://blog.jobbole.com/tag/ios/' class='tag-link-860' title='210 个话题' style='font-size: 16.217391304348px;'>iOS</a>
+<a href='http://blog.jobbole.com/tag/it/' class='tag-link-513' title='43 个话题' style='font-size: 9.3188405797101px;'>IT</a>
+<a href='http://blog.jobbole.com/tag/java/' class='tag-link-457' title='134 个话题' style='font-size: 14.289855072464px;'>java</a>
+<a href='http://blog.jobbole.com/tag/javascript/' class='tag-link-683' title='268 个话题' style='font-size: 17.333333333333px;'>Javascript</a>
+<a href='http://blog.jobbole.com/tag/jquery/' class='tag-link-459' title='56 个话题' style='font-size: 10.536231884058px;'>jQuery</a>
+<a href='http://blog.jobbole.com/tag/linux/' class='tag-link-190' title='195 个话题' style='font-size: 15.913043478261px;'>Linux</a>
+<a href='http://blog.jobbole.com/tag/mysql/' class='tag-link-191' title='46 个话题' style='font-size: 9.6231884057971px;'>MySQL</a>
+<a href='http://blog.jobbole.com/tag/node-js/' class='tag-link-896' title='43 个话题' style='font-size: 9.3188405797101px;'>Node.js</a>
+<a href='http://blog.jobbole.com/tag/nosql/' class='tag-link-967' title='34 个话题' style='font-size: 8.304347826087px;'>NoSQL</a>
+<a href='http://blog.jobbole.com/tag/objective-c/' class='tag-link-829' title='37 个话题' style='font-size: 8.7101449275362px;'>Objective-C</a>
+<a href='http://blog.jobbole.com/tag/php/' class='tag-link-168' title='75 个话题' style='font-size: 11.753623188406px;'>php</a>
+<a href='http://blog.jobbole.com/tag/python/' class='tag-link-663' title='164 个话题' style='font-size: 15.202898550725px;'>Python</a>
+<a href='http://blog.jobbole.com/tag/ruby/' class='tag-link-647' title='37 个话题' style='font-size: 8.7101449275362px;'>Ruby</a>
+<a href='http://blog.jobbole.com/tag/soho/' class='tag-link-153' title='39 个话题' style='font-size: 8.9130434782609px;'>soho</a>
+<a href='http://blog.jobbole.com/tag/sql-server/' class='tag-link-2681' title='54 个话题' style='font-size: 10.333333333333px;'>SQL Server</a>
+<a href='http://blog.jobbole.com/tag/tiobe/' class='tag-link-1493' title='32 个话题' style='font-size: 8.1014492753623px;'>TIOBE</a>
+<a href='http://blog.jobbole.com/tag/twitter/' class='tag-link-419' title='33 个话题' style='font-size: 8.2028985507246px;'>Twitter</a>
+<a href='http://blog.jobbole.com/tag/ui/' class='tag-link-1143' title='32 个话题' style='font-size: 8.1014492753623px;'>UI</a>
+<a href='http://blog.jobbole.com/tag/web-fundamentals/' class='tag-link-3560' title='38 个话题' style='font-size: 8.8115942028986px;'>web fundamentals</a>
+<a href='http://blog.jobbole.com/tag/web%e5%bc%80%e5%8f%91/' class='tag-link-493' title='118 个话题' style='font-size: 13.782608695652px;'>Web开发</a>
+<a href='http://blog.jobbole.com/tag/%e4%b9%94%e5%b8%83%e6%96%af/' class='tag-link-301' title='32 个话题' style='font-size: 8.1014492753623px;'>乔布斯</a>
+<a href='http://blog.jobbole.com/tag/book/' class='tag-link-1022' title='46 个话题' style='font-size: 9.6231884057971px;'>书籍</a>
+<a href='http://blog.jobbole.com/tag/%e4%ba%92%e8%81%94%e7%bd%91/' class='tag-link-40' title='80 个话题' style='font-size: 12.057971014493px;'>互联网</a>
+<a href='http://blog.jobbole.com/tag/%e4%ba%a4%e4%ba%92%e8%ae%be%e8%ae%a1/' class='tag-link-648' title='65 个话题' style='font-size: 11.144927536232px;'>交互设计</a>
+<a href='http://blog.jobbole.com/tag/%e4%ba%a7%e5%93%81/' class='tag-link-522' title='59 个话题' style='font-size: 10.739130434783px;'>产品</a>
+<a href='http://blog.jobbole.com/tag/%e4%ba%a7%e5%93%81%e7%bb%8f%e7%90%86/' class='tag-link-549' title='48 个话题' style='font-size: 9.8260869565217px;'>产品经理</a>
+<a href='http://blog.jobbole.com/tag/%e4%bb%a3%e7%a0%81/' class='tag-link-489' title='96 个话题' style='font-size: 12.869565217391px;'>代码</a>
+<a href='http://blog.jobbole.com/tag/startup/' class='tag-link-4' title='201 个话题' style='font-size: 16.115942028986px;'>创业</a>
+<a href='http://blog.jobbole.com/tag/%e5%89%8d%e7%ab%af/' class='tag-link-1138' title='59 个话题' style='font-size: 10.739130434783px;'>前端</a>
+<a href='http://blog.jobbole.com/tag/%e5%89%8d%e7%ab%af%e5%bc%80%e5%8f%91/' class='tag-link-775' title='33 个话题' style='font-size: 8.2028985507246px;'>前端开发</a>
+<a href='http://blog.jobbole.com/tag/%e5%9b%a2%e9%98%9f/' class='tag-link-551' title='55 个话题' style='font-size: 10.434782608696px;'>团队</a>
+<a href='http://blog.jobbole.com/tag/%e5%a4%a7%e6%95%b0%e6%8d%ae/' class='tag-link-884' title='40 个话题' style='font-size: 9.0144927536232px;'>大数据</a>
+<a href='http://blog.jobbole.com/tag/female-programmer/' class='tag-link-1460' title='51 个话题' style='font-size: 10.130434782609px;'>女程序员</a>
+<a href='http://blog.jobbole.com/tag/%e5%a8%81%e5%ae%a2/' class='tag-link-129' title='40 个话题' style='font-size: 9.0144927536232px;'>威客</a>
+<a href='http://blog.jobbole.com/tag/%e5%ae%89%e5%85%a8/' class='tag-link-1214' title='119 个话题' style='font-size: 13.782608695652px;'>安全</a>
+<a href='http://blog.jobbole.com/tag/%e5%ae%89%e5%8d%93%e5%bc%80%e5%8f%91/' class='tag-link-3362' title='59 个话题' style='font-size: 10.739130434783px;'>安卓开发</a>
+<a href='http://blog.jobbole.com/tag/%e5%ae%a2%e6%88%b7/' class='tag-link-174' title='51 个话题' style='font-size: 10.130434782609px;'>客户</a>
+<a href='http://blog.jobbole.com/tag/%e5%b7%a5%e5%85%b7/' class='tag-link-18' title='113 个话题' style='font-size: 13.579710144928px;'>工具</a>
+<a href='http://blog.jobbole.com/tag/%e5%b7%a5%e7%a8%8b%e5%b8%88/' class='tag-link-470' title='37 个话题' style='font-size: 8.7101449275362px;'>工程师</a>
+<a href='http://blog.jobbole.com/tag/%e5%bb%ba%e8%ae%ae/' class='tag-link-512' title='31 个话题' style='font-size: 8px;'>建议</a>
+<a href='http://blog.jobbole.com/tag/%e5%bc%80%e5%8f%91%e4%ba%ba%e5%91%98/' class='tag-link-370' title='123 个话题' style='font-size: 13.884057971014px;'>开发人员</a>
+<a href='http://blog.jobbole.com/tag/%e5%bc%80%e6%ba%90/' class='tag-link-196' title='79 个话题' style='font-size: 11.95652173913px;'>开源</a>
+<a href='http://blog.jobbole.com/tag/%e5%be%ae%e8%bd%af/' class='tag-link-429' title='84 个话题' style='font-size: 12.260869565217px;'>微软</a>
+<a href='http://blog.jobbole.com/tag/%e6%8a%80%e6%9c%af%e9%9d%a2%e8%af%95/' class='tag-link-1876' title='39 个话题' style='font-size: 8.9130434782609px;'>技术面试</a>
+<a href='http://blog.jobbole.com/tag/%e6%8b%9b%e8%81%98/' class='tag-link-326' title='47 个话题' style='font-size: 9.7246376811594px;'>招聘</a>
+<a href='http://blog.jobbole.com/tag/%e6%95%88%e7%8e%87/' class='tag-link-415' title='45 个话题' style='font-size: 9.5217391304348px;'>效率</a>
+<a href='http://blog.jobbole.com/tag/database/' class='tag-link-353' title='127 个话题' style='font-size: 14.086956521739px;'>数据库</a>
+<a href='http://blog.jobbole.com/tag/time-management/' class='tag-link-271' title='42 个话题' style='font-size: 9.2173913043478px;'>时间管理</a>
+<a href='http://blog.jobbole.com/tag/%e6%9c%8d%e5%8a%a1%e5%99%a8/' class='tag-link-311' title='32 个话题' style='font-size: 8.1014492753623px;'>服务器</a>
+<a href='http://blog.jobbole.com/tag/%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0/' class='tag-link-1910' title='50 个话题' style='font-size: 10.028985507246px;'>机器学习</a>
+<a href='http://blog.jobbole.com/tag/%e6%9e%b6%e6%9e%84/' class='tag-link-603' title='53 个话题' style='font-size: 10.231884057971px;'>架构</a>
+<a href='http://blog.jobbole.com/tag/%e6%b5%8b%e8%af%95/' class='tag-link-678' title='79 个话题' style='font-size: 11.95652173913px;'>测试</a>
+<a href='http://blog.jobbole.com/tag/%e6%b5%8f%e8%a7%88%e5%99%a8/' class='tag-link-63' title='50 个话题' style='font-size: 10.028985507246px;'>浏览器</a>
+<a href='http://blog.jobbole.com/tag/%e6%b8%b8%e6%88%8f/' class='tag-link-797' title='59 个话题' style='font-size: 10.739130434783px;'>游戏</a>
+<a href='http://blog.jobbole.com/tag/%e6%bc%ab%e7%94%bb/' class='tag-link-503' title='32 个话题' style='font-size: 8.1014492753623px;'>漫画</a>
+<a href='http://blog.jobbole.com/tag/%e7%94%a8%e6%88%b7/' class='tag-link-460' title='56 个话题' style='font-size: 10.536231884058px;'>用户</a>
+<a href='http://blog.jobbole.com/tag/%e7%94%a8%e6%88%b7%e4%bd%93%e9%aa%8c/' class='tag-link-580' title='99 个话题' style='font-size: 12.971014492754px;'>用户体验</a>
+<a href='http://blog.jobbole.com/tag/%e7%a0%81%e5%86%9c%e6%95%85%e4%ba%8b/' class='tag-link-2863' title='54 个话题' style='font-size: 10.333333333333px;'>码农故事</a>
+<a href='http://blog.jobbole.com/tag/%e7%a7%bb%e5%8a%a8%e5%ba%94%e7%94%a8/' class='tag-link-654' title='67 个话题' style='font-size: 11.246376811594px;'>移动应用</a>
+<a href='http://blog.jobbole.com/tag/%e7%a8%8b%e5%ba%8f%e5%91%98/' class='tag-link-368' title='778 个话题' style='font-size: 22px;'>程序员</a>
+<a href='http://blog.jobbole.com/tag/algorithm/' class='tag-link-650' title='171 个话题' style='font-size: 15.405797101449px;'>算法</a>
+<a href='http://blog.jobbole.com/tag/management/' class='tag-link-32' title='37 个话题' style='font-size: 8.7101449275362px;'>管理</a>
+<a href='http://blog.jobbole.com/tag/%e7%bc%96%e7%a8%8b/' class='tag-link-389' title='127 个话题' style='font-size: 14.086956521739px;'>编程</a>
+<a href='http://blog.jobbole.com/tag/%e7%bc%96%e7%a8%8b%e8%af%ad%e8%a8%80/' class='tag-link-596' title='114 个话题' style='font-size: 13.579710144928px;'>编程语言</a>
+<a href='http://blog.jobbole.com/tag/%e7%bc%96%e7%a8%8b%e8%af%ad%e8%a8%80%e6%8e%92%e8%a1%8c%e6%a6%9c/' class='tag-link-1621' title='36 个话题' style='font-size: 8.6086956521739px;'>编程语言排行榜</a>
+<a href='http://blog.jobbole.com/tag/%e7%bd%91%e9%a1%b5%e8%ae%be%e8%ae%a1/' class='tag-link-454' title='73 个话题' style='font-size: 11.652173913043px;'>网页设计</a>
+<a href='http://blog.jobbole.com/tag/%e8%81%8c%e5%9c%ba/' class='tag-link-253' title='300 个话题' style='font-size: 17.840579710145px;'>职场</a>
+<a href='http://blog.jobbole.com/tag/%e8%87%aa%e7%94%b1%e8%81%8c%e4%b8%9a/' class='tag-link-315' title='128 个话题' style='font-size: 14.086956521739px;'>自由职业</a>
+<a href='http://blog.jobbole.com/tag/translation/' class='tag-link-49' title='40 个话题' style='font-size: 9.0144927536232px;'>英语</a>
+<a href='http://blog.jobbole.com/tag/%e8%8b%b9%e6%9e%9c/' class='tag-link-183' title='48 个话题' style='font-size: 9.8260869565217px;'>苹果</a>
+<a href='http://blog.jobbole.com/tag/%e8%90%a5%e9%94%80/' class='tag-link-262' title='34 个话题' style='font-size: 8.304347826087px;'>营销</a>
+<a href='http://blog.jobbole.com/tag/%e8%ae%be%e8%ae%a1/' class='tag-link-431' title='125 个话题' style='font-size: 13.985507246377px;'>设计</a>
+<a href='http://blog.jobbole.com/tag/%e8%ae%be%e8%ae%a1%e5%b8%88/' class='tag-link-436' title='104 个话题' style='font-size: 13.173913043478px;'>设计师</a>
+<a href='http://blog.jobbole.com/tag/%e8%ae%be%e8%ae%a1%e6%a8%a1%e5%bc%8f/' class='tag-link-1845' title='51 个话题' style='font-size: 10.130434782609px;'>设计模式</a>
+<a href='http://blog.jobbole.com/tag/%e8%b6%a3%e6%96%87/' class='tag-link-2105' title='43 个话题' style='font-size: 9.3188405797101px;'>趣文</a>
+<a href='http://blog.jobbole.com/tag/%e8%bd%af%e4%bb%b6%e5%b7%a5%e7%a8%8b%e5%b8%88/' class='tag-link-400' title='40 个话题' style='font-size: 9.0144927536232px;'>软件工程师</a>
+<a href='http://blog.jobbole.com/tag/%e8%bd%af%e4%bb%b6%e5%bc%80%e5%8f%91/' class='tag-link-38' title='76 个话题' style='font-size: 11.855072463768px;'>软件开发</a>
+<a href='http://blog.jobbole.com/tag/%e9%87%8d%e6%9e%84/' class='tag-link-728' title='31 个话题' style='font-size: 8px;'>重构</a>
+<a href='http://blog.jobbole.com/tag/%e9%9d%a2%e8%af%95/' class='tag-link-173' title='100 个话题' style='font-size: 12.971014492754px;'>面试</a>
+<a href='http://blog.jobbole.com/tag/%e9%a1%b9%e7%9b%ae/' class='tag-link-177' title='38 个话题' style='font-size: 8.8115942028986px;'>项目</a>
+<a href='http://blog.jobbole.com/tag/%e9%a1%b9%e7%9b%ae%e7%bb%8f%e7%90%86/' class='tag-link-1049' title='38 个话题' style='font-size: 8.8115942028986px;'>项目经理</a>
+<a href='http://blog.jobbole.com/tag/%e9%bb%91%e5%ae%a2/' class='tag-link-617' title='56 个话题' style='font-size: 10.536231884058px;'>黑客</a></p></div></div><div id="text-94" class="widget widget_text">			<div class="textwidget"><p><a href='https://www.shiyanlou.com/courses/?f=jobbole_05.15' target='_blank'><img src='http://ww2.sinaimg.cn/mw690/bfdcef89gw1es3vzh6634j208c03cjrs.jpg' /></a></p>
+</div>
+		</div>		<h3 class='widget-title'>最新评论（期待您也参与评论）</h3>
+		<ul>
+		
+					
+			<li id="rc-comment-152373" class="rc-item rc-comment rc-clearfix">
+				<img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://jbcdn2.b0.upaiyun.com/2015/04/8fbdaaa5ea6d3b49c8c1c825aafeb5d9.png">
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/87068/#comment-152373" rel="nofollow">我用 Go 语言做了一个红白机模拟器</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				Go语言的应用越来越多了。不错。									<a class="rc-reviewer" target="_blank" href="http://www.jobbole.com/members/laozhonggu" rel="nofollow external"> 老钟古</a>
+								</div>
+			</li>
+			
+					
+			<li id="rc-comment-152367" class="rc-item rc-comment rc-clearfix">
+				<img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://jbcdn2.b0.upaiyun.com/2015/04/8fbdaaa5ea6d3b49c8c1c825aafeb5d9.png">
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/86843/#comment-152367" rel="nofollow">C++对象模型</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				好文，竟然没有评论，真可惜。								<span class="rc-reviewer"> WJQ</span>
+								</div>
+			</li>
+			
+					
+			<li id="rc-comment-152366" class="rc-item rc-comment rc-clearfix">
+				<img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://jbcdn2.b0.upaiyun.com/2015/04/8fbdaaa5ea6d3b49c8c1c825aafeb5d9.png">
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/84650/#comment-152366" rel="nofollow">Git Step by Step (3)：Gi...</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				对于图中tree和tree之间的引用关系不是很理解。什么请款下的操作会使得tree和tree之前会产...								<span class="rc-reviewer"> 刘建刚</span>
+								</div>
+			</li>
+			
+					
+			<li id="rc-comment-152324" class="rc-item rc-comment rc-clearfix">
+				<img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://jbcdn2.b0.upaiyun.com/2015/04/8fbdaaa5ea6d3b49c8c1c825aafeb5d9.png">
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/77855/#comment-152324" rel="nofollow">用4K电视做显示器的程序员</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				这样做不要眼睛了啊，显示器30MHZ的刷新率严重影响视力的，4K电视的刷新率只有30MHZ，离得近了...								<span class="rc-reviewer"> 王</span>
+								</div>
+			</li>
+			
+					
+			<li id="rc-comment-152321" class="rc-item rc-comment rc-clearfix">
+				<img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://jbcdn2.b0.upaiyun.com/2015/04/8fbdaaa5ea6d3b49c8c1c825aafeb5d9.png">
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/26533/#comment-152321" rel="nofollow">12个有趣的C语言问答</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				栈向下生长，flag声明在passwd前面， strcpy不安全，直接写到flag上面去了。								<span class="rc-reviewer"> MidoriYakumo</span>
+								</div>
+			</li>
+			
+					
+			<li id="rc-comment-152255" class="rc-item rc-comment rc-clearfix">
+				<img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://jbcdn2.b0.upaiyun.com/2015/04/8fbdaaa5ea6d3b49c8c1c825aafeb5d9.png">
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/24006/#comment-152255" rel="nofollow">MySQL索引背后的数据结构及算法...</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				写的太好了，好多以前比较模糊的概念一看就明白了，非常赞！								<span class="rc-reviewer"> worldwalker77</span>
+								</div>
+			</li>
+			
+					
+			<li id="rc-comment-18079" class="rc-item rc-comment rc-clearfix">
+				<img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://jbcdn2.b0.upaiyun.com/2015/04/8fbdaaa5ea6d3b49c8c1c825aafeb5d9.png">
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/24006/#comment-18079" rel="nofollow">MySQL索引背后的数据结构及算法...</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				真心好文章  数据库优化的精髓大都在此了								<span class="rc-reviewer"> 胡晗光</span>
+								</div>
+			</li>
+			
+				
+		</ul>
+        <div id="text-96" class="widget widget_text">			<div class="textwidget"><p><a href="http://www.lagou.com/jobs/list_%E6%8A%80%E6%9C%AF?kd=%E6%8A%80%E6%9C%AF&#038;spc=&#038;pl=&#038;gj=&#038;xl=&#038;yx=&#038;gx=&#038;st=&#038;labelWords=&#038;lc=&#038;workAddress=&#038;city=&#038;requestId=&#038;cmpid=AD__jobbole_banner_jishu" target="_blank"><img src="http://ww1.sinaimg.cn/mw690/bfdcef89gw1es3rzqmjtfj208c03c0sx.jpg" /></a></p>
+</div>
+		</div><div id="text-9" class="widget widget_text"><h3 class="widget-title">热点频道</h3>			<div class="textwidget"><div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://python.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank"><img src="http://top.jobbole.com/wp-content/uploads/sites/8/2014/07/36c4ed88b6ffefc5c83fce3881952875.png" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://python.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank">Python开发频道</a><br /> 汇集优质的Python技术文章和资源。人生苦短，我用Python！</p>
+</p></div>
+<div class="clear"></div>
+</div>
+<div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://web.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank"><img src="http://jbcdn2.b0.upaiyun.com/2014/12/34344d9a8b72f5be226b949b37f72d12.png" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://web.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank">前端开发频道</a><br />JavaScript, CSS, HTML5 这里有前端的技术干货！</p>
+</p></div>
+<div class="clear"></div>
+</div>
+<div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://android.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank"><img src="http://jbcdn2.b0.upaiyun.com/2014/12/6f9e08cead657d1159ca5af6eecb05d0.jpeg" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://android.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank">安卓开发频道</a><br />关注安卓移动开发业界动态，分享技术文章和优秀工具资源。</p>
+</p></div>
+<div class="clear"></div>
+</div>
+<div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://ios.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank"><img src="http://jbcdn2.b0.upaiyun.com/2014/12/12ee3b51be5e4bd87bf7a4c8895cc088.jpg" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://ios.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank">iOS开发频道</a><br />关注iOS移动开发业界动态，分享技术文章和优秀工具资源。</p>
+</p></div>
+<div class="clear"></div>
+</div>
+</div>
+		</div><div id="text-85" class="widget widget_text">			<div class="textwidget"><p><a href='http://blog.jobbole.com/84342/' target='_blank'><img src='http://jbcdn2.b0.upaiyun.com/2015/02/e5689e5b541cf10748fd6aef2a6aedbd.jpg' /></a></p>
+</div>
+		</div><div id="text-79" class="widget widget_text"><h3 class="widget-title">推荐关注</h3>			<div class="textwidget"><div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://top.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank"><img src="http://jbcdn2.b0.upaiyun.com/2014/07/53a397f357d0212df7f0f4dbb2f33732.jpg" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://top.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank">伯乐头条</a><br />为作者带来更多读者；为读者筛选优质内容；专注IT互联网。</p>
+</p></div>
+<div class="clear"></div>
+</div>
+<div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://fanyi.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank"><img src="http://jbcdn2.b0.upaiyun.com/2014/11/7561219c1abc47e8c9653f0edb65c93c.jpg" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://fanyi.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank">伯乐翻译小组</a><br />由数百名译者组成，立志翻译传播优秀的外文技术干货。</p>
+</p></div>
+<div class="clear"></div>
+</div>
+<div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://date.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank"><img src="http://jbcdn2.b0.upaiyun.com/2014/11/65cc2ac965f6b213ee056d29eda39cbb.jpg" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://date.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank">程序员相亲</a><br />一个专门为IT单身男女服务的征婚传播平台。</p>
+</p></div>
+<div class="clear"></div>
+</div>
+<div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://hao.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank"><img src="http://jbcdn2.b0.upaiyun.com/2014/11/fd62c3d72eda679ca7f89f3965f2ee4e.png" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://hao.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank">资源导航</a><br />收录优秀的工具资源，覆盖开发、设计、产品和管理等。</p>
+</p></div>
+<div class="clear"></div>
+</div>
+</div>
+		</div><div id="text-80" class="widget widget_text">			<div class="textwidget"><p><a href="http://100offer.com/join/jobbole?utm_source=jobbole&#038;utm_medium=dis&#038;utm_campaign=jobbole" target="_blank"><img src="http://jbcdn2.b0.upaiyun.com/2015/01/c8573fd828815600e38fc52373fd3622.jpg" border="0" /></a></p>
+</div>
+		</div>	
+	<!-- BEGIN .container -->
+	<div class="container">
+	
+		<!-- BEGIN .grid-2 -->
+		<div class="grid-2">
+			
+						
+		</div>
+		<!-- END .grid-2 -->
+		
+		<!-- BEGIN .grid-2 -->
+		<div class="grid-2">
+			
+						
+		</div>
+		<!-- END .grid-2 -->
+		
+		<div class="clear"></div>
+			
+	</div>
+	<!-- END .container -->
+
+</div>
+<!-- END #sidebar -->
+<div class="clear"></div>	
+
+
+</div>
+<!-- END #wrapper -->
+
+<!-- BEGIN footer -->
+
+    <footer>
+
+        <!-- BEGIN .container -->
+        <div class="container">
+
+            <!-- BEGIN .grid-4 -->
+            <div class="grid-4">
+
+                <div id="text-3" class="widget widget_text"><h3 class="widget-title">关于伯乐在线博客</h3>			<div class="textwidget"><p>在这个信息爆炸的时代，人们已然被大量、快速并且简短的信息所包围。然而，我们相信：过多“快餐”式的阅读只会令人“虚胖”，缺乏实质的内涵。伯乐在线博客团队正试图以我们微薄的力量，把优秀的原创/译文分享给读者，做一个小而精的精选博客，为“快餐”添加一些“营养”元素。</p>
+<div id="aw_socialcounter_widget-2" class="widget aw_socialcounter_widget">
+<ul>
+<li>
+<a target="_blank" href="http://weibo.com/jobbole"><img class="alignleft" src="http://blog.jobbole.com/common_images/sina_32.png"  alt="关注我们的新浪微博" title="关注我们的新浪微博" /></a></p>
+<div class="view-rss"><a  target="_blank"  href="http://blog.jobbole.com/feed/" class="rss-link"><img class="alignleft" src="http://blog.jobbole.com/common_images/rss_32.png"  alt="RSS订阅" title="RSS订阅" /></a></div>
+</li>
+</ul>
+</div>
+</div>
+		</div>
+            </div>
+            <!-- END .grid-4 -->
+
+            <!-- BEGIN .grid-4 -->
+            <div class="grid-4">
+
+                <div id="text-7" class="widget widget_text"><h3 class="widget-title">欢迎关注更多频道</h3>			<div class="textwidget"><p><a href='http://top.jobbole.com/' target='_blank'>头条</a> &#8211; 分享和发现有价值的内容与观点<br />
+<a href='http://date.jobbole.com/' target='_blank'>相亲</a> &#8211; 为IT单身男女服务的征婚传播平台<br />
+<a href='http://hao.jobbole.com/' target='_blank'>资源</a> &#8211; 优秀的工具资源导航<br />
+<a href='http://fanyi.jobbole.com/' target='_blank'>翻译</a> &#8211; 翻译传播优秀的外文文章<br />
+<a href='http://blog.jobbole.com/' target='_blank'>博客</a> &#8211; 国内外的精选博客文章<br />
+<a href='http://web.jobbole.com/' target='_blank'>前端</a> &#8211; JavaScript, HTML5, CSS<br />
+<a href='http://android.jobbole.com/' target='_blank'>安卓</a> &#8211; 专注Android技术分享<br />
+<a href='http://ios.jobbole.com/' target='_blank'>iOS</a> &#8211; 专注iOS技术分享<br />
+<a href='http://www.importnew.com/' target='_blank'>Java</a> &#8211; 专注Java技术分享<br />
+<a href='http://python.jobbole.com/' target='_blank'>Python</a> &#8211; 专注Python技术分享</p>
+</div>
+		</div>
+            </div>
+            <!-- END .grid-4 -->
+
+            <!-- BEGIN .grid-4 -->
+            <div class="grid-4">
+
+                <div id="text-4" class="widget widget_text"><h3 class="widget-title">联系我们</h3>			<div class="textwidget"><p><strong>商务合作</strong></p>
+<p>Email：<a  href='mailto:bd@jobbole.com'>bd@Jobbole.com</a><br />
+QQ： 2302462408  （加好友请注明来意）</p>
+<p><strong>网站使用问题</strong></p>
+<p>请在<a  href='http://group.jobbole.com/category/feedback/'>站务小组</a>询问或者反馈</p>
+</div>
+		</div>
+            </div>
+            <!-- END .grid-4 -->
+
+            <div class="clear"></div>
+
+        </div>
+        <!-- END .container -->
+
+        <!-- BEGIN #bottom -->
+        <div id="bottom">
+
+            <!-- BEGIN .container -->
+            <div class="container">
+
+                <!-- BEGIN .grid-12 -->
+                <div class="grid-12">
+
+                    <p>&copy; 2015 伯乐在线
+                    <span style="margin-left: 40px;">
+                        <a href="http://www.jobbole.com">首页</a>&nbsp;&nbsp;
+                        <a href="http://top.jobbole.com">头条</a>&nbsp;&nbsp;
+                        <a href="http://blog.jobbole.com">博客</a>&nbsp;&nbsp;
+                        <a href="http://hao.jobbole.com">资源</a>&nbsp;&nbsp;
+                        <a href="http://fanyi.jobbole.com">翻译</a>&nbsp;&nbsp;
+                        <a href="http://group.jobbole.com">小组</a>&nbsp;&nbsp;
+                        <i class="fa fa-heart-o pinkiconcolor"></i> <a href="http://date.jobbole.com">相亲</a>
+                    </span>
+                <span style="float:right; ">
+                    本站由 <a href="http://www.ucloud.cn/" target="_blank">UCloud</a> 赞助云主机，<a href="http://www.qiniu.com/" target="_blank">七牛</a> 赞助云存储
+                </span>
+                    </p>
+
+                </div>
+                <!-- END .grid-12 -->
+
+                <div class="clear"></div>
+
+            </div>
+            <!-- END .container -->
+
+        </div>
+        <!-- END #bottom -->
+    </footer>
+
+<!-- END footer -->
+
+
+
+
+<!-- WP SyntaxHighlighter Ver.1.7.3 Begin -->
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shCore.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shLegacy.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shAutoloader.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushAppleScript.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushAS3.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushBash.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushColdFusion.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCpp.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCSharp.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCss.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDelphi.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDiff.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushErlang.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJava.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJavaFX.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJScript.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPerl.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPhp.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPlain.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPowerShell.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPython.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushRuby.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSass.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushScala.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSql.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushVb.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushXml.js?ver=3.0"></script>
+<script type="text/javascript">//<![CDATA[
+	SyntaxHighlighter.autoloader(
+	"applescript	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushAppleScript.js?ver=3.0"
+	,"as3 actionscript3	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushAS3.js?ver=3.0"
+	,"bash shell	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushBash.js?ver=3.0"
+	,"cf coldfusion	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushColdFusion.js?ver=3.0"
+	,"cpp c	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCpp.js?ver=3.0"
+	,"c# c-sharp csharp	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCSharp.js?ver=3.0"
+	,"css	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCss.js?ver=3.0"
+	,"delphi pas pascal	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDelphi.js?ver=3.0"
+	,"diff patch	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDiff.js?ver=3.0"
+	,"erl erlang	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushErlang.js?ver=3.0"
+	,"java	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJava.js?ver=3.0"
+	,"jfx javafx	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJavaFX.js?ver=3.0"
+	,"js jscript javascript	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJScript.js?ver=3.0"
+	,"perl pl	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPerl.js?ver=3.0"
+	,"php	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPhp.js?ver=3.0"
+	,"plain text	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPlain.js?ver=3.0"
+	,"ps powershell	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPowerShell.js?ver=3.0"
+	,"py python	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPython.js?ver=3.0"
+	,"rails ror ruby rb	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushRuby.js?ver=3.0"
+	,"sass scss	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSass.js?ver=3.0"
+	,"scala	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushScala.js?ver=3.0"
+	,"sql	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSql.js?ver=3.0"
+	,"vb vbnet	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushVb.js?ver=3.0"
+	,"xml xhtml xslt html	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushXml.js?ver=3.0"
+	);
+	SyntaxHighlighter.defaults['auto-links'] = false;
+	SyntaxHighlighter.defaults['quick-code'] = true;
+	SyntaxHighlighter.defaults['title'] = '';
+	SyntaxHighlighter.defaults['class-name'] = 'notranslate';
+	SyntaxHighlighter.defaults['collapse'] = false;
+	SyntaxHighlighter.defaults['first-line'] = 1;
+	SyntaxHighlighter.defaults['gutter'] = true;
+	SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+	SyntaxHighlighter.defaults['smart-tabs'] = true;
+	SyntaxHighlighter.defaults['tab-size'] = 4;
+	SyntaxHighlighter.defaults['toolbar'] = false;
+ SyntaxHighlighter.config.stripBrs = true;
+	SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+	SyntaxHighlighter.config.strings.help = '?';
+	SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+	SyntaxHighlighter.config.strings.noBrush = "Can't find brush for: ";
+	SyntaxHighlighter.config.strings.brushNotHtmlScript = "Brush wasn't configured for html-script option: ";
+	SyntaxHighlighter.all();
+	dp.SyntaxHighlighter.HighlightAll('code')
+//]]></script>
+<!-- WP SyntaxHighlighter Ver.1.7.3 End -->
+<!-- Lightbox Plus ColorBox v2.6/1.3.32 - 2013.01.24 - Message: 0-->
+<script type="text/javascript">
+jQuery(document).ready(function($){
+  $("a[rel*=lightbox]").colorbox({speed:450,initialWidth:"300",initialHeight:"100",opacity:0.8,loop:false,scrolling:false,escKey:false,arrowKey:false,top:false,right:false,bottom:false,left:false});
+});
+</script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var thickboxL10n = {"next":"\u4e0b\u4e00\u9875 >","prev":"< \u4e0a\u4e00\u9875","image":"\u56fe\u50cf","of":"\/","close":"\u5173\u95ed","noiframes":"\u8fd9\u4e2a\u529f\u80fd\u9700\u8981 iframe \u7684\u652f\u6301\u3002\u60a8\u53ef\u80fd\u7981\u6b62\u4e86 iframe \u7684\u663e\u793a\uff0c\u6216\u60a8\u7684\u6d4f\u89c8\u5668\u4e0d\u652f\u6301\u6b64\u529f\u80fd\u3002","loadingAnimation":"http:\/\/blog.jobbole.com\/wp-includes\/js\/thickbox\/loadingAnimation.gif","closeImage":"http:\/\/blog.jobbole.com\/wp-includes\/js\/thickbox\/tb-close.png"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-includes/js/thickbox/thickbox.js?ver=3.1-20121105'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-includes/js/underscore.min.js?ver=1.4.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-includes/js/shortcode.min.js?ver=3.5.2'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-admin/js/media-upload.min.js?ver=3.5.2'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var pollsL10n = {"ajax_url":"http:\/\/blog.jobbole.com\/wp-admin\/admin-ajax.php","text_wait":"Your last request is still being processed. Please wait a while ...","text_valid":"Please choose a valid poll answer.","text_multiple":"\u6700\u591a\u53ea\u5141\u8bb8\u6295\u7684\u9009\u9879\uff1a","show_loading":"1","show_fading":"1"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/plugins/wp-polls/polls-js.js?ver=2.63'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/ready.js?ver=1.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/easing.js?ver=1.3'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/superfish.js?ver=1.4.8'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/validate.js?ver=1.9.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/touchwipe.js?ver=1.1.1'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/caroufredsel.js?ver=5.5.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/flexslider.js?ver=2.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/jplayer.js?ver=2.1.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/fitvids.js?ver=1.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/selectnav.js?ver=0.1'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/effects.js?ver=1.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/plugins/lightbox-plus/js/jquery.colorbox.1.3.32.js?ver=1.3.32'></script>
+
+
+<div id="full-btm" style="position:fixed; left:50%; top:550px;  z-index:100; text-align:center; cursor:pointer;">
+<a><img src="http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/img/back-btm.png" width="20" border=0 alt="跳到底部" title="跳到底部"></a>
+</div>
+
+<script type="text/javascript">
+jQuery('#full-btm').click(function(){
+    jQuery('html, body').animate({scrollTop:jQuery(document).height()}, 'slow');
+    return false;
+});
+</script>
+
+<div id="full-top" style="position:fixed; left:50%; top:520px; margin-left:495px; z-index:100; text-align:center; cursor:pointer;">
+<a><img src="http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/img/back-top.png" width="20" border=0 alt="返回顶部" title="返回顶部"></a>
+</div>
+
+<script type="text/javascript">
+jQuery('#full-top').click(function(){
+    jQuery('html, body').animate({scrollTop:0}, 'slow');
+    return false;
+});
+
+</script>
+
+<!-- script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','/_assets/js/analytics.js','ga');
+
+    ga('create', 'UA-15621043-1', 'jobbole.com');
+    ga('send', 'pageview');
+
+</script -->
+
+</body>
+<!-- END body -->
+
+</html>
+<!-- END html -->
