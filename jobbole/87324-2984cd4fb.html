@@ -1,0 +1,2518 @@
+<!DOCTYPE html>   
+<!--[if lt IE 7 ]> <html lang="en" class="no-js ie6"> <![endif]-->
+<!--[if IE 7 ]> <html lang="en" class="no-js ie7"> <![endif]-->
+<!--[if IE 8 ]> <html lang="en" class="no-js ie8"> <![endif]-->
+<!--[if IE 9 ]> <html lang="en" class="no-js ie9"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html lang="zh-CN" prefix="og: http://ogp.me/ns#" class="no-js"> <!--<![endif]-->
+
+
+<!-- BEGIN head -->
+<head>
+
+	<!-- Title -->
+	<title>我的MYSQL学习心得（4） ： 数据类型 - 博客 - 伯乐在线</title>
+	
+	<!-- Meta Tags -->
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	
+	<!-- Favicon & Mobileicon -->
+	<link rel="shortcut icon" href="http://jbcdn2.b0.upaiyun.com/2013/12/favicon.png" />
+	<link rel="apple-touch-icon" href="http://jbcdn2.b0.upaiyun.com/2013/12/jobbole-blog-logo-mobile.png" />
+	
+	<!-- RSS, Atom & Pingbacks -->
+		<link rel="alternate" title="博客 &#8211; 伯乐在线 RSS Feed" href="http://blog.jobbole.com/feed/" />
+		<link rel="alternate" title="RSS .92" href="http://blog.jobbole.com/feed/rss/" />
+	<link rel="alternate" title="Atom 0.3" href="http://blog.jobbole.com/feed/atom/" />
+	<link rel="pingback" href="http://blog.jobbole.com/xmlrpc.php" />
+	
+	<!-- Theme Hook -->
+	
+<!-- This site is optimized with the Yoast WordPress SEO plugin v1.4.13 - http://yoast.com/wordpress/seo/ -->
+<meta name="description" content="BLOB是一个二进制大对象，用来存储可变数量的数据。BLOB类型分为4种：TinyBlob、Blob、MediumBlob、LongBlob，这几个类型之间的唯一区别是在存储文件的最大大小上不同。"/>
+<link rel="canonical" href="http://blog.jobbole.com/87324/" />
+<meta property='og:locale' content='zh_CN'/>
+<meta property='og:type' content='article'/>
+<meta property='og:title' content='我的MYSQL学习心得（4） ： 数据类型 - 博客 - 伯乐在线'/>
+<meta property='og:description' content='BLOB是一个二进制大对象，用来存储可变数量的数据。BLOB类型分为4种：TinyBlob、Blob、MediumBlob、LongBlob，这几个类型之间的唯一区别是在存储文件的最大大小上不同。'/>
+<meta property='og:url' content='http://blog.jobbole.com/87324/'/>
+<meta property='og:site_name' content='博客 - 伯乐在线'/>
+<meta property='og:image' content='http://jbcdn2.b0.upaiyun.com/2012/04/mysql-logo.png'/>
+<!-- / Yoast WordPress SEO plugin. -->
+
+<link rel='stylesheet' id='thickbox-css'  href='http://blog.jobbole.com/wp-includes/js/thickbox/thickbox.css?ver=20121105' type='text/css' media='all' />
+<link rel='stylesheet' id='jobbole-wp-css-css'  href='http://blog.jobbole.com/wp-content/plugins/jobbole-wp-plugin/css/jobbole-wp-plugin-1.0.css?ver=3.5.2' type='text/css' media='all' />
+<link rel='stylesheet' id='v48fv_images-css'  href='http://blog.jobbole.com/wp-content/plugins/mu-widgets/library/base/public/css/images.css?ver=1.2.v48fv' type='text/css' media='all' />
+<link rel='stylesheet' id='v48fv_front-css'  href='http://blog.jobbole.com/wp-content/plugins/mu-widgets/library/base/public/css/front.css?ver=1.2.v48fv' type='text/css' media='all' />
+<link rel='stylesheet' id='v48fv_common-css'  href='http://blog.jobbole.com/wp-content/plugins/mu-widgets/library/base/public/css/common.css?ver=1.2.v48fv' type='text/css' media='all' />
+<link rel='stylesheet' id='wp-polls-css'  href='http://blog.jobbole.com/wp-content/plugins/wp-polls/polls-css.css?ver=2.63' type='text/css' media='all' />
+<link rel='stylesheet' id='core3.0-css'  href='http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/styles/shCore.css?ver=3.0' type='text/css' media='all' />
+<link rel='stylesheet' id='core-Default3.0-css'  href='http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/styles/shCoreDefault.css?ver=3.0' type='text/css' media='all' />
+<link rel='stylesheet' id='theme-Default3.0-css'  href='http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/styles/shThemeDefault.css?ver=3.0' type='text/css' media='all' />
+<link rel='stylesheet' id='lightboxStyle-css'  href='http://blog.jobbole.com/wp-content/plugins/lightbox-plus/css/shadowed/colorbox.css?ver=2.6' type='text/css' media='screen' />
+<script type='text/javascript' src='http://blog.jobbole.com/wp-includes/js/jquery/jquery.js?ver=1.8.3'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-includes/js/comment-reply.min.js?ver=3.5.2'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var JobboleAjax = {"ajaxurl":"http:\/\/blog.jobbole.com\/wp-admin\/admin-ajax.php"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/plugins/jobbole-wp-plugin/js/jobbole-wp-plugin-1.0.js?ver=3.5.2'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/modernizr.js?ver=2.5.3'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/js/rc-textarea-hl.js?ver=1.3'></script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://blog.jobbole.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://blog.jobbole.com/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='http://blog.jobbole.com/?p=87324' />
+<script type="text/javascript">
+	window._wp_rp_static_base_url = 'http://dtmvdvtzf8rz0.cloudfront.net/static/';
+	window._wp_rp_wp_ajax_url = "http://blog.jobbole.com/wp-admin/admin-ajax.php";
+	window._wp_rp_plugin_version = '2.8';
+	window._wp_rp_post_id = '87324';
+	window._wp_rp_num_rel_posts = '10';
+</script>
+<style type="text/css">
+.wp-polls .pollbar {
+	margin: 1px;
+	font-size: 6px;
+	line-height: 8px;
+	height: 8px;
+	background: #0CA3C4;
+	border: 1px solid #fff;
+}
+</style>
+
+<!-- WP SyntaxHighlighter Ver.1.7.3 CSS for code Begin -->
+<style type='text/css'>
+.syntaxhighlighter,
+.syntaxhighlighter a,
+.syntaxhighlighter div,
+.syntaxhighlighter code,
+.syntaxhighlighter table,
+.syntaxhighlighter table td,
+.syntaxhighlighter table tr,
+.syntaxhighlighter table tbody,
+.syntaxhighlighter table thead,
+.syntaxhighlighter table caption,
+.syntaxhighlighter textarea {
+font-size: 12px !important; /* Set the font size in pixels */  
+font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace !important; /* Set the font type */  
+}
+.syntaxhighlighter table caption {
+/* For Title(Caption) */  
+font-size: 14px !important; /* Set the font size in pixels */  
+font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace !important; /* Set the font type */  
+}
+.syntaxhighlighter.nogutter td.code .line {
+/* Set the left padding space when no-gutter in ver. 3.0 */  
+padding-left: 3px !important;
+}
+.syntaxhighlighter {
+/* For Chrome/Safari(WebKit) */  
+/* Hide the superfluous vertical scrollbar in ver. 3.0 */  
+overflow-y: hidden !important;
+padding: 1px !important;
+}
+.widget-area.syntaxhighlighter a,
+.widget-area.syntaxhighlighter div,
+.widget-area.syntaxhighlighter code,
+.widget-area.syntaxhighlighter table,
+.widget-area.syntaxhighlighter table td,
+.widget-area.syntaxhighlighter table tr,
+.widget-area.syntaxhighlighter table tbody,
+.widget-area.syntaxhighlighter table thead,
+.widget-area.syntaxhighlighter table caption,
+.widget-area.syntaxhighlighter textarea {
+/* For Widget */  
+font-size: 14px !important; /* Set the font size in pixels */  
+font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace !important; /* Set the font type */  
+}
+.widget-area table caption {
+/* For Widget */  
+/* For Title(Caption) */  
+font-size: 10px !important; /* Set the font size in pixels */  
+font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace !important; /* Set the font type */  
+}
+</style>
+<!-- WP SyntaxHighlighter Ver.1.7.3 CSS for code End -->
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="http://blog.jobbole.com/wp-content/themes/jobboleblogv3/style.css" media="screen" />
+	<style>
+				*::selection { background: #0099cc; }
+		*::-moz-selection { background: #0099cc; }
+		body {
+            background: #ffffff         }
+
+        a,
+        .tabs ul.nav li a:hover,
+        .tabs ul.nav li.active a,
+        .dropcap,
+        .toggle.hover .toggle-title,
+        li.comment cite a:hover,
+        h3.widget-title,
+        .post-meta .meta-title:hover,
+        .the-latest a:hover h4,
+        .aw_socialcounter_widget li a:hover,
+        .aw_tabbed_widget #tab-latest-comments a:hover
+        {
+            color: #0099cc;
+        }
+
+		a:hover { color: #b30000; }
+		input:focus, textarea:focus { border-color: #0099cc; }
+
+		#searchsubmit,
+        .highlight,
+        .aw_tabbed_widget .tabs ul.nav li.active a, footer .aw_tabbed_widget .tabs ul.nav li.active a,
+        #top .aw_tabbed_widget .tabs ul.nav li.active a,
+        .aw_tabbed_widget .tabs ul.nav li a:hover,
+        footer .aw_tabbed_widget .tabs ul.nav li a:hover,
+        #top .aw_tabbed_widget .tabs ul.nav li a:hover,
+        .aw_twitter_widget .twitter-icon, .testimonial-icon,
+        #top-closed:hover,
+        .flex-control-nav a:hover,
+        .flex-control-nav a.flex-active {
+            background-color: #0099cc;
+        }
+
+		.submit { background-color: #0099cc; border-color: #007399; }
+		.submit:hover { background-color: #b30000; border-color: #860000; }
+		#searchsubmit:hover { background-color: #b30000; }
+		.toggle.hover .toggle-icon { border-top-color: #0099cc; }
+		.toggle.hover.active .toggle-icon { border-bottom-color: #0099cc; }
+		.flex-direction-nav li .flex-prev:hover { border-right-color: #0099cc; }
+		.flex-direction-nav li .flex-next:hover { border-left-color: #0099cc; }
+		@media only screen and (min-width: 768px) and (max-width: 959px) {
+			.aw_tabbed_widget .tabs ul.nav li a:hover, .tabs ul.nav li.active a { color: #0099cc; }
+		}
+		@media screen and (max-width: 767px) {
+			.tabs ul.nav li a:hover, .tabs ul.nav li.active a { color: #0099cc; }
+		}
+	</style>
+
+	<!--[if IE 8]>
+		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<script src="http://ie7-js.googlecode.com/svn/version/2.1(beta4)/IE9.js"></script>
+    <![endif]-->
+
+	<!-- Links: RSS + Atom Syndication + Pingback etc. -->
+	<link rel="alternate" type="application/rss+xml" title="博客 &#8211; 伯乐在线 RSS Feed" href="http://blog.jobbole.com/feed/" />
+	<link rel="alternate" type="text/xml" title="RSS .92" href="http://blog.jobbole.com/feed/rss/" />
+	<link rel="alternate" type="application/atom+xml" title="Atom 0.3" href="http://blog.jobbole.com/feed/atom/" />
+	<link rel="pingback" href="http://blog.jobbole.com/xmlrpc.php" />
+
+<!-- END head -->
+</head>
+
+<!-- BEGIN body -->
+<body class="single single-post postid-87324 single-format-standard chrome">
+
+		
+	    <nav id="top-nav" class="menu-nav">
+
+        <!-- BEGIN .container -->
+        <div class="container">
+
+            <div class="grid-8 hide-on-480 hide-on-767">
+                <ul id="menu-main-menu" class="menu left">
+                    <li class="menu-item">
+                        <a href="http://www.jobbole.com">首页</a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="http://top.jobbole.com">头条</a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="http://blog.jobbole.com">博客</a>
+                    </li>
+                    <li class="menu-item">
+                        <span><a href="#">频道 <i class="fa fa-angle-double-down"></i></a></span>
+                        <ul class="sub-menu sf-js-enabled">
+                            <li class="menu-item"><a href="http://web.jobbole.com">Web前端</a></li>
+                            <li class="menu-item"><a href="http://python.jobbole.com">Python开发</a></li>
+                            <li class="menu-item"><a href="http://www.importnew.com/?utm_source=home-top-nav">Java技术</a></li>
+                            <li class="menu-item"><a href="http://android.jobbole.com">Android应用</a></li>
+                            <li class="menu-item"><a href="http://ios.jobbole.com">iOS应用</a></li>
+                        </ul>
+                    </li>
+                    <li class="menu-item">
+                        <a href="http://hao.jobbole.com">资源</a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="http://fanyi.jobbole.com">翻译</a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="http://group.jobbole.com">小组</a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="http://date.jobbole.com"><i class="fa fa-heart-o pinkiconcolor"></i> 相亲</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="grid-4">
+                <ul id="menu-main-menu" class="menu">
+
+                    <li class="menu-item hide-on-768-wider left">
+                        <span><a href="#">切换频道 <i class="fa fa-angle-double-down"></i></a></span>
+                        <ul class="sub-menu sf-js-enabled">
+                            <li class="menu-item"><a href="http://www.jobbole.com">首页</a></li>
+                            <li class="menu-item"><a href="http://top.jobbole.com">头条</a></li>
+                            <li class="menu-item"><a href="http://blog.jobbole.com">博客</a></li>
+                            <li class="menu-item"><a href="http://hao.jobbole.com">资源</a></li>
+                            <li class="menu-item"><a href="http://fanyi.jobbole.com">翻译</a></li>
+                            <li class="menu-item"><a href="http://group.jobbole.com">小组</a></li>
+                            <li class="menu-item"><a href="http://date.jobbole.com">相亲</a></li>
+                            <li class="menu-item"><a href="http://web.jobbole.com">前端</a></li>
+                            <li class="menu-item"><a href="http://python.jobbole.com">Python</a></li>
+                            <li class="menu-item"><a href="http://www.importnew.com/">Java</a></li>
+                            <li class="menu-item"><a href="http://android.jobbole.com">安卓</a></li>
+                            <li class="menu-item"><a href="http://ios.jobbole.com">iOS</a></li>
+                        </ul>
+                    </li>
+
+                                            <li class="menu-item"><a href="http://www.jobbole.com/login?redirect=http://blog.jobbole.com/87324/"><i class="fa fa-sign-in"></i> 登录</a></li>
+                        <li class="menu-item"><a href="http://www.jobbole.com/register"><i class="fa fa-user-plus"></i> 注册</a></li>
+                                        <li class="menu-item"><a href="#"><i class="fa fa-life-ring"></i> 帮助</a></li>
+                </ul>
+            </div>
+            <div class="clear"></div>
+
+        </div>
+        <!-- END .container -->
+
+    </nav>
+    <!-- END #top-nav -->
+  	
+	<!-- BEGIN #wrapper -->
+	<div id="wrapper" class="container">
+
+		<!-- BEGIN header -->
+		<header>
+		
+						
+			<div class="header-wrapper">
+								
+				<!-- BEGIN #logo -->
+				<div id="logo" class="leaderboard-true">
+                    <a href="http://blog.jobbole.com"><img src="http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/img/jobbole-logo.png" alt="博客 &#8211; 伯乐在线" /></a>
+				</div>
+				<!-- END #logo -->
+				
+				<!-- BEGIN #leaderboard -->
+				<div id="leaderboard">
+				
+					<script language=javascript> 
+var randomNumTop = Math.round(Math.random()*4);
+var imageTop=new Array(5);
+imageTop[0]="http://ww1.sinaimg.cn/mw690/bfdcef89gw1es2pv45zshj20k802iab0.jpg";
+imageTop[1]="http://ww2.sinaimg.cn/mw690/bfdcef89gw1es2pv3b8exj20k802iwfd.jpg";
+imageTop[2]="http://ww1.sinaimg.cn/mw690/bfdcef89gw1es2pv2u731j20k802igmb.jpg";
+imageTop[3]="http://ww3.sinaimg.cn/mw690/bfdcef89gw1es2pv27ligj20k802idgs.jpg";
+imageTop[4]="http://ww3.sinaimg.cn/mw690/bfdcef89gw1es2pv1k80jj20k802it9o.jpg";
+var imageUrlTop=imageTop[randomNumTop];
+var urlsTop=new Array(5);
+urlsTop[0]="http://www.imooc.com/activity/androidindex?from=jobboleblog&mc_marking=4fe27dd9db69d53bab273d1d3c6cf27e&mc_channel=jobboleblog&mc_billing=%E5%85%8D%E8%B4%B9%E8%B5%A0%E9%80%81&mc_keywords=&mc_position=&mc_business=";
+urlsTop[1]="http://www.imooc.com/activity/javaerindex?from=jobboleblog&mc_marking=5725cce24eda63001d5a6011725ade41&mc_channel=jobboleblog&mc_billing=%E5%85%8D%E8%B4%B9%E8%B5%A0%E9%80%81&mc_keywords=&mc_position=&mc_business=";
+urlsTop[2]="http://www.imooc.com/course/programdetail/pid/11?from=jobboleblog&mc_marking=f726d606d0ce56f8cebc9b87771de84d&mc_channel=jobboleblog&mc_billing=%E5%85%8D%E8%B4%B9%E8%B5%A0%E9%80%81&mc_keywords=&mc_position=&mc_business=";
+urlsTop[3]="http://www.imooc.com/activity/feerindex?from=jobboleblog&mc_marking=97abfff1b39d6e9c92281898db324d71&mc_channel=jobboleblog&mc_billing=%E5%85%8D%E8%B4%B9%E8%B5%A0%E9%80%81&mc_keywords=&mc_position=&mc_business=";
+urlsTop[4]="http://www.imooc.com/activity/planhtml5?from=jobboleblog&mc_marking=49ed987767cfb761bce2b94cb7cbd5c9&mc_channel=jobboleblog&mc_billing=%E5%85%8D%E8%B4%B9%E8%B5%A0%E9%80%81&mc_keywords=&mc_position=&mc_business=";
+var urlTop = urlsTop[randomNumTop];
+var adHTML = "<a href='"+urlTop+"' target='_blank'><img width='728' height='90'  src='"+imageUrlTop+"' border='0'></a>";
+document.write(adHTML);
+</script>				
+				</div>
+				<!-- END #leaderboard -->
+				
+				<div class="clear"></div>
+			
+			</div>
+			
+						
+			<div class="clear"></div>
+
+            			<!-- BEGIN #main-nav -->
+			<nav id="main-nav" class="grid-12 menu-nav">
+                <div class="menu-sub-menu-container"><ul id="main-nav-menu" class="menu"><li id="menu-item-33290" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-33290"><a href="http://blog.jobbole.com/">首页</a></li>
+<li id="menu-item-33406" class="menu-item menu-item-type-post_type menu-item-object-page current_page_parent menu-item-33406"><a href="http://blog.jobbole.com/all-posts/">最新文章</a></li>
+<li id="menu-item-70342" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-70342"><a href="http://blog.jobbole.com/category/online-courses/">在线课程</a></li>
+<li id="menu-item-33325" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33325"><a href="http://blog.jobbole.com/category/news/">业界</a></li>
+<li id="menu-item-33319" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33319"><a href="http://blog.jobbole.com/category/programmer/">开发</a>
+<ul class="sub-menu">
+	<li id="menu-item-81047" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-81047"><a href="http://web.jobbole.com">Web前端</a></li>
+	<li id="menu-item-81218" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-81218"><a href="http://python.jobbole.com">Python</a></li>
+	<li id="menu-item-81220" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-81220"><a href="http://android.jobbole.com">Android</a></li>
+	<li id="menu-item-81219" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-81219"><a href="http://ios.jobbole.com">iOS</a></li>
+	<li id="menu-item-53194" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-53194"><a href="http://www.importnew.com">Java</a></li>
+	<li id="menu-item-57616" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-57616"><a href="http://blog.jobbole.com/category/c-cpp/">C/C++</a></li>
+	<li id="menu-item-57003" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-57003"><a href="http://blog.jobbole.com/category/php-programmer/">PHP</a></li>
+	<li id="menu-item-55603" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55603"><a href="http://blog.jobbole.com/tag/ruby/">Ruby</a></li>
+	<li id="menu-item-70347" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-70347"><a href="http://blog.jobbole.com/tag/go/">Go</a></li>
+</ul>
+</li>
+<li id="menu-item-33313" class="menu-item menu-item-type-taxonomy menu-item-object-category current-post-ancestor current-menu-parent current-post-parent menu-item-33313"><a href="http://blog.jobbole.com/category/it-tech/">IT技术</a>
+<ul class="sub-menu">
+	<li id="menu-item-55604" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55604"><a href="http://blog.jobbole.com/tag/linux/">Linux</a></li>
+	<li id="menu-item-55607" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55607"><a href="http://blog.jobbole.com/tag/unix/">UNIX</a></li>
+	<li id="menu-item-55605" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55605"><a href="http://blog.jobbole.com/tag/mysql/">MySQL</a></li>
+	<li id="menu-item-55621" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55621"><a href="http://blog.jobbole.com/tag/nosql/">NoSQL</a></li>
+	<li id="menu-item-55622" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55622"><a href="http://blog.jobbole.com/tag/database/">数据库</a></li>
+	<li id="menu-item-55606" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55606"><a href="http://blog.jobbole.com/tag/git/">Git</a></li>
+	<li id="menu-item-55635" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55635"><a href="http://blog.jobbole.com/tag/algorithm/">算法</a></li>
+	<li id="menu-item-55612" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55612"><a href="http://blog.jobbole.com/tag/%e6%b5%8b%e8%af%95/">测试</a></li>
+	<li id="menu-item-55618" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55618"><a href="http://blog.jobbole.com/tag/%e5%ae%89%e5%85%a8/">信息安全</a></li>
+	<li id="menu-item-55636" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55636"><a href="http://blog.jobbole.com/tag/vim/">Vim</a></li>
+</ul>
+</li>
+<li id="menu-item-33323" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33323"><a href="http://blog.jobbole.com/category/design/">设计</a>
+<ul class="sub-menu">
+	<li id="menu-item-55610" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55610"><a href="http://blog.jobbole.com/tag/%e7%bd%91%e9%a1%b5%e8%ae%be%e8%ae%a1/">网页设计</a></li>
+	<li id="menu-item-55608" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55608"><a href="http://blog.jobbole.com/tag/ui/">UI设计</a></li>
+	<li id="menu-item-55609" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55609"><a href="http://blog.jobbole.com/tag/%e4%ba%a4%e4%ba%92%e8%ae%be%e8%ae%a1/">交互设计</a></li>
+	<li id="menu-item-55611" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55611"><a href="http://blog.jobbole.com/tag/%e7%94%a8%e6%88%b7%e4%bd%93%e9%aa%8c/">用户体验</a></li>
+</ul>
+</li>
+<li id="menu-item-33317" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33317"><a href="http://blog.jobbole.com/category/startup/">创业</a></li>
+<li id="menu-item-33390" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33390"><a href="http://blog.jobbole.com/category/career/">IT职场</a></li>
+<li id="menu-item-85528" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-85528"><a href="http://top.jobbole.com">投稿</a></li>
+<li id="menu-item-33388" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33388"><a href="http://blog.jobbole.com/category/other/">更多 »</a>
+<ul class="sub-menu">
+	<li id="menu-item-56110" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-56110"><a href="http://blog.jobbole.com/category/overseas/">在国外</a></li>
+	<li id="menu-item-56094" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-56094"><a href="http://blog.jobbole.com/category/interview/">访谈</a></li>
+	<li id="menu-item-56111" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-56111"><a href="http://blog.jobbole.com/tag/featuredpost/">经典回顾</a></li>
+	<li id="menu-item-33665" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33665"><a href="http://blog.jobbole.com/category/humor-comic/">趣文</a></li>
+	<li id="menu-item-33321" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33321"><a href="http://blog.jobbole.com/category/freelance/">自由职业</a></li>
+	<li id="menu-item-33408" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33408"><a href="http://blog.jobbole.com/category/resources/">工具与资源</a></li>
+	<li id="menu-item-33407" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33407"><a href="http://blog.jobbole.com/category/books/">书籍与教程</a></li>
+</ul>
+</li>
+</ul></div>				<div class="clear"></div>
+			</nav>
+			<!-- END #main-nav -->
+                        <div class="clear"></div>
+
+		</header>
+		<!-- END header -->
+		
+		<div id="breadcrumb" class="grid-12 margin-20"><div class="breadcrumb-wrapper"><!-- Breadcrumb NavXT 4.4.0 -->
+<a title="Go to 伯乐在线." href="http://www.jobbole.com" class="main-home">伯乐在线</a> &gt; <a href="http://blog.jobbole.com" class="home">首页</a> &gt; <a href="http://blog.jobbole.com/all-posts/" class="post-root post-post">所有文章</a> &gt; <a href="http://blog.jobbole.com/category/it-tech/" class="category">IT技术</a> &gt; 我的MYSQL学习心得（4） ： 数据类型</div></div><div class="clear"></div>
+
+<!-- BEGIN .grid-8 -->
+<div class="grid-8">
+
+		
+	<!-- BEGIN .post -->
+<div class="post-87324 post type-post status-publish format-standard hentry category-it-tech tag-mysql tag-database odd" id="post-87324">
+	
+	<!-- BEGIN .entry-header -->
+	<div class="entry-header">
+	
+				
+		<h1>我的MYSQL学习心得（4） ： 数据类型</h1>
+		
+							
+	</div>
+	<!-- BEGIN .entry-header -->
+	
+	<!-- BEGIN .entry-meta -->
+	<div class="entry-meta">
+	
+		<p class="entry-meta-hide-on-mobile">
+
+            2015/06/03 | 分类： <a href="http://blog.jobbole.com/category/it-tech/" title="查看 IT技术 中的全部文章" rel="category tag">IT技术</a> | 
+            
+
+ | 标签： <a href="http://blog.jobbole.com/tag/mysql/">MySQL</a>, <a href="http://blog.jobbole.com/tag/database/">数据库</a>
+
+</p>
+
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style" style="display: block; margin: 0 0px; clear: both;"><span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_tsina"></a>
+<a class="jiathis_button_weixin"></a>
+<a class="jiathis_button_qzone"></a>
+<a class="jiathis_button_fb"></a>
+<a class="jiathis_button_renren"></a>
+<a class="jiathis_button_douban"></a>
+<a class="jiathis_button_readitlater"></a>
+<a class="jiathis_button_evernote"></a>
+<a class="jiathis_button_ydnote"></a>
+<a href="http://www.jiathis.com/share?uid=1745061" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+<a class="jiathis_counter_style"></a>
+</div>
+<!-- JiaThis Button END -->
+
+
+	</div>
+	<!-- END .entry-meta -->
+
+	<!-- BEGIN .entry -->
+	<div class="entry">
+
+        <script src="http://www.imooc.com/open/courselistrandjs"></script><span style='display:block;margin-bottom:10px;'></span>
+		<div class='copyright-area'>原文出处： <a ref='nofollow' target='_blank' href='http://www.cnblogs.com/lyhabc/p/3697952.html'>桦仔的博客</a>&nbsp;&nbsp;&nbsp;欢迎分享原创到<a href='http://top.jobbole.com/?utm_source=jobboleblog-article' target='_blank'>伯乐头条</a></div><ul>
+<li><a href="http://blog.jobbole.com/87315/" target="_blank">我的MYSQL学习心得（1） ：简单语法</a></li>
+<li><a href="http://blog.jobbole.com/87318/" target="_blank">我的MYSQL学习心得（2） ：数据类型宽度</a></li>
+<li><a href="http://blog.jobbole.com/87322/" target="_blank">我的MYSQL学习心得（3） ： 查看字段长度</a></li>
+</ul>
+<p><strong>MYSQL</strong>里的BLOB数据类型</p>
+<p>BLOB是一个二进制大对象，用来存储可变数量的数据。BLOB类型分为4种：TinyBlob、Blob、MediumBlob、LongBlob，</p>
+<p>这几个类型之间的唯一区别是在存储文件的最大大小上不同。</p>
+<p>MySQL的四种BLOB类型     类型 大小(单位：字节)</p>
+<p>TinyBlob                            最大 255<br />
+Blob                                  最大 65K<br />
+MediumBlob                       最大 16M<br />
+LongBlob                           最大 4G</p>
+<p>BLOB列存储的是二进制字符串（字节字符串）；TEXT列存储的是非二进制字符串（字符字符串）。</p>
+<p>BLOB列没有字符集，并且排序和比较基于列值字节的数值；TEXT列有一个字符集，并且根据字符集对值进行排序和比较</p>
+<p>BLOB是二进制字符串，TEXT是非二进制字符串，两者均可存放大容量的信息。<strong>BLOB主要存储图片、音频信息等</strong>，</p>
+<p>而TEXT只能存储文本文件。</p>
+<hr />
+<p><strong>SQLSERVER</strong></p>
+<p>SQLSERVER并没有BLOB数据类型，只有大型对象数据类型（BLOB）：</p>
+<p>text,ntext,image,nvarchar(max),varchar(max),varbinary(max)和xml数据类型</p>
+<p>这些数据类型的数据都存放在LOB类型的数据页面里</p>
+<p><strong>如有不对的地方，欢迎大家拍砖o(∩_∩)o </strong></p>
+<p><strong>其他类型</strong></p>
+<h2>第11章：列类型</h2>
+<p><strong>目录</strong></p>
+<dl>
+<dt><a href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#column-type-overview">11.1. 列类型概述</a></dt>
+<dd>
+<dl>
+<dt><a href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#numeric-type-overview">11.1.1. 数值类型概述</a></dt>
+<dt><a href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#date-and-time-type-overview">11.1.2. 日期和时间类型概述</a></dt>
+<dt><a href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#string-type-overview">11.1.3. 字符串类型概述</a></dt>
+</dl>
+</dd>
+<dt><a href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#numeric-types">11.2. 数值类型</a></dt>
+<dt><a href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#date-and-time-types">11.3. 日期和时间类型</a></dt>
+<dd>
+<dl>
+<dt><a href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#datetime">11.3.1. DATETIME、DATE和TIMESTAMP类型</a></dt>
+<dt><a href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#time">11.3.2. TIME类型</a></dt>
+<dt><a href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#year">11.3.3. YEAR类型</a></dt>
+<dt><a href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#y2k-issues">11.3.4. Y2K事宜和日期类型</a></dt>
+</dl>
+</dd>
+<dt><a href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#string-types">11.4. String类型</a></dt>
+<dd>
+<dl>
+<dt><a href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#char">11.4.1. CHAR和VARCHAR类型</a></dt>
+<dt><a href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#binary-varbinary">11.4.2. BINARY和VARBINARY类型</a></dt>
+<dt><a href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#blob">11.4.3. BLOB和TEXT类型<code></code></a></dt>
+<dt><a href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#enum">11.4.4. ENUM类型</a></dt>
+<dt><a href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#set">11.4.5. SET类型</a></dt>
+</dl>
+</dd>
+<dt><a href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#storage-requirements">11.5. 列类型存储需求</a></dt>
+<dt><a href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#choosing-types">11.6. 选择正确的列类型</a></dt>
+<dt><a href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#other-vendor-column-types">11.7. 使用来自其他数据库引擎的列类型</a></dt>
+</dl>
+<p>MySQL支持多种列类型：数值类型、日期/时间类型和字符串(字符)类型。本章首先对这些列类型进行了概述，然后更加详细地描述了各种列的类型，以及列类型存储需求的总结。概述很简单。关于具体列类型的详细信息应查阅详细的描述，例如指定值时允许使用的格式。</p>
+<p>MySQL支持处理空间数据的扩展名。关于空间类型的信息参见<a href="http://dev.mysql.com/doc/refman/5.1/zh/spatial-extensions-in-mysql.html">第19章：</a><a title="Chapter 19. Spatial Extensions in MySQL" href="http://dev.mysql.com/doc/refman/5.1/zh/spatial-extensions-in-mysql.html"><em>MySQL中的空间扩展</em></a>。</p>
+<p>几种列类型描述使用了下述惯例：</p>
+<p>·         <em>M</em></p>
+<p>表示最大显示宽度。最大有效显示宽度是255。</p>
+<p>·         <em>D</em></p>
+<p>适用于浮点和定点类型，并表示小数点后面的位数。最大可能的值是30，但不应大于<em>M</em>-2。</p>
+<p>·         方括号(‘[’和‘]’)表示可选部分。</p>
+<h2><a name="column-type-overview"></a>11.1. 列类型概述</h2>
+<dl>
+<dt><a href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#numeric-type-overview">11.1.1. 数值类型概述</a></dt>
+<dt><a href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#date-and-time-type-overview">11.1.2. 日期和时间类型概述</a></dt>
+<dt><a href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#string-type-overview">11.1.3. 字符串类型概述</a></dt>
+</dl>
+<p><a name="id2844482"></a></p>
+<h3><a name="numeric-type-overview"></a>11.1.1. 数值类型概述</h3>
+<p>下面为数值列类型的概述。详细信息参见<a title="11.2. Numeric Types" href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#numeric-types">11.2节，“数值类型”</a>。列存储需求参见<a title="11.5. Column Type Storage Requirements" href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#storage-requirements">11.5节，“列类型存储需求”</a>。</p>
+<p><em>M</em>指示最大显示宽度。最大有效显示宽度是255。显示宽度与存储大小或类型包含的值的范围无关，相关描述见<a title="11.2. Numeric Types" href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#numeric-types">11.2节，“数值类型”</a>。</p>
+<p>如果为一个数值列指定ZEROFILL，MySQL自动为该列添加UNSIGNED属性。</p>
+<p>SERIAL是BIGINT UNSIGNED NOT NULL AUTO_INCREMENT UNIQUE的一个别名。</p>
+<p>在整数列定义中，SERIAL DEFAULT VALUE是NOT NULL AUTO_INCREMENT UNIQUE的一个别名。</p>
+<p><strong>警告：</strong>应当清楚，当使用在整数值（其中一个是UNSIGNED类型）之间使用减号时，结果是无符号。参见<a title="12.8. Cast Functions and Operators" href="http://dev.mysql.com/doc/refman/5.1/zh/functions.html#cast-functions">12.8节，“Cast函数和操作符”</a>。</p>
+<p>·         BIT[(<em>M</em>)]</p>
+<p>位字段类型。<em>M</em>表示每个值的位数，范围为从1到64。如果<em>M</em>被省略， 默认为1。</p>
+<p>·         TINYINT[(<em>M</em>)] [UNSIGNED] [ZEROFILL]</p>
+<p>很小的整数。带符号的范围是-128到127。无符号的范围是0到255。</p>
+<p>·         BOOL，BOOLEAN</p>
+<p>是TINYINT(1)的同义词。zero值被视为假。非zero值视为真。</p>
+<p>在将来，将根据标准SQL引入完全布尔类型的处理。</p>
+<p>·         SMALLINT[(<em>M</em>)] [UNSIGNED] [ZEROFILL]</p>
+<p>小的整数。带符号的范围是-32768到32767。无符号的范围是0到65535。</p>
+<p>·         MEDIUMINT[(<em>M</em>)] [UNSIGNED] [ZEROFILL]</p>
+<p>中等大小的整数。带符号的范围是-8388608到8388607。无符号的范围是0到16777215。</p>
+<p>·         INT[(<em>M</em>)] [UNSIGNED] [ZEROFILL]</p>
+<p>普通大小的整数。带符号的范围是-2147483648到2147483647。无符号的范围是0到4294967295。</p>
+<p>·         INTEGER[(<em>M</em>)] [UNSIGNED] [ZEROFILL]</p>
+<p>这是INT的同义词。</p>
+<p>·         BIGINT[(<em>M</em>)] [UNSIGNED] [ZEROFILL]</p>
+<p>大整数。带符号的范围是-9223372036854775808到9223372036854775807。无符号的范围是0到18446744073709551615。</p>
+<p>应清楚BIGINT列的下述内容：</p>
+<p>o        使用带符号的BIGINT或DOUBLE值进行所有算法，因此除了位函数，不应使用大于9223372036854775807(63位)的无符号的大整数! 如果这样做，结果中的最后几位可能出错，这是由于将BIGINT值转换为DOUBLE进行四舍五入时造成的错误。</p>
+<p>MySQL可以在以下情况下处理BIGINT：</p>
+<p>§         当使用整数在一个BIGINT列保存大的无符号的值时。</p>
+<p>§         在MIN(<em>col_name</em>)或MAX(<em>col_name</em>)中，其中<em>col_name</em>指BIGINT列。</p>
+<p>§         使用操作符(+，-，*等等)并且两个操作数均为整数时。</p>
+<p>o        总是可以使用一个字符串在BIGINT列中保存严格整数值。在这种情况下，MySQL执行字符串-数字转换，其间不存在双精度表示。</p>
+<p>o        当两个操作数均为整数值时，-、+和* 操作符使用BIGINT算法。这说明如果乘两个大整数(或来自返回整数的函数)，当结果大于9223372036854775807时，会得到意想不到的结果。</p>
+<p>·         FLOAT[(<em>M</em>,<em>D</em>)] [UNSIGNED] [ZEROFILL]</p>
+<p>小(单精度)浮点数。允许的值是-3.402823466E+38到-1.175494351E-38、0和1.175494351E-38到3.402823466E+38。这些是理论限制，基于IEEE标准。实际的范围根据硬件或操作系统的不同可能稍微小些。</p>
+<p><em>M</em>是小数纵位数，<em>D</em>是小数点后面的位数。如果<em>M</em>和<em>D</em>被省略，根据硬件允许的限制来保存值。单精度浮点数精确到大约7位小数位。</p>
+<p>如果指定UNSIGNED，不允许负值。</p>
+<p>使用浮点数可能会遇到意想不到的问题，因为在MySQL中的所有计算用双精度完成。参见<a title="A.5.7. Solving Problems with No Matching Rows" href="http://dev.mysql.com/doc/refman/5.1/zh/problems.html#no-matching-rows">A.5.7节，“解决与不匹配行有关的问题”</a>。</p>
+<p>·         DOUBLE[(<em>M</em>,<em>D</em>)] [UNSIGNED] [ZEROFILL]</p>
+<p>普通大小(双精度)浮点数。允许的值是-1.7976931348623157E+308到-2.2250738585072014E-308、0和2.2250738585072014E-308到 1.7976931348623157E+308。这些是理论限制，基于IEEE标准。实际的范围根据硬件或操作系统的不同可能稍微小些。</p>
+<p><em>M</em>是小数总位数，<em>D</em>是小数点后面的位数。如果<em>M</em>和<em>D</em>被省略，根据硬件允许的限制来保存值。双精度浮点数精确到大约15位小数位。</p>
+<p>如果指定UNSIGNED，不允许负值。</p>
+<p>·         DOUBLE PRECISION[(<em>M</em>,<em>D</em>)] [UNSIGNED] [ZEROFILL], REAL[(<em>M</em>,<em>D</em>)] [UNSIGNED] [ZEROFILL]</p>
+<p>为DOUBLE的同义词。除了：如果SQL服务器模式包括REAL_AS_FLOAT选项，REAL是FLOAT的同义词而不是DOUBLE的同义词。</p>
+<p>·         FLOAT(<em>p</em>) [UNSIGNED] [ZEROFILL]</p>
+<p>浮点数。<em>p</em>表示精度（以位数表示），但MySQL只使用该值来确定是否结果列的数据类型为FLOAT或DOUBLE。如果<em>p</em>为从0到24，数据类型变为没有<em>M</em>或<em>D</em>值的FLOAT。如果<em>p</em>为从25到53，数据类型变为没有<em>M</em>或<em>D</em>值的DOUBLE。结果列范围与本节前面描述的单精度FLOAT或双精度DOUBLE数据类型相同。</p>
+<p>FLOAT(<em>p</em>)语法与ODBC兼容。</p>
+<p>·         DECIMAL[(<em>M</em>[,<em>D</em>])] [UNSIGNED] [ZEROFILL]</p>
+<p>压缩的“严格”定点数。<em>M</em>是小数位数(精度)的总数，<em>D</em>是小数点(标度)后面的位数。小数点和(负数)的‘-’符号不包括在<em>M</em>中。如果<em>D</em>是0，则值没有小数点或分数部分。DECIMAL整数最大位数(<em>M</em>)为65。支持的十进制数的最大位数(<em>D</em>)是30。如果<em>D</em>被省略， 默认是0。如果<em>M</em>被省略， 默认是10。</p>
+<p>如果指定UNSIGNED，不允许负值。</p>
+<p>所有DECIMAL列的基本计算(+，-，*，/)用65位精度完成。</p>
+<p>·         DEC[(<em>M</em>[,<em>D</em>])] [UNSIGNED] [ZEROFILL], NUMERIC[(<em>M</em>[,<em>D</em>])] [UNSIGNED] [ZEROFILL], FIXED[(<em>M</em>[,<em>D</em>])] [UNSIGNED] [ZEROFILL]</p>
+<p>是DECIMAL的同义词。FIXED同义词适用于与其它服务器的兼容性。</p>
+<h3><a name="date-and-time-type-overview"></a>11.1.2. 日期和时间类型概述</h3>
+<p>本节综合讨论了临时列类型。详细信息，参见<a title="11.3. Date and Time Types" href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#date-and-time-types">11.3节，“日期和时间类型”</a>。列存储需求参见<a title="11.5. Column Type Storage Requirements" href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#storage-requirements">11.5节，“列类型存储需求”</a>。</p>
+<p>·         DATE</p>
+<p>日期。支持的范围为&#8217;1000-01-01&#8242;到&#8217;9999-12-31&#8242;。MySQL以&#8217;YYYY-MM-DD&#8217;格式显示DATE值，但允许使用字符串或数字为DATE列分配值。</p>
+<p>·         DATETIME</p>
+<p>日期和时间的组合。支持的范围是&#8217;1000-01-01 00:00:00&#8242;到&#8217;9999-12-31 23:59:59&#8242;。MySQL以&#8217;YYYY-MM-DD HH:MM:SS&#8217;格式显示DATETIME值，但允许使用字符串或数字为DATETIME列分配值。</p>
+<p>·         TIMESTAMP[(<em>M</em>)]</p>
+<p>时间戳。范围是&#8217;1970-01-01 00:00:00&#8242;到2037年。</p>
+<p>TIMESTAMP列用于INSERT或UPDATE操作时记录日期和时间。如果你不分配一个值，表中的第一个TIMESTAMP列自动设置为最近操作的日期和时间。也可以通过分配一个NULL值，将TIMESTAMP列设置为当前的日期和时间。</p>
+<p>TIMESTAMP值返回后显示为&#8217;YYYY-MM-DD HH:MM:SS&#8217;格式的字符串，显示宽度固定为19个字符。如果想要获得数字值，应在TIMESTAMP 列添加+0。</p>
+<p><strong>注释：</strong>MySQL 4.1以前使用的TIMESTAMP格式在MySQL 5.1中不支持；关于旧格式的信息参见<em>MySQL 4.1 参考手册</em>。</p>
+<p>·         TIME</p>
+<p>时间。范围是&#8217;-838:59:59&#8242;到&#8217;838:59:59&#8242;。MySQL以&#8217;HH:MM:SS&#8217;格式显示TIME值，但允许使用字符串或数字为TIME列分配值。</p>
+<p>·         YEAR[(2|4)]</p>
+<p>两位或四位格式的年。默认是四位格式。在四位格式中，允许的值是1901到2155和0000。在两位格式中，允许的值是70到69，表示从1970年到2069年。MySQL以YYYY 格式显示YEAR值，但允许使用字符串或数字为YEAR列分配值。</p>
+<h3><a name="string-type-overview"></a>11.1.3. 字符串类型概述</h3>
+<p>本节综合讨论了字符串列类型。详细信息参见<a title="11.4. String Types" href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#string-types">11.4节，“String类型”</a>。列存储需求参见<a title="11.5. Column Type Storage Requirements" href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#storage-requirements">11.5节，“列类型存储需求”</a>。</p>
+<p>在某些情况中，MySQL可以将一个字符串列更改为不同于CREATE TABLE或ALTER TABLE语句中所给出的类型。参见<a title="13.1.5.1. Silent Column Specification Changes" href="http://dev.mysql.com/doc/refman/5.1/zh/sql-syntax.html#silent-column-changes">13.1.5.1节，“沉寂的列规格变更”</a>。</p>
+<p>MySQL 5.1字符串数据类型包括部分在MySQL 4.1之前的版本中没有的特性：</p>
+<p>·         许多字符串数据类型的列定义可以包括指定字符集的CHARACTER SET属性，也可能包括校对规则。(CHARSET是CHARACTER SET的一个同义词）。这些属性适用于CHAR、VARCHAR、TEXT类型、ENUM和SET。例如：</p>
+<pre class="brush: sql; gutter: true">CREATE TABLE t
+(
+  c1 CHAR(20) CHARACTER SET utf8,
+  c2 CHAR(20) CHARACTER SET latin1 COLLATE  latin1_bin
+);</pre>
+<p>该表定义创建了一个名为c1的列，具有一个utf8字符集和该字符集的默认 校对规则，和一个名为c2的列以及latin1字符集和该字符集的二元 校对规则。二元校对规则对大小写不敏感。</p>
+<p>·         MySQL 5.1用字符单位解释在字符列定义中的长度规范。(以前的一些MySQL版本以字节解释长度）。</p>
+<p>·         对于CHAR、VARCHAR和TEXT类型，BINARY属性可以为列分配该列字符集的 校对规则。</p>
+<p>·         字符列的排序和比较基于分配给列的字符集。在以前的版本中，排序和比较基于服务器字符集的校对规则。对于CHAR和VARCHAR 列，你可以用BINARY属性声明列让排序和 校对规则使用当前的字符代码值而不是词汇顺序。</p>
+<p>关于MySQL 5.1中字符集的支持，参见<a href="http://dev.mysql.com/doc/refman/5.1/zh/charset.html">第10章：</a><a title="Chapter 10. Character Set Support" href="http://dev.mysql.com/doc/refman/5.1/zh/charset.html"><em>字符集支持</em></a>。</p>
+<p>·         [NATIONAL] CHAR(<em>M</em>) [BINARY| ASCII | UNICODE]</p>
+<p>固定长度字符串，当保存时在右侧填充空格以达到指定的长度。<em>M</em>表示列长度。<em>M</em>的范围是0到255个字符。</p>
+<p><strong>注释：</strong>当检索CHAR值时尾部空格被删除。</p>
+<p>如果想要将某个CHAR的长度设为大于255，执行的CREATE TABLE或ALTER TABLE语句将失败并提示错误：</p>
+<pre class="brush: sql; gutter: true">mysql&gt; CREATE TABLE c1 (col1 INT, col2 CHAR(500));
+ERROR 1074 (42000): Column length too big for column &#039;col&#039; (max = 255); use BLOB or TEXT instead
+mysql&gt; SHOW CREATE TABLE c1;
+ERROR 1146 (42S02): Table &#039;test.c1&#039; doesn&#039;t exist</pre>
+<p>CHAR是CHARACTER的简写。NATIONAL CHAR(或其等效短形式NCHAR)是标准的定义CHAR列应使用 默认字符集的SQL方法。这在MySQL中为默认值。</p>
+<p>BINARY属性是指定列字符集的二元 校对规则的简写。排序和比较基于数值字符值。</p>
+<p>列类型CHAR BYTE是CHAR BINARY的一个别名。这是为了保证兼容性。</p>
+<p>可以为CHAR指定ASCII属性。它分配latin1字符集。</p>
+<p>可以为CHAR指定UNICODE属性。它分配ucs2字符集。</p>
+<p>MySQL允许创建类型CHAR(0)的列。这主要用于必须有一个列但实际上不使用值的旧版本的应用程序相兼容。当你需要只能取两个值的列时也很好：没有定义为NOT NULL的一个CHAR(0)列只占用一位，只可以取值NULL和&#8221;(空字符串)。</p>
+<p>·         CHAR</p>
+<p>这是CHAR(1)的同义词。</p>
+<p>·         [NATIONAL] VARCHAR(<em>M</em>) [BINARY]</p>
+<p>变长字符串。<em>M</em> 表示最大列长度。<em>M</em>的范围是0到65,535。(VARCHAR的最大实际长度由最长的行的大小和使用的字符集确定。最大<em>有效</em>长度是65,532字节）。</p>
+<p><strong>注释：</strong>MySQL 5.1遵从标准SQL规范，并且不删除VARCHAR值的尾部空格。</p>
+<p>VARCHAR是字符VARYING的简写。</p>
+<p>BINARY属性是指定列的字符集的二元 校对规则的简写。排序和比较基于数值字符值。</p>
+<p>VARCHAR保存时用一个字节或两个字节长的前缀+数据。如果VARCHAR列声明的长度大于255，长度前缀是两个字节。</p>
+<p>·         BINARY(<em>M</em>)</p>
+<p>BINARY类型类似于CHAR类型，但保存二进制字节字符串而不是非二进制字符串。</p>
+<p>·         VARBINARY(<em>M</em>)</p>
+<p>VARBINARY类型类似于VARCHAR类型，但保存二进制字节字符串而不是非二进制字符串。</p>
+<p>·         TINYBLOB</p>
+<p>最大长度为255(2<sup>8</sup>–1)字节的BLOB列。</p>
+<p>·         TINYTEXT</p>
+<p>最大长度为255(2<sup>8</sup>–1)字符的TEXT列。</p>
+<p>·         BLOB[(<em>M</em>)]</p>
+<p>最大长度为65,535(2<sup>16</sup>–1)字节的BLOB列。</p>
+<p>可以给出该类型的可选长度<em>M</em>。如果给出，则MySQL将列创建为最小的但足以容纳<em>M</em>字节长的值的BLOB类型。</p>
+<p>·         TEXT[(<em>M</em>)]</p>
+<p>最大长度为65,535(2<sup>16</sup>–1)字符的TEXT列。</p>
+<p>可以给出可选长度<em>M</em>。则MySQL将列创建为最小的但足以容纳<em>M</em>字符长的值的TEXT类型。</p>
+<p>·         MEDIUMBLOB</p>
+<p>最大长度为16,777,215(2<sup>24</sup>–1)字节的BLOB列。</p>
+<p>·         MEDIUMTEXT</p>
+<p>最大长度为16,777,215(2<sup>24</sup>–1)字符的TEXT列。</p>
+<p>·         LONGBLOB</p>
+<p>最大长度为4,294,967,295或4GB(2<sup>32</sup>–1)字节的BLOB列。LONGBLOB列的最大<em>有效</em>(允许的)长度取决于客户端/服务器协议中配置最大包大小和可用的内存。</p>
+<p>·         LONGTEXT</p>
+<p>最大长度为4,294,967,295或4GB(2<sup>32</sup>–1)字符的TEXT列。LONGTEXT列的最大<em>有效</em>(允许的)长度取决于客户端/服务器协议中配置最大包大小和可用的内存。</p>
+<p>·         ENUM(&#8216;<em>value1</em>&#8216;,&#8217;<em>value2</em>&#8216;,&#8230;)</p>
+<p>枚举类型。只能有一个值的字符串，从值列&#8217;<em>value1</em>&#8216;，&#8217;<em>value2</em>&#8216;，&#8230;，NULL中或特殊 &#8221;错误值中选出。ENUM列最多可以有65,535个截然不同的值。ENUM值在内部用整数表示。</p>
+<p>·         SET(&#8216;<em>value1</em>&#8216;,&#8217;<em>value2</em>&#8216;,&#8230;)</p>
+<p>一个设置。字符串对象可以有零个或多个值，每个值必须来自列值&#8217;<em>value1</em>&#8216;，&#8217;<em>value2</em>&#8216;，&#8230;SET列最多可以有64个成员。SET值在内部用整数表示。</p>
+<h2><a name="numeric-types"></a>11.2. 数值类型</h2>
+<p>MySQL支持所有标准SQL数值数据类型。这些类型包括严格数值数据类型(INTEGER、SMALLINT、DECIMAL和NUMERIC)，以及近似数值数据类型(FLOAT、REAL和DOUBLE PRECISION)。关键字INT是INTEGER的同义词，关键字DEC是DECIMAL的同义词。</p>
+<p>BIT数据类型保存位字段值，并且支持MyISAM、MEMORY、InnoDB和BDB表。</p>
+<p>作为SQL标准的扩展，MySQL也支持整数类型TINYINT、MEDIUMINT和BIGINT。下面的表显示了需要的每个整数类型的存储和范围。</p>
+<table id="table1" border="1" cellpadding="0">
+<tbody>
+<tr>
+<td><strong>类型</strong></td>
+<td><strong>字节</strong></td>
+<td><strong>最小值</strong></td>
+<td><strong>最大值</strong></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td><strong>(带符号的/无符号的)</strong></td>
+<td><strong>(带符号的/无符号的)</strong></td>
+</tr>
+<tr>
+<td>TINYINT</td>
+<td>1</td>
+<td>-128</td>
+<td>127</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>0</td>
+<td>255</td>
+</tr>
+<tr>
+<td>SMALLINT</td>
+<td>2</td>
+<td>-32768</td>
+<td>32767</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>0</td>
+<td>65535</td>
+</tr>
+<tr>
+<td>MEDIUMINT</td>
+<td>3</td>
+<td>-8388608</td>
+<td>8388607</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>0</td>
+<td>16777215</td>
+</tr>
+<tr>
+<td>INT</td>
+<td>4</td>
+<td>-2147483648</td>
+<td>2147483647</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>0</td>
+<td>4294967295</td>
+</tr>
+<tr>
+<td>BIGINT</td>
+<td>8</td>
+<td>-9223372036854775808</td>
+<td>9223372036854775807</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>0</td>
+<td>18446744073709551615</td>
+</tr>
+</tbody>
+</table>
+<p>MySQL还支持选择在该类型关键字后面的括号内指定整数值的显示宽度(例如，INT(4))。该可选显示宽度规定用于显示宽度小于指定的列宽度的值时从左侧填满宽度。</p>
+<p>显示宽度并不限制可以在列内保存的值的范围，也不限制超过列的指定宽度的值的显示。</p>
+<p>当结合可选扩展属性ZEROFILL使用时， 默认补充的空格用零代替。例如，对于声明为INT(5) ZEROFILL的列，值4检索为00004。请注意如果在整数列保存超过显示宽度的一个值，当MySQL为复杂联接生成临时表时会遇到问题，因为在这些情况下MySQL相信数据适合原列宽度。</p>
+<p>所有整数类型可以有一个可选(非标准)属性UNSIGNED。当你想要在列内只允许非负数和该列需要较大的上限数值范围时可以使用无符号值。</p>
+<p>浮点和定点类型也可以为UNSIGNED。同数类型，该属性防止负值保存到列中。然而，与整数类型不同的是，列值的上范围保持不变。</p>
+<p>如果为一个数值列指定ZEROFILL，MySQL自动为该列添加UNSIGNED属性。</p>
+<p>对于浮点列类型，在MySQL中单精度值使用4个字节，双精度值使用8个字节。</p>
+<p>FLOAT类型用于表示近似数值数据类型。SQL标准允许在关键字FLOAT后面的括号内选择用位指定精度(但不能为指数范围)。MySQL还支持可选的只用于确定存储大小的精度规定。0到23的精度对应FLOAT列的4字节单精度。24到53的精度对应DOUBLE列的8字节双精度。</p>
+<p>MySQL允许使用非标准语法：FLOAT(<em>M</em>,<em>D</em>)或REAL(<em>M</em>,<em>D</em>)或DOUBLE PRECISION(<em>M</em>,<em>D</em>)。这里，“(<em>M</em>,<em>D</em>)”表示该值一共显示<em>M</em>位整数，其中<em>D</em>位位于小数点后面。例如，定义为FLOAT(7,4)的一个列可以显示为-999.9999。MySQL保存值时进行四舍五入，因此如果在FLOAT(7,4)列内插入999.00009，近似结果是999.0001。</p>
+<p>MySQL将DOUBLE视为DOUBLE PRECISION(非标准扩展)的同义词。MySQL还将REAL视为DOUBLE PRECISION(非标准扩展)的同义词，除非SQL服务器模式包括REAL_AS_FLOAT选项。</p>
+<p>为了保证最大可能的可移植性，需要使用近似数值数据值存储的代码应使用FLOAT或DOUBLE PRECISION，不规定精度或位数。</p>
+<p>DECIMAL和NUMERIC类型在MySQL中视为相同的类型。它们用于保存必须为确切精度的值，例如货币数据。当声明该类型的列时，可以(并且通常要)指定精度和标度；例如：</p>
+<pre class="brush: sql; gutter: true">salary DECIMAL(5,2)</pre>
+<p>在该例子中，5是精度，2是标度。精度表示保存值的主要位数，标度表示小数点后面可以保存的位数。</p>
+<p>在MySQL 5.1中以二进制格式保存DECIMAL和NUMERIC值。</p>
+<p>标准SQL要求salary列能够用5位整数位和两位小数保存任何值。因此，在这种情况下可以保存在salary列的值的范围是从-999.99到999.99。</p>
+<p>在标准SQL中，语法DECIMAL(<em>M</em>)等价于DECIMAL(<em>M</em>,0)。同样，语法DECIMAL等价于DECIMAL(<em>M</em>,0)，可以通过计算确定<em>M</em>的值。在MySQL 5.1中支持DECIMAL和NUMERIC数据类型的变量形式。<em>M</em>默认值是10。</p>
+<p>DECIMAL或NUMERIC的最大位数是65，但具体的DECIMAL或NUMERIC列的实际范围受具体列的精度或标度约束。如果此类列分配的值小数点后面的位数超过指定的标度允许的范围，值被转换为该标度。(具体操作与操作系统有关，但一般结果均被截取到允许的位数）。</p>
+<p>BIT数据类型可用来保存位字段值。BIT(<em>M</em>)类型允许存储<em>M</em>位值。<em>M</em>范围为1到64。</p>
+<p>要指定位值，可以使用b&#8217;<em>value</em>&#8216;符。<em>value</em>是一个用0和1编写的二进制值。例如，b&#8217;111&#8242;和b&#8217;100000000&#8242;分别表示7和128。参见<a title="9.1.5. Bit-Field Values" href="http://dev.mysql.com/doc/refman/5.1/zh/language-structure.html#bit-field-values">9.1.5节，“位字段值”</a>。</p>
+<p>如果为BIT(M)列分配的值的长度小于<em>M</em>位，在值的左边用0填充。例如，为BIT(6)列分配一个值b&#8217;101&#8242;，其效果与分配b&#8217;000101&#8242;相同。</p>
+<p>当要在一个数值列内保存一个超出该列允许范围的值时，MySQL的操作取决于此时有效的SQL模式。如果模式未设置，MySQL将值裁剪到范围的相应端点，并保存裁减好的值。但是，如果模式设置为traditional(“严格模式”)，超出范围的值将被拒绝并提示错误，并且根据SQL标准插入会失败。参见<a title="5.3.2. The Server SQL Mode" href="http://dev.mysql.com/doc/refman/5.1/zh/database-administration.html#server-sql-mode">5.3.2节，“SQL服务器模式”</a>。</p>
+<p>如果INT列是UNSIGNED，列范围的大小相同，但其端点会变为到0和4294967295。如果你试图保存-9999999999和9999999999，以非严格模式保存到列中的值是0和4294967296。</p>
+<p>如果在浮点或定点列中分配的值超过指定(或默认)精度和标度规定的范围，MySQL以非严格模式保存表示范围相应端点的值。</p>
+<p>当MySQL没有工作在严格模式时，对于ALTER TABLE、LOAD DATA INFILE、UPDATE和多行INSERT语句，由于裁剪发生的转换将报告为警告。当MySQL工作在严格模式时，这些语句将失败，并且部分或全部值不会插入或更改，取决于是否表为事务表和其它因素。详情参见<a title="5.3.2. The Server SQL Mode" href="http://dev.mysql.com/doc/refman/5.1/zh/database-administration.html#server-sql-mode">5.3.2节，“SQL服务器模式”</a>。</p>
+<h2><a name="date-and-time-types"></a>11.3. 日期和时间类型</h2>
+<dl>
+<dt><a href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#datetime">11.3.1. DATETIME、DATE和TIMESTAMP类型</a></dt>
+<dt><a href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#time">11.3.2. TIME类型</a></dt>
+<dt><a href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#year">11.3.3. YEAR类型</a></dt>
+<dt><a href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#y2k-issues">11.3.4. Y2K事宜和日期类型</a></dt>
+</dl>
+<p><a name="id2849193"></a><a name="id2849203"></a>表示时间值的DATE和时间类型为DATETIME、DATE、TIMESTAMP、TIME和YEAR。每个时间类型有一个有效值范围和一个“零”值，当指定不合法的MySQL不能表示的值时使用“零”值。TIMESTAMP类型有专有的自动更新特性，将在后面描述。</p>
+<p>如果试图插入一个不合法的日期，MySQL将给出警告或错误。可以使用ALLOW_INVALID_DATES SQL模式让MySQL接受某些日期，例如&#8217;1999-11-31&#8242;。当你想要保存一个“可能错误的”用户已经在数据库中指定(例如，以web形式)用于将来处理的值时很有用。在这种模式下，MySQL只验证月范围为从0到12，日范围为从0到31。这些范围可以包括零，因为MySQL允许在DATE或DATETIME列保存日/月和日是零的日期。这在应用程序需要保存一个你不知道确切日期的生日时非常有用。在这种情况下，只需要将日期保存为&#8217;1999-00-00&#8242;或&#8217;1999-01-00&#8242;。如果保存此类日期，DATE_SUB()或DATE_ADD等需要完整日期的函数不会得到正确的结果。(如果你不想在日期中出现零，可以使用NO_ZERO_IN_DATE SQL模式)。</p>
+<p>MySQL还允许将&#8217;0000-00-00&#8242;保存为“伪日期”(如果不使用NO_ZERO_DATE SQL模式)。这在某些情况下比使用NULL值更方便(并且数据和索引占用的空间更小)。</p>
+<p>将sql_mode系统变量设置为相应模式值，可以更确切你想让MySQL支持哪种日期。参见<a title="5.3.2. The Server SQL Mode" href="http://dev.mysql.com/doc/refman/5.1/zh/database-administration.html#server-sql-mode">5.3.2节，“SQL服务器模式”</a>。</p>
+<p>当使用日期和时间类型时应记住以下几点：</p>
+<p>·         MySQL以标准输出格式检索给定日期或时间类型的值，但它尽力解释你指定的各种输入值格式(例如，当你指定一个分配给或与日期或时间类型进行比较的值时)。只支持下面章节中描述的格式。期望你能提供有效值。如果你使用其它格式的值会发生意想不到的结果。</p>
+<p>·         包含两位年值的日期会令人模糊，因为世纪不知道。MySQL使用以下规则解释两位年值：</p>
+<p>o        70-99范围的年值转换为1970-1999。</p>
+<p>o        00-69范围的年值转换为2000-2069。</p>
+<p>·         尽管MySQL尝试解释几种格式的值，日期总是以年-月-日顺序(例如，&#8217;98-09-04&#8242;)，而不是其它地方常用的月-日-年或日-月-年顺序(例如，&#8217;09-04-98&#8242;，&#8217;04-09-98&#8242;)。</p>
+<p>·         如果值用于数值上下文中，MySQL自动将日期或时间类型的值转换为数字，反之亦然。</p>
+<p>·         当 MySQL遇到一个日期或时间类型的超出范围或对于该类型不合法的值时(如本节开始所描述)，它将该值转换为该类的“零”值。一个例外是超出范围的TIME值被裁剪到TIME范围的相应端点。</p>
+<p>下面的表显示了各类“零”值的格式。请注意如果启用NO_ZERO_DATE SQL模式，使用这些值会产生警告。</p>
+<table id="table2" border="1" cellpadding="0">
+<tbody>
+<tr>
+<td><strong>列类型</strong></td>
+<td><strong>“</strong><strong>零</strong><strong>”值</strong></td>
+</tr>
+<tr>
+<td>DATETIME</td>
+<td>&#8217;0000-00-00 00:00:00&#8242;</td>
+</tr>
+<tr>
+<td>DATE</td>
+<td>&#8217;0000-00-00&#8242;</td>
+</tr>
+<tr>
+<td>TIMESTAMP</td>
+<td>00000000000000</td>
+</tr>
+<tr>
+<td>TIME</td>
+<td>&#8217;00:00:00&#8242;</td>
+</tr>
+<tr>
+<td>YEAR</td>
+<td>0000</td>
+</tr>
+</tbody>
+</table>
+<p>·         “零”值是特殊值，但你可以使用表内显示的值显式保存或引用它们。你也可以使用值&#8217;0&#8242;或0来保存或引用，写起来更容易。</p>
+<p>·         MyODBC中使用的“零”日期或时间值在MyODBC 2.50.12和以上版本中被自动转换为NULL，因为ODBC不能处理此类值。</p>
+<h3><a name="datetime"></a>11.3.1. DATETIME、DATE和TIMESTAMP类型</h3>
+<dl>
+<dt><a href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#timestamp-4-1">11.3.1.1. 自MySQL 4.1以来的TIMESTAMP属性</a></dt>
+</dl>
+<p><a name="id2849637"></a><a name="id2849646"></a><a name="id2849655"></a><a name="id2849664"></a><a name="id2849677"></a><a name="id2849689"></a>DATETIME、DATE和TIMESTAMP类型是相关的。该节描述了它们的特征，它们的相似点和不同点。</p>
+<p>当你需要同时包含日期和时间信息的值时则使用DATETIME类型。MySQL以&#8217;YYYY-MM-DD HH:MM:SS&#8217;格式检索和显示DATETIME值。支持的范围为&#8217;1000-01-01 00:00:00&#8242;到&#8217;9999-12-31 23:59:59&#8242;。(“支持”表示尽管先前的值可能工作，但没有保证)。</p>
+<p>当你只需要日期值而不需要时间部分时应使用DATE类型。MySQL用&#8217;YYYY-MM-DD&#8217;格式检索和显示DATE值。支持的范围是&#8217;1000-01-01&#8242;到 &#8217;9999-12-31&#8242;。</p>
+<p>TIMESTAMP列类型的属性不固定，取决于MySQL版本和服务器运行的SQL模式。这些属性将在本节后面描述。</p>
+<p>可以使用任何常见格式指定DATETIME、DATE和TIMESTAMP值：</p>
+<p>·         &#8217;YYYY-MM-DD HH:MM:SS&#8217;或&#8217;YY-MM-DD HH:MM:SS&#8217;格式的字符串。允许“不严格”语法：任何标点符都可以用做日期部分或时间部分之间的间割符。例如，&#8217;98-12-31 11:30:45&#8242;、&#8217;98.12.31 11+30+45&#8242;、&#8217;98/12/31 11*30*45&#8242;和&#8217;98@12@31 11^30^45&#8242;是等价的。</p>
+<p>·         &#8217;YYYY-MM-DD&#8217;或&#8217;YY-MM-DD&#8217;格式的字符串。这里也允许使用“不严格的”语法。例如，&#8217;98-12-31&#8242;、&#8217;98.12.31&#8242;、&#8217;98/12/31&#8242;和&#8217;98@12@31&#8242;是等价的。</p>
+<p>·         &#8217;YYYYMMDDHHMMSS&#8217;或&#8217;YYMMDDHHMMSS&#8217;格式的没有间割符的字符串，假定字符串对于日期类型是有意义的。例如，&#8217;19970523091528&#8242;和&#8217;970523091528&#8242;被解释为&#8217;1997-05-23 09:15:28&#8242;，但&#8217;971122129015&#8242;是不合法的(它有一个没有意义的分钟部分)，将变为&#8217;0000-00-00 00:00:00&#8242;。</p>
+<p>·         &#8217;YYYYMMDD&#8217;或&#8217;YYMMDD&#8217;格式的没有间割符的字符串，假定字符串对于日期类型是有意义的。例如，&#8217;19970523&#8242;和&#8217;970523&#8242;被解释为 &#8217;1997-05-23&#8242;，但&#8217;971332&#8242;是不合法的(它有一个没有意义的月和日部分)，将变为&#8217;0000-00-00&#8242;。</p>
+<p>·         YYYYMMDDHHMMSS或YYMMDDHHMMSS格式的数字，假定数字对于日期类型是有意义的。例如，19830905132800和830905132800被解释为 &#8217;1983-09-05 13:28:00&#8242;。</p>
+<p>·         YYYYMMDD或YYMMDD格式的数字，假定数字对于日期类型是有意义的。例如，19830905和830905被解释为&#8217;1983-09-05&#8242;。</p>
+<p>·         函数返回的结果，其值适合DATETIME、DATE或者TIMESTAMP上下文，例如NOW()或CURRENT_DATE。</p>
+<p>无效DATETIME、DATE或者TIMESTAMP值被转换为相应类型的“零”值(&#8217;0000-00-00 00:00:00&#8242;、&#8217;0000-00-00&#8242;或者00000000000000)。</p>
+<p>对于包括日期部分间割符的字符串值，如果日和月的值小于10，不需要指定两位数。&#8217;1979-6-9&#8242;与&#8217;1979-06-09&#8242;是相同的。同样，对于包括时间部分间割符的字符串值，如果时、分和秒的值小于10，不需要指定两位数。&#8217;1979-10-30 1:2:3&#8242;与&#8217;1979-10-30 01:02:03&#8242;相同。</p>
+<p>数字值应为6、8、12或者14位长。如果一个数值是8或14位长，则假定为YYYYMMDD或YYYYMMDDHHMMSS格式，前4位数表示年。如果数字 是6或12位长，则假定为YYMMDD或YYMMDDHHMMSS格式，前2位数表示年。其它数字被解释为仿佛用零填充到了最近的长度。</p>
+<p>指定为非限定符字符串的值使用给定的长度进行解释。如果字符串为8或14字符长，前4位数表示年。否则，前2位数表示年。从左向右解释字符串内出现的各部分，以发现年、月、日、小时、分和秒值。这说明不应使用少于6字符的字符串。例如，如果你指定&#8217;9903&#8242;，认为它表示1999年3月，MySQL将在你的表内插入一个“零”日期值。这是因为年和月值是99和03，但日部分完全丢失，因此该值不是一个合法的日期。但是，可以明显指定一个零值来代表缺少的月或日部分。例如，可以使用&#8217;990300&#8242;来插入值&#8217;1999-03-00&#8242;。</p>
+<p>在一定程度上，可以将一个日期类型的值分配给一个不同的日期类型。但是，值可能会更改或丢失一些信息：</p>
+<p>·         如果你为一个DATETIME或TIMESTAMP对象分配一个DATE值，结果值的时间部分被设置为&#8217;00:00:00&#8242;，因为DATE值未包含时间信息。</p>
+<p>·         如果你为一个DATE对象分配一个DATETIME或TIMESTAMP值，结果值的时间部分被删除，因为DATE值未包含时间信息。</p>
+<p>·         记住尽管可以使用相同的格式指定DATETIME、DATE和TIMESTAMP值，不同类型的值的范围却不同。例如，TIMESTAMP值不能早于1970或晚于2037。这说明一个日期，例如&#8217;1968-01-01&#8242;，虽然对于DATETIME或DATE值是有效的，但对于TIMESTAMP值却无效，如果分配给这样一个对象将被转换为0。</p>
+<p>当指定日期值时请注意某些缺陷：</p>
+<p>·         指定为字符串的值允许的非严格格式可能会欺骗。例如，值&#8217;10:11:12&#8242;由于‘:’间割符看上去可能象时间值，但如果用于日期上下文值则被解释为年&#8217;2010-11-12&#8242;。值&#8217;10:45:15&#8242;被转换为&#8217;0000-00-00&#8242;因为&#8217;45&#8242;不是合法月。</p>
+<p>·         在非严格模式，MySQL服务器只对日期的合法性进行基本检查：年、月和日的范围分别是1000到9999、00到12和00到31。任何包含超出这些范围的部分的日期被转换成&#8217;0000-00-00&#8242;。请注意仍然允许你保存非法日期，例如&#8217;2002-04-31&#8242;。要想确保不使用严格模式时日期有效，应检查应用程序。</p>
+<p>在严格模式，非法日期不被接受，并且不转换。</p>
+<p>详细信息参见<a title="5.3.2. The Server SQL Mode" href="http://dev.mysql.com/doc/refman/5.1/zh/database-administration.html#server-sql-mode">5.3.2节，“SQL服务器模式”</a>。</p>
+<p>·         包含两位年值的日期会令人模糊，因为世纪不知道。MySQL使用以下规则解释两位年值：</p>
+<p>o        00-69范围的年值转换为2000-2069。</p>
+<p>o        70-99范围的年值转换为1970-1999。</p>
+<h4><a name="timestamp-4-1"></a>11.3.1.1. 自MySQL 4.1以来的TIMESTAMP属性</h4>
+<p><strong>注释：在</strong>旧版本的MySQL中(4.1之前)，TIMESTAMP列类型的属性在许多方面于本节所描述的大大不同。如果你需要对旧的TIMESTAMP数据进行转化以便在MySQL 5.1中工作，详情请参见<em>MySQL 4.1 参考手册</em>。</p>
+<p>TIMESTAMP列的显示格式与DATETIME列相同。换句话说，显示宽度固定在19字符，并且格式为YYYY-MM-DD HH:MM:SS。</p>
+<p>MySQL服务器也可以以MAXDB模式运行。当服务器以该模式运行时，TIMESTAMP与DATETIME相等。也就是说，如果创建表时服务器以MAXDB模式运行，TIMESTAMP列创建为DATETIME列。结果是，该列使用DATETIME显示格式，有相同的值范围，并且没有自动对当前的日期和时间进行初始化或更新。</p>
+<p>要想启用MAXDB模式，在启动服务器时使用&#8211;sql-mode=MAXDB服务器选项或在运行时通过设置全局sql_mode变量将SQL服务器模式设置为MAXDB：</p>
+<pre class="brush: sql; gutter: true">mysql&amp;gt; &lt;strong&gt;SET GLOBAL sql_mode=MAXDB；&lt;/strong&gt;</pre>
+<p>客户端可以按照下面方法让服务器为它的连接以MAXDB模式运行：</p>
+<pre class="brush: sql; gutter: true">mysql&amp;gt; &lt;strong&gt;SET SESSION sql_mode=MAXDB;&lt;/strong&gt;</pre>
+<p>MySQL不接受在日或月列包括一个零或包含非法日期值的时间戳值。该规则的唯一例外是特殊值&#8217;0000-00-00 00:00:00&#8242;。</p>
+<p>你可以非常灵便地确定什么时候初始化和更新TIMESTAMP和对哪些列进行初始化和更新：</p>
+<p>·         你可以将当前的时间戳指定为默认值和自动更新的值。但只能选择一个，或者两者都不选。(不可能一个列选择一个行为而另一个列选择另一个行为）。</p>
+<p>·         你可以指定哪个TIMESTAMP列自动初始化或更新为当前的日期和时间。不再需要为第1个TIMESTAMP列。</p>
+<p>请注意下面讨论所信息只适用于创建时未启用MAXDB模式的表的TIMESTAMP列。(如上所述，MAXDB模式使列创建为DATETIME列）。控制TIMESTAMP列的初始化和更新的规则如下所示：</p>
+<p>·         如果一个表内的第1个TIMESTAMP列指定为一个DEFAULT值，则不能忽略。 默认值可以为CURRENT_TIMESTAMP或常量日期和时间值。</p>
+<p>·         DEFAULT NULL与第1个<em>TIMESTAMP</em> 列的DEFAULT CURRENT_TIMESTAMP相同。对于其它TIMESTAMP列，DEFAULT NULL被视为DEFAULT 0。</p>
+<p>·         表内的任何一个TIMESTAMP列可以设置为自动初始化为当前时间戳和/或更新。</p>
+<p>·         在CREATE TABLE语句中，可以用下面的任何一种方式声明第1个TIMESTAMP列：</p>
+<p>o        用DEFAULT CURRENT_TIMESTAMP和ON UPDATE CURRENT_TIMESTAMP子句，列为默认值使用当前的时间戳，并且自动更新。</p>
+<p>o        不使用DEFAULT或ON UPDATE子句，与DEFAULT CURRENT_TIMESTAMP ON UPDATECURRENT_TIMESTAMP相同。</p>
+<p>o        用DEFAULT CURRENT_TIMESTAMP子句不用ON UPDATE子句，列为默认值使用当前的时间戳但是不自动更新。</p>
+<p>o        不用DEFAULT子句但用ON UPDATE CURRENT_TIMESTAMP子句，列有默认值0并自动更新。</p>
+<p>o        用常量DEFAULT值，列有给出的 默认值。如果列有一个ON UPDATE CURRENT_TIMESTAMP子句，它自动更新，否则不。</p>
+<p>换句话说，你可以为初始值和自动更新的值使用当前的时间戳，或者其中一个使用，或者两个皆不使用。(例如，你可以指定ON UPDATE来启用自动更新而不让列自动初始化）。</p>
+<p>·         在DEFAULT和ON UPDATE子句中可以使用CURRENT_TIMESTAMP、CURRENT_TIMESTAMP()或者NOW()。它们均具有相同的效果。</p>
+<p>两个属性的顺序并不重要。如果一个TIMESTAMP列同时指定了DEFAULT和ON UPDATE，任何一个可以在另一个的前面。</p>
+<p>例子，下面这些语句是等效的：</p>
+<pre class="brush: sql; gutter: true">CREATE TABLE t (ts TIMESTAMP);
+CREATE TABLE t (ts TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP);
+CREATE TABLE t (ts TIMESTAMP ON UPDATE CURRENT_TIMESTAMP DEFAULT CURRENT_TIMESTAMP);</pre>
+<p>·         要为TIMESTAMP列而不是第1列指定自动默认或更新，必须通过将第1个TIMESTAMP列显式分配一个常量DEFAULT值来禁用自动初始化和更新。(例如，DEFAULT 0或DEFAULT&#8217;2003-01-01 00:00:00&#8242;)。然后，对于其它TIMESTAMP列，规则与第1个TIMESTAMP列相同，例外情况是不能忽略DEFAULT和ON UPDATE子句。如果这样做，则不会自动进行初始化或更新。</p>
+<p>例如：下面这些语句是等效的：</p>
+<pre class="brush: sql; gutter: true">CREATE TABLE t (
+    ts1 TIMESTAMP DEFAULT 0,
+    ts2 TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                  ON UPDATE CURRENT_TIMESTAMP);</pre>
+<pre class="brush: sql; gutter: true">CREATE TABLE t (
+    ts1 TIMESTAMP DEFAULT 0,
+    ts2 TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+                  DEFAULT CURRENT_TIMESTAMP);</pre>
+<p>可以对每个连接设置当前的时区，相关描述参见<a title="5.10.8. MySQL Server Time Zone Support" href="http://dev.mysql.com/doc/refman/5.1/zh/database-administration.html#time-zone-support">5.10.8节，“MySQL服务器时区支持”</a>。TIMESTAMP值以UTC格式保存，存储时对当前的时区进行转换，检索时再转换回当前的时区。只要时区设定值为常量，便可以得到保存时的值。如果保存一个TIMESTAMP值，应更改时区然后检索该值，它与你保存的值不同。这是因为在两个方向的转换中没有使用相同的时区。当前的时区可以用作time_zone系统变量的值。</p>
+<p>可以在TIMESTAMP列的定义中包括NULL属性以允许列包含NULL值。例如：</p>
+<pre class="brush: sql; gutter: true">CREATE TABLE t
+(
+  ts1 TIMESTAMP NULL DEFAULT NULL,
+  ts2 TIMESTAMP NULL DEFAULT 0,
+  ts3 TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP
+);</pre>
+<p>如果未指定NULL属性，将列设置为NULL设置则会将它设置为当前的时间戳。请注意允许NULL值的TIMESTAMP列不会采用当前的时间戳，除非要么其 默认值定义为CURRENT_TIMESTAMP，或者NOW()或CURRENT_TIMESTAMP被插入到该列内。换句话说，只有使用如下定义创建，定义为 NULL的TIMESTAMP列才会自动更新：</p>
+<pre class="brush: sql; gutter: true">CREATE TABLE t (ts NULLDEFAULT CURRENT_TIMESTAMP)；</pre>
+<p>否则-也就是说，如果使用NULL而不是DEFAULT TIMESTAMP来定义TIMESTAMP列，如下所示&#8230;</p>
+<pre class="brush: sql; gutter: true">CREATE TABLE t1 (ts NULL DEFAULT NULL);
+CREATE TABLE t2 (ts NULL DEFAULT &#039;0000-00-00 00:00:00&#039;);</pre>
+<p>&#8230;则必须显式插入一个对应当前日期和时间的值。例如：</p>
+<pre class="brush: sql; gutter: true">INSERT INTO t1 VALUES (NOW());
+INSERT INTO t2 VALUES (CURRENT_TIMESTAMP);</pre>
+<h3><a name="time"></a>11.3.2. TIME类型</h3>
+<p><a name="id2851158"></a><a name="id2851167"></a></p>
+<p>MySQL以&#8217;HH:MM:SS&#8217;格式检索和显示TIME值(或对于大的小时值采用&#8217;HHH:MM:SS&#8217;格式)。TIME值的范围可以从&#8217;-838:59:59&#8242;到&#8217;838:59:59&#8242;。小时部分会因此大的原因是TIME类型不仅可以用于表示一天的时间(必须小于24小时)，还可能为某个事件过去的时间或两个事件之间的时间间隔(可以大于24小时，或者甚至为负)。</p>
+<p>你可以用各种格式指定TIME值：</p>
+<p>·         &#8217;D HH:MM:SS.fraction&#8217;格式的字符串。还可以使用下面任何一种“非严格”语法：&#8217;HH:MM:SS.fraction&#8217;、&#8217;HH:MM:SS&#8217;、&#8217;HH:MM&#8217;、&#8217;D HH:MM:SS&#8217;、&#8217;D HH:MM&#8217;、&#8217;D HH&#8217;或&#8217;SS&#8217;。这里D表示日，可以取0到34之间的值。请注意MySQL还不保存分数。</p>
+<p>·         &#8217;HHMMSS&#8217;格式的没有间割符的字符串，假定是有意义的时间。例如，&#8217;101112&#8242;被理解为&#8217;10:11:12&#8242;，但&#8217;109712&#8242;是不合法的(它有一个没有意义的分钟部分)，将变为&#8217;00:00:00&#8242;。</p>
+<p>·         HHMMSS格式的数值，假定是有意义的时间。例如，101112被理解为&#8217;10:11:12&#8242;。下面格式也可以理解：SS、MMSS、HHMMSS、HHMMSS.fraction。请注意MySQL还不保存分数。</p>
+<p>·         函数返回的结果，其值适合TIME上下文，例如CURRENT_TIME。</p>
+<p>对于指定为包括时间部分间割符的字符串的TIME值，如果时、分或者秒值小于10，则不需要指定两位数。&#8217;8:3:2&#8242;与&#8217;08:03:02&#8242;相同。</p>
+<p>为TIME列分配简写值时应注意。没有冒号，MySQL解释值时假定最右边的两位表示秒。(MySQL解释TIME值为过去的时间而不是当天的时间）。例如，你可能认为&#8217;1112&#8242;和1112表示&#8217;11:12:00&#8242;(11点过12分)，但MySQL将它们解释为&#8217;00:11:12&#8242;(11分，12 秒)。同样，&#8217;12&#8242;和12 被解释为 &#8217;00:00:12&#8242;。相反，TIME值中使用冒号则肯定被看作当天的时间。也就是说，&#8217;11:12&#8242;表示&#8217;11:12:00&#8242;，而不是&#8217;00:11:12&#8242;。</p>
+<p>超出TIME范围但合法的值被裁为范围最接近的端点。例如，&#8217;-850:00:00&#8242;和&#8217;850:00:00&#8242;被转换为&#8217;-838:59:59&#8242;和&#8217;838:59:59&#8242;。</p>
+<p>无效TIME值被转换为&#8217;00:00:00&#8242;。请注意由于&#8217;00:00:00&#8242;本身是一个合法TIME值，只从表内保存的一个&#8217;00:00:00&#8242;值还不能说出原来的值是 &#8217;00:00:00&#8242;还是不合法的值。</p>
+<h3><a name="year"></a>11.3.3. YEAR类型</h3>
+<p><a name="id2851517"></a><a name="id2851526"></a></p>
+<p>YEAR类型是一个单字节类型用于表示年。</p>
+<p>MySQL以YYYY格式检索和显示YEAR值。范围是1901到2155。</p>
+<p>可以指定各种格式的YEAR值：</p>
+<p>·         四位字符串，范围为&#8217;1901&#8242;到&#8217;2155&#8242;。</p>
+<p>·         四位数字，范围为1901到2155。</p>
+<p>·         两位字符串，范围为&#8217;00&#8242;到&#8217;99&#8242;。&#8217;00&#8242;到&#8217;69&#8242;和&#8217;70&#8242;到&#8217;99&#8242;范围的值被转换为2000到2069和1970到1999范围的YEAR值。</p>
+<p>·         两位整数，范围为1到99。1到69和70到99范围的值被转换为2001到2069和1970到1999范围的YEAR值。请注意两位整数范围与两位字符串范围稍有不同，因为你不能直接将零指定为数字并将它解释为2000。你必须将它指定为一个字符串&#8217;0&#8242;或&#8217;00&#8242;或它被解释为0000。</p>
+<p>·         函数返回的结果，其值适合YEAR上下文，例如NOW()。</p>
+<p>非法YEAR值被转换为0000。</p>
+<h3><a name="y2k-issues"></a>11.3.4. Y2K事宜和日期类型</h3>
+<p><a name="id2851772"></a><a name="id2851779"></a>MySQL本身对于2000年(Y2K)是安全的(参见<a title="1.4.5. Year 2000 Compliance" href="http://dev.mysql.com/doc/refman/5.1/zh/introduction.html#year-2000-compliance">1.4.5节，“2000年兼容性”</a>)，但输入给MySQL的值可能不安全。任何包含两位年值的输入都会令人模糊，因为世纪不知道。这些值必须解释为四位形式，因为MySQL内部使用四位来保存年。</p>
+<p>对于DATETIME、DATE、TIMESTAMP和YEAR类型，MySQL使用以下规则解释含模糊年值的日期：</p>
+<p>·         00-69范围的年值转换为2000-2069。</p>
+<p>·         70-99范围的年值转换为1970-1999。</p>
+<p>请记住这些规则只是合理猜测数据值表示什么。如果MySQL使用的启发不能产生正确的值，你应提供包含四位年值的确切输入。</p>
+<p>ORDER BY可以正确排序有两位年的TIMESTAMP或YEAR值。</p>
+<p>部分函数如MIN()和MAX()将TIMESTAMP或YEAR转换为一个数字。这说明使用有两位年值的值，这些函数不能工作正确。在这种情况下的修复方法是将TIMESTAMP或YEAR转换为四位年格式或使用MIN(DATE_ADD(TIMESTAMP,INTERVAL 0 DAYS))。</p>
+<h2><a name="string-types"></a>11.4. String类型</h2>
+<dl>
+<dt><a href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#char">11.4.1. CHAR和VARCHAR类型</a></dt>
+<dt><a href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#binary-varbinary">11.4.2. BINARY和VARBINARY类型</a></dt>
+<dt><a href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#blob">11.4.3. BLOB和TEXT类型<code></code></a></dt>
+<dt><a href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#enum">11.4.4. ENUM类型</a></dt>
+<dt><a href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#set">11.4.5. SET类型</a></dt>
+</dl>
+<p>字符串类型指CHAR、VARCHAR、BINARY、VARBINARY、BLOB、TEXT、ENUM和SET。该节描述了这些类型如何工作以及如何在查询中使用这些类型。</p>
+<h3><a name="char"></a>11.4.1. CHAR和VARCHAR类型</h3>
+<p>CHAR和VARCHAR类型类似，但它们保存和检索的方式不同。它们的最大长度和是否尾部空格被保留等方面也不同。在存储或检索过程中不进行大小写转换。</p>
+<p>CHAR和VARCHAR类型声明的长度表示你想要保存的最大字符数。例如，CHAR(30)可以占用30个字符。</p>
+<p>CHAR列的长度固定为创建表时声明的长度。长度可以为从0到255的任何值。当保存CHAR值时，在它们的右边填充空格以达到指定的长度。当检索到CHAR值时，尾部的空格被删除掉。在存储或检索过程中不进行大小写转换。</p>
+<p>VARCHAR列中的值为可变长字符串。长度可以指定为0到65,535之间的值。(VARCHAR的最大有效长度由最大行大小和使用的字符集确定。整体最大长度是65,532字节）。</p>
+<p>同CHAR对比，VARCHAR值保存时只保存需要的字符数，另加一个字节来记录长度(如果列声明的长度超过255，则使用两个字节)。</p>
+<p>VARCHAR值保存时不进行填充。当值保存和检索时尾部的空格仍保留，符合标准SQL。</p>
+<p>如果分配给CHAR或VARCHAR列的值超过列的最大长度，则对值进行裁剪以使其适合。如果被裁掉的字符不是空格，则会产生一条警告。如果裁剪非空格字符，则会造成错误(而不是警告)并通过使用严格SQL模式禁用值的插入。参见<a title="5.3.2. The Server SQL Mode" href="http://dev.mysql.com/doc/refman/5.1/zh/database-administration.html#server-sql-mode">5.3.2节，“SQL服务器模式”</a>。</p>
+<p>下面的表显示了将各种字符串值保存到CHAR(4)和VARCHAR(4)列后的结果，说明了CHAR和VARCHAR之间的差别：</p>
+<table id="table3" border="1" cellpadding="0">
+<tbody>
+<tr>
+<td><strong>值</strong></td>
+<td>CHAR(4)</td>
+<td><strong>存储需求</strong></td>
+<td>VARCHAR(4)</td>
+<td><strong>存储需求</strong></td>
+</tr>
+<tr>
+<td>&#8221;</td>
+<td>&#8216;    &#8217;</td>
+<td>4个字节</td>
+<td>&#8221;</td>
+<td>1个字节</td>
+</tr>
+<tr>
+<td>&#8216;ab&#8217;</td>
+<td>&#8216;ab  &#8217;</td>
+<td>4个字节</td>
+<td>&#8216;ab &#8216;</td>
+<td>3个字节</td>
+</tr>
+<tr>
+<td>&#8216;abcd&#8217;</td>
+<td>&#8216;abcd&#8217;</td>
+<td>4个字节</td>
+<td>&#8216;abcd&#8217;</td>
+<td>5个字节</td>
+</tr>
+<tr>
+<td>&#8216;abcdefgh&#8217;</td>
+<td>&#8216;abcd&#8217;</td>
+<td>4个字节</td>
+<td>&#8216;abcd&#8217;</td>
+<td>5个字节</td>
+</tr>
+</tbody>
+</table>
+<p>请注意上表中最后一行的值只适用<em>不使用严格模式</em>时；如果MySQL运行在严格模式，超过列长度不的值<em>不<em>保存</em></em>，并且会出现错误。</p>
+<p>从CHAR(4)和VARCHAR(4)列检索的值并不总是相同，因为检索时从CHAR列删除了尾部的空格。通过下面的例子说明该差别：</p>
+<pre class="brush: sql; gutter: true">mysql&amp;gt; &lt;strong&gt;CREATE TABLE vc (v VARCHAR(4), c CHAR(4));
+&lt;/strong&gt;Query OK, 0 rows affected (0.02 sec)</pre>
+<pre class="brush: sql; gutter: true">mysql&amp;gt; &lt;strong&gt;INSERT INTO vc VALUES (&#039;ab  &#039;, &#039;ab  &#039;);
+&lt;/strong&gt;Query OK, 1 row affected (0.00 sec)</pre>
+<pre class="brush: sql; gutter: true">mysql&amp;gt; &lt;strong&gt;SELECT CONCAT(v, &#039;+&#039;), CONCAT(c, &#039;+&#039;) FROM vc;
+&lt;/strong&gt;+----------------+----------------+
+| CONCAT(v, &#039;+&#039;) | CONCAT(c, &#039;+&#039;) |
++----------------+----------------+
+| ab  +          | ab+            |
++----------------+----------------+
+1 row in set (0.00 sec)</pre>
+<p>根据分配给列的字符集校对规则对CHAR和VARCHAR列中的值进行排序和比较。</p>
+<p>请注意所有MySQL校对规则属于PADSPACE类。这说明在MySQL中的所有CHAR和VARCHAR值比较时不需要考虑任何尾部空格。例如：</p>
+<pre class="brush: sql; gutter: true">mysql&amp;gt; &lt;strong&gt;CREATE TABLE names (myname CHAR(10), yourname VARCHAR(10));
+&lt;/strong&gt;Query OK, 0 rows affected (0.09 sec)</pre>
+<pre class="brush: sql; gutter: true">mysql&amp;gt; &lt;strong&gt;INSERT INTO names VALUES (&#039;Monty &#039;, &#039;Monty &#039;);
+&lt;/strong&gt;Query OK, 1 row affected (0.00 sec)</pre>
+<pre class="brush: sql; gutter: true">mysql&amp;gt; &lt;strong&gt;SELECT myname = &#039;Monty  &#039;, yourname = &#039;Monty  &#039; FROM names;
+&lt;/strong&gt;+--------------------+----------------------+
+| myname = &#039;Monty  &#039; | yourname = &#039;Monty  &#039; |
++--------------------+----------------------+
+|                  1 |                    1 |
++--------------------+----------------------+
+1 row in set (0.00 sec)</pre>
+<p>请注意所有MySQL版本均如此，并且它不受SQL服务器模式的影响。</p>
+<p>对于尾部填充字符被裁剪掉或比较时将它们忽视掉的情形，如果列的索引需要唯一的值，在列内插入一个只是填充字符数不同的值将会造成复制键值错误。</p>
+<p>CHAR BYTE是CHAR BINARY的别名。这是为了保证兼容性。</p>
+<p>ASCII属性为CHAR列分配latin1字符集。UNICODE属性分配ucs2字符集。</p>
+<h3><a name="binary-varbinary"></a>11.4.2. BINARY和VARBINARY类型</h3>
+<p><a name="id2852527"></a><a name="id2852536"></a><a name="id2852545"></a><a name="id2852558"></a>BINARY和VARBINARY类类似于CHAR和VARCHAR，不同的是它们包含二进制字符串而不要非二进制字符串。也就是说，它们包含字节字符串而不是字符字符串。这说明它们没有字符集，并且排序和比较基于列值字节的数值值。</p>
+<p>BINARY和VARBINARY允许的最大长度一样，如同CHAR和VARCHAR，不同的是BINARY和VARBINARY的长度是字节长度而不是字符长度。</p>
+<p>BINARY和VARBINARY数据类型不同于CHAR BINARY和VARCHAR BINARY数据类型。对于后一种类型，BINARY属性不会将列视为二进制字符串列。相反，它致使使用列字符集的二元 校对规则，并且列自身包含非二进制字符字符串而不是二进制字节字符串。例如CHAR(5) BINARY被视为CHAR(5) CHARACTER SET latin1 COLLATE latin1_bin，假定默认字符集是latin1。这不同于BINARY(5)，它保存5字节二进制字符串，没有字符集或 校对规则。</p>
+<p>当保存BINARY值时，在它们右边填充值以达到指定长度。填充值是0&#215;00(零字节)。插入值时在右侧添加0&#215;00 on，并且选择时不删除尾部的字节。比较时所有字节很重要，包括ORDER BY和DISTINCT操作。比较时0&#215;00字节和空格是不同的，0&#215;00&lt;空格。</p>
+<p>例如：对于一个BINARY(3)列，当插入时 &#8217;a' 变为 &#8217;a &#8217;。&#8217;a'插入时变为&#8217;a'。当选择时两个插入的值均不更改。</p>
+<p>对于VARBINARY，插入时不填充字符，选择时不裁剪字节。比较时所有字节很重要，包括ORDER BY和DISTINCT操作。比较时0&#215;00字节和空格是不同的，0&#215;00&lt;空格。</p>
+<p>对于尾部填充字符被裁剪掉或比较时将它们忽视掉的情形，如果列的索引需要唯一的值，在列内插入一个只是填充字符数不同的值将会造成复制键值错误。</p>
+<p>如果你计划使用这些数据类型来保存二进制数据并且需要检索的值与保存的值完全相同，应考虑前面所述的填充和裁剪特征。下面的例子说明了用0&#215;00填充的BINARY值如何影响列值比较：</p>
+<pre class="brush: sql; gutter: true">mysql&amp;gt; &lt;strong&gt;CREATE TABLE t (c BINARY(3));
+&lt;/strong&gt;Query OK, 0 rows affected (0.01 sec)</pre>
+<pre class="brush: sql; gutter: true">mysql&amp;gt; &lt;strong&gt;INSERT INTO t SET c = &#039;a&#039;;
+&lt;/strong&gt;Query OK, 1 row affected (0.01 sec)</pre>
+<pre class="brush: sql; gutter: true">mysql&amp;gt; &lt;strong&gt;SELECT HEX(c), c = &#039;a&#039;, c = &#039;a&#039; from t;
+&lt;/strong&gt;+--------+---------+-------------+
+| HEX(c) | c = &#039;a&#039; | c = &#039;a&#039; |
++--------+---------+-------------+
+| 610000 |       0 |           1 |
++--------+---------+-------------+
+1 row in set (0.09 sec)</pre>
+<p>如果检索的值必须与指定进行存储而没有填充的值相同，最好使用BLOB数据类型。</p>
+<p>创建表时，MySQL可以默默更改BINARY或VARBINARY列的类型。参见<a title="13.1.5.1. Silent Column Specification Changes" href="http://dev.mysql.com/doc/refman/5.1/zh/sql-syntax.html#silent-column-changes">13.1.5.1节，“沉寂的列规格变更”</a>。</p>
+<h3><a name="blob"></a>11.4.3. BLOB和TEXT类型<code></code></h3>
+<p><a name="id2852869"></a><a name="id2852878"></a><a name="id2852887"></a><a name="id2852900"></a><a name="id2852912"></a><a name="id2852921"></a>BLOB是一个二进制大对象，可以容纳可变数量的数据。有4种BLOB类型：TINYBLOB、BLOB、MEDIUMBLOB和LONGBLOB。它们只是可容纳值的最大长度不同。</p>
+<p>有4种TEXT类型：TINYTEXT、TEXT、MEDIUMTEXT和LONGTEXT。这些对应4种BLOB类型，有相同的最大长度和存储需求。</p>
+<p>参见<a title="11.5. Column Type Storage Requirements" href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#storage-requirements">11.5节，“列类型存储需求”</a>。</p>
+<p>BLOB 列被视为二进制字符串(字节字符串)。TEXT列被视为非二进制字符串(字符字符串)。BLOB列没有字符集，并且排序和比较基于列值字节的数值值。TEXT列有一个字符集，并且根据字符集的 校对规则对值进行排序和比较。</p>
+<p>在TEXT或BLOB列的存储或检索过程中，不存在大小写转换。</p>
+<p>当未运行在严格模式时，如果你为BLOB或TEXT列分配一个超过该列类型的最大长度的值值，值被截取以保证适合。如果截掉的字符不是空格，将会产生一条警告。使用严格SQL模式，会产生错误，并且值将被拒绝而不是截取并给出警告。参见<a title="5.3.2. The Server SQL Mode" href="http://dev.mysql.com/doc/refman/5.1/zh/database-administration.html#server-sql-mode">5.3.2节，“SQL服务器模式”</a>。</p>
+<p>在大多数方面，可以将BLOB列视为能够足够大的VARBINARY列。同样，可以将TEXT列视为VARCHAR列。BLOB和TEXT在以下几个方面不同于VARBINARY和VARCHAR：</p>
+<p>·         当保存或检索BLOB和TEXT列的值时不删除尾部空格。(这与VARBINARY和VARCHAR列相同）。</p>
+<p>请注意比较时将用空格对TEXT进行扩充以适合比较的对象，正如CHAR和VARCHAR。</p>
+<p>·         对于BLOB和TEXT列的索引，必须指定索引前缀的长度。对于CHAR和VARCHAR，前缀长度是可选的。参见<a title="7.4.3. Column Indexes" href="http://dev.mysql.com/doc/refman/5.1/zh/optimization.html#indexes">7.4.3节，“列索引”</a>。</p>
+<p>·         BLOB和TEXT列不能有 默认值。</p>
+<p>LONG和LONG VARCHAR对应MEDIUMTEXT数据类型。这是为了保证兼容性。如果TEXT列类型使用BINARY属性，将为列分配列字符集的二元 校对规则。</p>
+<p>MySQL连接程序/ODBC将BLOB值定义为LONGVARBINARY，将TEXT值定义为LONGVARCHAR。</p>
+<p>由于BLOB和TEXT值可能会非常长，使用它们时可能遇到一些约束：</p>
+<p>·         当排序时只使用该列的前max_sort_length个字节。max_sort_length的 默认值是1024；该值可以在启动<strong>mysqld</strong>服务器时使用&#8211;max_sort_length选项进行更改。参见<a title="5.3.3. Server System Variables" href="http://dev.mysql.com/doc/refman/5.1/zh/database-administration.html#server-system-variables">5.3.3节，“服务器系统变量”</a>。</p>
+<p>运行时增加max_sort_length的值可以在排序或组合时使更多的字节有意义。任何客户端可以更改其会话max_sort_length变量的值：</p>
+<pre class="brush: sql; gutter: true">mysql&amp;gt; &lt;strong&gt;SET max_sort_length = 2000;&lt;/strong&gt;</pre>
+<pre class="brush: sql; gutter: true">mysql&amp;gt; &lt;strong&gt;SELECT id, comment FROM &lt;em&gt;tbl_name
+&lt;/em&gt;&lt;/strong&gt;    -&amp;gt; &lt;strong&gt;ORDER BY comment;&lt;/strong&gt;</pre>
+<p>当你想要使超过max_sort_length的字节有意义，对含长值的BLOB或TEXT列使用GROUP BY或ORDER BY的另一种方式是将列值转换为固定长度的对象。标准方法是使用SUBSTRING函数。例如，下面的语句对comment列的2000个字节进行排序：</p>
+<pre class="brush: sql; gutter: true">mysql&amp;gt; &lt;strong&gt;SELECT id, SUBSTRING(comment,1,2000) FROM &lt;em&gt;tbl_name
+&lt;/em&gt;&lt;/strong&gt;    -&amp;gt; &lt;strong&gt;ORDER BY SUBSTRING(comment,1,2000);&lt;/strong&gt;</pre>
+<p>·         BLOB或TEXT对象的最大大小由其类型确定，但在客户端和服务器之间实际可以传递的最大值由可用内存数量和通信缓存区大小确定。你可以通过更改max_allowed_packet变量的值更改消息缓存区的大小，但必须同时修改服务器和客户端程序。例如，可以使用 <strong>mysql</strong>和<strong>mysqldump</strong>来更改客户端的max_allowed_packet值。参见<a title="7.5.2. Tuning Server Parameters" href="http://dev.mysql.com/doc/refman/5.1/zh/optimization.html#server-parameters">7.5.2节，“调节服务器参数”</a>、<a title="8.3. mysql — The MySQL Command-Line Tool" href="http://dev.mysql.com/doc/refman/5.1/zh/client-side-scripts.html#mysql">8.3节，“mysql：MySQL命令行工具”</a>和<a title="8.8. mysqldump — A Database Backup Program" href="http://dev.mysql.com/doc/refman/5.1/zh/client-side-scripts.html#mysqldump">8.8节，“mysqldump：数据库备份程序”</a>。</p>
+<p>每个BLOB或TEXT值分别由内部分配的对象表示。这与其它列类型形成对比，后者是当打开表时为每1列分配存储引擎。</p>
+<h3><a name="enum"></a>11.4.4. ENUM类型</h3>
+<p><a name="id2853488"></a><a name="id2853497"></a></p>
+<p>ENUM是一个字符串对象，其值来自表创建时在列规定中显式枚举的一列值。</p>
+<p>在某些情况下，ENUM值也可以为空字符串(&#8221;)或NULL：</p>
+<p>·         如果你将一个非法值插入ENUM(也就是说，允许的值列之外的字符串)，将插入空字符串以作为特殊错误值。该字符串与“普通”空字符串不同，该字符串有数值值0。后面有详细讨论。</p>
+<p>·         如果将ENUM列声明为允许NULL，NULL值则为该列的一个有效值，并且 默认值为NULL。如果ENUM列被声明为NOT NULL，其默认值为允许的值列的第1个元素。</p>
+<p>每个枚举值有一个索引：</p>
+<p>·         来自列规定的允许的值列中的值从1开始编号。</p>
+<p>·         空字符串错误值的索引值是0。这说明你可以使用下面的SELECT语句来找出分配了非法ENUM值的行：</p>
+<pre class="brush: sql; gutter: true">·    mysql&amp;gt; &lt;strong&gt;SELECT * FROM &lt;em&gt;tbl_name&lt;/em&gt; WHERE &lt;em&gt;enum_col&lt;/em&gt;=0;&lt;/strong&gt;</pre>
+<p>·         NULL值的索引是NULL。</p>
+<p>例如，定义为ENUM的列(&#8216;one&#8217;，&#8217;two&#8217;，&#8217;three&#8217;)可以有下面所示任何值。还显示了每个值的索引：</p>
+<table id="table4" border="1" cellpadding="0">
+<tbody>
+<tr>
+<td><strong>值</strong></td>
+<td><strong>索引</strong></td>
+</tr>
+<tr>
+<td>NULL</td>
+<td>NULL</td>
+</tr>
+<tr>
+<td>&#8221;</td>
+<td>0</td>
+</tr>
+<tr>
+<td>&#8216;one&#8217;</td>
+<td>1</td>
+</tr>
+<tr>
+<td>&#8216;two&#8217;</td>
+<td>2</td>
+</tr>
+<tr>
+<td>&#8216;three&#8217;</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+<p>枚举最多可以有65,535个元素。</p>
+<p>当创建表时，ENUM成员值的尾部空格将自动被删除。</p>
+<p>当检索时，保存在ENUM列的值使用列定义中所使用的大小写来显示。请注意可以为ENUM列分配字符集和 校对规则。对于二进制或大小写敏感的校对规则，当为列分配值时应考虑大小写。</p>
+<p>如果在数值上下文中检索一个ENUM值，将返回列值的索引。例如，你可以这样从ENUM列搜索数值值：</p>
+<pre class="brush: sql; gutter: true">mysql&amp;gt; &lt;strong&gt;SELECT &lt;em&gt;enum_col&lt;/em&gt;+0 FROM &lt;em&gt;tbl_name&lt;/em&gt;;&lt;/strong&gt;</pre>
+<p>如果将一个数字保存到ENUM列，数字被视为索引，并且保存的值是该索引对应的枚举成员。(但是，这不适合LOAD DATA，它将所有输入视为字符串）。不建议使用类似数字的枚举值来定义一个ENUM列，因为这很容易引起混淆。例如，下面的列含有字符串值&#8217;0&#8242;、&#8217;1&#8242;和&#8217;2&#8242;的枚举成员，但数值索引值为1、2和3：</p>
+<pre class="brush: sql; gutter: true">numbers ENUM(&#039;0&#039;,&#039;1&#039;,&#039;2&#039;)</pre>
+<p>根据枚举成员在列定义中列出的顺序对ENUM值进行排序。(换句话说，ENUM值根据索引编号进行排序）。例如，对于ENUM(&#8216;a&#8217;，&#8217;b')，&#8217;a'排在&#8217;b'前面，但对于ENUM(&#8216;b&#8217;，&#8217;a')，&#8217;b'排在&#8217;a'前面。空字符串排在非空字符串前面，并且NULL值排在所有其它枚举值前面。要想防止意想不到的结果，按字母顺序规定ENUM列。还可以使用GROUP BY  CAST(col AS CHAR)或GROUP BY  CONCAT(col)来确保按照词汇对列进行排序而不是用索引数字。</p>
+<p>如果你想要确定一个ENUM列的所有可能的值，使用SHOW COLUMNS FROM <em>tbl_name</em> LIKE <em>enum_col</em>，并解析输出中第2列的ENUM定义。</p>
+<h3><a name="set"></a>11.4.5. SET类型</h3>
+<p><a name="id2853953"></a><a name="id2853962"></a></p>
+<p>SET是一个字符串对象，可以有零或多个值，其值来自表创建时规定的允许的一列值。指定包括多个SET成员的SET列值时各成员之间用逗号(‘,’)间隔开。这样SET成员值本身不能包含逗号。</p>
+<p>例如，指定为SET(&#8216;one&#8217;, &#8216;two&#8217;) NOT NULL的列可以有下面的任何值：</p>
+<pre class="brush: sql; gutter: true">&#039;&#039;
+&#039;one&#039;
+&#039;two&#039;
+&#039;one,two&#039;</pre>
+<p>SET最多可以有64个不同的成员。</p>
+<p>当创建表时，SET成员值的尾部空格将自动被删除。</p>
+<p>当检索时，保存在SET列的值使用列定义中所使用的大小写来显示。请注意可以为SET列分配字符集和 校对规则。对于二进制或大小写敏感的校对规则，当为列分配值时应考虑大小写。</p>
+<p>MySQL用数字保存SET值，所保存值的低阶位对应第1个SET成员。如果在数值上下文中检索一个SET值，检索的值的位设置对应组成列值的SET成员。例如，你可以这样从一个SET列检索数值值：</p>
+<pre class="brush: sql; gutter: true">mysql&amp;gt; &lt;strong&gt;SELECT &lt;em&gt;set_col&lt;/em&gt;+0 FROM &lt;em&gt;tbl_name&lt;/em&gt;;&lt;/strong&gt;</pre>
+<p>如果将一个数字保存到SET列中，数字中二进制表示中的位确定了列值中的SET成员。对于指定为SET(&#8216;a&#8217;,'b&#8217;,'c&#8217;,'d&#8217;)的列，成员有下面的十进制和二进制值：</p>
+<table id="table5" border="1" cellpadding="0">
+<tbody>
+<tr>
+<td>SET<strong>成员</strong></td>
+<td><strong>十进制值</strong></td>
+<td><strong>二进制值</strong></td>
+</tr>
+<tr>
+<td>&#8216;a&#8217;</td>
+<td>1</td>
+<td>0001</td>
+</tr>
+<tr>
+<td>&#8216;b&#8217;</td>
+<td>2</td>
+<td>0010</td>
+</tr>
+<tr>
+<td>&#8216;c&#8217;</td>
+<td>4</td>
+<td>0100</td>
+</tr>
+<tr>
+<td>&#8216;d&#8217;</td>
+<td>8</td>
+<td>1000</td>
+</tr>
+</tbody>
+</table>
+<p>如果你为该列分配一个值9，其二进制形式为1001，因此第1个和第4个SET值成员&#8217;a'和&#8217;d'被选择，结果值为 &#8217;a,d&#8217;。</p>
+<p>对于包含多个SET元素的值，当插入值时元素所列的顺序并不重要。在值中一个给定的元素列了多少次也不重要。当以后检索该值时，值中的每个元素出现一次，根据表创建时指定的顺序列出元素。例如，假定某个列指定为SET(&#8216;a&#8217;,'b&#8217;,'c&#8217;,'d&#8217;)：</p>
+<pre class="brush: sql; gutter: true">mysql&amp;gt; &lt;strong&gt;CREATE TABLE myset (col SET(&#039;a&#039;, &#039;b&#039;, &#039;c&#039;, &#039;d&#039;));&lt;/strong&gt;</pre>
+<p>插入值&#8217;a,d&#8217;、&#8217;d,a&#8217;、&#8217;a,d,d&#8217;、&#8217;a,d,a&#8217;和&#8217;d,a,d&#8217;:</p>
+<pre class="brush: sql; gutter: true">mysql&amp;gt; &lt;strong&gt;INSERT INTO myset (col) VALUES 
+&lt;/strong&gt;-&amp;gt; (&#039;a,d&#039;), (&#039;d,a&#039;), (&#039;a,d,a&#039;), (&#039;a,d,d&#039;), (&#039;d,a,d&#039;);
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0</pre>
+<p>当检索时所有这些值显示为 &#8217;a,d&#8217;：</p>
+<pre class="brush: sql; gutter: true">mysql&amp;gt; &lt;strong&gt;SELECT col FROM myset;
+&lt;/strong&gt;+------+
+| col  |
++------+
+| a,d  |
+| a,d  |
+| a,d  |
+| a,d  |
+| a,d  |
++------
+5 rows in set (0.04 sec)</pre>
+<p>如果将SET列设置为一个不支持的值，则该值被忽略并发出警告：</p>
+<pre class="brush: sql; gutter: true">mysql&amp;gt; &lt;strong&gt;INSERT INTO myset (col) VALUES (&#039;a,d,d,s&#039;);
+&lt;/strong&gt;Query OK, 1 row affected, 1 warning (0.03 sec)</pre>
+<pre class="brush: sql; gutter: true">mysql&amp;gt; &lt;strong&gt;SHOW WARNINGS;
+&lt;/strong&gt;+---------+------+------------------------------------------+
+| Level   | Code | Message                                  |
++---------+------+------------------------------------------+
+| Warning | 1265 | Data truncated for column &#039;col&#039; at row 1 |
++---------+------+------------------------------------------+
+1 row in set (0.04 sec)</pre>
+<pre class="brush: sql; gutter: true">mysql&amp;gt; &lt;strong&gt;SELECT col FROM myset;
+&lt;/strong&gt;+------+
+| col  |
++------+
+| a,d  |
+| a,d  |
+| a,d  |
+| a,d  |
+| a,d  |
+| a,d  |
++------+
+6 rows in set (0.01 sec)</pre>
+<p>SET值按数字顺序排序。NULL值排在非NULL SET值的前面。</p>
+<p>通常情况，可以使用FIND_IN_SET()函数或LIKE操作符搜索SET值：</p>
+<pre class="brush: sql; gutter: true">mysql&amp;gt; &lt;strong&gt;SELECT * FROM &lt;em&gt;tbl_name&lt;/em&gt; WHERE FIND_IN_SET(&#039;&lt;em&gt;value&lt;/em&gt;&#039;,&lt;em&gt;set_col&lt;/em&gt;)&amp;gt;0;
+&lt;/strong&gt;mysql&amp;gt; &lt;strong&gt;SELECT * FROM &lt;em&gt;tbl_name&lt;/em&gt; WHERE &lt;em&gt;set_col&lt;/em&gt; LIKE &#039;%&lt;em&gt;value&lt;/em&gt;%&#039;;&lt;/strong&gt;</pre>
+<p>第1个语句找出<em>SET_col</em>包含<em>value</em> set成员的行。第2个类似，但有所不同：它在其它地方找出<em>set_col</em>包含<em>value</em>的行，甚至是在另一个SET成员的子字符串中。</p>
+<p>下面的语句也是合法的：</p>
+<pre class="brush: sql; gutter: true">mysql&amp;gt; &lt;strong&gt;SELECT * FROM &lt;em&gt;tbl_name&lt;/em&gt; WHERE &lt;em&gt;set_col&lt;/em&gt; &amp;amp; 1;
+&lt;/strong&gt;mysql&amp;gt; &lt;strong&gt;SELECT * FROM &lt;em&gt;tbl_name&lt;/em&gt; WHERE &lt;em&gt;set_col&lt;/em&gt; = &#039;&lt;em&gt;val1&lt;/em&gt;,&lt;em&gt;val2&lt;/em&gt;&#039;;&lt;/strong&gt;</pre>
+<p>第1个语句寻找包含第1个set成员的值。第2个语句寻找一个确切匹配的值。应注意第2类的比较。将set值与&#8217;<em>val1</em>,<em>val2</em>&#8216;比较返回的结果与同&#8217;<em>val2</em>,<em>val1</em>&#8216;比较返回的结果不同。指定值时的顺序应与在列定义中所列的顺序相同。</p>
+<p>如果想要为SET列确定所有可能的值，使用SHOW COLUMNS FROM <em>tbl_name</em> LIKE <em>set_col</em>并解析输出中第2列的SET定义。</p>
+<h2><a name="storage-requirements"></a>11.5. 列类型存储需求</h2>
+<p><a name="id2854549"></a><a name="id2854559"></a>根据类别列出了MySQL支持的每个列类型的存储需求。</p>
+<p>MyISAM表中行的最大大小为65,534字节。每个BLOB和TEXT列 账户只占其中的5至9个字节。</p>
+<p>如果MyISAM表包括变长列类型，记录格式也是可变长度。当创建表时，在某些条件下，MySQL可以将一个列从变长类型改为固定长度的类型或反之亦然。详细信息参见<a title="13.1.5.1. Silent Column Specification Changes" href="http://dev.mysql.com/doc/refman/5.1/zh/sql-syntax.html#silent-column-changes">13.1.5.1节，“沉寂的列规格变更”</a>。</p>
+<p><strong>数值类型存储需求</strong></p>
+<table id="table6" border="1" cellpadding="0">
+<tbody>
+<tr>
+<td><strong>列类型</strong></td>
+<td><strong>存储需求</strong></td>
+</tr>
+<tr>
+<td>TINYINT</td>
+<td>1个字节</td>
+</tr>
+<tr>
+<td>SMALLINT</td>
+<td>2个字节</td>
+</tr>
+<tr>
+<td>MEDIUMINT</td>
+<td>3个字节</td>
+</tr>
+<tr>
+<td>INT, INTEGER</td>
+<td>4个字节</td>
+</tr>
+<tr>
+<td>BIGINT</td>
+<td>8个字节</td>
+</tr>
+<tr>
+<td>FLOAT(<em>p</em>)</td>
+<td>如果0 &lt;= <em>p</em> &lt;= 24为4个字节, 如果25 &lt;= <em>p</em> &lt;= 53为8个字节</td>
+</tr>
+<tr>
+<td>FLOAT</td>
+<td>4个字节</td>
+</tr>
+<tr>
+<td>DOUBLE [PRECISION], item REAL</td>
+<td>8个字节</td>
+</tr>
+<tr>
+<td>DECIMAL(<em>M</em>,<em>D</em>), NUMERIC(<em>M</em>,<em>D</em>)</td>
+<td>变长；参见下面的讨论</td>
+</tr>
+<tr>
+<td>BIT(<em>M</em>)</td>
+<td>大约(<em>M</em>+7)/8个字节</td>
+</tr>
+</tbody>
+</table>
+<p>DECIMAL(和NUMERIC)的存储需求与具体版本有关：</p>
+<p>使用二进制格式将9个十进制(基于10)数压缩为4个字节来表示DECIMAL列值。每个值的整数和分数部分的存储分别确定。每个9位数的倍数需要4个字节，并且“剩余的”位需要4个字节的一部分。下表给出了超出位数的存储需求：</p>
+<table id="table7" border="1" cellpadding="0">
+<tbody>
+<tr>
+<td><strong>剩余的</strong></td>
+<td><strong>字节</strong></td>
+</tr>
+<tr>
+<td><strong>位数</strong></td>
+<td><strong>数目</strong></td>
+</tr>
+<tr>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr>
+<td>2</td>
+<td>1</td>
+</tr>
+<tr>
+<td>3</td>
+<td>2</td>
+</tr>
+<tr>
+<td>4</td>
+<td>2</td>
+</tr>
+<tr>
+<td>5</td>
+<td>3</td>
+</tr>
+<tr>
+<td>6</td>
+<td>3</td>
+</tr>
+<tr>
+<td>7</td>
+<td>4</td>
+</tr>
+<tr>
+<td>8</td>
+<td>4</td>
+</tr>
+<tr>
+<td>9</td>
+<td>4</td>
+</tr>
+</tbody>
+</table>
+<p><strong>日期和时间类型的存储需求</strong></p>
+<table id="table8" border="1" cellpadding="0">
+<tbody>
+<tr>
+<td><strong>列类型</strong></td>
+<td><strong>存储需求</strong></td>
+</tr>
+<tr>
+<td>DATE</td>
+<td>3个字节</td>
+</tr>
+<tr>
+<td>DATETIME</td>
+<td>8个字节</td>
+</tr>
+<tr>
+<td>TIMESTAMP</td>
+<td>4个字节</td>
+</tr>
+<tr>
+<td>TIME</td>
+<td>3个字节</td>
+</tr>
+<tr>
+<td>YEAR</td>
+<td>1个字节</td>
+</tr>
+</tbody>
+</table>
+<p><strong>字符串类型的存储需求</strong></p>
+<table id="table9" border="1" cellpadding="0">
+<tbody>
+<tr>
+<td><strong>列类型</strong></td>
+<td><strong>存储需求</strong></td>
+</tr>
+<tr>
+<td>CHAR(<em>M</em>)</td>
+<td><em>M</em>个字节，0 &lt;= <em>M</em> &lt;= 255</td>
+</tr>
+<tr>
+<td>VARCHAR(<em>M</em>)</td>
+<td><em>L</em>+1个字节，其中<em>L</em> &lt;= <em>M </em>且0 &lt;= <em>M</em> &lt;= 65535(参见下面的注释)</td>
+</tr>
+<tr>
+<td>BINARY(<em>M</em>)</td>
+<td><em>M</em>个字节，0 &lt;= <em>M</em> &lt;= 255</td>
+</tr>
+<tr>
+<td>VARBINARY(<em>M</em>)</td>
+<td><em>L</em>+1个字节，其中<em>L</em> &lt;= <em>M </em>且0 &lt;= <em>M</em> &lt;= 255</td>
+</tr>
+<tr>
+<td>TINYBLOB, TINYTEXT</td>
+<td><em>L</em>+1个字节，其中<em>L</em> &lt; 2<sup>8</sup></td>
+</tr>
+<tr>
+<td>BLOB, TEXT</td>
+<td><em>L</em>+2个字节，其中<em>L</em> &lt; 2<sup>16</sup></td>
+</tr>
+<tr>
+<td>MEDIUMBLOB, MEDIUMTEXT</td>
+<td><em>L</em>+3个字节，其中<em>L</em> &lt; 2<sup>24</sup></td>
+</tr>
+<tr>
+<td>LONGBLOB, LONGTEXT</td>
+<td><em>L</em>+4个字节，其中<em>L</em> &lt; 2<sup>32</sup></td>
+</tr>
+<tr>
+<td>ENUM(&#8216;<em>value1</em>&#8216;,&#8217;<em>value2</em>&#8216;,&#8230;)</td>
+<td>1或2个字节，取决于枚举值的个数(最多65,535个值)</td>
+</tr>
+<tr>
+<td>SET(&#8216;<em>value1</em>&#8216;,&#8217;<em>value2</em>&#8216;,&#8230;)</td>
+<td>1、2、3、4或者8个字节，取决于set成员的数目(最多64个成员)</td>
+</tr>
+</tbody>
+</table>
+<p>VARCHAR、BLOB和TEXT类是变长类型。每个类型的存储需求取决于列值的实际长度(用前面的表中的<em>L</em>表示)，而不是该类型的最大可能的大小。例如，VARCHAR(10)列可以容纳最大长度为10的字符串。实际存储需求是字符串(<em>L</em>)的长度，加上一个记录字符串长度的字节。对于字符串&#8217;abcd&#8217;，<em>L</em>是4，存储需要5个字节。</p>
+<p>对于CHAR、VARCHAR和TEXT类型，前面的表中的值<em>L</em>和<em>M</em>应解释为字符数目，并且列定义中的这些类型的长度表示字符数目。例如，要想保存一个TINYTEXT值需要<em>L</em>字符+ 1个字节。</p>
+<p>要想计算用于保存具体CHAR、VARCHAR或者TEXT列值的字节数，需要考虑该列使用的字符集。在具体情况中，当使用Unicode时，必须记住所有Unicode字符使用相同的字节数。为了细分用于不同类Unicode字符使用的存储，参见<a title="10.5. Unicode Support" href="http://dev.mysql.com/doc/refman/5.1/zh/charset.html#charset-unicode">10.5节，“Unicode支持”</a>。</p>
+<p><strong>注释：</strong>VARCHAR列的<em>有效</em>最大长度为65,532字符。</p>
+<p>NDBCLUSTER引擎只支持固定宽度的列。这说明MySQL簇中的表中的VARCHAR列的行为如同类型CHAR(不同的是每个记录仍然有一个额外字节空间)。例如，在Cluster表中，声明为VARCHAR(100)的列中的<em>每个</em>记录存储时将占用101个字节，无论实际存储的记录中的字符串的长度为多少。</p>
+<p>BLOB和TEXT类需要 1、2、3或者4个字节来记录列值的长度，取决于该类的最大可能的长度。参见<a title="11.4.3. The BLOB and TEXT Types" href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#blob">11.4.3节，“BLOB和TEXT类型<code></code>”</a>。</p>
+<p>在NDB Cluster存储引擎中，TEXT和BLOB列的实施是不同的，其中TEXT列中的每个记录由两个单独部分组成。一个是固定大小(256字节)，并且实际上保存在原表中。另一个包括超出256字节的任何数据，保存在隐含的表中。第2个表中的记录总是2,000字节长。这说明如果<em>size</em>&lt;= 256，TEXT列的大小为256(其中<em>size</em>表示记录的大小)；否则，大小是256 +<em>size</em>+(2000–(<em>size</em>–256)%2000)。</p>
+<p>ENUM对象的大小由不同的枚举值的数目确定。枚举用一个字节，可以有255个可能的值。当枚举的值位于256和65,535之间时，用两个字节。参见<a title="11.4.4. The ENUM Type" href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#enum">11.4.4节，“ENUM类型”</a>。</p>
+<p>SET对象的大小由不同的set成员的数量确定。如果set大小是<em>N</em>，对象占(<em>N</em>+7)/8个字节，四舍五入到1、2、3、4或者8个字节。SET最多可以有64个成员。参见<a title="11.4.5. The SET Type" href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#set">11.4.5节，“SET类型”</a>。</p>
+<h2><a name="choosing-types"></a>11.6. 选择正确的列类型</h2>
+<p><a name="id2855781"></a><a name="id2855792"></a>为了优化存储，在任何情况下均应使用最精确的类型。例如，如果列的值的范围为从1到99999，若使用整数，则MEDIUMINT UNSIGNED是好的类型。在所有可以表示该列值的类型中，该类型使用的存储最少。</p>
+<p>用精度为65位十进制数(基于10)对DECIMAL 列进行所有基本计算(+、-、*、/)。参见<a title="11.1.1. Overview of Numeric Types" href="http://dev.mysql.com/doc/refman/5.1/zh/column-types.html#numeric-type-overview">11.1.1节，“数值类型概述”</a>。</p>
+<p>使用双精度操作对DECIMAL值进行计算。如果准确度不是太重要或如果速度为最高优先级，DOUBLE类型即足够了。为了达到高精度，可以转换到保存在BIGINT中的定点类型。这样可以用64位整数进行所有计算，根据需要将结果转换回浮点值。</p>
+<h2><a name="other-vendor-column-types"></a>11.7. 使用来自其他数据库引擎的列类型</h2>
+<p><a name="id2855869"></a><a name="id2855879"></a><a name="id2855890"></a><a name="id2855900"></a><a name="id2855912"></a>为了使用由其它卖方编写的SQL执行代码，MySQL按照下表所示对列类型进行映射。通过这些映射，可以很容易地从其它数据库引擎将表定义导入到MySQL中：</p>
+<table id="table10" border="1" cellpadding="0">
+<tbody>
+<tr>
+<td><strong>其它卖方类型</strong></td>
+<td><strong>MySQL类型</strong></td>
+</tr>
+<tr>
+<td>BOOL,</td>
+<td>TINYINT</td>
+</tr>
+<tr>
+<td>BOOLEAN</td>
+<td>TINYINT</td>
+</tr>
+<tr>
+<td>CHAR VARYING(<em>M</em>)</td>
+<td>VARCHAR(<em>M</em>)</td>
+</tr>
+<tr>
+<td>DEC</td>
+<td>DECIMAL</td>
+</tr>
+<tr>
+<td>FIXED</td>
+<td>DECIMAL</td>
+</tr>
+<tr>
+<td>FLOAT4</td>
+<td>FLOAT</td>
+</tr>
+<tr>
+<td>FLOAT8</td>
+<td>DOUBLE</td>
+</tr>
+<tr>
+<td>INT1</td>
+<td>TINYINT</td>
+</tr>
+<tr>
+<td>INT2</td>
+<td>SMALLINT</td>
+</tr>
+<tr>
+<td>INT3</td>
+<td>MEDIUMINT</td>
+</tr>
+<tr>
+<td>INT4</td>
+<td>INT</td>
+</tr>
+<tr>
+<td>INT8</td>
+<td>BIGINT</td>
+</tr>
+<tr>
+<td>LONG VARBINARY</td>
+<td>MEDIUMBLOB</td>
+</tr>
+<tr>
+<td>LONG VARCHAR</td>
+<td>MEDIUMTEXT</td>
+</tr>
+<tr>
+<td>LONG</td>
+<td>MEDIUMTEXT</td>
+</tr>
+<tr>
+<td>MIDDLEINT</td>
+<td>MEDIUMINT</td>
+</tr>
+<tr>
+<td>NUMERIC</td>
+<td>DECIMAL</td>
+</tr>
+</tbody>
+</table>
+<p>在创建表时对列类型进行映射，然后原来的类型定义被丢弃。如果你使用其它卖方的类型创建一个表，然后执行DESCRIBE <em>tbl_name</em>语句，MySQL使用等效的MySQL类型来报告表的结构。例如：</p>
+<pre class="brush: sql; gutter: true">mysql&amp;gt; &lt;strong&gt;CREATE TABLE t (a BOOL, b FLOAT8, c LONG, d NUMERIC);
+&lt;/strong&gt;Query OK, 0 rows affected (0.08 sec)</pre>
+<pre class="brush: sql; gutter: true">mysql&amp;gt; &lt;strong&gt;DESCRIBE t;
+&lt;/strong&gt;+-------+---------------+------+-----+---------+-------+
+| Field | Type          | Null | Key | Default | Extra |
++-------+---------------+------+-----+---------+-------+
+| a     | tinyint(1)    | YES  |     | NULL    |       
+&lt;span style=&quot;font-family: Monaco, Consolas, &#039;Andale Mono&#039;, &#039;DejaVu Sans Mono&#039;, monospace; font-style: normal;&quot;&gt;| b     | double        | YES  |     | NULL    |       |
+&lt;/span&gt;| c     | mediumtext    | YES  |     | NULL    |       |
+| d     | decimal(10,0) | YES  |     | NULL    |       |
++-------+---------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)</pre>
+
+        
+        
+    <div class="post-adds">
+        <span data-post-id="87324" class="btn-bluet href-style vote-post-up   register-user-only "><i class="fa  fa-thumbs-o-up"></i> <h10 id="87324votetotal">1</h10> 赞</span>
+        <span data-book-type="1" data-site-id="2" data-item-id="87324" data-item-type="1" class="btn-bluet href-style bookmark-btn  register-user-only "><i class="fa fa-bookmark-o  "></i>  收藏</span>
+
+                <a href="#article-comment"><span class="btn-bluet href-style"><i class="fa fa-comments-o"></i>  评论</span></a>
+        
+            </div>
+
+
+        <!-- BEGIN #author-bio -->
+
+
+<!-- END #author-bio -->
+	</div>
+	<!-- END .entry -->
+
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_24x24">
+<a class="jiathis_button_tsina"></a>
+<a class="jiathis_button_weixin"></a>
+<a class="jiathis_button_qzone"></a>
+<a class="jiathis_button_fb"></a>
+<a class="jiathis_button_renren"></a>
+<a class="jiathis_button_douban"></a>
+<a class="jiathis_button_googleplus"></a>
+<a class="jiathis_button_readitlater"></a>
+<a class="jiathis_button_evernote"></a>
+<a class="jiathis_button_ydnote"></a>
+<a href="http://www.jiathis.com/share?uid=1745061" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+<a class="jiathis_counter_style"></a>
+</div>
+
+
+<script type="text/javascript" >
+var jiathis_config={
+	data_track_clickback:false,
+	title:"《我的MYSQL学习心得（4） ： 数据类型》",
+	summary:"BLOB是一个二进制大对象，用来存储可变数量的数据。BLOB类型分为4种：TinyBlob、Blob、MediumBlob、LongBlob，这几个类型之间的唯一区别是在存储文件的最大大小上不同。",
+	pic:"http://jbcdn2.b0.upaiyun.com/2012/04/mysql-logo.png",
+	appkey:{
+         "tsina": 2606191112    },
+	ralateuid:{
+		"tsina": 1670481425	},
+	hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1745061" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+<br/><br/>
+			<div class="textwidget"><p>
+    <a target="_blank" rel="nofollow" href="http://ghtools.sinaapp.com/bole.html"><br />
+        <img style='max-width:300px; max-height: 250px;' src="http://ghtools.sinaapp.com/bole.png" /><br />
+    </a></p>
+</div>
+		
+</div>
+<!-- END .post -->
+    
+<div class="wp_rp_wrap  wp_rp_plain" id="wp_rp_first"><div class="wp_rp_content"><h3 class="related_post_title">相关文章</h3><ul class="related_post wp_rp" style="visibility: visible"><li ><a href="http://blog.jobbole.com/87345/" class="wp_rp_title">我的MYSQL学习心得（8） ： 插入 更新 删除</a></li><li ><a href="http://blog.jobbole.com/87121/" class="wp_rp_title">理解 MySQL（1）：架构和概念</a></li><li ><a href="http://blog.jobbole.com/87127/" class="wp_rp_title">理解 MySQL（2）：索引与优化</a></li><li ><a href="http://blog.jobbole.com/84906/" class="wp_rp_title">10分钟学会理解和解决MySQL乱码问题</a></li><li ><a href="http://blog.jobbole.com/86564/" class="wp_rp_title">MySQL之终端：管理数据库的基本操作</a></li><li ><a href="http://blog.jobbole.com/87137/" class="wp_rp_title">理解 MySQL（4）：并行数据库与分区(Partition)</a></li><li ><a href="http://blog.jobbole.com/87348/" class="wp_rp_title">我的MYSQL学习心得（9） ： 索引</a></li><li ><a href="http://blog.jobbole.com/46516/" class="wp_rp_title">从Mysql转到Oracle前需了解的50件事</a></li><li ><a href="http://blog.jobbole.com/87315/" class="wp_rp_title">我的MYSQL学习心得（1） ：简单语法</a></li><li ><a href="http://blog.jobbole.com/86594/" class="wp_rp_title">MySQL索引原理及慢查询优化</a></li></ul></div></div>
+
+    
+        <!-- BEGIN .navigation -->
+        <div class="navigation margin-20">
+
+            <div class="alignleft"><a href="http://blog.jobbole.com/87322/" rel="prev">&laquo; 我的MYSQL学习心得（3） ： 查看字段长度</a></div>
+            <div class="alignright"><a href="http://blog.jobbole.com/87327/" rel="next">我的MYSQL学习心得（5） ： 运算符 &raquo;</a></div>
+            <div class="clear"></div>
+
+        </div>
+        <!-- END .navigation -->
+
+    
+	
+            <div id="article-comment" class="dot-box center-align">
+            <button type="button" class="btn btn-non-transparent" data-toggle="modal" data-target="#login-modal">登录后评论</button>
+            <a target="_blank" href="http://www.jobbole.com/register"><button type="button" class="btn btn-primary">新用户注册</button></a>
+        </div>
+    
+
+    <div id="comment_list" class="comments">
+
+        
+    </div>
+		
+
+	
+</div>
+<!-- END .grid-8 -->
+
+<!-- BEGIN #sidebar -->
+<div id="sidebar" class="grid-4">
+
+	    <div class="nav-search-box ">
+                <form method="get" id="searchform" action="http://blog.jobbole.com">
+            <select id="searchselect">
+                                    <option selected value="http://blog.jobbole.com">博客</option>
+                                    <option  value="http://hao.jobbole.com">资源</option>
+                                    <option  value="http://top.jobbole.com">头条</option>
+                                    <option  value="http://group.jobbole.com">小组</option>
+                                    <option  value="http://date.jobbole.com">面向对象</option>
+                                    <option  value="http://web.jobbole.com">WEB前端</option>
+                                    <option  value="http://ios.jobbole.com">IOS</option>
+                                    <option  value="http://python.jobbole.com">Python</option>
+                                    <option  value="http://android.jobbole.com">安卓</option>
+                            </select>
+            <div class="input-wrapper">
+                <input type="text" value="" name="s" id="s" placeholder="输入搜索关键字">
+            </div>
+            <input type="submit" id="searchsubmit" value="搜索">
+        </form>
+    </div>
+<div id="text-34" class="widget widget_text">			<div class="textwidget"><div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://top.jobbole.com?utm_source=jobboleblog-sidebar" target="_blank"><img src="http://jbcdn2.b0.upaiyun.com/2014/07/53a397f357d0212df7f0f4dbb2f33732.jpg" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://top.jobbole.com?utm_source=jobboleblog-sidebar" target="_blank">伯乐头条 &#8211; 分享和发现原创</a><br /> 为作者带来更多读者；为读者筛选优质内容；专注IT互联网。</p>
+</p></div>
+<div class="clear"></div>
+</div>
+</div>
+		</div><div id="text-43" class="widget widget_text">			<div class="textwidget"><p><script language=javascript> 
+var randomNum = Math.round(Math.random()*2);
+var image=new Array(3);
+image[0]="http://ww1.sinaimg.cn/mw690/bfdcef89gw1esl9czo4gfj208c06yjsb.jpg";
+image[1]="http://ww1.sinaimg.cn/mw690/bfdcef89gw1esl9d415cdj208c06yq3x.jpg";
+image[2]="http://ww2.sinaimg.cn/mw690/bfdcef89gw1esl9cfmp60j208c06ywfg.jpg";
+var imageUrl=image[randomNum];
+var urls=new Array(3);
+urls[0]="http://e.jikexueyuan.com/bootstrap.html?hmsr=job_banner_bootstrap_05.28";
+urls[1]="http://e.jikexueyuan.com/python.html?hmsr=job_banner_python_05.28";
+urls[2]="http://e.jikexueyuan.com/cplus.html?hmsr=job_banner_cplus_05.28";
+var url = urls[randomNum];
+var adHTML = "<a href='"+url+"' target='_blank'><img src='"+imageUrl+"' border='0'></a>";
+document.write(adHTML);
+</script></p>
+</div>
+		</div><div class="tabs tabbed_widget"><ul class="nav clearfix"><li><a id="link-tab1" href="#tab1" title="本周热门文章">本周热门文章</a></li><li><a id="link-tab2" href="#tab2" title="本月热门文章">本月热门文章</a></li><li><a id="link-tab3" href="#tab3" title="热门标签">热门标签</a></li></ul><div id="tab1" class="tab"><div class="floated-thumb">
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">0</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87300/" title="软件工程师的创业陷阱：接私活">软件工程师的创业陷阱：接私活</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">1</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87158/" title="浅谈排队论">浅谈排队论</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta ">
+
+                        <p>
+                            <span class="numb">2</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87194/" title="林仕鼎：系统架构领域的一些学习材料">林仕鼎：系统架构领域的一些学习材料</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">3</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87216/" title="SourceForge分发的GIMP安装包开始捆绑推广软件">SF分发的GIMP安装包开始捆绑推广软件</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">4</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87203/" title="信息图：软件工程师薪福指南">信息图：软件工程师薪福指南</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">5</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87281/" title="为什么打断 15 分钟的代价是 1 个小时">为什么打断 15 分钟的代价是 1 个小时</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">6</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87278/" title="Tmux 入门介绍">Tmux 入门介绍</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta ">
+
+                        <p>
+                            <span class="numb">7</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87267/" title="一位俄罗斯程序员移民美国的故事">一位俄罗斯程序员移民美国的故事</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta ">
+
+                        <p>
+                            <span class="numb">8</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87159/" title="SQL on Hadoop 的真相（2）">SQL on Hadoop 的真相（2）</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">9</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87315/" title="我的MYSQL学习心得（1） ：简单语法">我的MYSQL学习心得（1） ：简单语法</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                </div></div><div id="tab2" class="tab"><div class="floated-thumb">
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta ">
+
+                        <p>
+                            <span class="numb">0</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/84506/" title="老码农教你在 StackOverflow 上谈笑风生">老码农教你在 StackOverflow 上谈笑风生</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta ">
+
+                        <p>
+                            <span class="numb">1</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87160/" title="关于 StackOverflow 上评论风格的争议">关于 StackOverflow 上评论风格的争议</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">2</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/86649/" title="新加坡总理公开多年前写的数独程序源码">新加坡总理李显龙晒数独程序源码</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta ">
+
+                        <p>
+                            <span class="numb">3</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/86892/" title="老菜鸟致青春，程序员应该选择 Java 还是 C#">程序员应该选择 Java 还是 C#</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">4</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87300/" title="软件工程师的创业陷阱：接私活">软件工程师的创业陷阱：接私活</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">5</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/86709/" title="用信号量解决进程的同步与互斥探讨">用信号量解决进程的同步与互斥探讨</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">6</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/86843/" title="C++对象模型">C++对象模型</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">7</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/85139/" title="小宝宝半夜老是哭，程序员爸爸设计了这个APP">小孩半夜总哭，程序员爸爸设计了这个APP</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">8</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/86836/" title="C++的函数重载">C++的函数重载</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">9</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/86900/" title="高效程序员的 5 种角色">高效程序员的 5 种角色</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                </div></div><div id="tab3" class="tab"><p><a href='http://blog.jobbole.com/tag/net/' class='tag-link-1636' title='68 个话题' style='font-size: 11.347826086957px;'>.Net</a>
+<a href='http://blog.jobbole.com/tag/android/' class='tag-link-467' title='143 个话题' style='font-size: 14.594202898551px;'>Android</a>
+<a href='http://blog.jobbole.com/tag/apple/' class='tag-link-180' title='34 个话题' style='font-size: 8.304347826087px;'>apple</a>
+<a href='http://blog.jobbole.com/tag/bug/' class='tag-link-218' title='53 个话题' style='font-size: 10.231884057971px;'>Bug</a>
+<a href='http://blog.jobbole.com/tag/cpp/' class='tag-link-807' title='34 个话题' style='font-size: 8.304347826087px;'>C++</a>
+<a href='http://blog.jobbole.com/tag/chrome/' class='tag-link-527' title='32 个话题' style='font-size: 8.1014492753623px;'>Chrome</a>
+<a href='http://blog.jobbole.com/tag/c-sharp/' class='tag-link-2197' title='35 个话题' style='font-size: 8.5072463768116px;'>C sharp</a>
+<a href='http://blog.jobbole.com/tag/css/' class='tag-link-711' title='65 个话题' style='font-size: 11.144927536232px;'>CSS</a>
+<a href='http://blog.jobbole.com/tag/c/' class='tag-link-757' title='141 个话题' style='font-size: 14.492753623188px;'>C语言</a>
+<a href='http://blog.jobbole.com/tag/facebook/' class='tag-link-164' title='98 个话题' style='font-size: 12.971014492754px;'>Facebook</a>
+<a href='http://blog.jobbole.com/tag/featuredpost/' class='tag-link-2241' title='540 个话题' style='font-size: 20.376811594203px;'>featuredpost</a>
+<a href='http://blog.jobbole.com/tag/git/' class='tag-link-885' title='65 个话题' style='font-size: 11.144927536232px;'>Git</a>
+<a href='http://blog.jobbole.com/tag/github/' class='tag-link-1253' title='58 个话题' style='font-size: 10.63768115942px;'>Github</a>
+<a href='http://blog.jobbole.com/tag/google/' class='tag-link-198' title='250 个话题' style='font-size: 17.028985507246px;'>Google</a>
+<a href='http://blog.jobbole.com/tag/hadoop/' class='tag-link-862' title='32 个话题' style='font-size: 8.1014492753623px;'>Hadoop</a>
+<a href='http://blog.jobbole.com/tag/html5/' class='tag-link-182' title='81 个话题' style='font-size: 12.057971014493px;'>HTML5</a>
+<a href='http://blog.jobbole.com/tag/ie/' class='tag-link-1531' title='35 个话题' style='font-size: 8.5072463768116px;'>IE</a>
+<a href='http://blog.jobbole.com/tag/ie-css-bug/' class='tag-link-2785' title='31 个话题' style='font-size: 8px;'>IE CSS Bug</a>
+<a href='http://blog.jobbole.com/tag/ios/' class='tag-link-860' title='210 个话题' style='font-size: 16.217391304348px;'>iOS</a>
+<a href='http://blog.jobbole.com/tag/it/' class='tag-link-513' title='43 个话题' style='font-size: 9.3188405797101px;'>IT</a>
+<a href='http://blog.jobbole.com/tag/java/' class='tag-link-457' title='134 个话题' style='font-size: 14.289855072464px;'>java</a>
+<a href='http://blog.jobbole.com/tag/javascript/' class='tag-link-683' title='268 个话题' style='font-size: 17.333333333333px;'>Javascript</a>
+<a href='http://blog.jobbole.com/tag/jquery/' class='tag-link-459' title='56 个话题' style='font-size: 10.536231884058px;'>jQuery</a>
+<a href='http://blog.jobbole.com/tag/linux/' class='tag-link-190' title='195 个话题' style='font-size: 15.913043478261px;'>Linux</a>
+<a href='http://blog.jobbole.com/tag/mysql/' class='tag-link-191' title='54 个话题' style='font-size: 10.333333333333px;'>MySQL</a>
+<a href='http://blog.jobbole.com/tag/node-js/' class='tag-link-896' title='43 个话题' style='font-size: 9.3188405797101px;'>Node.js</a>
+<a href='http://blog.jobbole.com/tag/nosql/' class='tag-link-967' title='34 个话题' style='font-size: 8.304347826087px;'>NoSQL</a>
+<a href='http://blog.jobbole.com/tag/objective-c/' class='tag-link-829' title='37 个话题' style='font-size: 8.7101449275362px;'>Objective-C</a>
+<a href='http://blog.jobbole.com/tag/php/' class='tag-link-168' title='75 个话题' style='font-size: 11.753623188406px;'>php</a>
+<a href='http://blog.jobbole.com/tag/python/' class='tag-link-663' title='164 个话题' style='font-size: 15.202898550725px;'>Python</a>
+<a href='http://blog.jobbole.com/tag/ruby/' class='tag-link-647' title='37 个话题' style='font-size: 8.7101449275362px;'>Ruby</a>
+<a href='http://blog.jobbole.com/tag/soho/' class='tag-link-153' title='39 个话题' style='font-size: 8.9130434782609px;'>soho</a>
+<a href='http://blog.jobbole.com/tag/sql-server/' class='tag-link-2681' title='54 个话题' style='font-size: 10.333333333333px;'>SQL Server</a>
+<a href='http://blog.jobbole.com/tag/tiobe/' class='tag-link-1493' title='32 个话题' style='font-size: 8.1014492753623px;'>TIOBE</a>
+<a href='http://blog.jobbole.com/tag/twitter/' class='tag-link-419' title='33 个话题' style='font-size: 8.2028985507246px;'>Twitter</a>
+<a href='http://blog.jobbole.com/tag/ui/' class='tag-link-1143' title='32 个话题' style='font-size: 8.1014492753623px;'>UI</a>
+<a href='http://blog.jobbole.com/tag/web-fundamentals/' class='tag-link-3560' title='38 个话题' style='font-size: 8.8115942028986px;'>web fundamentals</a>
+<a href='http://blog.jobbole.com/tag/web%e5%bc%80%e5%8f%91/' class='tag-link-493' title='118 个话题' style='font-size: 13.782608695652px;'>Web开发</a>
+<a href='http://blog.jobbole.com/tag/%e4%b9%94%e5%b8%83%e6%96%af/' class='tag-link-301' title='32 个话题' style='font-size: 8.1014492753623px;'>乔布斯</a>
+<a href='http://blog.jobbole.com/tag/book/' class='tag-link-1022' title='46 个话题' style='font-size: 9.6231884057971px;'>书籍</a>
+<a href='http://blog.jobbole.com/tag/%e4%ba%92%e8%81%94%e7%bd%91/' class='tag-link-40' title='80 个话题' style='font-size: 12.057971014493px;'>互联网</a>
+<a href='http://blog.jobbole.com/tag/%e4%ba%a4%e4%ba%92%e8%ae%be%e8%ae%a1/' class='tag-link-648' title='65 个话题' style='font-size: 11.144927536232px;'>交互设计</a>
+<a href='http://blog.jobbole.com/tag/%e4%ba%a7%e5%93%81/' class='tag-link-522' title='59 个话题' style='font-size: 10.739130434783px;'>产品</a>
+<a href='http://blog.jobbole.com/tag/%e4%ba%a7%e5%93%81%e7%bb%8f%e7%90%86/' class='tag-link-549' title='48 个话题' style='font-size: 9.8260869565217px;'>产品经理</a>
+<a href='http://blog.jobbole.com/tag/%e4%bb%a3%e7%a0%81/' class='tag-link-489' title='96 个话题' style='font-size: 12.869565217391px;'>代码</a>
+<a href='http://blog.jobbole.com/tag/startup/' class='tag-link-4' title='201 个话题' style='font-size: 16.115942028986px;'>创业</a>
+<a href='http://blog.jobbole.com/tag/%e5%89%8d%e7%ab%af/' class='tag-link-1138' title='59 个话题' style='font-size: 10.739130434783px;'>前端</a>
+<a href='http://blog.jobbole.com/tag/%e5%89%8d%e7%ab%af%e5%bc%80%e5%8f%91/' class='tag-link-775' title='33 个话题' style='font-size: 8.2028985507246px;'>前端开发</a>
+<a href='http://blog.jobbole.com/tag/%e5%9b%a2%e9%98%9f/' class='tag-link-551' title='55 个话题' style='font-size: 10.434782608696px;'>团队</a>
+<a href='http://blog.jobbole.com/tag/%e5%a4%a7%e6%95%b0%e6%8d%ae/' class='tag-link-884' title='40 个话题' style='font-size: 9.0144927536232px;'>大数据</a>
+<a href='http://blog.jobbole.com/tag/female-programmer/' class='tag-link-1460' title='51 个话题' style='font-size: 10.130434782609px;'>女程序员</a>
+<a href='http://blog.jobbole.com/tag/%e5%a8%81%e5%ae%a2/' class='tag-link-129' title='40 个话题' style='font-size: 9.0144927536232px;'>威客</a>
+<a href='http://blog.jobbole.com/tag/%e5%ae%89%e5%85%a8/' class='tag-link-1214' title='119 个话题' style='font-size: 13.782608695652px;'>安全</a>
+<a href='http://blog.jobbole.com/tag/%e5%ae%89%e5%8d%93%e5%bc%80%e5%8f%91/' class='tag-link-3362' title='59 个话题' style='font-size: 10.739130434783px;'>安卓开发</a>
+<a href='http://blog.jobbole.com/tag/%e5%ae%a2%e6%88%b7/' class='tag-link-174' title='51 个话题' style='font-size: 10.130434782609px;'>客户</a>
+<a href='http://blog.jobbole.com/tag/%e5%b7%a5%e5%85%b7/' class='tag-link-18' title='113 个话题' style='font-size: 13.579710144928px;'>工具</a>
+<a href='http://blog.jobbole.com/tag/%e5%b7%a5%e7%a8%8b%e5%b8%88/' class='tag-link-470' title='37 个话题' style='font-size: 8.7101449275362px;'>工程师</a>
+<a href='http://blog.jobbole.com/tag/%e5%bb%ba%e8%ae%ae/' class='tag-link-512' title='31 个话题' style='font-size: 8px;'>建议</a>
+<a href='http://blog.jobbole.com/tag/%e5%bc%80%e5%8f%91%e4%ba%ba%e5%91%98/' class='tag-link-370' title='123 个话题' style='font-size: 13.884057971014px;'>开发人员</a>
+<a href='http://blog.jobbole.com/tag/%e5%bc%80%e6%ba%90/' class='tag-link-196' title='79 个话题' style='font-size: 11.95652173913px;'>开源</a>
+<a href='http://blog.jobbole.com/tag/%e5%be%ae%e8%bd%af/' class='tag-link-429' title='84 个话题' style='font-size: 12.260869565217px;'>微软</a>
+<a href='http://blog.jobbole.com/tag/%e6%8a%80%e6%9c%af%e9%9d%a2%e8%af%95/' class='tag-link-1876' title='39 个话题' style='font-size: 8.9130434782609px;'>技术面试</a>
+<a href='http://blog.jobbole.com/tag/%e6%8b%9b%e8%81%98/' class='tag-link-326' title='47 个话题' style='font-size: 9.7246376811594px;'>招聘</a>
+<a href='http://blog.jobbole.com/tag/%e6%95%88%e7%8e%87/' class='tag-link-415' title='45 个话题' style='font-size: 9.5217391304348px;'>效率</a>
+<a href='http://blog.jobbole.com/tag/database/' class='tag-link-353' title='135 个话题' style='font-size: 14.289855072464px;'>数据库</a>
+<a href='http://blog.jobbole.com/tag/time-management/' class='tag-link-271' title='42 个话题' style='font-size: 9.2173913043478px;'>时间管理</a>
+<a href='http://blog.jobbole.com/tag/%e6%9c%8d%e5%8a%a1%e5%99%a8/' class='tag-link-311' title='32 个话题' style='font-size: 8.1014492753623px;'>服务器</a>
+<a href='http://blog.jobbole.com/tag/%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0/' class='tag-link-1910' title='50 个话题' style='font-size: 10.028985507246px;'>机器学习</a>
+<a href='http://blog.jobbole.com/tag/%e6%9e%b6%e6%9e%84/' class='tag-link-603' title='53 个话题' style='font-size: 10.231884057971px;'>架构</a>
+<a href='http://blog.jobbole.com/tag/%e6%b5%8b%e8%af%95/' class='tag-link-678' title='79 个话题' style='font-size: 11.95652173913px;'>测试</a>
+<a href='http://blog.jobbole.com/tag/%e6%b5%8f%e8%a7%88%e5%99%a8/' class='tag-link-63' title='50 个话题' style='font-size: 10.028985507246px;'>浏览器</a>
+<a href='http://blog.jobbole.com/tag/%e6%b8%b8%e6%88%8f/' class='tag-link-797' title='59 个话题' style='font-size: 10.739130434783px;'>游戏</a>
+<a href='http://blog.jobbole.com/tag/%e6%bc%ab%e7%94%bb/' class='tag-link-503' title='32 个话题' style='font-size: 8.1014492753623px;'>漫画</a>
+<a href='http://blog.jobbole.com/tag/%e7%94%a8%e6%88%b7/' class='tag-link-460' title='56 个话题' style='font-size: 10.536231884058px;'>用户</a>
+<a href='http://blog.jobbole.com/tag/%e7%94%a8%e6%88%b7%e4%bd%93%e9%aa%8c/' class='tag-link-580' title='99 个话题' style='font-size: 12.971014492754px;'>用户体验</a>
+<a href='http://blog.jobbole.com/tag/%e7%a0%81%e5%86%9c%e6%95%85%e4%ba%8b/' class='tag-link-2863' title='54 个话题' style='font-size: 10.333333333333px;'>码农故事</a>
+<a href='http://blog.jobbole.com/tag/%e7%a7%bb%e5%8a%a8%e5%ba%94%e7%94%a8/' class='tag-link-654' title='67 个话题' style='font-size: 11.246376811594px;'>移动应用</a>
+<a href='http://blog.jobbole.com/tag/%e7%a8%8b%e5%ba%8f%e5%91%98/' class='tag-link-368' title='778 个话题' style='font-size: 22px;'>程序员</a>
+<a href='http://blog.jobbole.com/tag/algorithm/' class='tag-link-650' title='171 个话题' style='font-size: 15.405797101449px;'>算法</a>
+<a href='http://blog.jobbole.com/tag/management/' class='tag-link-32' title='37 个话题' style='font-size: 8.7101449275362px;'>管理</a>
+<a href='http://blog.jobbole.com/tag/%e7%bc%96%e7%a8%8b/' class='tag-link-389' title='127 个话题' style='font-size: 14.086956521739px;'>编程</a>
+<a href='http://blog.jobbole.com/tag/%e7%bc%96%e7%a8%8b%e8%af%ad%e8%a8%80/' class='tag-link-596' title='114 个话题' style='font-size: 13.579710144928px;'>编程语言</a>
+<a href='http://blog.jobbole.com/tag/%e7%bc%96%e7%a8%8b%e8%af%ad%e8%a8%80%e6%8e%92%e8%a1%8c%e6%a6%9c/' class='tag-link-1621' title='36 个话题' style='font-size: 8.6086956521739px;'>编程语言排行榜</a>
+<a href='http://blog.jobbole.com/tag/%e7%bd%91%e9%a1%b5%e8%ae%be%e8%ae%a1/' class='tag-link-454' title='73 个话题' style='font-size: 11.652173913043px;'>网页设计</a>
+<a href='http://blog.jobbole.com/tag/%e8%81%8c%e5%9c%ba/' class='tag-link-253' title='300 个话题' style='font-size: 17.840579710145px;'>职场</a>
+<a href='http://blog.jobbole.com/tag/%e8%87%aa%e7%94%b1%e8%81%8c%e4%b8%9a/' class='tag-link-315' title='128 个话题' style='font-size: 14.086956521739px;'>自由职业</a>
+<a href='http://blog.jobbole.com/tag/translation/' class='tag-link-49' title='40 个话题' style='font-size: 9.0144927536232px;'>英语</a>
+<a href='http://blog.jobbole.com/tag/%e8%8b%b9%e6%9e%9c/' class='tag-link-183' title='48 个话题' style='font-size: 9.8260869565217px;'>苹果</a>
+<a href='http://blog.jobbole.com/tag/%e8%90%a5%e9%94%80/' class='tag-link-262' title='34 个话题' style='font-size: 8.304347826087px;'>营销</a>
+<a href='http://blog.jobbole.com/tag/%e8%ae%be%e8%ae%a1/' class='tag-link-431' title='125 个话题' style='font-size: 13.985507246377px;'>设计</a>
+<a href='http://blog.jobbole.com/tag/%e8%ae%be%e8%ae%a1%e5%b8%88/' class='tag-link-436' title='104 个话题' style='font-size: 13.173913043478px;'>设计师</a>
+<a href='http://blog.jobbole.com/tag/%e8%ae%be%e8%ae%a1%e6%a8%a1%e5%bc%8f/' class='tag-link-1845' title='51 个话题' style='font-size: 10.130434782609px;'>设计模式</a>
+<a href='http://blog.jobbole.com/tag/%e8%b6%a3%e6%96%87/' class='tag-link-2105' title='43 个话题' style='font-size: 9.3188405797101px;'>趣文</a>
+<a href='http://blog.jobbole.com/tag/%e8%bd%af%e4%bb%b6%e5%b7%a5%e7%a8%8b%e5%b8%88/' class='tag-link-400' title='40 个话题' style='font-size: 9.0144927536232px;'>软件工程师</a>
+<a href='http://blog.jobbole.com/tag/%e8%bd%af%e4%bb%b6%e5%bc%80%e5%8f%91/' class='tag-link-38' title='76 个话题' style='font-size: 11.855072463768px;'>软件开发</a>
+<a href='http://blog.jobbole.com/tag/%e9%87%8d%e6%9e%84/' class='tag-link-728' title='31 个话题' style='font-size: 8px;'>重构</a>
+<a href='http://blog.jobbole.com/tag/%e9%9d%a2%e8%af%95/' class='tag-link-173' title='100 个话题' style='font-size: 12.971014492754px;'>面试</a>
+<a href='http://blog.jobbole.com/tag/%e9%a1%b9%e7%9b%ae/' class='tag-link-177' title='38 个话题' style='font-size: 8.8115942028986px;'>项目</a>
+<a href='http://blog.jobbole.com/tag/%e9%a1%b9%e7%9b%ae%e7%bb%8f%e7%90%86/' class='tag-link-1049' title='38 个话题' style='font-size: 8.8115942028986px;'>项目经理</a>
+<a href='http://blog.jobbole.com/tag/%e9%bb%91%e5%ae%a2/' class='tag-link-617' title='56 个话题' style='font-size: 10.536231884058px;'>黑客</a></p></div></div><div id="text-94" class="widget widget_text">			<div class="textwidget"><p><script language=javascript> 
+var randomNum = Math.round(Math.random()*1);
+var image=new Array(2);
+image[0]="http://ww2.sinaimg.cn/mw690/bfdcef89gw1es3vzh6634j208c03cjrs.jpg";
+image[1]="http://ww2.sinaimg.cn/mw690/bfdcef89gw1esrfkwa9xnj208c03cdhq.jpg";
+var imageUrl=image[randomNum];
+var urls=new Array(2);
+urls[0]="https://www.shiyanlou.com/courses/?f=jobbole_05.15";
+urls[1]="https://www.shiyanlou.com/jobs/?jobid=3&#038;f=jobbole_06.04";
+var url = urls[randomNum];
+var adHTML = "<a href='"+url+"' target='_blank'><img src='"+imageUrl+"' border='0'></a>";
+document.write(adHTML);
+</script></p>
+</div>
+		</div>		<h3 class='widget-title'>最新评论（期待您也参与评论）</h3>
+		<ul>
+		
+					
+			<li id="rc-comment-152397" class="rc-item rc-comment rc-clearfix">
+				<img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://jbcdn2.b0.upaiyun.com/2015/04/8fbdaaa5ea6d3b49c8c1c825aafeb5d9.png">
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/87300/#comment-152397" rel="nofollow">软件工程师的创业陷阱：接私活</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				确实是这样！最近接了几个私活，心里感觉很不爽……自己的想法得不到实现，总是在纠结做的合不合客户要求；...									<a class="rc-reviewer" target="_blank" href="http://www.jobbole.com/members/jason520" rel="nofollow external"> jason</a>
+								</div>
+			</li>
+			
+					
+			<li id="rc-comment-152396" class="rc-item rc-comment rc-clearfix">
+				<img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://jbcdn2.b0.upaiyun.com/2015/04/8fbdaaa5ea6d3b49c8c1c825aafeb5d9.png">
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/471/#comment-152396" rel="nofollow">阅读优秀代码是提高开发人员修为的一...</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				赞，阅读新代码确实可以学到好多东西，每次读懂代码时都会有一种喜悦感和小小的成就感哈，好的代码永远是我...									<a class="rc-reviewer" target="_blank" href="http://www.jobbole.com/members/ydianh" rel="nofollow external"> elmseed</a>
+								</div>
+			</li>
+			
+					
+			<li id="rc-comment-152395" class="rc-item rc-comment rc-clearfix">
+				<img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://jbcdn2.b0.upaiyun.com/2015/04/8fbdaaa5ea6d3b49c8c1c825aafeb5d9.png">
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/86900/#comment-152395" rel="nofollow">高效程序员的 5 种角色</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				哈哈。。。。挺有意思的。。5种的是cto。。									<a class="rc-reviewer" target="_blank" href="http://www.jobbole.com/members/ydianh" rel="nofollow external"> elmseed</a>
+								</div>
+			</li>
+			
+					
+			<li id="rc-comment-152394" class="rc-item rc-comment rc-clearfix">
+				<img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://jbcdn2.b0.upaiyun.com/2015/04/8fbdaaa5ea6d3b49c8c1c825aafeb5d9.png">
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/87059/#comment-152394" rel="nofollow">技术人员获得高薪有哪些谈判技巧？</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				赞。。。。。看了觉得是对自己的认知的归纳，不错。总结相当好，比较有助益，我觉得翻译然后发出来这种想法...									<a class="rc-reviewer" target="_blank" href="http://www.jobbole.com/members/ydianh" rel="nofollow external"> elmseed</a>
+								</div>
+			</li>
+			
+					
+			<li id="rc-comment-152393" class="rc-item rc-comment rc-clearfix">
+				<img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://jbcdn2.b0.upaiyun.com/2015/04/8fbdaaa5ea6d3b49c8c1c825aafeb5d9.png">
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/87281/#comment-152393" rel="nofollow">为什么打断 15 分钟的代价是 1 ...</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				赞，深有同感，特别在构思的时候或者写一个比较长的逻辑的时候，打断是很要命的事情。。。事先把思路和要做...									<a class="rc-reviewer" target="_blank" href="http://www.jobbole.com/members/ydianh" rel="nofollow external"> elmseed</a>
+								</div>
+			</li>
+			
+					
+			<li id="rc-comment-152390" class="rc-item rc-comment rc-clearfix">
+				<img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://jbcdn2.b0.upaiyun.com/2015/04/8fbdaaa5ea6d3b49c8c1c825aafeb5d9.png">
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/87018/#comment-152390" rel="nofollow">算法题：删除 K 位数字</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				贪婪算法有问题，只能按顺序便利，没有真正按照数组的大小									<a class="rc-reviewer" target="_blank" href="http://www.jobbole.com/members/garykildall" rel="nofollow external"> 十字路口的黑猫</a>
+								</div>
+			</li>
+			
+					
+			<li id="rc-comment-152387" class="rc-item rc-comment rc-clearfix">
+				<img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://jbcdn2.b0.upaiyun.com/2015/04/8fbdaaa5ea6d3b49c8c1c825aafeb5d9.png">
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/84506/#comment-152387" rel="nofollow">老码农教你在 StackOverflow 上...</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				赞，确实应该常去StackOverflow，好多有意思的答案，或者能给大家启发，对学英语确实有好处。...									<a class="rc-reviewer" target="_blank" href="http://www.jobbole.com/members/ydianh" rel="nofollow external"> elmseed</a>
+								</div>
+			</li>
+			
+					
+			<li id="rc-comment-152386" class="rc-item rc-comment rc-clearfix">
+				<img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://jbcdn2.b0.upaiyun.com/2015/04/8fbdaaa5ea6d3b49c8c1c825aafeb5d9.png">
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/86843/#comment-152386" rel="nofollow">C++对象模型</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				图画的不错，请问用什么软件画的？									<a class="rc-reviewer" target="_blank" href="http://www.jobbole.com/members/chaogege" rel="nofollow external"> 善良超哥哥</a>
+								</div>
+			</li>
+			
+				
+		</ul>
+        <div id="text-96" class="widget widget_text">			<div class="textwidget"><p><a href="http://www.lagou.com/jobs/list_%E6%8A%80%E6%9C%AF?kd=%E6%8A%80%E6%9C%AF&#038;spc=&#038;pl=&#038;gj=&#038;xl=&#038;yx=&#038;gx=&#038;st=&#038;labelWords=&#038;lc=&#038;workAddress=&#038;city=&#038;requestId=&#038;cmpid=AD__jobbole_banner_jishu" target="_blank"><img src="http://ww1.sinaimg.cn/mw690/bfdcef89gw1es3rzqmjtfj208c03c0sx.jpg" /></a></p>
+</div>
+		</div><div id="text-9" class="widget widget_text"><h3 class="widget-title">热点频道</h3>			<div class="textwidget"><div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://python.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank"><img src="http://top.jobbole.com/wp-content/uploads/sites/8/2014/07/36c4ed88b6ffefc5c83fce3881952875.png" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://python.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank">Python开发频道</a><br /> 汇集优质的Python技术文章和资源。人生苦短，我用Python！</p>
+</p></div>
+<div class="clear"></div>
+</div>
+<div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://web.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank"><img src="http://jbcdn2.b0.upaiyun.com/2014/12/34344d9a8b72f5be226b949b37f72d12.png" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://web.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank">前端开发频道</a><br />JavaScript, CSS, HTML5 这里有前端的技术干货！</p>
+</p></div>
+<div class="clear"></div>
+</div>
+<div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://android.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank"><img src="http://jbcdn2.b0.upaiyun.com/2014/12/6f9e08cead657d1159ca5af6eecb05d0.jpeg" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://android.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank">安卓开发频道</a><br />关注安卓移动开发业界动态，分享技术文章和优秀工具资源。</p>
+</p></div>
+<div class="clear"></div>
+</div>
+<div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://ios.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank"><img src="http://jbcdn2.b0.upaiyun.com/2014/12/12ee3b51be5e4bd87bf7a4c8895cc088.jpg" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://ios.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank">iOS开发频道</a><br />关注iOS移动开发业界动态，分享技术文章和优秀工具资源。</p>
+</p></div>
+<div class="clear"></div>
+</div>
+</div>
+		</div><div id="text-85" class="widget widget_text">			<div class="textwidget"><p><a href='http://blog.jobbole.com/84342/' target='_blank'><img src='http://jbcdn2.b0.upaiyun.com/2015/02/e5689e5b541cf10748fd6aef2a6aedbd.jpg' /></a></p>
+</div>
+		</div><div id="text-79" class="widget widget_text"><h3 class="widget-title">推荐关注</h3>			<div class="textwidget"><div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://top.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank"><img src="http://jbcdn2.b0.upaiyun.com/2014/07/53a397f357d0212df7f0f4dbb2f33732.jpg" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://top.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank">伯乐头条</a><br />为作者带来更多读者；为读者筛选优质内容；专注IT互联网。</p>
+</p></div>
+<div class="clear"></div>
+</div>
+<div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://fanyi.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank"><img src="http://jbcdn2.b0.upaiyun.com/2014/11/7561219c1abc47e8c9653f0edb65c93c.jpg" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://fanyi.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank">伯乐翻译小组</a><br />由数百名译者组成，立志翻译传播优秀的外文技术干货。</p>
+</p></div>
+<div class="clear"></div>
+</div>
+<div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://date.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank"><img src="http://jbcdn2.b0.upaiyun.com/2014/11/65cc2ac965f6b213ee056d29eda39cbb.jpg" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://date.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank">程序员相亲</a><br />一个专门为IT单身男女服务的征婚传播平台。</p>
+</p></div>
+<div class="clear"></div>
+</div>
+<div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://hao.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank"><img src="http://jbcdn2.b0.upaiyun.com/2014/11/fd62c3d72eda679ca7f89f3965f2ee4e.png" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://hao.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank">资源导航</a><br />收录优秀的工具资源，覆盖开发、设计、产品和管理等。</p>
+</p></div>
+<div class="clear"></div>
+</div>
+</div>
+		</div><div id="text-80" class="widget widget_text">			<div class="textwidget"><p><a href="http://100offer.com/join/jobbole?utm_source=jobbole&#038;utm_medium=dis&#038;utm_campaign=jobbole" target="_blank"><img src="http://jbcdn2.b0.upaiyun.com/2015/01/c8573fd828815600e38fc52373fd3622.jpg" border="0" /></a></p>
+</div>
+		</div>	
+	<!-- BEGIN .container -->
+	<div class="container">
+	
+		<!-- BEGIN .grid-2 -->
+		<div class="grid-2">
+			
+						
+		</div>
+		<!-- END .grid-2 -->
+		
+		<!-- BEGIN .grid-2 -->
+		<div class="grid-2">
+			
+						
+		</div>
+		<!-- END .grid-2 -->
+		
+		<div class="clear"></div>
+			
+	</div>
+	<!-- END .container -->
+
+</div>
+<!-- END #sidebar -->
+<div class="clear"></div>	
+
+
+</div>
+<!-- END #wrapper -->
+
+<!-- BEGIN footer -->
+
+    <footer>
+
+        <!-- BEGIN .container -->
+        <div class="container">
+
+            <!-- BEGIN .grid-4 -->
+            <div class="grid-4">
+
+                <div id="text-3" class="widget widget_text"><h3 class="widget-title">关于伯乐在线博客</h3>			<div class="textwidget"><p>在这个信息爆炸的时代，人们已然被大量、快速并且简短的信息所包围。然而，我们相信：过多“快餐”式的阅读只会令人“虚胖”，缺乏实质的内涵。伯乐在线博客团队正试图以我们微薄的力量，把优秀的原创/译文分享给读者，做一个小而精的精选博客，为“快餐”添加一些“营养”元素。</p>
+<div id="aw_socialcounter_widget-2" class="widget aw_socialcounter_widget">
+<ul>
+<li>
+<a target="_blank" href="http://weibo.com/jobbole"><img class="alignleft" src="http://blog.jobbole.com/common_images/sina_32.png"  alt="关注我们的新浪微博" title="关注我们的新浪微博" /></a></p>
+<div class="view-rss"><a  target="_blank"  href="http://blog.jobbole.com/feed/" class="rss-link"><img class="alignleft" src="http://blog.jobbole.com/common_images/rss_32.png"  alt="RSS订阅" title="RSS订阅" /></a></div>
+</li>
+</ul>
+</div>
+</div>
+		</div>
+            </div>
+            <!-- END .grid-4 -->
+
+            <!-- BEGIN .grid-4 -->
+            <div class="grid-4">
+
+                <div id="text-7" class="widget widget_text"><h3 class="widget-title">欢迎关注更多频道</h3>			<div class="textwidget"><p><a href='http://top.jobbole.com/' target='_blank'>头条</a> &#8211; 分享和发现有价值的内容与观点<br />
+<a href='http://date.jobbole.com/' target='_blank'>相亲</a> &#8211; 为IT单身男女服务的征婚传播平台<br />
+<a href='http://hao.jobbole.com/' target='_blank'>资源</a> &#8211; 优秀的工具资源导航<br />
+<a href='http://fanyi.jobbole.com/' target='_blank'>翻译</a> &#8211; 翻译传播优秀的外文文章<br />
+<a href='http://blog.jobbole.com/' target='_blank'>博客</a> &#8211; 国内外的精选博客文章<br />
+<a href='http://web.jobbole.com/' target='_blank'>前端</a> &#8211; JavaScript, HTML5, CSS<br />
+<a href='http://android.jobbole.com/' target='_blank'>安卓</a> &#8211; 专注Android技术分享<br />
+<a href='http://ios.jobbole.com/' target='_blank'>iOS</a> &#8211; 专注iOS技术分享<br />
+<a href='http://www.importnew.com/' target='_blank'>Java</a> &#8211; 专注Java技术分享<br />
+<a href='http://python.jobbole.com/' target='_blank'>Python</a> &#8211; 专注Python技术分享</p>
+</div>
+		</div>
+            </div>
+            <!-- END .grid-4 -->
+
+            <!-- BEGIN .grid-4 -->
+            <div class="grid-4">
+
+                <div id="text-4" class="widget widget_text"><h3 class="widget-title">联系我们</h3>			<div class="textwidget"><p><strong>商务合作</strong></p>
+<p>Email：<a  href='mailto:bd@jobbole.com'>bd@Jobbole.com</a><br />
+QQ： 2302462408  （加好友请注明来意）</p>
+<p><strong>网站使用问题</strong></p>
+<p>请在<a  href='http://group.jobbole.com/category/feedback/'>站务小组</a>询问或者反馈</p>
+</div>
+		</div>
+            </div>
+            <!-- END .grid-4 -->
+
+            <div class="clear"></div>
+
+        </div>
+        <!-- END .container -->
+
+        <!-- BEGIN #bottom -->
+        <div id="bottom">
+
+            <!-- BEGIN .container -->
+            <div class="container">
+
+                <!-- BEGIN .grid-12 -->
+                <div class="grid-12">
+
+                    <p>&copy; 2015 伯乐在线
+                    <span style="margin-left: 40px;">
+                        <a href="http://www.jobbole.com">首页</a>&nbsp;&nbsp;
+                        <a href="http://top.jobbole.com">头条</a>&nbsp;&nbsp;
+                        <a href="http://blog.jobbole.com">博客</a>&nbsp;&nbsp;
+                        <a href="http://hao.jobbole.com">资源</a>&nbsp;&nbsp;
+                        <a href="http://fanyi.jobbole.com">翻译</a>&nbsp;&nbsp;
+                        <a href="http://group.jobbole.com">小组</a>&nbsp;&nbsp;
+                        <i class="fa fa-heart-o pinkiconcolor"></i> <a href="http://date.jobbole.com">相亲</a>
+                    </span>
+                <span style="float:right; ">
+                    本站由 <a href="http://www.ucloud.cn/" target="_blank">UCloud</a> 赞助云主机，<a href="http://www.qiniu.com/" target="_blank">七牛</a> 赞助云存储
+                </span>
+                    </p>
+
+                </div>
+                <!-- END .grid-12 -->
+
+                <div class="clear"></div>
+
+            </div>
+            <!-- END .container -->
+
+        </div>
+        <!-- END #bottom -->
+    </footer>
+
+<!-- END footer -->
+
+
+
+
+<!-- WP SyntaxHighlighter Ver.1.7.3 Begin -->
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shCore.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shLegacy.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shAutoloader.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushAppleScript.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushAS3.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushBash.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushColdFusion.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCpp.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCSharp.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCss.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDelphi.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDiff.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushErlang.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJava.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJavaFX.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJScript.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPerl.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPhp.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPlain.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPowerShell.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPython.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushRuby.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSass.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushScala.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSql.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushVb.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushXml.js?ver=3.0"></script>
+<script type="text/javascript">//<![CDATA[
+	SyntaxHighlighter.autoloader(
+	"applescript	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushAppleScript.js?ver=3.0"
+	,"as3 actionscript3	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushAS3.js?ver=3.0"
+	,"bash shell	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushBash.js?ver=3.0"
+	,"cf coldfusion	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushColdFusion.js?ver=3.0"
+	,"cpp c	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCpp.js?ver=3.0"
+	,"c# c-sharp csharp	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCSharp.js?ver=3.0"
+	,"css	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCss.js?ver=3.0"
+	,"delphi pas pascal	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDelphi.js?ver=3.0"
+	,"diff patch	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDiff.js?ver=3.0"
+	,"erl erlang	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushErlang.js?ver=3.0"
+	,"java	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJava.js?ver=3.0"
+	,"jfx javafx	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJavaFX.js?ver=3.0"
+	,"js jscript javascript	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJScript.js?ver=3.0"
+	,"perl pl	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPerl.js?ver=3.0"
+	,"php	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPhp.js?ver=3.0"
+	,"plain text	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPlain.js?ver=3.0"
+	,"ps powershell	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPowerShell.js?ver=3.0"
+	,"py python	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPython.js?ver=3.0"
+	,"rails ror ruby rb	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushRuby.js?ver=3.0"
+	,"sass scss	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSass.js?ver=3.0"
+	,"scala	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushScala.js?ver=3.0"
+	,"sql	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSql.js?ver=3.0"
+	,"vb vbnet	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushVb.js?ver=3.0"
+	,"xml xhtml xslt html	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushXml.js?ver=3.0"
+	);
+	SyntaxHighlighter.defaults['auto-links'] = false;
+	SyntaxHighlighter.defaults['quick-code'] = true;
+	SyntaxHighlighter.defaults['title'] = '';
+	SyntaxHighlighter.defaults['class-name'] = 'notranslate';
+	SyntaxHighlighter.defaults['collapse'] = false;
+	SyntaxHighlighter.defaults['first-line'] = 1;
+	SyntaxHighlighter.defaults['gutter'] = true;
+	SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+	SyntaxHighlighter.defaults['smart-tabs'] = true;
+	SyntaxHighlighter.defaults['tab-size'] = 4;
+	SyntaxHighlighter.defaults['toolbar'] = false;
+ SyntaxHighlighter.config.stripBrs = true;
+	SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+	SyntaxHighlighter.config.strings.help = '?';
+	SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+	SyntaxHighlighter.config.strings.noBrush = "Can't find brush for: ";
+	SyntaxHighlighter.config.strings.brushNotHtmlScript = "Brush wasn't configured for html-script option: ";
+	SyntaxHighlighter.all();
+	dp.SyntaxHighlighter.HighlightAll('code')
+//]]></script>
+<!-- WP SyntaxHighlighter Ver.1.7.3 End -->
+<!-- Lightbox Plus ColorBox v2.6/1.3.32 - 2013.01.24 - Message: 0-->
+<script type="text/javascript">
+jQuery(document).ready(function($){
+  $("a[rel*=lightbox]").colorbox({speed:450,initialWidth:"300",initialHeight:"100",opacity:0.8,loop:false,scrolling:false,escKey:false,arrowKey:false,top:false,right:false,bottom:false,left:false});
+});
+</script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var thickboxL10n = {"next":"\u4e0b\u4e00\u9875 >","prev":"< \u4e0a\u4e00\u9875","image":"\u56fe\u50cf","of":"\/","close":"\u5173\u95ed","noiframes":"\u8fd9\u4e2a\u529f\u80fd\u9700\u8981 iframe \u7684\u652f\u6301\u3002\u60a8\u53ef\u80fd\u7981\u6b62\u4e86 iframe \u7684\u663e\u793a\uff0c\u6216\u60a8\u7684\u6d4f\u89c8\u5668\u4e0d\u652f\u6301\u6b64\u529f\u80fd\u3002","loadingAnimation":"http:\/\/blog.jobbole.com\/wp-includes\/js\/thickbox\/loadingAnimation.gif","closeImage":"http:\/\/blog.jobbole.com\/wp-includes\/js\/thickbox\/tb-close.png"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-includes/js/thickbox/thickbox.js?ver=3.1-20121105'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-includes/js/underscore.min.js?ver=1.4.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-includes/js/shortcode.min.js?ver=3.5.2'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-admin/js/media-upload.min.js?ver=3.5.2'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var pollsL10n = {"ajax_url":"http:\/\/blog.jobbole.com\/wp-admin\/admin-ajax.php","text_wait":"Your last request is still being processed. Please wait a while ...","text_valid":"Please choose a valid poll answer.","text_multiple":"\u6700\u591a\u53ea\u5141\u8bb8\u6295\u7684\u9009\u9879\uff1a","show_loading":"1","show_fading":"1"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/plugins/wp-polls/polls-js.js?ver=2.63'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/ready.js?ver=1.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/easing.js?ver=1.3'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/superfish.js?ver=1.4.8'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/validate.js?ver=1.9.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/touchwipe.js?ver=1.1.1'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/caroufredsel.js?ver=5.5.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/flexslider.js?ver=2.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/jplayer.js?ver=2.1.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/fitvids.js?ver=1.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/selectnav.js?ver=0.1'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/effects.js?ver=1.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/plugins/lightbox-plus/js/jquery.colorbox.1.3.32.js?ver=1.3.32'></script>
+
+
+<div id="full-btm" style="position:fixed; left:50%; top:550px;  z-index:100; text-align:center; cursor:pointer;">
+<a><img src="http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/img/back-btm.png" width="20" border=0 alt="跳到底部" title="跳到底部"></a>
+</div>
+
+<script type="text/javascript">
+jQuery('#full-btm').click(function(){
+    jQuery('html, body').animate({scrollTop:jQuery(document).height()}, 'slow');
+    return false;
+});
+</script>
+
+<div id="full-top" style="position:fixed; left:50%; top:520px; margin-left:495px; z-index:100; text-align:center; cursor:pointer;">
+<a><img src="http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/img/back-top.png" width="20" border=0 alt="返回顶部" title="返回顶部"></a>
+</div>
+
+<script type="text/javascript">
+jQuery('#full-top').click(function(){
+    jQuery('html, body').animate({scrollTop:0}, 'slow');
+    return false;
+});
+
+</script>
+
+<!-- script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','/_assets/js/analytics.js','ga');
+
+    ga('create', 'UA-15621043-1', 'jobbole.com');
+    ga('send', 'pageview');
+
+</script -->
+
+</body>
+<!-- END body -->
+
+</html>
+<!-- END html -->
