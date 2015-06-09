@@ -1,0 +1,2178 @@
+<!DOCTYPE html>   
+<!--[if lt IE 7 ]> <html lang="en" class="no-js ie6"> <![endif]-->
+<!--[if IE 7 ]> <html lang="en" class="no-js ie7"> <![endif]-->
+<!--[if IE 8 ]> <html lang="en" class="no-js ie8"> <![endif]-->
+<!--[if IE 9 ]> <html lang="en" class="no-js ie9"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html lang="zh-CN" prefix="og: http://ogp.me/ns#" class="no-js"> <!--<![endif]-->
+
+
+<!-- BEGIN head -->
+<head>
+
+	<!-- Title -->
+	<title>我的MYSQL学习心得（17） ： 复制 - 博客 - 伯乐在线</title>
+	
+	<!-- Meta Tags -->
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	
+	<!-- Favicon & Mobileicon -->
+	<link rel="shortcut icon" href="http://jbcdn2.b0.upaiyun.com/2013/12/favicon.png" />
+	<link rel="apple-touch-icon" href="http://jbcdn2.b0.upaiyun.com/2013/12/jobbole-blog-logo-mobile.png" />
+	
+	<!-- RSS, Atom & Pingbacks -->
+		<link rel="alternate" title="博客 &#8211; 伯乐在线 RSS Feed" href="http://blog.jobbole.com/feed/" />
+		<link rel="alternate" title="RSS .92" href="http://blog.jobbole.com/feed/rss/" />
+	<link rel="alternate" title="Atom 0.3" href="http://blog.jobbole.com/feed/atom/" />
+	<link rel="pingback" href="http://blog.jobbole.com/xmlrpc.php" />
+	
+	<!-- Theme Hook -->
+	
+<!-- This site is optimized with the Yoast WordPress SEO plugin v1.4.13 - http://yoast.com/wordpress/seo/ -->
+<meta name="description" content="最近把大学时候的ORACLE教程书本翻出来看，真的是感触良多，以前在学校的时候，每次ORACLE测验和考试都是不合格的，期末的时候靠补考才勉强过关。大家看到下图的封面应该知道大学教我们ORACLE课程的老师，没错，他就是李爱武老师"/>
+<link rel="canonical" href="http://blog.jobbole.com/87369/" />
+<meta property='og:locale' content='zh_CN'/>
+<meta property='og:type' content='article'/>
+<meta property='og:title' content='我的MYSQL学习心得（17） ： 复制 - 博客 - 伯乐在线'/>
+<meta property='og:description' content='最近把大学时候的ORACLE教程书本翻出来看，真的是感触良多，以前在学校的时候，每次ORACLE测验和考试都是不合格的，期末的时候靠补考才勉强过关。大家看到下图的封面应该知道大学教我们ORACLE课程的老师，没错，他就是李爱武老师'/>
+<meta property='og:url' content='http://blog.jobbole.com/87369/'/>
+<meta property='og:site_name' content='博客 - 伯乐在线'/>
+<meta property='og:image' content='http://ww1.sinaimg.cn/mw690/6941baebgw1esq45baqeqj20k00qoadj.jpg'/>
+<meta property='og:image' content='http://ww3.sinaimg.cn/mw690/6941baebgw1esq45an4ypj20dj03raaj.jpg'/>
+<meta property='og:image' content='http://ww2.sinaimg.cn/mw690/6941baebgw1esq45a4uprj20cp03hjrr.jpg'/>
+<meta property='og:image' content='http://ww2.sinaimg.cn/mw690/6941baebgw1esq459diqwj20dn05mjro.jpg'/>
+<meta property='og:image' content='http://ww2.sinaimg.cn/mw690/6941baebgw1esq458o0egj208r06sgly.jpg'/>
+<meta property='og:image' content='http://ww3.sinaimg.cn/mw690/6941baebgw1esq456643zj20ae04wmxf.jpg'/>
+<meta property='og:image' content='http://ww2.sinaimg.cn/mw690/6941baebgw1esq4559wgfj20dy02jgls.jpg'/>
+<meta property='og:image' content='http://ww2.sinaimg.cn/mw690/6941baebgw1esq454p4i3j205t046glm.jpg'/>
+<meta property='og:image' content='http://ww3.sinaimg.cn/mw690/6941baebgw1esq453ozu9j20dy02jgls.jpg'/>
+<meta property='og:image' content='http://ww1.sinaimg.cn/mw690/6941baebgw1esq450pwolj209i03wt8m.jpg'/>
+<meta property='og:image' content='http://ww2.sinaimg.cn/mw690/6941baebgw1esq4501alaj20ln06kaax.jpg'/>
+<meta property='og:image' content='http://images.cnitblog.com/i/257159/201408/061930107254515.jpg'/>
+<meta property='og:image' content='http://ww2.sinaimg.cn/mw690/6941baebgw1esq44y8dl8j20fp0gmwh6.jpg'/>
+<meta property='og:image' content='http://ww4.sinaimg.cn/mw690/6941baebgw1esq44xk9s3j209q0dwq3s.jpg'/>
+<meta property='og:image' content='http://ww4.sinaimg.cn/mw690/6941baebgw1esq44wv0a6j20ao0gdwg6.jpg'/>
+<meta property='og:image' content='http://ww1.sinaimg.cn/mw690/6941baebgw1esq44w8f0ej20e203et8r.jpg'/>
+<meta property='og:image' content='http://ww1.sinaimg.cn/mw690/6941baebgw1esq44vlkyyj205o06idfx.jpg'/>
+<meta property='og:image' content='http://ww1.sinaimg.cn/mw690/6941baebgw1esq44v3nj2j205o06idfx.jpg'/>
+<meta property='og:image' content='http://ww4.sinaimg.cn/mw690/6941baebgw1esq44u7a42j20ab0bxgmr.jpg'/>
+<!-- / Yoast WordPress SEO plugin. -->
+
+<link rel='stylesheet' id='thickbox-css'  href='http://blog.jobbole.com/wp-includes/js/thickbox/thickbox.css?ver=20121105' type='text/css' media='all' />
+<link rel='stylesheet' id='jobbole-wp-css-css'  href='http://blog.jobbole.com/wp-content/plugins/jobbole-wp-plugin/css/jobbole-wp-plugin-1.0.css?ver=3.5.2' type='text/css' media='all' />
+<link rel='stylesheet' id='v48fv_images-css'  href='http://blog.jobbole.com/wp-content/plugins/mu-widgets/library/base/public/css/images.css?ver=1.2.v48fv' type='text/css' media='all' />
+<link rel='stylesheet' id='v48fv_front-css'  href='http://blog.jobbole.com/wp-content/plugins/mu-widgets/library/base/public/css/front.css?ver=1.2.v48fv' type='text/css' media='all' />
+<link rel='stylesheet' id='v48fv_common-css'  href='http://blog.jobbole.com/wp-content/plugins/mu-widgets/library/base/public/css/common.css?ver=1.2.v48fv' type='text/css' media='all' />
+<link rel='stylesheet' id='wp-polls-css'  href='http://blog.jobbole.com/wp-content/plugins/wp-polls/polls-css.css?ver=2.63' type='text/css' media='all' />
+<link rel='stylesheet' id='core3.0-css'  href='http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/styles/shCore.css?ver=3.0' type='text/css' media='all' />
+<link rel='stylesheet' id='core-Default3.0-css'  href='http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/styles/shCoreDefault.css?ver=3.0' type='text/css' media='all' />
+<link rel='stylesheet' id='theme-Default3.0-css'  href='http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/styles/shThemeDefault.css?ver=3.0' type='text/css' media='all' />
+<link rel='stylesheet' id='lightboxStyle-css'  href='http://blog.jobbole.com/wp-content/plugins/lightbox-plus/css/shadowed/colorbox.css?ver=2.6' type='text/css' media='screen' />
+<script type='text/javascript' src='http://blog.jobbole.com/wp-includes/js/jquery/jquery.js?ver=1.8.3'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-includes/js/comment-reply.min.js?ver=3.5.2'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var JobboleAjax = {"ajaxurl":"http:\/\/blog.jobbole.com\/wp-admin\/admin-ajax.php"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/plugins/jobbole-wp-plugin/js/jobbole-wp-plugin-1.0.js?ver=3.5.2'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/modernizr.js?ver=2.5.3'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/js/rc-textarea-hl.js?ver=1.3'></script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://blog.jobbole.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://blog.jobbole.com/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='http://blog.jobbole.com/?p=87369' />
+<script type="text/javascript">
+	window._wp_rp_static_base_url = 'http://dtmvdvtzf8rz0.cloudfront.net/static/';
+	window._wp_rp_wp_ajax_url = "http://blog.jobbole.com/wp-admin/admin-ajax.php";
+	window._wp_rp_plugin_version = '2.8';
+	window._wp_rp_post_id = '87369';
+	window._wp_rp_num_rel_posts = '10';
+</script>
+<style type="text/css">
+.wp-polls .pollbar {
+	margin: 1px;
+	font-size: 6px;
+	line-height: 8px;
+	height: 8px;
+	background: #0CA3C4;
+	border: 1px solid #fff;
+}
+</style>
+
+<!-- WP SyntaxHighlighter Ver.1.7.3 CSS for code Begin -->
+<style type='text/css'>
+.syntaxhighlighter,
+.syntaxhighlighter a,
+.syntaxhighlighter div,
+.syntaxhighlighter code,
+.syntaxhighlighter table,
+.syntaxhighlighter table td,
+.syntaxhighlighter table tr,
+.syntaxhighlighter table tbody,
+.syntaxhighlighter table thead,
+.syntaxhighlighter table caption,
+.syntaxhighlighter textarea {
+font-size: 12px !important; /* Set the font size in pixels */  
+font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace !important; /* Set the font type */  
+}
+.syntaxhighlighter table caption {
+/* For Title(Caption) */  
+font-size: 14px !important; /* Set the font size in pixels */  
+font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace !important; /* Set the font type */  
+}
+.syntaxhighlighter.nogutter td.code .line {
+/* Set the left padding space when no-gutter in ver. 3.0 */  
+padding-left: 3px !important;
+}
+.syntaxhighlighter {
+/* For Chrome/Safari(WebKit) */  
+/* Hide the superfluous vertical scrollbar in ver. 3.0 */  
+overflow-y: hidden !important;
+padding: 1px !important;
+}
+.widget-area.syntaxhighlighter a,
+.widget-area.syntaxhighlighter div,
+.widget-area.syntaxhighlighter code,
+.widget-area.syntaxhighlighter table,
+.widget-area.syntaxhighlighter table td,
+.widget-area.syntaxhighlighter table tr,
+.widget-area.syntaxhighlighter table tbody,
+.widget-area.syntaxhighlighter table thead,
+.widget-area.syntaxhighlighter table caption,
+.widget-area.syntaxhighlighter textarea {
+/* For Widget */  
+font-size: 14px !important; /* Set the font size in pixels */  
+font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace !important; /* Set the font type */  
+}
+.widget-area table caption {
+/* For Widget */  
+/* For Title(Caption) */  
+font-size: 10px !important; /* Set the font size in pixels */  
+font-family: "Consolas", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace !important; /* Set the font type */  
+}
+</style>
+<!-- WP SyntaxHighlighter Ver.1.7.3 CSS for code End -->
+	
+	<!-- CSS -->
+	<link rel="stylesheet" href="http://blog.jobbole.com/wp-content/themes/jobboleblogv3/style.css" media="screen" />
+	<style>
+				*::selection { background: #0099cc; }
+		*::-moz-selection { background: #0099cc; }
+		body {
+            background: #ffffff         }
+
+        a,
+        .tabs ul.nav li a:hover,
+        .tabs ul.nav li.active a,
+        .dropcap,
+        .toggle.hover .toggle-title,
+        li.comment cite a:hover,
+        h3.widget-title,
+        .post-meta .meta-title:hover,
+        .the-latest a:hover h4,
+        .aw_socialcounter_widget li a:hover,
+        .aw_tabbed_widget #tab-latest-comments a:hover
+        {
+            color: #0099cc;
+        }
+
+		a:hover { color: #b30000; }
+		input:focus, textarea:focus { border-color: #0099cc; }
+
+		#searchsubmit,
+        .highlight,
+        .aw_tabbed_widget .tabs ul.nav li.active a, footer .aw_tabbed_widget .tabs ul.nav li.active a,
+        #top .aw_tabbed_widget .tabs ul.nav li.active a,
+        .aw_tabbed_widget .tabs ul.nav li a:hover,
+        footer .aw_tabbed_widget .tabs ul.nav li a:hover,
+        #top .aw_tabbed_widget .tabs ul.nav li a:hover,
+        .aw_twitter_widget .twitter-icon, .testimonial-icon,
+        #top-closed:hover,
+        .flex-control-nav a:hover,
+        .flex-control-nav a.flex-active {
+            background-color: #0099cc;
+        }
+
+		.submit { background-color: #0099cc; border-color: #007399; }
+		.submit:hover { background-color: #b30000; border-color: #860000; }
+		#searchsubmit:hover { background-color: #b30000; }
+		.toggle.hover .toggle-icon { border-top-color: #0099cc; }
+		.toggle.hover.active .toggle-icon { border-bottom-color: #0099cc; }
+		.flex-direction-nav li .flex-prev:hover { border-right-color: #0099cc; }
+		.flex-direction-nav li .flex-next:hover { border-left-color: #0099cc; }
+		@media only screen and (min-width: 768px) and (max-width: 959px) {
+			.aw_tabbed_widget .tabs ul.nav li a:hover, .tabs ul.nav li.active a { color: #0099cc; }
+		}
+		@media screen and (max-width: 767px) {
+			.tabs ul.nav li a:hover, .tabs ul.nav li.active a { color: #0099cc; }
+		}
+	</style>
+
+	<!--[if IE 8]>
+		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<script src="http://ie7-js.googlecode.com/svn/version/2.1(beta4)/IE9.js"></script>
+    <![endif]-->
+
+	<!-- Links: RSS + Atom Syndication + Pingback etc. -->
+	<link rel="alternate" type="application/rss+xml" title="博客 &#8211; 伯乐在线 RSS Feed" href="http://blog.jobbole.com/feed/" />
+	<link rel="alternate" type="text/xml" title="RSS .92" href="http://blog.jobbole.com/feed/rss/" />
+	<link rel="alternate" type="application/atom+xml" title="Atom 0.3" href="http://blog.jobbole.com/feed/atom/" />
+	<link rel="pingback" href="http://blog.jobbole.com/xmlrpc.php" />
+
+<!-- END head -->
+</head>
+
+<!-- BEGIN body -->
+<body class="single single-post postid-87369 single-format-standard chrome">
+
+		
+	    <nav id="top-nav" class="menu-nav">
+
+        <!-- BEGIN .container -->
+        <div class="container">
+
+            <div class="grid-8 hide-on-480 hide-on-767">
+                <ul id="menu-main-menu" class="menu left">
+                    <li class="menu-item">
+                        <a href="http://www.jobbole.com">首页</a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="http://top.jobbole.com">头条</a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="http://blog.jobbole.com">博客</a>
+                    </li>
+                    <li class="menu-item">
+                        <span><a href="#">频道 <i class="fa fa-angle-double-down"></i></a></span>
+                        <ul class="sub-menu sf-js-enabled">
+                            <li class="menu-item"><a href="http://web.jobbole.com">Web前端</a></li>
+                            <li class="menu-item"><a href="http://python.jobbole.com">Python开发</a></li>
+                            <li class="menu-item"><a href="http://www.importnew.com/?utm_source=home-top-nav">Java技术</a></li>
+                            <li class="menu-item"><a href="http://android.jobbole.com">Android应用</a></li>
+                            <li class="menu-item"><a href="http://ios.jobbole.com">iOS应用</a></li>
+                        </ul>
+                    </li>
+                    <li class="menu-item">
+                        <a href="http://hao.jobbole.com">资源</a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="http://fanyi.jobbole.com">翻译</a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="http://group.jobbole.com">小组</a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="http://date.jobbole.com"><i class="fa fa-heart-o pinkiconcolor"></i> 相亲</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="grid-4">
+                <ul id="menu-main-menu" class="menu">
+
+                    <li class="menu-item hide-on-768-wider left">
+                        <span><a href="#">切换频道 <i class="fa fa-angle-double-down"></i></a></span>
+                        <ul class="sub-menu sf-js-enabled">
+                            <li class="menu-item"><a href="http://www.jobbole.com">首页</a></li>
+                            <li class="menu-item"><a href="http://top.jobbole.com">头条</a></li>
+                            <li class="menu-item"><a href="http://blog.jobbole.com">博客</a></li>
+                            <li class="menu-item"><a href="http://hao.jobbole.com">资源</a></li>
+                            <li class="menu-item"><a href="http://fanyi.jobbole.com">翻译</a></li>
+                            <li class="menu-item"><a href="http://group.jobbole.com">小组</a></li>
+                            <li class="menu-item"><a href="http://date.jobbole.com">相亲</a></li>
+                            <li class="menu-item"><a href="http://web.jobbole.com">前端</a></li>
+                            <li class="menu-item"><a href="http://python.jobbole.com">Python</a></li>
+                            <li class="menu-item"><a href="http://www.importnew.com/">Java</a></li>
+                            <li class="menu-item"><a href="http://android.jobbole.com">安卓</a></li>
+                            <li class="menu-item"><a href="http://ios.jobbole.com">iOS</a></li>
+                        </ul>
+                    </li>
+
+                                            <li class="menu-item"><a href="http://www.jobbole.com/login?redirect=http://blog.jobbole.com/87369/"><i class="fa fa-sign-in"></i> 登录</a></li>
+                        <li class="menu-item"><a href="http://www.jobbole.com/register"><i class="fa fa-user-plus"></i> 注册</a></li>
+                                        <li class="menu-item"><a href="#"><i class="fa fa-life-ring"></i> 帮助</a></li>
+                </ul>
+            </div>
+            <div class="clear"></div>
+
+        </div>
+        <!-- END .container -->
+
+    </nav>
+    <!-- END #top-nav -->
+  	
+	<!-- BEGIN #wrapper -->
+	<div id="wrapper" class="container">
+
+		<!-- BEGIN header -->
+		<header>
+		
+						
+			<div class="header-wrapper">
+								
+				<!-- BEGIN #logo -->
+				<div id="logo" class="leaderboard-true">
+                    <a href="http://blog.jobbole.com"><img src="http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/img/jobbole-logo.png" alt="博客 &#8211; 伯乐在线" /></a>
+				</div>
+				<!-- END #logo -->
+				
+				<!-- BEGIN #leaderboard -->
+				<div id="leaderboard">
+				
+					<script language=javascript> 
+var randomNumTop = Math.round(Math.random()*4);
+var imageTop=new Array(5);
+imageTop[0]="http://ww1.sinaimg.cn/mw690/bfdcef89gw1es2pv45zshj20k802iab0.jpg";
+imageTop[1]="http://ww2.sinaimg.cn/mw690/bfdcef89gw1es2pv3b8exj20k802iwfd.jpg";
+imageTop[2]="http://ww1.sinaimg.cn/mw690/bfdcef89gw1es2pv2u731j20k802igmb.jpg";
+imageTop[3]="http://ww3.sinaimg.cn/mw690/bfdcef89gw1es2pv27ligj20k802idgs.jpg";
+imageTop[4]="http://ww3.sinaimg.cn/mw690/bfdcef89gw1es2pv1k80jj20k802it9o.jpg";
+var imageUrlTop=imageTop[randomNumTop];
+var urlsTop=new Array(5);
+urlsTop[0]="http://www.imooc.com/activity/androidindex?from=jobboleblog&mc_marking=4fe27dd9db69d53bab273d1d3c6cf27e&mc_channel=jobboleblog&mc_billing=%E5%85%8D%E8%B4%B9%E8%B5%A0%E9%80%81&mc_keywords=&mc_position=&mc_business=";
+urlsTop[1]="http://www.imooc.com/activity/javaerindex?from=jobboleblog&mc_marking=5725cce24eda63001d5a6011725ade41&mc_channel=jobboleblog&mc_billing=%E5%85%8D%E8%B4%B9%E8%B5%A0%E9%80%81&mc_keywords=&mc_position=&mc_business=";
+urlsTop[2]="http://www.imooc.com/course/programdetail/pid/11?from=jobboleblog&mc_marking=f726d606d0ce56f8cebc9b87771de84d&mc_channel=jobboleblog&mc_billing=%E5%85%8D%E8%B4%B9%E8%B5%A0%E9%80%81&mc_keywords=&mc_position=&mc_business=";
+urlsTop[3]="http://www.imooc.com/activity/feerindex?from=jobboleblog&mc_marking=97abfff1b39d6e9c92281898db324d71&mc_channel=jobboleblog&mc_billing=%E5%85%8D%E8%B4%B9%E8%B5%A0%E9%80%81&mc_keywords=&mc_position=&mc_business=";
+urlsTop[4]="http://www.imooc.com/activity/planhtml5?from=jobboleblog&mc_marking=49ed987767cfb761bce2b94cb7cbd5c9&mc_channel=jobboleblog&mc_billing=%E5%85%8D%E8%B4%B9%E8%B5%A0%E9%80%81&mc_keywords=&mc_position=&mc_business=";
+var urlTop = urlsTop[randomNumTop];
+var adHTML = "<a href='"+urlTop+"' target='_blank'><img width='728' height='90'  src='"+imageUrlTop+"' border='0'></a>";
+document.write(adHTML);
+</script>				
+				</div>
+				<!-- END #leaderboard -->
+				
+				<div class="clear"></div>
+			
+			</div>
+			
+						
+			<div class="clear"></div>
+
+            			<!-- BEGIN #main-nav -->
+			<nav id="main-nav" class="grid-12 menu-nav">
+                <div class="menu-sub-menu-container"><ul id="main-nav-menu" class="menu"><li id="menu-item-33290" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-33290"><a href="http://blog.jobbole.com/">首页</a></li>
+<li id="menu-item-33406" class="menu-item menu-item-type-post_type menu-item-object-page current_page_parent menu-item-33406"><a href="http://blog.jobbole.com/all-posts/">最新文章</a></li>
+<li id="menu-item-70342" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-70342"><a href="http://blog.jobbole.com/category/online-courses/">在线课程</a></li>
+<li id="menu-item-33325" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33325"><a href="http://blog.jobbole.com/category/news/">业界</a></li>
+<li id="menu-item-33319" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33319"><a href="http://blog.jobbole.com/category/programmer/">开发</a>
+<ul class="sub-menu">
+	<li id="menu-item-81047" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-81047"><a href="http://web.jobbole.com">Web前端</a></li>
+	<li id="menu-item-81218" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-81218"><a href="http://python.jobbole.com">Python</a></li>
+	<li id="menu-item-81220" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-81220"><a href="http://android.jobbole.com">Android</a></li>
+	<li id="menu-item-81219" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-81219"><a href="http://ios.jobbole.com">iOS</a></li>
+	<li id="menu-item-53194" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-53194"><a href="http://www.importnew.com">Java</a></li>
+	<li id="menu-item-57616" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-57616"><a href="http://blog.jobbole.com/category/c-cpp/">C/C++</a></li>
+	<li id="menu-item-57003" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-57003"><a href="http://blog.jobbole.com/category/php-programmer/">PHP</a></li>
+	<li id="menu-item-55603" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55603"><a href="http://blog.jobbole.com/tag/ruby/">Ruby</a></li>
+	<li id="menu-item-70347" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-70347"><a href="http://blog.jobbole.com/tag/go/">Go</a></li>
+</ul>
+</li>
+<li id="menu-item-33313" class="menu-item menu-item-type-taxonomy menu-item-object-category current-post-ancestor current-menu-parent current-post-parent menu-item-33313"><a href="http://blog.jobbole.com/category/it-tech/">IT技术</a>
+<ul class="sub-menu">
+	<li id="menu-item-55604" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55604"><a href="http://blog.jobbole.com/tag/linux/">Linux</a></li>
+	<li id="menu-item-55607" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55607"><a href="http://blog.jobbole.com/tag/unix/">UNIX</a></li>
+	<li id="menu-item-55605" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55605"><a href="http://blog.jobbole.com/tag/mysql/">MySQL</a></li>
+	<li id="menu-item-55621" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55621"><a href="http://blog.jobbole.com/tag/nosql/">NoSQL</a></li>
+	<li id="menu-item-55622" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55622"><a href="http://blog.jobbole.com/tag/database/">数据库</a></li>
+	<li id="menu-item-55606" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55606"><a href="http://blog.jobbole.com/tag/git/">Git</a></li>
+	<li id="menu-item-55635" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55635"><a href="http://blog.jobbole.com/tag/algorithm/">算法</a></li>
+	<li id="menu-item-55612" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55612"><a href="http://blog.jobbole.com/tag/%e6%b5%8b%e8%af%95/">测试</a></li>
+	<li id="menu-item-55618" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55618"><a href="http://blog.jobbole.com/tag/%e5%ae%89%e5%85%a8/">信息安全</a></li>
+	<li id="menu-item-55636" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55636"><a href="http://blog.jobbole.com/tag/vim/">Vim</a></li>
+</ul>
+</li>
+<li id="menu-item-33323" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33323"><a href="http://blog.jobbole.com/category/design/">设计</a>
+<ul class="sub-menu">
+	<li id="menu-item-55610" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55610"><a href="http://blog.jobbole.com/tag/%e7%bd%91%e9%a1%b5%e8%ae%be%e8%ae%a1/">网页设计</a></li>
+	<li id="menu-item-55608" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55608"><a href="http://blog.jobbole.com/tag/ui/">UI设计</a></li>
+	<li id="menu-item-55609" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55609"><a href="http://blog.jobbole.com/tag/%e4%ba%a4%e4%ba%92%e8%ae%be%e8%ae%a1/">交互设计</a></li>
+	<li id="menu-item-55611" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55611"><a href="http://blog.jobbole.com/tag/%e7%94%a8%e6%88%b7%e4%bd%93%e9%aa%8c/">用户体验</a></li>
+</ul>
+</li>
+<li id="menu-item-33317" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33317"><a href="http://blog.jobbole.com/category/startup/">创业</a></li>
+<li id="menu-item-33390" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33390"><a href="http://blog.jobbole.com/category/career/">IT职场</a></li>
+<li id="menu-item-85528" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-85528"><a href="http://top.jobbole.com">投稿</a></li>
+<li id="menu-item-33388" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33388"><a href="http://blog.jobbole.com/category/other/">更多 »</a>
+<ul class="sub-menu">
+	<li id="menu-item-56110" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-56110"><a href="http://blog.jobbole.com/category/overseas/">在国外</a></li>
+	<li id="menu-item-56094" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-56094"><a href="http://blog.jobbole.com/category/interview/">访谈</a></li>
+	<li id="menu-item-56111" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-56111"><a href="http://blog.jobbole.com/tag/featuredpost/">经典回顾</a></li>
+	<li id="menu-item-33665" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33665"><a href="http://blog.jobbole.com/category/humor-comic/">趣文</a></li>
+	<li id="menu-item-33321" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33321"><a href="http://blog.jobbole.com/category/freelance/">自由职业</a></li>
+	<li id="menu-item-33408" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33408"><a href="http://blog.jobbole.com/category/resources/">工具与资源</a></li>
+	<li id="menu-item-33407" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33407"><a href="http://blog.jobbole.com/category/books/">书籍与教程</a></li>
+</ul>
+</li>
+</ul></div>				<div class="clear"></div>
+			</nav>
+			<!-- END #main-nav -->
+                        <div class="clear"></div>
+
+		</header>
+		<!-- END header -->
+		
+		<div id="breadcrumb" class="grid-12 margin-20"><div class="breadcrumb-wrapper"><!-- Breadcrumb NavXT 4.4.0 -->
+<a title="Go to 伯乐在线." href="http://www.jobbole.com" class="main-home">伯乐在线</a> &gt; <a href="http://blog.jobbole.com" class="home">首页</a> &gt; <a href="http://blog.jobbole.com/all-posts/" class="post-root post-post">所有文章</a> &gt; <a href="http://blog.jobbole.com/category/it-tech/" class="category">IT技术</a> &gt; 我的MYSQL学习心得（17） ： 复制</div></div><div class="clear"></div>
+
+<!-- BEGIN .grid-8 -->
+<div class="grid-8">
+
+		
+	<!-- BEGIN .post -->
+<div class="post-87369 post type-post status-publish format-standard hentry category-it-tech tag-mysql tag-database odd" id="post-87369">
+	
+	<!-- BEGIN .entry-header -->
+	<div class="entry-header">
+	
+				
+		<h1>我的MYSQL学习心得（17） ： 复制</h1>
+		
+							
+	</div>
+	<!-- BEGIN .entry-header -->
+	
+	<!-- BEGIN .entry-meta -->
+	<div class="entry-meta">
+	
+		<p class="entry-meta-hide-on-mobile">
+
+            2015/06/07 | 分类： <a href="http://blog.jobbole.com/category/it-tech/" title="查看 IT技术 中的全部文章" rel="category tag">IT技术</a> | 
+            
+
+ | 标签： <a href="http://blog.jobbole.com/tag/mysql/">MySQL</a>, <a href="http://blog.jobbole.com/tag/database/">数据库</a>
+
+</p>
+
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style" style="display: block; margin: 0 0px; clear: both;"><span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_tsina"></a>
+<a class="jiathis_button_weixin"></a>
+<a class="jiathis_button_qzone"></a>
+<a class="jiathis_button_fb"></a>
+<a class="jiathis_button_renren"></a>
+<a class="jiathis_button_douban"></a>
+<a class="jiathis_button_readitlater"></a>
+<a class="jiathis_button_evernote"></a>
+<a class="jiathis_button_ydnote"></a>
+<a href="http://www.jiathis.com/share?uid=1745061" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+<a class="jiathis_counter_style"></a>
+</div>
+<!-- JiaThis Button END -->
+
+
+	</div>
+	<!-- END .entry-meta -->
+
+	<!-- BEGIN .entry -->
+	<div class="entry">
+
+        <script src="http://www.imooc.com/open/courselistrandjs"></script><span style='display:block;margin-bottom:10px;'></span>
+		<div class='copyright-area'>原文出处： <a ref='nofollow' target='_blank' href='http://www.cnblogs.com/lyhabc/p/3888702.html'>桦仔的博客</a>&nbsp;&nbsp;&nbsp;欢迎分享原创到<a href='http://top.jobbole.com/?utm_source=jobboleblog-article' target='_blank'>伯乐头条</a></div><ul>
+<li><a href="http://blog.jobbole.com/87315/" target="_blank">我的MYSQL学习心得（1） ：简单语法</a></li>
+<li><a href="http://blog.jobbole.com/87318/" target="_blank">我的MYSQL学习心得（2） ：数据类型宽度</a></li>
+<li><a href="http://blog.jobbole.com/87322/" target="_blank">我的MYSQL学习心得（3） ： 查看字段长度</a></li>
+<li><a href="http://blog.jobbole.com/87324/" target="_blank">我的MYSQL学习心得（4） ： 数据类型</a></li>
+<li><a href="http://blog.jobbole.com/87327/" target="_blank">我的MYSQL学习心得（5） ： 运算符</a></li>
+<li><a href="http://blog.jobbole.com/87337/" target="_blank">我的MYSQL学习心得（6） ： 函数</a></li>
+<li><a href="http://blog.jobbole.com/87340/" target="_blank">我的MYSQL学习心得（7） ： 查询</a></li>
+<li><a href="http://blog.jobbole.com/87345/" target="_blank">我的MYSQL学习心得（8） ： 插入 更新 删除</a></li>
+<li><a href="http://blog.jobbole.com/87348/" target="_blank">我的MYSQL学习心得（9） ： 索引</a></li>
+<li><a href="http://blog.jobbole.com/87351/" target="_blank">我的MYSQL学习心得（10） ： 自定义存储过程和函数</a></li>
+<li><a href="http://blog.jobbole.com/87353/" target="_blank">我的MYSQL学习心得（11） ： 视图</a></li>
+<li><a href="http://blog.jobbole.com/87355/" target="_blank">我的MYSQL学习心得（12） ： 触发器</a></li>
+<li><a href="http://blog.jobbole.com/87357/" target="_blank">我的MYSQL学习心得（13） ： 权限管理</a></li>
+<li><a href="http://blog.jobbole.com/87363/" target="_blank">我的MYSQL学习心得（14） ： 备份和恢复</a></li>
+<li><a href="http://blog.jobbole.com/87365/" target="_blank">我的MYSQL学习心得（15） ： 日志</a></li>
+<li><a href="http://blog.jobbole.com/87367/" target="_blank">我的MYSQL学习心得（16） ： 优化</a></li>
+</ul>
+<p>最近把大学时候的ORACLE教程书本翻出来看，真的是感触良多</p>
+<p>以前在学校的时候，每次ORACLE测验和考试都是不合格的，期末的时候靠补考才勉强过关</p>
+<p>大家看到下图的封面应该知道大学教我们ORACLE课程的老师，没错，他就是李爱武老师</p>
+<p>大家可能对李爱武老师不太熟悉，在ORACLE领域，大家第一时间肯定会想到“盖国强”</p>
+<p>还记得前段时间某个媒体说“盖国强”是中国第一DBA，但是我在百度里面搜索“<strong>中国第一DBA</strong>”并没有出现“<strong>盖国强</strong>”三个字o(∩_∩)o</p>
+<p>李爱武老师可能会有一些人认识，他写了几本数据库方面的书，以<strong>SQLSERVER</strong>和<strong>ORACLE</strong>为主</p>
+<p>老师的实力是毋容置疑的，老师上课的风格是比较凶的那种，不过老师他很细心，会把ORACLE里面的知识点讲透</p>
+<p>因为比较凶，所以很多时候不是很想上他的课，有时候会选择逃课，但是想不到多年后自己会做了DBA，会研究数据库</p>
+<p>虽然未到教师节，但是还是要<strong>感谢</strong>李爱武老师和大学里教我计算机知识的其他老师，感谢</p>
+<p>不扯了，马上开始今天的内容。。。</p>
+<p>的<img alt="" src="http://ww1.sinaimg.cn/mw690/6941baebgw1esq45baqeqj20k00qoadj.jpg" /></p>
+<p>这一篇主要介绍MYSQL的复制</p>
+<p>MYSQL 从3.25.15版本开始提供数据库复制功能（replication）。mysql复制是指从一个mysql主服务器（MASTER）将数据</p>
+<p>复制到另一台或多台mysql从服务器（SLAVE）的过程，将主数据库的DDL和DML操作通过二进制日志传到复制服务器上，</p>
+<p>然后在从服务器上对这些日志重新执行，从而使从服务器的数据保持同步。</p>
+<p>在mysql中，复制操作是异步进行的，slave服务器不需要持续的保持连接接收master服务器的数据</p>
+<p>mysql支持一台主服务器同时向多台从服务器进行复制操作，从服务器同时可以作为其他从服务器的主服务器，如果mysql主服务器</p>
+<p>访问量大，可以通过复制数据，然后在从服务器上进行查询操作，从而降低主服务器的访问压力（读写分离），同时从服务器作为</p>
+<p>主服务器的备份，可以避免主服务器因为故障数据丢失的问题。</p>
+<p>mysql数据库复制操作大致可以分为三个步骤</p>
+<p>1主服务器将数据的改变记录到二进制日志（binlog）中。</p>
+<p>2、从服务器将主服务器的binary log events复制到他的中继日志（relay log）中。</p>
+<p>3、从服务器做中继日志中的事件，将数据的改变与从服务器保持同步。</p>
+<p>首先，主服务器会记录二进制日志，每个事务更新完毕数据之前，主服务器将这些操作的信息记录在二进制日志里面，在事件写入</p>
+<p>二进制日志完成后，主服务器 通知存储引擎提交事务。</p>
+<p>SLAVE上面的I/O进程连接上MASTER，并发出日志请求，MASTER接收到来自SLAVE的I/O进程的请求后，通过负责复制的I/O进程</p>
+<p>根据请求信息读取指定日志位置之后的日志信息，返回给SLAVE的I/O进程。返回信息中除了日志所包含的信息之外，还包括本次</p>
+<p>返回的信息已经到MASTER端的binlog文件的名称以及binlog的位置</p>
+<p>SLAVE的I/O进程接收到信息后，将接收到的日志内容依次添加到SLAVE端的relay-log文件的最末端，并将读取到的MASTER端的</p>
+<p>binlog文件名和位置记录到master-Info文件中</p>
+<p>SLAVE的SQL进程检测到relay-log中新增了内容后，会马上解析relay-log的内容成为在master端真实执行时候的那些可执行内容，</p>
+<p>并在自身执行</p>
+<p>mysql复制环境，90%以上都是一个master带一个或者多个slave的架构模式。如果master和slave压力不是太大的话，异步复制的延时一般</p>
+<p>都很少。尤其是slave端的复制方式改成两个进程处理之后，更是减少了slave端的延时</p>
+<blockquote><p><strong>提示：对于数据实时性要求不是特别严格的应用，只需要通过廉价的电脑服务器来扩展slave的数量，将读压力分散到多台slave的机器上面</strong></p>
+<p><strong>即可解决数据库端的读压力瓶颈。这在很大程度上解决了目前很多中小型网站的数据库压力瓶颈问题，甚至有些大型网站也在使用类似方案解决</strong></p>
+<p><strong>数据库瓶颈问题</strong></p></blockquote>
+<hr />
+<p><strong>Windows环境下的mysql主从复制</strong></p>
+<p><strong>复制前的准备工作</strong></p>
+<p>在Windows环境下，如果想实现主从复制需要准备的操作环境</p>
+<p>角色          ip                      端口            操作系统          mysql版本</p>
+<p>master   192.168.1.100     3306           Windows7         5.5.20</p>
+<p>slave      192.168.1.102     3306           Windows8         5.5.20</p>
+<p>Windows环境下实现主从复制</p>
+<p>准备好两台安装mysql5.6的计算机，即可实现两台mysql服务器主从复制备份操作。</p>
+<p>具体操作步骤如下：</p>
+<p>1、在Windows下安装好两台mysql服务器，配置好两台主机的ip地址，实现两台计算机可以网络连通</p>
+<p><img alt="" src="http://ww3.sinaimg.cn/mw690/6941baebgw1esq45an4ypj20dj03raaj.jpg" /></p>
+<p><img alt="" src="http://ww2.sinaimg.cn/mw690/6941baebgw1esq45a4uprj20cp03hjrr.jpg" /></p>
+<p>2、配置master的相关配置信息，在master主机上开启binlog日志，首先，看下datadir的具体路径</p>
+<pre class="brush: sql; gutter: true">show variables  LIKE &#039;%datadir%&#039;</pre>
+<p><img alt="" src="http://ww2.sinaimg.cn/mw690/6941baebgw1esq459diqwj20dn05mjro.jpg" /></p>
+<p>3、此时需要打开在D:\Program Files (x86)\MySQL\MySQL Server 5.5路径下的配置文件my.ini，添加如下代码，开启binlog功能</p>
+<pre class="brush: sql; gutter: true">[mysqld]
+log-bin=&quot;D:/MYSQLDataBase/binlog&quot;
+expire_logs_days=10
+max_binlog_size=100M</pre>
+<p>提示：此事我们需要在D盘下面创建MYSQLDATABASE文件夹，binlog日志记录在该文件夹里面，该配置文件中的其他参数如下所示</p>
+<p>expire_logs_days：表示二进制日志文件删除的天数</p>
+<p>max_binlog_size：表示二进制日志文件最大的大小</p>
+<p>4、登录mysql后，可以执行show VARIABLES LIKE &#8216;%log_bin%&#8217;命令来测试下log_bin是否成功开启</p>
+<pre class="brush: sql; gutter: true">show VARIABLES LIKE &#039;%log_bin%&#039;;</pre>
+<p><img alt="" src="http://ww2.sinaimg.cn/mw690/6941baebgw1esq458o0egj208r06sgly.jpg" /></p>
+<p><img alt="" src="http://ww3.sinaimg.cn/mw690/6941baebgw1esq456643zj20ae04wmxf.jpg" /></p>
+<p>如果log_bin参数是ON的话，那么表示二进制日志文件已经成功开启，如果为OFF的话，那么表示二进制日志文件开启失败</p>
+<p>5、在master上配置复制所需要的账户，这里创建一个repl的用户，%表示任何远程地址的repl用户都可以连接master主机</p>
+<pre class="brush: sql; gutter: true">GRANT replication slave ON *.*TO repl@&#039;%&#039; IDENTIFIED BY &#039;123&#039;;
+
+flush privileges;</pre>
+<p>6、在my.ini配置文件里配置master主机的相关信息</p>
+<pre class="brush: sql; gutter: true">[mysqld]
+log-bin=&quot;D:/MYSQLDataBase/binlog&quot;
+expire_logs_days=10
+max_binlog_size=100M
+
+server-id=1
+binlog-do-db=test
+binlog-ignore-db=mysql</pre>
+<p>这些配置语句的含义</p>
+<p>server-id：表示服务器表示id号，master和slave主机的server-id不能一样</p>
+<p>binlog-do-db：表示需要复制的数据库，这里以test库为例</p>
+<p>binlog-ignore-db：表示不需要复制的数据库</p>
+<p>7、重启master主机上的mysql服务，然后输入show master status命令查询master主机的信息</p>
+<p><img alt="" src="http://ww2.sinaimg.cn/mw690/6941baebgw1esq4559wgfj20dy02jgls.jpg" /></p>
+<p>8、将master主机的数据备份出来，然后导入到slave主机中去，具体执行语句如下</p>
+<pre class="brush: sql; gutter: true">mysqldump -u root -p -h 127.0.0.1 test &gt;D:\TEST.TXT</pre>
+<p>TEST库里面的表和数据</p>
+<p><img alt="" src="http://ww2.sinaimg.cn/mw690/6941baebgw1esq454p4i3j205t046glm.jpg" /></p>
+<p><img alt="" src="http://ww3.sinaimg.cn/mw690/6941baebgw1esq453ozu9j20dy02jgls.jpg" /></p>
+<p>innodb_monitor表是没有数据的</p>
+<p>dump出来的txt文件内容</p>
+<pre class="brush: sql; gutter: true">-- MySQL dump 10.13  Distrib 5.5.20, for Win32 (x86)
+--
+-- Host: 127.0.0.1    Database: test
+-- ------------------------------------------------------
+-- Server version    5.5.20-log
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE=&#039;+00:00&#039; */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE=&#039;NO_AUTO_VALUE_ON_ZERO&#039; */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `book`
+--
+
+DROP TABLE IF EXISTS `book`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `book` (
+  `bookid` int(11) NOT NULL,
+  `bookname` varchar(255) NOT NULL,
+  `authors` varchar(255) NOT NULL,
+  `info` varchar(255) DEFAULT NULL,
+  `comment` varchar(255) DEFAULT NULL,
+  `year_publication` year(4) NOT NULL,
+  KEY `year_publication` (`year_publication`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `book`
+--
+
+LOCK TABLES `book` WRITE;
+/*!40000 ALTER TABLE `book` DISABLE KEYS */;
+INSERT INTO `book` VALUES (12,&#039;dajiahao&#039;,&#039;NIHAO&#039;,&#039;??&#039;,&#039;henhao&#039;,1990);
+/*!40000 ALTER TABLE `book` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `innodb_monitor`
+--
+
+DROP TABLE IF EXISTS `innodb_monitor`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `innodb_monitor` (
+  `a` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `innodb_monitor`
+--
+
+LOCK TABLES `innodb_monitor` WRITE;
+/*!40000 ALTER TABLE `innodb_monitor` DISABLE KEYS */;
+/*!40000 ALTER TABLE `innodb_monitor` ENABLE KEYS */;
+UNLOCK TABLES;
+
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2014-08-05 22:36:17</pre>
+<p>将D:\TEST.TXT文件复制到slave机器上，然后执行如下操作</p>
+<p>在命令行登录mysql，然后 USE TEST;</p>
+<p>记得一定要USE TEST，切换数据库上下文，否则会报错：NO DATABASE SELECTED 的错误信息</p>
+<p>然后执行source命令导入TEXT.txt文件的内容</p>
+<p><img alt="" src="http://ww1.sinaimg.cn/mw690/6941baebgw1esq450pwolj209i03wt8m.jpg" /></p>
+<p>可以看到，数据已经导入到slave上面了</p>
+<p><img alt="" src="http://ww2.sinaimg.cn/mw690/6941baebgw1esq4501alaj20ln06kaax.jpg" /></p>
+<p>9、配置slave机器（192.168.1.102）的my.ini配置文件</p>
+<p>具体配置信息如下</p>
+<pre class="brush: sql; gutter: true">[mysql]
+
+default-character-set=utf8
+log_bin=&quot;C:/MYSQLLOG/binlog&quot;
+expire_logs_days=10
+max_binlog_size=100M
+
+[mysqld]
+server-id=2</pre>
+<p>提示：配置slave主机my.ini文件的时候，需要将server-id=2写到[mysqld]后面</p>
+<p>另外如果配置文件中还有log_bin的配置，可以将他注释掉，如下所示</p>
+<pre class="brush: sql; gutter: true">#Binary Logging
+#log-bin
+#log_bin=&quot;xxx&quot;</pre>
+<p>10、重启slave主机（192.168.1.102）的mysql服务，在slave主机（192.168.1.102）的mysql中执行如下命令</p>
+<p>关闭slave服务</p>
+<pre class="brush: sql; gutter: true">stop slave;</pre>
+<p>11、设置slave从机实现复制相关的信息，命令如下</p>
+<pre class="brush: sql; gutter: true">change master to
+master_host=&#039;192.168.1.100&#039;,
+master_user=&#039;repl&#039;,
+master_password=&#039;123&#039;,
+master_log_file=&#039;binlog。000004&#039;,
+master_log_pos=107;
+
+Command(s) completed successfully.</pre>
+<p>各个参数所代表的具体含义如下：</p>
+<p>master_host：表示实现复制的主机ip地址</p>
+<p>master_user：表示实现复制的登录远程主机的用户</p>
+<p>master_password：表示实现复制的登录远程主机的密码</p>
+<p>master_log_file：表示实现复制的binlog日志文件</p>
+<p>master_log_pos：表示实现复制的binlog日志文件的偏移量</p>
+<p>12、继续在从机执行操作，显示slave从机的状况，如下所示</p>
+<pre class="brush: sql; gutter: true">start slave;
+
+Command(s) completed successfully.</pre>
+<pre class="brush: sql; gutter: true">mysql&gt; SHOW SLAVE STATUS \G;
+*************************** 1. row ***************************
+               Slave_IO_State:
+                  Master_Host: 192.168.1.100
+                  Master_User: repl
+                  Master_Port: 3306
+                Connect_Retry: 60
+              Master_Log_File: binlog銆?00004
+          Read_Master_Log_Pos: 107
+               Relay_Log_File: Steven-PC-relay-bin.000002
+                Relay_Log_Pos: 4
+        Relay_Master_Log_File: binlog銆?00004
+             Slave_IO_Running: No
+            Slave_SQL_Running: Yes
+              Replicate_Do_DB:
+          Replicate_Ignore_DB:
+           Replicate_Do_Table:
+       Replicate_Ignore_Table:
+      Replicate_Wild_Do_Table:
+  Replicate_Wild_Ignore_Table:
+                   Last_Errno: 0
+                   Last_Error:
+                 Skip_Counter: 0
+          Exec_Master_Log_Pos: 107
+              Relay_Log_Space: 107
+              Until_Condition: None
+               Until_Log_File:
+                Until_Log_Pos: 0
+           Master_SSL_Allowed: No
+           Master_SSL_CA_File:
+           Master_SSL_CA_Path:
+              Master_SSL_Cert:
+            Master_SSL_Cipher:
+               Master_SSL_Key:
+        Seconds_Behind_Master: NULL
+Master_SSL_Verify_Server_Cert: No
+                Last_IO_Errno: 1236
+                Last_IO_Error: Got fatal error 1236 from master when reading dat
+a from binary log: &#039;Could not find first log file name in binary log index file&#039;
+
+               Last_SQL_Errno: 0
+               Last_SQL_Error:
+  Replicate_Ignore_Server_Ids:
+             Master_Server_Id: 1
+1 row in set (0.00 sec)
+
+ERROR:
+No query specified</pre>
+<p>在上述执行show slave status \G命令中很显然存在一些问题，问题如下</p>
+<pre class="brush: sql; gutter: true"> Last_IO_Errno: 1236
+                Last_IO_Error: Got fatal error 1236 from master when reading dat
+a from binary log: &#039;Could not find first log file name in binary log index file&#039;</pre>
+<p>下面的步骤可以解决问题，具体步骤如下</p>
+<p>1、重启master（192.168.1.100）主机的mysql服务，执行show master status \G命令</p>
+<p>记下File和Position的值，后面slave主机会用到，命令执行如下</p>
+<pre class="brush: sql; gutter: true">SHOW MASTER STATUS;</pre>
+<p><img alt="" src="http://images.cnitblog.com/i/257159/201408/061930107254515.jpg" /></p>
+<p>2、在slave（192.168.1.102）主机上重新设置信息，命令执行如下</p>
+<pre class="brush: sql; gutter: true">stop slave;</pre>
+<pre class="brush: sql; gutter: true">change master to
+master_log_file=&#039;binlog.000005&#039;,
+master_log_pos=107;</pre>
+<pre class="brush: sql; gutter: true">start slave;</pre>
+<pre class="brush: sql; gutter: true">mysql&gt; SHOW SLAVE STATUS \G;
+*************************** 1. row ***************************
+               Slave_IO_State: Waiting for master to send event
+                  Master_Host: 192.168.1.100
+                  Master_User: repl
+                  Master_Port: 3306
+                Connect_Retry: 60
+              Master_Log_File: binlog.000005
+          Read_Master_Log_Pos: 107
+               Relay_Log_File: Steven-PC-relay-bin.000002
+                Relay_Log_Pos: 250
+        Relay_Master_Log_File: binlog.000005
+             Slave_IO_Running: Yes
+            Slave_SQL_Running: Yes
+              Replicate_Do_DB:
+          Replicate_Ignore_DB:
+           Replicate_Do_Table:
+       Replicate_Ignore_Table:
+      Replicate_Wild_Do_Table:
+  Replicate_Wild_Ignore_Table:
+                   Last_Errno: 0
+                   Last_Error:
+                 Skip_Counter: 0
+          Exec_Master_Log_Pos: 107
+              Relay_Log_Space: 410
+              Until_Condition: None
+               Until_Log_File:
+                Until_Log_Pos: 0
+           Master_SSL_Allowed: No
+           Master_SSL_CA_File:
+           Master_SSL_CA_Path:
+              Master_SSL_Cert:
+            Master_SSL_Cipher:
+               Master_SSL_Key:
+        Seconds_Behind_Master: 0
+Master_SSL_Verify_Server_Cert: No
+                Last_IO_Errno: 0
+                Last_IO_Error:
+               Last_SQL_Errno: 0
+               Last_SQL_Error:
+  Replicate_Ignore_Server_Ids:
+             Master_Server_Id: 1
+1 row in set (0.00 sec)
+
+ERROR:
+No query specified</pre>
+<p>这次正常了，实际上刚才有两个地方是错误的</p>
+<p><strong>第一个</strong>：在从机的my.ini里面</p>
+<pre class="brush: sql; gutter: true">[mysql]
+default-character-set=utf8
+#log_bin=&quot;C:/MYSQLLOG/binlog&quot;
+#expire_logs_days=10
+#max_binlog_size=100M</pre>
+<p>在从机的my.ini里面的mysql配置节下面配置了binlog，实际上这样做是错误的，要配置binlog需要在[mysqld]配置节下</p>
+<p><strong>第二个</strong>：第一次配置从机的同步的时候本人写错了标点符号，.号写成。号</p>
+<pre class="brush: sql; gutter: true">master_log_file=&#039;binlog。000004&#039;,</pre>
+<p>这时候，我们可以在从机上面执行show processlist来查询从服务器的进程状态</p>
+<pre class="brush: sql; gutter: true">mysql&gt; show processlist \G
+*************************** 1. row ***************************
+     Id: 4
+   User: root
+   Host: localhost:60968
+     db: information_schema
+Command: Sleep
+   Time: 3613
+  State:
+   Info: NULL
+*************************** 2. row ***************************
+     Id: 5
+   User: system user
+   Host:
+     db: NULL
+Command: Connect
+   Time: 3613
+  State: Waiting for master to send event
+   Info: NULL
+*************************** 3. row ***************************
+     Id: 6
+   User: system user
+   Host:
+     db: NULL
+Command: Connect
+   Time: 2769
+  State: Slave has read all relay log; waiting for the slave I/O thread to update it
+   Info: NULL
+*************************** 4. row ***************************
+     Id: 7
+   User: root
+   Host: localhost:61007
+     db: NULL
+Command: Query
+   Time: 0
+  State: NULL
+   Info: show processlist
+4 rows in set (0.04 sec)</pre>
+<p>结果表明slave已经连接上master，开始接收并执行日志</p>
+<p>relay-log.info文件里面的内容</p>
+<pre class="brush: sql; gutter: true">.\Steven-PC-relay-bin.000002
+250
+binlog.000005
+107
+7</pre>
+<p>relay-log.info文件里面记录了slave端的relaylog的当前文件名和位置，还有master端的binlog文件名和位置</p>
+<p><img alt="" src="http://ww2.sinaimg.cn/mw690/6941baebgw1esq44y8dl8j20fp0gmwh6.jpg" /></p>
+<hr />
+<p><strong>Windows环境下主从复制测试</strong></p>
+<p>1、在master端的mysql环境下，执行下面命令</p>
+<pre class="brush: sql; gutter: true">use test;
+create table rep_test(data integer);
+
+insert into rep_test values(2);</pre>
+<p>2、在slave端的mysql环境下，查看主机刚才添加的表和数据是否成功同步到从机上</p>
+<pre class="brush: sql; gutter: true">use test;
+
+show tables;
+
+select * FROM REP_TEST;</pre>
+<p><img alt="" src="http://ww4.sinaimg.cn/mw690/6941baebgw1esq44xk9s3j209q0dwq3s.jpg" /></p>
+<p><img alt="" src="http://ww4.sinaimg.cn/mw690/6941baebgw1esq44wv0a6j20ao0gdwg6.jpg" /></p>
+<p>测试表明，数据已经成功地同步到slave上，实验中只是用到了主从同步，在实际生产环境中MYSQL架构可能会用到一主多从的架构</p>
+<hr />
+<p><strong>MYSQL主要复制启动选项</strong></p>
+<p>（1）log-slave-updates</p>
+<p>log-slave-updates这个参数主要用来配置从服务器的更新是否写入二进制日志，该选项默认是不打开的，如果这个</p>
+<p>从服务器同时也作为其他服务器的主服务器，搭建一个链式的复制，那么就需要开启这个选项，这样从服务器才能获取他</p>
+<p>的二进制日志进行同步操作</p>
+<p>（2）master-connect-retry</p>
+<p>master-connect-retry这个参数用来设置和主服务器连接丢失的时候进行重试的时间间隔，默认是60秒</p>
+<p>（3）read-only</p>
+<p>read-only是用来限制普通用户对从数据库的更新操作，以确保从数据库的安全性，不过如果是超级用户依然可以对</p>
+<p>从数据库进行更新操作。如果主数据库创建了一个普通用户，在默认情况下，该用户是可以更新从数据库的数据的，如果</p>
+<p>使用read-only选项启动从数据库以后，用户对从数据库进行更新时会提示错误</p>
+<p>在Linux下启动mysql例子</p>
+<pre class="brush: sql; gutter: true">[root@localhost~]#mysqld_safe -read-only</pre>
+<p>（4）slave-skip-errors</p>
+<p>在复制过程中，从服务器可以会执行BINLOG中的错误SQL语句，此时如果不忽略错误，从服务器会停止复制进程，等待用户处理错误。</p>
+<p>这种错误如果不能及时发现，将会对应用或者备份产生影响。slave-skip-errors的作用就是用来定义复制过程中从服务器可以自动</p>
+<p>跳过的错误号，设置该参数后，mysql会自动跳过所配置的一系列错误，直接执行后面的SQL语句，该参数可以定义多个错误号，如果</p>
+<p>设置成all，则表示跳过所有的错误，在my.ini或者my.cnf里配置如下</p>
+<pre class="brush: sql; gutter: true">slave-skip-errors=1007,1051,1062</pre>
+<p>如果从数据库主要作为主库的备份，那么就不应该使用这个启动参数，因为一旦设置不当很可能造成主从库的数据不同步。</p>
+<p>如果从库仅仅是为了分担主库的查询压力，并且对数据的完整性要求不高，那么这个选项可以减轻DBA维护从库的工作量</p>
+<hr />
+<p><strong>查看slave的复制进度</strong></p>
+<p>很多情况下，用户都想知道从服务器复制的进度，从而判断从服务器上复制数据的完整性，同时判断是否需要手工来做</p>
+<p>主从同步工作。</p>
+<p>事实上，用户可以通过show processlist列表中的Slave_SQL_Running线程的Time值得到，他记录了从服务器当前执行的SQL时间戳</p>
+<p>和系统时间之间的差距，例如下面的例子</p>
+<pre class="brush: sql; gutter: true">  Id: 6
+   User: system user
+   Host:
+     db: NULL
+Command: Connect
+   Time: 2769
+  State: Slave has read all relay log; waiting for the slave I/O thread to update it
+   Info: NULL</pre>
+<p>Time时间说明从服务器最后执行的更新操作大概是主服务器<strong>2769秒</strong>前的更新操作</p>
+<hr />
+<p><strong>日常管理和维护</strong></p>
+<p>复制配置完成后，DBA需要进行日常的监控和管理维护工作，以便能够及时发现问题和解决问题</p>
+<p>以保证主从数据库能够正常工作。</p>
+<p>1、了解服务器的状态</p>
+<p>一般使用show slave status命令来检查从服务器</p>
+<p>在查看服务器信息中，首先要查看下面的两个进程是否为YES。</p>
+<pre class="brush: sql; gutter: true">Slave_IO_Running: Yes
+Slave_SQL_Running: Yes</pre>
+<p>Slave_IO_Running表明此进程是否能够由从服务器到主服务器上正确地读取binlog日志，并写入到从服务器的中继日志中</p>
+<p>Slave_SQL_Running表明此进程能否读取并执行中继日志中的binlog信息</p>
+<p>2、服务器复制出错原因</p>
+<p>问题一：出现“log event entry exceeded max_allowed_pack”错误</p>
+<p>如果在应用中使用大的BLOB列或CLOB列或者长字符串，那么在从服务器上回复时，可能会出现</p>
+<p>“log event entry exceeded max_allowed_pack”的错误，这是因为含有达文本的记录无法通过网络进行传输而导致的</p>
+<p>解决方法是在主服务器和从服务器上添加max_allowed_packet参数，该参数默认设置为1MB</p>
+<pre class="brush: sql; gutter: true">show variables LIKE &#039;%max_all%&#039;</pre>
+<pre class="brush: sql; gutter: true">Variable_name      Value   
+------------------ ------- 
+max_allowed_packet 1048576 
+
+(1 row(s) affected)</pre>
+<pre class="brush: sql; gutter: true">set @@global.max_allowed_packet=16777216;</pre>
+<p>同时在my.ini或my.cnf文件里设置max_allowed_packet=16M，数据库重启之后该参数将有效</p>
+<p>问题二：多主复制时的自增长变量冲突问题</p>
+<p>大多数情况下使用一台主服务器对一台或者多台从服务器，但是在某些情况下可能会存在多个服务器配置为复制主服务器，</p>
+<p>使用auto_increment时应采取特殊步骤以防止键值冲突，否则插入时多个主服务器会试图使用相同的auto_increment值</p>
+<p>服务器变量auto_increment_increment和auto_increment_offset可以协调多主服务器复制auto_increment列</p>
+<p>在多主服务器复制到从服务器的过程中会发生主键冲突问题，可以将不同的主服务器的这两个参数重新进行设置，将A库</p>
+<p>上设置auto_increment_increment=1，auto_increment_offset=1，此时B库上设置</p>
+<p>auto_increment_increment=1，auto_increment_offset=0</p>
+<p><strong>提示：一般不建议使用双主或多主，因为这样会带来意想不到的冲突状况，就像SQLSERVER的对等复制，虽然有很多冲突检测措施</strong></p>
+<p><strong>但是有时候冲突是不可预料的，出现冲突DBA要排查，维护成本较高，我们生产环境里是没有使用双主和多主，主要使用的是一主多从或一主一从</strong></p>
+<hr />
+<p><strong>切换主从服务器</strong></p>
+<p>在实际生产环境，如果主机上的主库发生故障，需要将从机上的从库切换成主库，同时需要修改服务器C的配置文件，使程序连接到从机</p>
+<p>下面介绍主从切换的步骤</p>
+<p>1、首先要确保所有的从库都已经执行了relay log中的全部更新，看从库的状态是否是Has read all relay log，是否更新都已经执行完成</p>
+<p>在从库上执行下面命令</p>
+<pre class="brush: sql; gutter: true">STOP SLAVE IO_THREAD;
+
+Command(s) completed successfully.</pre>
+<pre class="brush: sql; gutter: true">mysql&gt; show processlist \G
+*************************** 1. row ***************************
+     Id: 4
+   User: root
+   Host: localhost:60968
+     db: test
+Command: Sleep
+   Time: 45
+  State:
+   Info: NULL
+*************************** 2. row ***************************
+     Id: 6
+   User: system user
+   Host:
+     db: NULL
+Command: Connect
+   Time: 3949
+  State: Slave has read all relay log; waiting for the slave I/O thread to update it
+   Info: NULL
+*************************** 3. row ***************************
+     Id: 7
+   User: root
+   Host: localhost:61007
+     db: NULL
+Command: Query
+   Time: 0
+  State: NULL
+   Info: show processlist
+3 rows in set (0.00 sec)</pre>
+<p>2、在从库上停止slave服务，然后执行reset master重置成为主库</p>
+<pre class="brush: sql; gutter: true">STOP SLAVE;
+
+Command(s) completed successfully.
+
+RESET MASTER;
+Command(s) completed successfully.</pre>
+<p>注意：如果从库上并未开binlog，那么在执行reset master的时候会报错：ERROR 1186(HY000):BINLOG CLOSED ,CANNOT RESET MASTER</p>
+<p>在切换之后，在从库的数据目录会多出master.info文件</p>
+<p>master.info文件里的内容</p>
+<pre class="brush: sql; gutter: true">18
+binlog.000005
+393
+192.168.1.100
+repl
+123
+3306
+60
+0
+
+0
+1800.000
+
+0
+0</pre>
+<p>基本上记录了主库的复制用户、密码和binlog文件名和位置等</p>
+<p>3、在从库B（192.168.1.102）上添加具有replication权限的用户repl，查询主库状态，命令如下</p>
+<pre class="brush: sql; gutter: true">GRANT REPLICATION SLAVE ON *.*TO &#039;repl&#039;@&#039;localhost&#039; identified by &#039;123&#039;;
+
+show master status;</pre>
+<p><img alt="" src="http://ww1.sinaimg.cn/mw690/6941baebgw1esq44w8f0ej20e203et8r.jpg" /></p>
+<p>4、修改主服务器的my.ini文件里的server-id为1，从服务器的server-id为2</p>
+<p>5、在原来的主库（192.168.1.100）上配置复制参数</p>
+<pre class="brush: sql; gutter: true">change master TO
+master_host=&#039;192.168.1.102&#039;,
+master_user=&#039;repl&#039;,
+master_password=&#039;123&#039;,
+master_port=3306,
+master_log_file=&#039;on.000004&#039;,
+master_log_pos=107;</pre>
+<p>6、在从库（192.168.1.100）上执行show slave status命令查看从库是否启动成功</p>
+<pre class="brush: sql; gutter: true">START SLAVE;</pre>
+<pre class="brush: sql; gutter: true">mysql&gt; show slave status \G;
+*************************** 1. row ***************************
+               Slave_IO_State: Waiting for master to send event
+                  Master_Host: 192.168.1.102
+                  Master_User: repl
+                  Master_Port: 3306
+                Connect_Retry: 60
+              Master_Log_File: on.000004
+          Read_Master_Log_Pos: 107
+               Relay_Log_File: joe-relay-bin.000006
+                Relay_Log_Pos: 246
+        Relay_Master_Log_File: on.000004
+             Slave_IO_Running: Yes
+            Slave_SQL_Running: Yes
+              Replicate_Do_DB:
+          Replicate_Ignore_DB:
+           Replicate_Do_Table:
+       Replicate_Ignore_Table:
+      Replicate_Wild_Do_Table:
+  Replicate_Wild_Ignore_Table:
+                   Last_Errno: 0
+                   Last_Error:
+                 Skip_Counter: 0
+          Exec_Master_Log_Pos: 107
+              Relay_Log_Space: 436
+              Until_Condition: None
+               Until_Log_File:
+                Until_Log_Pos: 0
+           Master_SSL_Allowed: No
+           Master_SSL_CA_File:
+           Master_SSL_CA_Path:
+              Master_SSL_Cert:
+            Master_SSL_Cipher:
+               Master_SSL_Key:
+        Seconds_Behind_Master: 0
+Master_SSL_Verify_Server_Cert: No
+                Last_IO_Errno: 0
+                Last_IO_Error:
+               Last_SQL_Errno: 0
+               Last_SQL_Error:
+  Replicate_Ignore_Server_Ids:
+             Master_Server_Id: 1
+1 row in set (0.00 sec)
+
+ERROR:
+No query specified</pre>
+<p>注意：如果在主库上面（192.168.1.102）的复制用户repl没有允许远程主机从库的访问，那么在执行show slave status的时候就会报错</p>
+<pre class="brush: sql; gutter: true"> Last_IO_Errno: 1130
+ Last_IO_Error: error connecting to master &#039;repl@192.168.1.102:3360  retries: 8640006&#039; - retry-time: 60  retries: 86400</pre>
+<p>这时候，只需要在主库（192.168.1.102）上面执行下面语句即可</p>
+<pre class="brush: sql; gutter: true">use mysql;
+select * from user where user=&#039;repl&#039;;
+update user set host = &#039;%&#039; where user =&#039;repl&#039;;
+flush privileges;</pre>
+<p>7、在主库和从库上面是否成功设置复制功能，首先在主库（192.168.1.102）上查看test库中的表</p>
+<pre class="brush: sql; gutter: true">use test;
+show tables;</pre>
+<p><img alt="" src="http://ww1.sinaimg.cn/mw690/6941baebgw1esq44vlkyyj205o06idfx.jpg" /></p>
+<p>查询从库中（192.168.1.100）test库里表的情况</p>
+<pre class="brush: sql; gutter: true">use test;
+show tables;</pre>
+<p><img alt="" src="http://ww1.sinaimg.cn/mw690/6941baebgw1esq44v3nj2j205o06idfx.jpg" /></p>
+<p>跟主库一样</p>
+<p>8、在主库（192.168.1.102）中增加表rep_t ，并插入数据</p>
+<pre class="brush: sql; gutter: true">create table rep_t(data int);
+
+insert into rep_t values(1);</pre>
+<p>9、在从库（192.168.1.100）上查询表是否已经创建并复制数据到从库中</p>
+<pre class="brush: sql; gutter: true">USE test;
+
+show variables like &#039;%server%&#039;;
+
+show tables;
+
+SELECT * FROM rep_t;</pre>
+<p><img alt="" src="http://ww4.sinaimg.cn/mw690/6941baebgw1esq44u7a42j20ab0bxgmr.jpg" /></p>
+<p>至此，主从库成功切换</p>
+<hr />
+<p><strong>如果主机和从机server-id一样如何解决</strong></p>
+<p>通常情况下，master和slave的server-id是不会一样的，如果一样的话会出现报错</p>
+<p>出现这种情况，用户可以使用如下命令来查看服务器的server-id，然后手动进行修改，如下所示</p>
+<pre class="brush: sql; gutter: true">show variables like &#039;%server_id%&#039;;
+
+Variable_name Value 
+------------- ----- 
+server_id     2     
+
+(1 row(s) affected)</pre>
+<pre class="brush: sql; gutter: true">SET global server_id=1</pre>
+<p>修改完成后，执行slave start命令，查询slave主机的状态，查看问题可否解决</p>
+<hr />
+<p><strong>从机状态显示Last_IO_Error错误代码为2013的原因</strong></p>
+<p>有时候会遇到这样的情况，在执行show slave status \G 命令中 Slave_IO_Running和Slave_SQL_Running的值都是YES</p>
+<p>但是Last_IO_Error发生2013错误</p>
+<p>发生这种问题主要原因是网络问题，首先要检查下master主机创建的用户是否授予远程连接的权限</p>
+<pre class="brush: sql; gutter: true">GRANT replication slave ON *.*TO repl@&#039;%&#039; IDENTIFIED BY &#039;123&#039;;</pre>
+<p>这里%表示任何的repl用户都可以访问master主机，另外需要查看是否有防火墙设置和网络的其他故障</p>
+<hr />
+<p><strong>MYSQL复制不同步的原因</strong></p>
+<p>mysql replication（复制）采用binlog进行网络传输，所以网络延时是产生mysql主从不同步的主要原因，这会给我们进行读写分离带来</p>
+<p>一定困难</p>
+<p>为了避免这种情况，在配置服务器的时候推荐使用INNODB存储引擎的表，在主机上可以设置<strong>sync_binlog</strong></p>
+<p>下面内容摘抄自《MYSQL行调优和架构设计》</p>
+<blockquote><p>“sync_binlog”：这个参数是对于 MySQL 系统来说是至关重要的，他不仅影响到 Binlog 对 MySQL 所</p>
+<p>带来的性能损耗，而且还影响到 MySQL 中数据的完整性。对于“sync_binlog”参数的各种设置的说明如</p>
+<p>下：</p>
+<p>● sync_binlog=0，当事务提交之后，MySQL 不做 fsync 之类的磁盘同步指令刷新 binlog_cache 中</p>
+<p>的信息到磁盘，而让 Filesystem 自行决定什么时候来做同步，或者 cache 满了之后才同步到磁</p>
+<p>盘。</p>
+<p>● sync_binlog=n，当每进行 n 次事务提交之后，MySQL 将进行一次 fsync 之类的磁盘同步指令来</p>
+<p>将 binlog_cache 中的数据强制写入磁盘。</p>
+<p>在 MySQL 中系统默认的设置是 sync_binlog=0，也就是不做任何强制性的磁盘刷新指令，这时候的性</p>
+<p>能是最好的，但是风险也是最大的。因为一旦系统 Crash，在 binlog_cache 中的所有 binlog 信息都会被</p>
+<p>丢失。而当设置为“1”的时候，是最安全但是性能损耗最大的设置。因为当设置为 1 的时候，即使系统</p>
+<p>Crash，也最多丢失 binlog_cache 中未完成的一个事务，对实际数据没有任何实质性影响。从以往经验</p>
+<p>和相关测试来看，对于高并发事务的系统来说，“sync_binlog”设置为 0 和设置为 1 的系统写入性能差</p>
+<p>距可能高达 5 倍甚至更多。</p></blockquote>
+<p>如果master主机上的max_allowed_packet比较大，但是从机上没有配置该值的话，该参数还是使用默认值1MB</p>
+<p>此时很有可能导致同步失败，建议主从两台机器都设为5MB比较合适</p>
+<hr />
+<p><strong>总结</strong></p>
+<p>本文简单的阐述了MYSQL的复制方面的内容，MYSQL复制是比较重要的技术</p>
+<p>文本的主从切换使用手工的方式，当然在真实生产环境一般使用<strong>自动切换脚本</strong>和<strong>软件工具</strong>去做自动主从切换，这里不做介绍了</p>
+<p>希望这篇文章对大家有帮助</p>
+
+        
+        
+    <div class="post-adds">
+        <span data-post-id="87369" class="btn-bluet href-style vote-post-up   register-user-only "><i class="fa  fa-thumbs-o-up"></i> <h10 id="87369votetotal">1</h10> 赞</span>
+        <span data-book-type="1" data-site-id="2" data-item-id="87369" data-item-type="1" class="btn-bluet href-style bookmark-btn  register-user-only "><i class="fa fa-bookmark-o  "></i> 1 收藏</span>
+
+                <a href="#article-comment"><span class="btn-bluet href-style"><i class="fa fa-comments-o"></i>  评论</span></a>
+        
+            </div>
+
+
+        <!-- BEGIN #author-bio -->
+
+
+<!-- END #author-bio -->
+	</div>
+	<!-- END .entry -->
+
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style_24x24">
+<a class="jiathis_button_tsina"></a>
+<a class="jiathis_button_weixin"></a>
+<a class="jiathis_button_qzone"></a>
+<a class="jiathis_button_fb"></a>
+<a class="jiathis_button_renren"></a>
+<a class="jiathis_button_douban"></a>
+<a class="jiathis_button_googleplus"></a>
+<a class="jiathis_button_readitlater"></a>
+<a class="jiathis_button_evernote"></a>
+<a class="jiathis_button_ydnote"></a>
+<a href="http://www.jiathis.com/share?uid=1745061" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+<a class="jiathis_counter_style"></a>
+</div>
+
+
+<script type="text/javascript" >
+var jiathis_config={
+	data_track_clickback:false,
+	title:"《我的MYSQL学习心得（17） ： 复制》",
+	summary:"最近把大学时候的ORACLE教程书本翻出来看，真的是感触良多，以前在学校的时候，每次ORACLE测验和考试都是不合格的，期末的时候靠补考才勉强过关。大家看到下图的封面应该知道大学教我们ORACLE课程的老师，没错，他就是李爱武老师",
+	pic:"http://ww1.sinaimg.cn/mw690/6941baebgw1esq45baqeqj20k00qoadj.jpg",
+	appkey:{
+         "tsina": 2606191112    },
+	ralateuid:{
+		"tsina": 1670481425	},
+	hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1745061" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+<br/><br/>
+			<div class="textwidget"><p>
+    <a target="_blank" rel="nofollow" href="http://ghtools.sinaapp.com/bole.html"><br />
+        <img style='max-width:300px; max-height: 250px;' src="http://ghtools.sinaapp.com/bole.png" /><br />
+    </a></p>
+</div>
+		
+</div>
+<!-- END .post -->
+    
+<div class="wp_rp_wrap  wp_rp_plain" id="wp_rp_first"><div class="wp_rp_content"><h3 class="related_post_title">相关文章</h3><ul class="related_post wp_rp" style="visibility: visible"><li ><a href="http://blog.jobbole.com/87365/" class="wp_rp_title">我的MYSQL学习心得（15） ： 日志</a></li><li ><a href="http://blog.jobbole.com/87133/" class="wp_rp_title">理解 MySQL（3）：复制(Replication)</a></li><li ><a href="http://blog.jobbole.com/87357/" class="wp_rp_title">我的MYSQL学习心得（13） ： 权限管理</a></li><li ><a href="http://blog.jobbole.com/87315/" class="wp_rp_title">我的MYSQL学习心得（1） ：简单语法</a></li><li ><a href="http://blog.jobbole.com/87363/" class="wp_rp_title">我的MYSQL学习心得（14） ： 备份和恢复</a></li><li ><a href="http://blog.jobbole.com/14012/" class="wp_rp_title">MySQL数据库备份的10个教程</a></li><li ><a href="http://blog.jobbole.com/87450/" class="wp_rp_title">运维角度浅谈MySQL数据库优化</a></li><li ><a href="http://blog.jobbole.com/87322/" class="wp_rp_title">我的MYSQL学习心得（3） ： 查看字段长度</a></li><li ><a href="http://blog.jobbole.com/86547/" class="wp_rp_title">一次非常有意思的 SQL 优化经历</a></li><li ><a href="http://blog.jobbole.com/87327/" class="wp_rp_title">我的MYSQL学习心得（5） ： 运算符</a></li></ul></div></div>
+
+    
+        <!-- BEGIN .navigation -->
+        <div class="navigation margin-20">
+
+            <div class="alignleft"><a href="http://blog.jobbole.com/87410/" rel="prev">&laquo; Git版本控制与工作流</a></div>
+            <div class="alignright"><a href="http://blog.jobbole.com/87367/" rel="next">我的MYSQL学习心得（16） ： 优化 &raquo;</a></div>
+            <div class="clear"></div>
+
+        </div>
+        <!-- END .navigation -->
+
+    
+	
+            <div id="article-comment" class="dot-box center-align">
+
+                        <a href="http://www.jobbole.com/login?redirect=http://blog.jobbole.com/87369/"><button type="button" class="btn btn-non-transparent">登录后评论</button></a>
+            
+            <a target="_blank" href="http://www.jobbole.com/register"><button type="button" class="btn btn-primary">新用户注册</button></a>
+
+            <br/><br/>
+            <span>直接登录</span>
+            <style type="text/css">.t_login_text{margin:0; padding:0;}.t_login_button{margin:0; padding: 5px 0;}.t_login_button a{margin:0; padding-right:3px; line-height:25px}.t_login_button img{display:inline; border:none;}</style><!-- 使用社交帐号登录 来自 WordPress连接微博 插件 --><span class="connectBox1 t_login_button"><a href="http://blog.jobbole.com/wp-content/plugins/wp-connect/login.php?go=weixin&redirect_url=http%3A%2F%2Fblog.jobbole.com%2F87369%2F" title="微信" rel="nofollow"><img src="http://blog.jobbole.com/wp-content/plugins/wp-connect/images/login/btn_weixin.png" /></a><a href="http://blog.jobbole.com/wp-content/plugins/wp-connect/login.php?go=qzone&redirect_url=http%3A%2F%2Fblog.jobbole.com%2F87369%2F" title="QQ" rel="nofollow"><img src="http://blog.jobbole.com/wp-content/plugins/wp-connect/images/login/btn_qzone.png" /></a><a href="http://blog.jobbole.com/wp-content/plugins/wp-connect/login.php?go=sina&redirect_url=http%3A%2F%2Fblog.jobbole.com%2F87369%2F" title="新浪微博" rel="nofollow"><img src="http://blog.jobbole.com/wp-content/plugins/wp-connect/images/login/btn_sina.png" /></a><a href="http://blog.jobbole.com/wp-content/plugins/wp-connect/login.php?go=douban&redirect_url=http%3A%2F%2Fblog.jobbole.com%2F87369%2F" title="豆瓣" rel="nofollow"><img src="http://blog.jobbole.com/wp-content/plugins/wp-connect/images/login/btn_douban.png" /></a><a href="http://blog.jobbole.com/wp-content/plugins/wp-connect/login.php?go=twitter&redirect_url=http%3A%2F%2Fblog.jobbole.com%2F87369%2F" title="Twitter" rel="nofollow"><img src="http://blog.jobbole.com/wp-content/plugins/wp-connect/images/login/btn_twitter.png" /></a><a href="http://blog.jobbole.com/wp-content/plugins/wp-connect/login.php?go=github&redirect_url=http%3A%2F%2Fblog.jobbole.com%2F87369%2F" title="GitHub" rel="nofollow"><img src="http://blog.jobbole.com/wp-content/plugins/wp-connect/images/login/btn_github.png" /></a><a href="http://blog.jobbole.com/wp-content/plugins/wp-connect/login.php?go=linkedin&redirect_url=http%3A%2F%2Fblog.jobbole.com%2F87369%2F" title="LinkedIn" rel="nofollow"><img src="http://blog.jobbole.com/wp-content/plugins/wp-connect/images/login/btn_linkedin.png" /></a><a href="http://blog.jobbole.com/wp-content/plugins/wp-connect/login.php?go=google&redirect_url=http%3A%2F%2Fblog.jobbole.com%2F87369%2F" title="Google" rel="nofollow"><img src="http://blog.jobbole.com/wp-content/plugins/wp-connect/images/login/btn_google.png" /></a></span>        </div>
+    
+
+    <div id="comment_list" class="comments">
+
+        
+    </div>
+		
+
+	
+</div>
+<!-- END .grid-8 -->
+
+<!-- BEGIN #sidebar -->
+<div id="sidebar" class="grid-4">
+
+	    <div class="nav-search-box ">
+                <form method="get" id="searchform" action="http://blog.jobbole.com">
+            <select id="searchselect">
+                                    <option selected value="http://blog.jobbole.com">博客</option>
+                                    <option  value="http://hao.jobbole.com">资源</option>
+                                    <option  value="http://top.jobbole.com">头条</option>
+                                    <option  value="http://group.jobbole.com">小组</option>
+                                    <option  value="http://date.jobbole.com">面向对象</option>
+                                    <option  value="http://web.jobbole.com">WEB前端</option>
+                                    <option  value="http://ios.jobbole.com">IOS</option>
+                                    <option  value="http://python.jobbole.com">Python</option>
+                                    <option  value="http://android.jobbole.com">安卓</option>
+                            </select>
+            <div class="input-wrapper">
+                <input type="text" value="" name="s" id="s" placeholder="输入搜索关键字">
+            </div>
+            <input type="submit" id="searchsubmit" value="搜索">
+        </form>
+    </div>
+<div id="text-34" class="widget widget_text">			<div class="textwidget"><div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://top.jobbole.com?utm_source=jobboleblog-sidebar" target="_blank"><img src="http://jbcdn2.b0.upaiyun.com/2014/07/53a397f357d0212df7f0f4dbb2f33732.jpg" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://top.jobbole.com?utm_source=jobboleblog-sidebar" target="_blank">伯乐头条 &#8211; 分享和发现原创</a><br /> 为作者带来更多读者；为读者筛选优质内容；专注IT互联网。</p>
+</p></div>
+<div class="clear"></div>
+</div>
+</div>
+		</div><div id="text-43" class="widget widget_text">			<div class="textwidget"><p><script language=javascript> 
+var randomNum = Math.round(Math.random()*2);
+var image=new Array(3);
+image[0]="http://ww1.sinaimg.cn/mw690/bfdcef89gw1esl9czo4gfj208c06yjsb.jpg";
+image[1]="http://ww1.sinaimg.cn/mw690/bfdcef89gw1esl9d415cdj208c06yq3x.jpg";
+image[2]="http://ww2.sinaimg.cn/mw690/bfdcef89gw1esl9cfmp60j208c06ywfg.jpg";
+var imageUrl=image[randomNum];
+var urls=new Array(3);
+urls[0]="http://e.jikexueyuan.com/bootstrap.html?hmsr=job_banner_bootstrap_05.28";
+urls[1]="http://e.jikexueyuan.com/python.html?hmsr=job_banner_python_05.28";
+urls[2]="http://e.jikexueyuan.com/cplus.html?hmsr=job_banner_cplus_05.28";
+var url = urls[randomNum];
+var adHTML = "<a href='"+url+"' target='_blank'><img src='"+imageUrl+"' border='0'></a>";
+document.write(adHTML);
+</script></p>
+</div>
+		</div><div class="tabs tabbed_widget"><ul class="nav clearfix"><li><a id="link-tab1" href="#tab1" title="本周热门文章">本周热门文章</a></li><li><a id="link-tab2" href="#tab2" title="本月热门文章">本月热门文章</a></li><li><a id="link-tab3" href="#tab3" title="热门标签">热门标签</a></li></ul><div id="tab1" class="tab"><div class="floated-thumb">
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">0</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87398/" title="TCP/IP 完全掌握了么？来看看 CloudFlare 的面试题">TCP/IP 完全掌握了么？</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">1</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87300/" title="软件工程师的创业陷阱：接私活">软件工程师的创业陷阱：接私活</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">2</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87363/" title="我的MYSQL学习心得（14） ： 备份和恢复">我的MYSQL学习心得（14） ： 备份和恢复</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">3</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87394/" title="超大 Cookie 拒绝服务攻击">超大 Cookie 拒绝服务攻击</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">4</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87203/" title="信息图：软件工程师薪福指南">信息图：软件工程师薪福指南</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">5</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87281/" title="为什么打断 15 分钟的代价是 1 个小时">为什么打断 15 分钟的代价是 1 个小时</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">6</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87458/" title="Origami五分钟入门秘籍">Origami五分钟入门秘籍</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">7</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87450/" title="运维角度浅谈MySQL数据库优化">运维角度浅谈MySQL数据库优化</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">8</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87439/" title="代码覆盖率工具 Istanbul 入门教程">代码覆盖率工具 Istanbul 入门教程</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">9</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87278/" title="Tmux 入门介绍">Tmux 入门介绍</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                </div></div><div id="tab2" class="tab"><div class="floated-thumb">
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta ">
+
+                        <p>
+                            <span class="numb">0</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/84506/" title="老码农教你在 StackOverflow 上谈笑风生">老码农教你在 StackOverflow 上谈笑风生</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta ">
+
+                        <p>
+                            <span class="numb">1</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87160/" title="关于 StackOverflow 上评论风格的争议">关于 StackOverflow 上评论风格的争议</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">2</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87398/" title="TCP/IP 完全掌握了么？来看看 CloudFlare 的面试题">TCP/IP 完全掌握了么？</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">3</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87300/" title="软件工程师的创业陷阱：接私活">软件工程师的创业陷阱：接私活</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta ">
+
+                        <p>
+                            <span class="numb">4</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/86892/" title="老菜鸟致青春，程序员应该选择 Java 还是 C#">程序员应该选择 Java 还是 C#</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">5</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/87363/" title="我的MYSQL学习心得（14） ： 备份和恢复">我的MYSQL学习心得（14） ： 备份和恢复</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">6</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/86843/" title="C++对象模型">C++对象模型</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">7</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/85139/" title="小宝宝半夜老是哭，程序员爸爸设计了这个APP">小孩半夜总哭，程序员爸爸设计了这个APP</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">8</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/86836/" title="C++的函数重载">C++的函数重载</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">9</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/86900/" title="高效程序员的 5 种角色">高效程序员的 5 种角色</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                </div></div><div id="tab3" class="tab"><p><a href='http://blog.jobbole.com/tag/net/' class='tag-link-1636' title='68 个话题' style='font-size: 11.347826086957px;'>.Net</a>
+<a href='http://blog.jobbole.com/tag/android/' class='tag-link-467' title='143 个话题' style='font-size: 14.594202898551px;'>Android</a>
+<a href='http://blog.jobbole.com/tag/apple/' class='tag-link-180' title='34 个话题' style='font-size: 8.304347826087px;'>apple</a>
+<a href='http://blog.jobbole.com/tag/bug/' class='tag-link-218' title='53 个话题' style='font-size: 10.231884057971px;'>Bug</a>
+<a href='http://blog.jobbole.com/tag/cpp/' class='tag-link-807' title='34 个话题' style='font-size: 8.304347826087px;'>C++</a>
+<a href='http://blog.jobbole.com/tag/chrome/' class='tag-link-527' title='32 个话题' style='font-size: 8.1014492753623px;'>Chrome</a>
+<a href='http://blog.jobbole.com/tag/c-sharp/' class='tag-link-2197' title='35 个话题' style='font-size: 8.5072463768116px;'>C sharp</a>
+<a href='http://blog.jobbole.com/tag/css/' class='tag-link-711' title='65 个话题' style='font-size: 11.144927536232px;'>CSS</a>
+<a href='http://blog.jobbole.com/tag/c/' class='tag-link-757' title='141 个话题' style='font-size: 14.492753623188px;'>C语言</a>
+<a href='http://blog.jobbole.com/tag/facebook/' class='tag-link-164' title='98 个话题' style='font-size: 12.971014492754px;'>Facebook</a>
+<a href='http://blog.jobbole.com/tag/featuredpost/' class='tag-link-2241' title='545 个话题' style='font-size: 20.478260869565px;'>featuredpost</a>
+<a href='http://blog.jobbole.com/tag/git/' class='tag-link-885' title='66 个话题' style='font-size: 11.246376811594px;'>Git</a>
+<a href='http://blog.jobbole.com/tag/github/' class='tag-link-1253' title='58 个话题' style='font-size: 10.63768115942px;'>Github</a>
+<a href='http://blog.jobbole.com/tag/google/' class='tag-link-198' title='250 个话题' style='font-size: 17.028985507246px;'>Google</a>
+<a href='http://blog.jobbole.com/tag/hadoop/' class='tag-link-862' title='32 个话题' style='font-size: 8.1014492753623px;'>Hadoop</a>
+<a href='http://blog.jobbole.com/tag/html5/' class='tag-link-182' title='81 个话题' style='font-size: 12.057971014493px;'>HTML5</a>
+<a href='http://blog.jobbole.com/tag/ie/' class='tag-link-1531' title='35 个话题' style='font-size: 8.5072463768116px;'>IE</a>
+<a href='http://blog.jobbole.com/tag/ie-css-bug/' class='tag-link-2785' title='31 个话题' style='font-size: 8px;'>IE CSS Bug</a>
+<a href='http://blog.jobbole.com/tag/ios/' class='tag-link-860' title='210 个话题' style='font-size: 16.217391304348px;'>iOS</a>
+<a href='http://blog.jobbole.com/tag/it/' class='tag-link-513' title='43 个话题' style='font-size: 9.3188405797101px;'>IT</a>
+<a href='http://blog.jobbole.com/tag/java/' class='tag-link-457' title='134 个话题' style='font-size: 14.289855072464px;'>java</a>
+<a href='http://blog.jobbole.com/tag/javascript/' class='tag-link-683' title='268 个话题' style='font-size: 17.333333333333px;'>Javascript</a>
+<a href='http://blog.jobbole.com/tag/jquery/' class='tag-link-459' title='56 个话题' style='font-size: 10.536231884058px;'>jQuery</a>
+<a href='http://blog.jobbole.com/tag/linux/' class='tag-link-190' title='195 个话题' style='font-size: 15.913043478261px;'>Linux</a>
+<a href='http://blog.jobbole.com/tag/mysql/' class='tag-link-191' title='64 个话题' style='font-size: 11.04347826087px;'>MySQL</a>
+<a href='http://blog.jobbole.com/tag/node-js/' class='tag-link-896' title='43 个话题' style='font-size: 9.3188405797101px;'>Node.js</a>
+<a href='http://blog.jobbole.com/tag/nosql/' class='tag-link-967' title='34 个话题' style='font-size: 8.304347826087px;'>NoSQL</a>
+<a href='http://blog.jobbole.com/tag/objective-c/' class='tag-link-829' title='37 个话题' style='font-size: 8.7101449275362px;'>Objective-C</a>
+<a href='http://blog.jobbole.com/tag/php/' class='tag-link-168' title='75 个话题' style='font-size: 11.753623188406px;'>php</a>
+<a href='http://blog.jobbole.com/tag/python/' class='tag-link-663' title='164 个话题' style='font-size: 15.202898550725px;'>Python</a>
+<a href='http://blog.jobbole.com/tag/ruby/' class='tag-link-647' title='37 个话题' style='font-size: 8.7101449275362px;'>Ruby</a>
+<a href='http://blog.jobbole.com/tag/soho/' class='tag-link-153' title='39 个话题' style='font-size: 8.9130434782609px;'>soho</a>
+<a href='http://blog.jobbole.com/tag/sql-server/' class='tag-link-2681' title='54 个话题' style='font-size: 10.333333333333px;'>SQL Server</a>
+<a href='http://blog.jobbole.com/tag/tiobe/' class='tag-link-1493' title='32 个话题' style='font-size: 8.1014492753623px;'>TIOBE</a>
+<a href='http://blog.jobbole.com/tag/twitter/' class='tag-link-419' title='33 个话题' style='font-size: 8.2028985507246px;'>Twitter</a>
+<a href='http://blog.jobbole.com/tag/ui/' class='tag-link-1143' title='32 个话题' style='font-size: 8.1014492753623px;'>UI</a>
+<a href='http://blog.jobbole.com/tag/web-fundamentals/' class='tag-link-3560' title='38 个话题' style='font-size: 8.8115942028986px;'>web fundamentals</a>
+<a href='http://blog.jobbole.com/tag/web%e5%bc%80%e5%8f%91/' class='tag-link-493' title='118 个话题' style='font-size: 13.782608695652px;'>Web开发</a>
+<a href='http://blog.jobbole.com/tag/%e4%b9%94%e5%b8%83%e6%96%af/' class='tag-link-301' title='32 个话题' style='font-size: 8.1014492753623px;'>乔布斯</a>
+<a href='http://blog.jobbole.com/tag/book/' class='tag-link-1022' title='46 个话题' style='font-size: 9.6231884057971px;'>书籍</a>
+<a href='http://blog.jobbole.com/tag/%e4%ba%92%e8%81%94%e7%bd%91/' class='tag-link-40' title='80 个话题' style='font-size: 12.057971014493px;'>互联网</a>
+<a href='http://blog.jobbole.com/tag/%e4%ba%a4%e4%ba%92%e8%ae%be%e8%ae%a1/' class='tag-link-648' title='65 个话题' style='font-size: 11.144927536232px;'>交互设计</a>
+<a href='http://blog.jobbole.com/tag/%e4%ba%a7%e5%93%81/' class='tag-link-522' title='59 个话题' style='font-size: 10.739130434783px;'>产品</a>
+<a href='http://blog.jobbole.com/tag/%e4%ba%a7%e5%93%81%e7%bb%8f%e7%90%86/' class='tag-link-549' title='48 个话题' style='font-size: 9.8260869565217px;'>产品经理</a>
+<a href='http://blog.jobbole.com/tag/%e4%bb%a3%e7%a0%81/' class='tag-link-489' title='96 个话题' style='font-size: 12.869565217391px;'>代码</a>
+<a href='http://blog.jobbole.com/tag/startup/' class='tag-link-4' title='201 个话题' style='font-size: 16.115942028986px;'>创业</a>
+<a href='http://blog.jobbole.com/tag/%e5%89%8d%e7%ab%af/' class='tag-link-1138' title='59 个话题' style='font-size: 10.739130434783px;'>前端</a>
+<a href='http://blog.jobbole.com/tag/%e5%89%8d%e7%ab%af%e5%bc%80%e5%8f%91/' class='tag-link-775' title='33 个话题' style='font-size: 8.2028985507246px;'>前端开发</a>
+<a href='http://blog.jobbole.com/tag/%e5%9b%a2%e9%98%9f/' class='tag-link-551' title='55 个话题' style='font-size: 10.434782608696px;'>团队</a>
+<a href='http://blog.jobbole.com/tag/%e5%a4%a7%e6%95%b0%e6%8d%ae/' class='tag-link-884' title='40 个话题' style='font-size: 9.0144927536232px;'>大数据</a>
+<a href='http://blog.jobbole.com/tag/female-programmer/' class='tag-link-1460' title='51 个话题' style='font-size: 10.130434782609px;'>女程序员</a>
+<a href='http://blog.jobbole.com/tag/%e5%a8%81%e5%ae%a2/' class='tag-link-129' title='40 个话题' style='font-size: 9.0144927536232px;'>威客</a>
+<a href='http://blog.jobbole.com/tag/%e5%ae%89%e5%85%a8/' class='tag-link-1214' title='120 个话题' style='font-size: 13.782608695652px;'>安全</a>
+<a href='http://blog.jobbole.com/tag/%e5%ae%89%e5%8d%93%e5%bc%80%e5%8f%91/' class='tag-link-3362' title='59 个话题' style='font-size: 10.739130434783px;'>安卓开发</a>
+<a href='http://blog.jobbole.com/tag/%e5%ae%a2%e6%88%b7/' class='tag-link-174' title='51 个话题' style='font-size: 10.130434782609px;'>客户</a>
+<a href='http://blog.jobbole.com/tag/%e5%b7%a5%e5%85%b7/' class='tag-link-18' title='113 个话题' style='font-size: 13.579710144928px;'>工具</a>
+<a href='http://blog.jobbole.com/tag/%e5%b7%a5%e7%a8%8b%e5%b8%88/' class='tag-link-470' title='37 个话题' style='font-size: 8.7101449275362px;'>工程师</a>
+<a href='http://blog.jobbole.com/tag/%e5%bb%ba%e8%ae%ae/' class='tag-link-512' title='31 个话题' style='font-size: 8px;'>建议</a>
+<a href='http://blog.jobbole.com/tag/%e5%bc%80%e5%8f%91%e4%ba%ba%e5%91%98/' class='tag-link-370' title='123 个话题' style='font-size: 13.884057971014px;'>开发人员</a>
+<a href='http://blog.jobbole.com/tag/%e5%bc%80%e6%ba%90/' class='tag-link-196' title='79 个话题' style='font-size: 11.95652173913px;'>开源</a>
+<a href='http://blog.jobbole.com/tag/%e5%be%ae%e8%bd%af/' class='tag-link-429' title='84 个话题' style='font-size: 12.260869565217px;'>微软</a>
+<a href='http://blog.jobbole.com/tag/%e6%8a%80%e6%9c%af%e9%9d%a2%e8%af%95/' class='tag-link-1876' title='39 个话题' style='font-size: 8.9130434782609px;'>技术面试</a>
+<a href='http://blog.jobbole.com/tag/%e6%8b%9b%e8%81%98/' class='tag-link-326' title='47 个话题' style='font-size: 9.7246376811594px;'>招聘</a>
+<a href='http://blog.jobbole.com/tag/%e6%95%88%e7%8e%87/' class='tag-link-415' title='45 个话题' style='font-size: 9.5217391304348px;'>效率</a>
+<a href='http://blog.jobbole.com/tag/database/' class='tag-link-353' title='145 个话题' style='font-size: 14.594202898551px;'>数据库</a>
+<a href='http://blog.jobbole.com/tag/time-management/' class='tag-link-271' title='42 个话题' style='font-size: 9.2173913043478px;'>时间管理</a>
+<a href='http://blog.jobbole.com/tag/%e6%9c%8d%e5%8a%a1%e5%99%a8/' class='tag-link-311' title='32 个话题' style='font-size: 8.1014492753623px;'>服务器</a>
+<a href='http://blog.jobbole.com/tag/%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0/' class='tag-link-1910' title='50 个话题' style='font-size: 10.028985507246px;'>机器学习</a>
+<a href='http://blog.jobbole.com/tag/%e6%9e%b6%e6%9e%84/' class='tag-link-603' title='53 个话题' style='font-size: 10.231884057971px;'>架构</a>
+<a href='http://blog.jobbole.com/tag/%e6%b5%8b%e8%af%95/' class='tag-link-678' title='80 个话题' style='font-size: 12.057971014493px;'>测试</a>
+<a href='http://blog.jobbole.com/tag/%e6%b5%8f%e8%a7%88%e5%99%a8/' class='tag-link-63' title='50 个话题' style='font-size: 10.028985507246px;'>浏览器</a>
+<a href='http://blog.jobbole.com/tag/%e6%b8%b8%e6%88%8f/' class='tag-link-797' title='59 个话题' style='font-size: 10.739130434783px;'>游戏</a>
+<a href='http://blog.jobbole.com/tag/%e6%bc%ab%e7%94%bb/' class='tag-link-503' title='32 个话题' style='font-size: 8.1014492753623px;'>漫画</a>
+<a href='http://blog.jobbole.com/tag/%e7%94%a8%e6%88%b7/' class='tag-link-460' title='56 个话题' style='font-size: 10.536231884058px;'>用户</a>
+<a href='http://blog.jobbole.com/tag/%e7%94%a8%e6%88%b7%e4%bd%93%e9%aa%8c/' class='tag-link-580' title='99 个话题' style='font-size: 12.971014492754px;'>用户体验</a>
+<a href='http://blog.jobbole.com/tag/%e7%a0%81%e5%86%9c%e6%95%85%e4%ba%8b/' class='tag-link-2863' title='54 个话题' style='font-size: 10.333333333333px;'>码农故事</a>
+<a href='http://blog.jobbole.com/tag/%e7%a7%bb%e5%8a%a8%e5%ba%94%e7%94%a8/' class='tag-link-654' title='67 个话题' style='font-size: 11.246376811594px;'>移动应用</a>
+<a href='http://blog.jobbole.com/tag/%e7%a8%8b%e5%ba%8f%e5%91%98/' class='tag-link-368' title='778 个话题' style='font-size: 22px;'>程序员</a>
+<a href='http://blog.jobbole.com/tag/algorithm/' class='tag-link-650' title='171 个话题' style='font-size: 15.405797101449px;'>算法</a>
+<a href='http://blog.jobbole.com/tag/management/' class='tag-link-32' title='37 个话题' style='font-size: 8.7101449275362px;'>管理</a>
+<a href='http://blog.jobbole.com/tag/%e7%bc%96%e7%a8%8b/' class='tag-link-389' title='127 个话题' style='font-size: 14.086956521739px;'>编程</a>
+<a href='http://blog.jobbole.com/tag/%e7%bc%96%e7%a8%8b%e8%af%ad%e8%a8%80/' class='tag-link-596' title='114 个话题' style='font-size: 13.579710144928px;'>编程语言</a>
+<a href='http://blog.jobbole.com/tag/%e7%bc%96%e7%a8%8b%e8%af%ad%e8%a8%80%e6%8e%92%e8%a1%8c%e6%a6%9c/' class='tag-link-1621' title='36 个话题' style='font-size: 8.6086956521739px;'>编程语言排行榜</a>
+<a href='http://blog.jobbole.com/tag/%e7%bd%91%e9%a1%b5%e8%ae%be%e8%ae%a1/' class='tag-link-454' title='73 个话题' style='font-size: 11.652173913043px;'>网页设计</a>
+<a href='http://blog.jobbole.com/tag/%e8%81%8c%e5%9c%ba/' class='tag-link-253' title='300 个话题' style='font-size: 17.840579710145px;'>职场</a>
+<a href='http://blog.jobbole.com/tag/%e8%87%aa%e7%94%b1%e8%81%8c%e4%b8%9a/' class='tag-link-315' title='128 个话题' style='font-size: 14.086956521739px;'>自由职业</a>
+<a href='http://blog.jobbole.com/tag/translation/' class='tag-link-49' title='40 个话题' style='font-size: 9.0144927536232px;'>英语</a>
+<a href='http://blog.jobbole.com/tag/%e8%8b%b9%e6%9e%9c/' class='tag-link-183' title='48 个话题' style='font-size: 9.8260869565217px;'>苹果</a>
+<a href='http://blog.jobbole.com/tag/%e8%90%a5%e9%94%80/' class='tag-link-262' title='34 个话题' style='font-size: 8.304347826087px;'>营销</a>
+<a href='http://blog.jobbole.com/tag/%e8%ae%be%e8%ae%a1/' class='tag-link-431' title='125 个话题' style='font-size: 13.985507246377px;'>设计</a>
+<a href='http://blog.jobbole.com/tag/%e8%ae%be%e8%ae%a1%e5%b8%88/' class='tag-link-436' title='104 个话题' style='font-size: 13.173913043478px;'>设计师</a>
+<a href='http://blog.jobbole.com/tag/%e8%ae%be%e8%ae%a1%e6%a8%a1%e5%bc%8f/' class='tag-link-1845' title='51 个话题' style='font-size: 10.130434782609px;'>设计模式</a>
+<a href='http://blog.jobbole.com/tag/%e8%b6%a3%e6%96%87/' class='tag-link-2105' title='43 个话题' style='font-size: 9.3188405797101px;'>趣文</a>
+<a href='http://blog.jobbole.com/tag/%e8%bd%af%e4%bb%b6%e5%b7%a5%e7%a8%8b%e5%b8%88/' class='tag-link-400' title='40 个话题' style='font-size: 9.0144927536232px;'>软件工程师</a>
+<a href='http://blog.jobbole.com/tag/%e8%bd%af%e4%bb%b6%e5%bc%80%e5%8f%91/' class='tag-link-38' title='76 个话题' style='font-size: 11.855072463768px;'>软件开发</a>
+<a href='http://blog.jobbole.com/tag/%e9%87%8d%e6%9e%84/' class='tag-link-728' title='31 个话题' style='font-size: 8px;'>重构</a>
+<a href='http://blog.jobbole.com/tag/%e9%9d%a2%e8%af%95/' class='tag-link-173' title='100 个话题' style='font-size: 12.971014492754px;'>面试</a>
+<a href='http://blog.jobbole.com/tag/%e9%a1%b9%e7%9b%ae/' class='tag-link-177' title='38 个话题' style='font-size: 8.8115942028986px;'>项目</a>
+<a href='http://blog.jobbole.com/tag/%e9%a1%b9%e7%9b%ae%e7%bb%8f%e7%90%86/' class='tag-link-1049' title='38 个话题' style='font-size: 8.8115942028986px;'>项目经理</a>
+<a href='http://blog.jobbole.com/tag/%e9%bb%91%e5%ae%a2/' class='tag-link-617' title='56 个话题' style='font-size: 10.536231884058px;'>黑客</a></p></div></div><div id="text-94" class="widget widget_text">			<div class="textwidget"><p><script language=javascript> 
+var randomNum = Math.round(Math.random()*1);
+var image=new Array(2);
+image[0]="http://ww2.sinaimg.cn/mw690/bfdcef89gw1es3vzh6634j208c03cjrs.jpg";
+image[1]="http://ww2.sinaimg.cn/mw690/bfdcef89gw1esrfkwa9xnj208c03cdhq.jpg";
+var imageUrl=image[randomNum];
+var urls=new Array(2);
+urls[0]="https://www.shiyanlou.com/courses/?f=jobbole_05.15";
+urls[1]="https://www.shiyanlou.com/jobs/?jobid=3&#038;f=jobbole_06.04";
+var url = urls[randomNum];
+var adHTML = "<a href='"+url+"' target='_blank'><img src='"+imageUrl+"' border='0'></a>";
+document.write(adHTML);
+</script></p>
+</div>
+		</div>		<h3 class='widget-title'>最新评论（期待您也参与评论）</h3>
+		<ul>
+		
+					
+			<li id="rc-comment-152439" class="rc-item rc-comment rc-clearfix">
+				<a target="_blank" href="http://www.jobbole.com/members/q2158113300"><img class="rc-avatar rc-left" width="32" height="32" alt="" src=""></a>
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/72201/#comment-152439" rel="nofollow">劳动报：（上海）程序员收入趋势调查</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				北京程序员和朋友创业，加老板只有三个人，程序员是7%股份，只有4000千工资...				</div>
+			</li>
+			
+					
+			<li id="rc-comment-152435" class="rc-item rc-comment rc-clearfix">
+				<a target="_blank" href="http://www.jobbole.com/members/tian168no"><img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://jbcdn2.b0.upaiyun.com/2015/04/8fbdaaa5ea6d3b49c8c1c825aafeb5d9.png"></a>
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/63748/#comment-152435" rel="nofollow">十张图解释机器学习的基本概念</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				完全看不懂- -~				</div>
+			</li>
+			
+					
+			<li id="rc-comment-152433" class="rc-item rc-comment rc-clearfix">
+				<a target="_blank" href="http://www.jobbole.com/members/shisansu13"><img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://jbcdn2.b0.upaiyun.com/2015/04/8fbdaaa5ea6d3b49c8c1c825aafeb5d9.png"></a>
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/35545/#comment-152433" rel="nofollow">如何通过两台电脑来提升效率?</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				对，上个e3 或者i7 cpu（支持多任务的），组个双屏，上个固态，再上个机械键盘，哈哈哈				</div>
+			</li>
+			
+					
+			<li id="rc-comment-152432" class="rc-item rc-comment rc-clearfix">
+				<a target="_blank" href="http://www.jobbole.com/members/zyshan33"><img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://jbcdn2.b0.upaiyun.com/2015/04/8fbdaaa5ea6d3b49c8c1c825aafeb5d9.png"></a>
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/87394/#comment-152432" rel="nofollow">超大 Cookie 拒绝服务攻击</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				第一次发现竟然可以这样攻击网站。				</div>
+			</li>
+			
+					
+			<li id="rc-comment-152427" class="rc-item rc-comment rc-clearfix">
+				<a target="_blank" href="http://www.jobbole.com/members/r253145902"><img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://jbcdn2.b0.upaiyun.com/2015/04/8fbdaaa5ea6d3b49c8c1c825aafeb5d9.png"></a>
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/87398/#comment-152427" rel="nofollow">TCP/IP 完全掌握了么？</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				表示只知道一个。				</div>
+			</li>
+			
+					
+			<li id="rc-comment-152419" class="rc-item rc-comment rc-clearfix">
+				<a target="_blank" href="http://www.jobbole.com/members/aixinnature"><img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://www.jobbole.com/wp-content/uploads/avatars/52608/0f47707be4d9c6e96a7617c99c3e2a31-bpfull.jpg"></a>
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/87300/#comment-152419" rel="nofollow">软件工程师的创业陷阱：接私活</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				国内的情况确实是这样，接过几次确实做恶心了。				</div>
+			</li>
+			
+					
+			<li id="rc-comment-152418" class="rc-item rc-comment rc-clearfix">
+				<a target="_blank" href="http://www.jobbole.com/members/lxtalx"><img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://www.jobbole.com/wp-content/uploads/avatars/38665/13aa3dd4910f75acf5dd5ca56bc7b757-bpthumb.jpg"></a>
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/87398/#comment-152418" rel="nofollow">TCP/IP 完全掌握了么？</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				恩，糊涂窗口综合症也挺不错，翻译成愚笨窗口综合症是参考自百度百科：http://baike.baid...				</div>
+			</li>
+			
+					
+			<li id="rc-comment-152417" class="rc-item rc-comment rc-clearfix">
+				<a target="_blank" href="http://www.jobbole.com/members/newseditors"><img class="rc-avatar rc-left" width="32" height="32" alt="" src="http://www.jobbole.com/wp-content/uploads/avatars/9177/87dfb1a3db7e36ed8a2aefdb5c9d837e-bpthumb.png"></a>
+				<div class="rc-info">
+				Re:
+				<a class="rc-post" target="_blank" href="http://blog.jobbole.com/87398/#comment-152417" rel="nofollow">TCP/IP 完全掌握了么？</a>
+				</div>
+				<div class="rc-timestamp"></div>
+				<div class="rc-excerpt">
+				cc: @zer0Black @胡屹				</div>
+			</li>
+			
+				
+		</ul>
+        <div id="text-96" class="widget widget_text">			<div class="textwidget"><p><a href="http://www.lagou.com/jobs/list_%E6%8A%80%E6%9C%AF?kd=%E6%8A%80%E6%9C%AF&#038;spc=&#038;pl=&#038;gj=&#038;xl=&#038;yx=&#038;gx=&#038;st=&#038;labelWords=&#038;lc=&#038;workAddress=&#038;city=&#038;requestId=&#038;cmpid=AD__jobbole_banner_jishu" target="_blank"><img src="http://ww1.sinaimg.cn/mw690/bfdcef89gw1es3rzqmjtfj208c03c0sx.jpg" /></a></p>
+</div>
+		</div><div id="text-9" class="widget widget_text"><h3 class="widget-title">热点频道</h3>			<div class="textwidget"><div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://python.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank"><img src="http://top.jobbole.com/wp-content/uploads/sites/8/2014/07/36c4ed88b6ffefc5c83fce3881952875.png" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://python.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank">Python开发频道</a><br /> 汇集优质的Python技术文章和资源。人生苦短，我用Python！</p>
+</p></div>
+<div class="clear"></div>
+</div>
+<div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://web.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank"><img src="http://jbcdn2.b0.upaiyun.com/2014/12/34344d9a8b72f5be226b949b37f72d12.png" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://web.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank">前端开发频道</a><br />JavaScript, CSS, HTML5 这里有前端的技术干货！</p>
+</p></div>
+<div class="clear"></div>
+</div>
+<div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://android.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank"><img src="http://jbcdn2.b0.upaiyun.com/2014/12/6f9e08cead657d1159ca5af6eecb05d0.jpeg" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://android.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank">安卓开发频道</a><br />关注安卓移动开发业界动态，分享技术文章和优秀工具资源。</p>
+</p></div>
+<div class="clear"></div>
+</div>
+<div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://ios.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank"><img src="http://jbcdn2.b0.upaiyun.com/2014/12/12ee3b51be5e4bd87bf7a4c8895cc088.jpg" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://ios.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank">iOS开发频道</a><br />关注iOS移动开发业界动态，分享技术文章和优秀工具资源。</p>
+</p></div>
+<div class="clear"></div>
+</div>
+</div>
+		</div><div id="text-85" class="widget widget_text">			<div class="textwidget"><p><a href='http://blog.jobbole.com/84342/' target='_blank'><img src='http://jbcdn2.b0.upaiyun.com/2015/02/e5689e5b541cf10748fd6aef2a6aedbd.jpg' /></a></p>
+</div>
+		</div><div id="text-79" class="widget widget_text"><h3 class="widget-title">推荐关注</h3>			<div class="textwidget"><div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://top.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank"><img src="http://jbcdn2.b0.upaiyun.com/2014/07/53a397f357d0212df7f0f4dbb2f33732.jpg" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://top.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank">伯乐头条</a><br />为作者带来更多读者；为读者筛选优质内容；专注IT互联网。</p>
+</p></div>
+<div class="clear"></div>
+</div>
+<div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://fanyi.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank"><img src="http://jbcdn2.b0.upaiyun.com/2014/11/7561219c1abc47e8c9653f0edb65c93c.jpg" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://fanyi.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank">伯乐翻译小组</a><br />由数百名译者组成，立志翻译传播优秀的外文技术干货。</p>
+</p></div>
+<div class="clear"></div>
+</div>
+<div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://date.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank"><img src="http://jbcdn2.b0.upaiyun.com/2014/11/65cc2ac965f6b213ee056d29eda39cbb.jpg" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://date.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank">程序员相亲</a><br />一个专门为IT单身男女服务的征婚传播平台。</p>
+</p></div>
+<div class="clear"></div>
+</div>
+<div class="floated-thumb">
+<div class="post-thumb">
+                <a href="http://hao.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank"><img src="http://jbcdn2.b0.upaiyun.com/2014/11/fd62c3d72eda679ca7f89f3965f2ee4e.png" width="50" height="50" class="attachment-grid-1 wp-post-image" /></a>
+        </div>
+<div class="post-meta">
+<p><a class="meta-title" href="http://hao.jobbole.com/?utm_source=jobboleblog-sidebar-topic" target="_blank">资源导航</a><br />收录优秀的工具资源，覆盖开发、设计、产品和管理等。</p>
+</p></div>
+<div class="clear"></div>
+</div>
+</div>
+		</div><div id="text-80" class="widget widget_text">			<div class="textwidget"><p><a href="http://100offer.com/join/jobbole?utm_source=jobbole&#038;utm_medium=dis&#038;utm_campaign=jobbole" target="_blank"><img src="http://jbcdn2.b0.upaiyun.com/2015/01/c8573fd828815600e38fc52373fd3622.jpg" border="0" /></a></p>
+</div>
+		</div>	
+	<!-- BEGIN .container -->
+	<div class="container">
+	
+		<!-- BEGIN .grid-2 -->
+		<div class="grid-2">
+			
+						
+		</div>
+		<!-- END .grid-2 -->
+		
+		<!-- BEGIN .grid-2 -->
+		<div class="grid-2">
+			
+						
+		</div>
+		<!-- END .grid-2 -->
+		
+		<div class="clear"></div>
+			
+	</div>
+	<!-- END .container -->
+
+</div>
+<!-- END #sidebar -->
+<div class="clear"></div>	
+
+
+</div>
+<!-- END #wrapper -->
+
+<!-- BEGIN footer -->
+
+    <footer>
+
+        <!-- BEGIN .container -->
+        <div class="container">
+
+            <!-- BEGIN .grid-4 -->
+            <div class="grid-4">
+
+                <div id="text-3" class="widget widget_text"><h3 class="widget-title">关于伯乐在线博客</h3>			<div class="textwidget"><p>在这个信息爆炸的时代，人们已然被大量、快速并且简短的信息所包围。然而，我们相信：过多“快餐”式的阅读只会令人“虚胖”，缺乏实质的内涵。伯乐在线博客团队正试图以我们微薄的力量，把优秀的原创/译文分享给读者，做一个小而精的精选博客，为“快餐”添加一些“营养”元素。</p>
+<div id="aw_socialcounter_widget-2" class="widget aw_socialcounter_widget">
+<ul>
+<li>
+<a target="_blank" href="http://weibo.com/jobbole"><img class="alignleft" src="http://blog.jobbole.com/common_images/sina_32.png"  alt="关注我们的新浪微博" title="关注我们的新浪微博" /></a></p>
+<div class="view-rss"><a  target="_blank"  href="http://blog.jobbole.com/feed/" class="rss-link"><img class="alignleft" src="http://blog.jobbole.com/common_images/rss_32.png"  alt="RSS订阅" title="RSS订阅" /></a></div>
+</li>
+</ul>
+</div>
+</div>
+		</div>
+            </div>
+            <!-- END .grid-4 -->
+
+            <!-- BEGIN .grid-4 -->
+            <div class="grid-4">
+
+                <div id="text-7" class="widget widget_text"><h3 class="widget-title">欢迎关注更多频道</h3>			<div class="textwidget"><p><a href='http://top.jobbole.com/' target='_blank'>头条</a> &#8211; 分享和发现有价值的内容与观点<br />
+<a href='http://date.jobbole.com/' target='_blank'>相亲</a> &#8211; 为IT单身男女服务的征婚传播平台<br />
+<a href='http://hao.jobbole.com/' target='_blank'>资源</a> &#8211; 优秀的工具资源导航<br />
+<a href='http://fanyi.jobbole.com/' target='_blank'>翻译</a> &#8211; 翻译传播优秀的外文文章<br />
+<a href='http://blog.jobbole.com/' target='_blank'>博客</a> &#8211; 国内外的精选博客文章<br />
+<a href='http://web.jobbole.com/' target='_blank'>前端</a> &#8211; JavaScript, HTML5, CSS<br />
+<a href='http://android.jobbole.com/' target='_blank'>安卓</a> &#8211; 专注Android技术分享<br />
+<a href='http://ios.jobbole.com/' target='_blank'>iOS</a> &#8211; 专注iOS技术分享<br />
+<a href='http://www.importnew.com/' target='_blank'>Java</a> &#8211; 专注Java技术分享<br />
+<a href='http://python.jobbole.com/' target='_blank'>Python</a> &#8211; 专注Python技术分享</p>
+</div>
+		</div>
+            </div>
+            <!-- END .grid-4 -->
+
+            <!-- BEGIN .grid-4 -->
+            <div class="grid-4">
+
+                <div id="text-4" class="widget widget_text"><h3 class="widget-title">联系我们</h3>			<div class="textwidget"><p><strong>商务合作</strong></p>
+<p>Email：<a  href='mailto:bd@jobbole.com'>bd@Jobbole.com</a><br />
+QQ： 2302462408  （加好友请注明来意）</p>
+<p><strong>网站使用问题</strong></p>
+<p>请在<a  href='http://group.jobbole.com/category/feedback/'>站务小组</a>询问或者反馈</p>
+</div>
+		</div>
+            </div>
+            <!-- END .grid-4 -->
+
+            <div class="clear"></div>
+
+        </div>
+        <!-- END .container -->
+
+        <!-- BEGIN #bottom -->
+        <div id="bottom">
+
+            <!-- BEGIN .container -->
+            <div class="container">
+
+                <!-- BEGIN .grid-12 -->
+                <div class="grid-12">
+
+                    <p>&copy; 2015 伯乐在线
+                    <span style="margin-left: 40px;">
+                        <a href="http://www.jobbole.com">首页</a>&nbsp;&nbsp;
+                        <a href="http://top.jobbole.com">头条</a>&nbsp;&nbsp;
+                        <a href="http://blog.jobbole.com">博客</a>&nbsp;&nbsp;
+                        <a href="http://hao.jobbole.com">资源</a>&nbsp;&nbsp;
+                        <a href="http://fanyi.jobbole.com">翻译</a>&nbsp;&nbsp;
+                        <a href="http://group.jobbole.com">小组</a>&nbsp;&nbsp;
+                        <i class="fa fa-heart-o pinkiconcolor"></i> <a href="http://date.jobbole.com">相亲</a>
+                    </span>
+                <span style="float:right; ">
+                    本站由 <a href="http://www.ucloud.cn/" target="_blank">UCloud</a> 赞助云主机，<a href="http://www.qiniu.com/" target="_blank">七牛</a> 赞助云存储
+                </span>
+                    </p>
+
+                </div>
+                <!-- END .grid-12 -->
+
+                <div class="clear"></div>
+
+            </div>
+            <!-- END .container -->
+
+        </div>
+        <!-- END #bottom -->
+    </footer>
+
+<!-- END footer -->
+
+
+
+
+<!-- WP SyntaxHighlighter Ver.1.7.3 Begin -->
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shCore.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shLegacy.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shAutoloader.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushAppleScript.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushAS3.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushBash.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushColdFusion.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCpp.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCSharp.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCss.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDelphi.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDiff.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushErlang.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJava.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJavaFX.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJScript.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPerl.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPhp.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPlain.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPowerShell.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPython.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushRuby.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSass.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushScala.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSql.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushVb.js?ver=3.0"></script>
+<script type="text/javascript" src="http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushXml.js?ver=3.0"></script>
+<script type="text/javascript">//<![CDATA[
+	SyntaxHighlighter.autoloader(
+	"applescript	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushAppleScript.js?ver=3.0"
+	,"as3 actionscript3	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushAS3.js?ver=3.0"
+	,"bash shell	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushBash.js?ver=3.0"
+	,"cf coldfusion	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushColdFusion.js?ver=3.0"
+	,"cpp c	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCpp.js?ver=3.0"
+	,"c# c-sharp csharp	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCSharp.js?ver=3.0"
+	,"css	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCss.js?ver=3.0"
+	,"delphi pas pascal	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDelphi.js?ver=3.0"
+	,"diff patch	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushDiff.js?ver=3.0"
+	,"erl erlang	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushErlang.js?ver=3.0"
+	,"java	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJava.js?ver=3.0"
+	,"jfx javafx	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJavaFX.js?ver=3.0"
+	,"js jscript javascript	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushJScript.js?ver=3.0"
+	,"perl pl	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPerl.js?ver=3.0"
+	,"php	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPhp.js?ver=3.0"
+	,"plain text	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPlain.js?ver=3.0"
+	,"ps powershell	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPowerShell.js?ver=3.0"
+	,"py python	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushPython.js?ver=3.0"
+	,"rails ror ruby rb	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushRuby.js?ver=3.0"
+	,"sass scss	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSass.js?ver=3.0"
+	,"scala	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushScala.js?ver=3.0"
+	,"sql	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushSql.js?ver=3.0"
+	,"vb vbnet	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushVb.js?ver=3.0"
+	,"xml xhtml xslt html	http://blog.jobbole.com/wp-content/plugins/wp-syntaxhighlighter/syntaxhighlighter3/scripts/shBrushXml.js?ver=3.0"
+	);
+	SyntaxHighlighter.defaults['auto-links'] = false;
+	SyntaxHighlighter.defaults['quick-code'] = true;
+	SyntaxHighlighter.defaults['title'] = '';
+	SyntaxHighlighter.defaults['class-name'] = 'notranslate';
+	SyntaxHighlighter.defaults['collapse'] = false;
+	SyntaxHighlighter.defaults['first-line'] = 1;
+	SyntaxHighlighter.defaults['gutter'] = true;
+	SyntaxHighlighter.defaults['pad-line-numbers'] = false;
+	SyntaxHighlighter.defaults['smart-tabs'] = true;
+	SyntaxHighlighter.defaults['tab-size'] = 4;
+	SyntaxHighlighter.defaults['toolbar'] = false;
+ SyntaxHighlighter.config.stripBrs = true;
+	SyntaxHighlighter.config.strings.expandSource = '+ expand source';
+	SyntaxHighlighter.config.strings.help = '?';
+	SyntaxHighlighter.config.strings.alert = 'SyntaxHighlighter\n\n';
+	SyntaxHighlighter.config.strings.noBrush = "Can't find brush for: ";
+	SyntaxHighlighter.config.strings.brushNotHtmlScript = "Brush wasn't configured for html-script option: ";
+	SyntaxHighlighter.all();
+	dp.SyntaxHighlighter.HighlightAll('code')
+//]]></script>
+<!-- WP SyntaxHighlighter Ver.1.7.3 End -->
+<!-- Lightbox Plus ColorBox v2.6/1.3.32 - 2013.01.24 - Message: 0-->
+<script type="text/javascript">
+jQuery(document).ready(function($){
+  $("a[rel*=lightbox]").colorbox({speed:450,initialWidth:"300",initialHeight:"100",opacity:0.8,loop:false,scrolling:false,escKey:false,arrowKey:false,top:false,right:false,bottom:false,left:false});
+});
+</script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var thickboxL10n = {"next":"\u4e0b\u4e00\u9875 >","prev":"< \u4e0a\u4e00\u9875","image":"\u56fe\u50cf","of":"\/","close":"\u5173\u95ed","noiframes":"\u8fd9\u4e2a\u529f\u80fd\u9700\u8981 iframe \u7684\u652f\u6301\u3002\u60a8\u53ef\u80fd\u7981\u6b62\u4e86 iframe \u7684\u663e\u793a\uff0c\u6216\u60a8\u7684\u6d4f\u89c8\u5668\u4e0d\u652f\u6301\u6b64\u529f\u80fd\u3002","loadingAnimation":"http:\/\/blog.jobbole.com\/wp-includes\/js\/thickbox\/loadingAnimation.gif","closeImage":"http:\/\/blog.jobbole.com\/wp-includes\/js\/thickbox\/tb-close.png"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-includes/js/thickbox/thickbox.js?ver=3.1-20121105'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-includes/js/underscore.min.js?ver=1.4.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-includes/js/shortcode.min.js?ver=3.5.2'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-admin/js/media-upload.min.js?ver=3.5.2'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var pollsL10n = {"ajax_url":"http:\/\/blog.jobbole.com\/wp-admin\/admin-ajax.php","text_wait":"Your last request is still being processed. Please wait a while ...","text_valid":"Please choose a valid poll answer.","text_multiple":"\u6700\u591a\u53ea\u5141\u8bb8\u6295\u7684\u9009\u9879\uff1a","show_loading":"1","show_fading":"1"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/plugins/wp-polls/polls-js.js?ver=2.63'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/ready.js?ver=1.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/easing.js?ver=1.3'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/superfish.js?ver=1.4.8'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/validate.js?ver=1.9.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/touchwipe.js?ver=1.1.1'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/caroufredsel.js?ver=5.5.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/flexslider.js?ver=2.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/jplayer.js?ver=2.1.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/fitvids.js?ver=1.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/selectnav.js?ver=0.1'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/effects.js?ver=1.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/plugins/lightbox-plus/js/jquery.colorbox.1.3.32.js?ver=1.3.32'></script>
+
+
+<div id="full-btm" style="position:fixed; left:50%; top:550px;  z-index:100; text-align:center; cursor:pointer;">
+<a><img src="http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/img/back-btm.png" width="20" border=0 alt="跳到底部" title="跳到底部"></a>
+</div>
+
+<script type="text/javascript">
+jQuery('#full-btm').click(function(){
+    jQuery('html, body').animate({scrollTop:jQuery(document).height()}, 'slow');
+    return false;
+});
+</script>
+
+<div id="full-top" style="position:fixed; left:50%; top:520px; margin-left:495px; z-index:100; text-align:center; cursor:pointer;">
+<a><img src="http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/img/back-top.png" width="20" border=0 alt="返回顶部" title="返回顶部"></a>
+</div>
+
+<script type="text/javascript">
+jQuery('#full-top').click(function(){
+    jQuery('html, body').animate({scrollTop:0}, 'slow');
+    return false;
+});
+
+</script>
+
+<!-- script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','/_assets/js/analytics.js','ga');
+
+    ga('create', 'UA-15621043-1', 'jobbole.com');
+    ga('send', 'pageview');
+
+</script -->
+
+</body>
+<!-- END body -->
+
+</html>
+<!-- END html -->
