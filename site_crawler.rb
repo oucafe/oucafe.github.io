@@ -79,13 +79,15 @@ config.shuffle.each do |site|
           uri = make_absolute(src, remote_url)
           p uri
           begin
-            File.open("./images/#{site_name}/#{src_digest}.jpg", 'wb') { |f| f.write(open(URI.encode(uri), :open_timeout => 15, :read_timeout => 60).read) }
+            if not File.exists? "./images/#{site_name}/#{data_digest}.#{ext}"
+              File.open("./images/#{site_name}/#{src_digest}.jpg", 'wb') { |f| f.write(open(URI.encode(uri), :open_timeout => 15, :read_timeout => 60).read) }
+            end
           rescue => e
             puts "#  ---   ./images/#{site_name}/#{src_digest}.jpg"
             p e
           end
         end
-	post_content.css('object').each do |object|
+        post_content.css('object').each do |object|
           data = object['data']
           next if data =~ /^data:/
           data_digest = Digest::MD5.hexdigest(data)
@@ -95,7 +97,9 @@ config.shuffle.each do |site|
           uri = make_absolute(data, remote_url)
           p uri
           begin
-            File.open("./images/#{site_name}/#{data_digest}.#{ext}", 'wb') { |f| f.write(open(uri, :open_timeout => 15, :read_timeout => 60).read) }
+            if not File.exists? "./images/#{site_name}/#{data_digest}.#{ext}"
+              File.open("./images/#{site_name}/#{data_digest}.#{ext}", 'wb') { |f| f.write(open(uri, :open_timeout => 15, :read_timeout => 60).read) }
+            end
           rescue => e
             puts "#  ---   ./images/#{site_name}/#{data_digest}.#{ext}"
             p e
