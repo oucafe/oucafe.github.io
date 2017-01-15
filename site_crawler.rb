@@ -79,7 +79,7 @@ config.shuffle.each do |site|
           uri = make_absolute(src, remote_url)
           p uri
           begin
-            if not File.exists? "./images/#{site_name}/#{src_digest}.#{ext}"
+            if not File.exists? "./images/#{site_name}/#{src_digest}.jpg"
               File.open("./images/#{site_name}/#{src_digest}.jpg", 'wb') { |f| f.write(open(URI.encode(uri), :open_timeout => 15, :read_timeout => 60).read) }
             end
           rescue => e
