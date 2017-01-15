@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>机器战胜人类了，伺候机器的运维呢？</title>
+    <meta name="author" content="陈子">
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!-- Le styles -->
+    <link href="/assets/themes/twitter/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/themes/twitter/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+    <link href="/assets/themes/twitter/css/pygments/default.css" rel="stylesheet" type="text/css">
+    <!-- Le fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+  </head>
+  <body>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="/">三斗室</a>
+          <ul class="nav">
+      	<li><a href="/archive/">归档</a></li>
+      	<li><a href="/categories/">分类</a></li>
+      	<li><a href="/elk-errata/">《ELK stack权威指南》勘误</a></li>
+      	<li><a href="/errata/">《网站运维技术与实践》勘误</a></li>
+      	<li><a href="/pages/">Pages</a></li>
+      	<li><a href="/projects/">学习记录</a></li>
+      	<li><a href="/tags/">标签</a></li>
+            <li><a href="http://chenlinux.com/poetry/index.html" />诗文集</a></li>
+            <li><link title="RSS 2.0" type="application/rss+xml" href="http://chenlinux.com/feed.xml" rel="alternate" /><a href="http://chenlinux.com/feed.xml" target="_blank">RSS订阅</a></li>
+          </ul>
+          <ul class="nav pull-right"><li><a href="/about.html">有关我</a></li></ul>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+    <div class="row">
+      <div class="span7">
+<div class="row">
+  <div class="page-header">
+    <h1>机器战胜人类了，伺候机器的运维呢？ <small></small></h1>
+    <div class="date"><span>19 March 2016</span></div>
+  </div>
+  <div style='background-color: #FFF;'>
+    <p>2016 年 3 月最火爆的新闻，莫过于谷歌的 alphago 机器 4:1 大胜李世乭了。一时间各界议论纷纷，我的前同事，运维界非著名段子手 <a href="http://weibo.com/30007147">@orroz</a> 在自己微博上写了两段话：</p>
+<blockquote>
+  <p>『跟其他运维工程师觉得这个职业将消失不同。我是对运维职业是持极端乐观态度的，也许运维职业将是人类最后一个职业。很可能祂们在能自理之前还需要我们伺候。。。也说不定，某几个运维工程师因为某种不知道的原因还会被祂们当宠物留下来，成为人类的最后的延续。』<br />
+<img src="http://ww4.sinaimg.cn/large/6673053fgw1f1qv2q6duaj209h0e83z4.jpg" alt="" /><br />
+『我终于明白这个图片的寓意了，它其实预示了人类的未来命运。』</p>
+</blockquote>
+<p>看完一笑~</p>
+<p>但是笑完以后，回头想想，运维和围棋手，其实还真是有相像的地方：传统说法中，与研发相比，运维总被认为是『更靠经验的』；一如我们说『人类棋手的经验和大局观』。</p>
+<p>我们知道，运维的『操作』，已经是可替代的了，IaaS、PaaS、运维自动化，诸多概念的落地，环境部署、软件安装不再是运维的主要工作职责。运维的职位名称，从系统管理员到运维工程师到产品工程师到站点可靠性工程师，一步步远离了基础设备层面。</p>
+<p>那，有没有可能，运维的『经验』，也是可以被机器替代掉的呢？</p>
+<h3 id="section">运维经验</h3>
+<p>我们先看看运维的经验到底是什么？</p>
+<ul>
+  <li>一个 4 核 CPU 的服务器，loadavg 跑到 10+，我们就会说：负载过高了。应对办法最简单的就是『加机器』。</li>
+  <li>一个 web 服务，每秒请求超过 1000，响应变慢了，我们就会说：还在用 apache 啊，快换 nginx 吧。</li>
+  <li>要是动态服务呢，就会说：做个动静分离呗，加个缓存层呗。</li>
+</ul>
+<p>这就是运维届的『定式』和『俗手』。</p>
+<p>但是不巧，定式并不能一路保送我们最后顺利完工。</p>
+<p>就好像这五场世纪大战一开始，人类棋手总觉得 alphago 水平不行——『职业初段的人都应该知道下这里才对啊』。但是一百多手不知不觉过去，局面就是不利了！</p>
+<h3 id="section-1">经验的坑</h3>
+<p>比方前面说的第一条经验，这几乎已经是运维共识了。但是把环境考虑进来：这如果是一台虚拟机呢？这如果挂载的是一个远端存储呢？这如果运行的是一个无法水平扩展的事务系统呢？</p>
+<p>是的，『加机器』只能死的更惨。（此处应配有那两把著名的刘强东之刀）</p>
+<p>所以，经验是否真的能成立，有赖于更复杂和深层次的分析。就像围棋依赖于算力一样。</p>
+<h3 id="section-2">大数据那么美好么</h3>
+<p>文章写到这里，似乎我要开始鼓吹运维届要如何如何上马大数据乃至机器学习了？</p>
+<p>这种玩法看起来确实高大上，但实际上，并没有那么美好！我们不要忘了：运维始终是一个 IT 支出向的工作。DevOps 运动中说运维加快部署就是赚钱，那也是间接的。花钱是直接的。还是引用另一个微博上有关 alphago 的段子：</p>
+<blockquote>
+  <p>alphago 跑了 1000 个 CPU，李世乭吃了一餐饭，比一下资源消耗就知道谁赢了。</p>
+</blockquote>
+<p>运维工程师拥有前所未有的多的机器数据，理论上当然可以通过大数据挖掘，通过机器学习获得相当多的收获。但是这些收获跟能间接带来的收益相比，性价比如何呢？</p>
+<p>拿监控数据来说，我们知道监控产生的，大多是时序数值。对于时序数值的分析，金融界早有数十年的算法研究和积累。运维工程师照搬过来，未尝不可。但这其中一些算法消耗的 CPU 运算，没准比本身业务系统运行消耗的还高，那这个花费显然就不可能投入。</p>
+<p>《人工智能的未来》作者，神经学家 Jeff Hawkins 成立的 numenta 公司曾经对市面上各种号称处理时序数据异常探测或者预测分析的开源实现做了对比性测试。结果，真正能满足『时序、动态』前提的都不多，有些算法长达一个小时都完成不了测试。更好玩的是：有的测试场景中，随机选异常点都有 25.9% 的准确率。</p>
+<p>测试见：<a href="https://github.com/numenta/NAB">https://github.com/numenta/NAB</a>。（当然我这里不是来推销说 HTM 算法是人工智能未来，毕竟 alphago 是 DNN 呢）</p>
+<h3 id="section-3">废话这么多，到底怎么办</h3>
+<p>又要深入分析，又要控制能耗。最好的办法，就是把不确定性降低，在一个较完善的运维体系框架基础上做数据分析，可以大大缩小数据集，降低复杂度。</p>
+<p>运维体系怎么才算完善，已经有很多文章在讲了。以数据分析为目的的话，个人推荐王津银的数据驱动运维系列文章。</p>
+<p>分析本身如何入手，其实简单算法也未必不好。百度云在 SREcon15 上的分享，同样推荐观看。在线数据通过简单的 3-sigma、ks-test、holt-winters、LOESS 来生成异常点，然后仅对异常点采用 Viterbi 计算同比的异常区域发出实际告警，配合通用的 tracing 调用链系统使用。</p>
+<p>最后回到文章开头的段子：机器为啥留下几个运维工程师？或许因为这几个运维当初给机器安排的都是算 3-sigma 这样轻松的活，一报还一报吧:)</p>
+    <hr>
+    <div class="pagination">
+      <ul>
+        <li class="prev"><a href="/2016/03/16/juttle-viz-intro/" title="juttle 可视化界面介绍">&larr; Previous</a></li>
+        <li><a href="/archive.html">Archive</a></li>
+        <li class="next"><a href="/2016/04/01/javaflamegraph/" title="用火焰图看 elasticsearch 的资源占用">Next &rarr;</a></li>
+      </ul>
+    </div>
+    <hr>
+  <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_tsina">新浪微博</a>
+<a class="jiathis_button_weixin">微信</a>
+<a class="jiathis_button_renren">人人网</a>
+<a class="jiathis_button_ydnote">有道云笔记</a>
+<a class="jiathis_button_gmail">Gmail邮箱</a>
+<a class="jiathis_button_twitter">Twitter</a>
+<a class="jiathis_button_googleplus">Google+</a>
+<a class="jiathis_button_hi">百度空间</a>
+<a class="jiathis_button_fb">Facebook</a>
+<a class="jiathis_button_douban">豆瓣</a>
+<a href="http://www.jiathis.com/share?uid=1589850" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+var jiathis_config={
+	data_track_clickback:true,
+	summary:"",
+	ralateuid:{
+		"tsina":"1035836154"
+	},
+	shortUrl:false,
+	hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1589850" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" id="UYScript" src="http://v1.uyan.cc/js/iframe.js?UYUserId=1589850" async=""></script>
+<!-- UY END -->
+  </div>
+</div>
+      </div>
+      <div class="span4">
+          <div class="well sidebar-nav">
+             <ul id="relate_blog" class="nav nav-list">
+               <li class="nav-header">最近文章</li>
+                 <li><a href="/2016/12/30/report-of-this-year/">2016 年度个人总结</a></li>
+                 <li><a href="/2016/11/15/important-unuseful-feature-in-log-analysis/">日志分析中 6 个常见但没啥用的功能</a></li>
+                 <li><a href="/2016/08/19/es-rally/">Elastic 官方压测工具 rally 试用</a></li>
+                 <li><a href="/2016/07/21/sampler-aggregation/">elasticsearch 的 sampler 聚合</a></li>
+                 <li><a href="/2016/07/18/event-pattern/">山寨一个 Splunk 的事件模式功能</a></li>
+                 <li><a href="/2016/07/07/hapi-auth/">hapi.js 框架的认证授权插件示例</a></li>
+                 <li><a href="/2016/04/04/lucene-proximity-querystring/">Lucene 查询中的距离查询(proximity query)</a></li>
+                 <li><a href="/2016/04/01/javaflamegraph/">用火焰图看 elasticsearch 的资源占用</a></li>
+                 <li><a href="/2016/03/16/juttle-viz-intro/">juttle 可视化界面介绍</a></li>
+            </ul>
+          </div>
+        <div class="well sidebar-nav">
+          <iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=1&ptype=1&speed=0&skin=2&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=1035836154&verifier=a26926d5&dpc=1"></iframe>
+        </div>
+        <div class="well sidebar-nav">
+            <div id="uyan_list_time_frame"></div>
+            <script type="text/javascript" id="UYScriptTime" src="http://v1.uyan.cc/js/iframe_time_list.js?UYUserId=1589850&rankType=time" async=""></script>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(英文)</li>
+              <li><a href="http://codeascraft.com/" title="Etsy 运维团队博客">Code as Craft</a></li>
+              <li><a href="http://devopsanywhere.blogspot.jp/" title="">devopsanywhere</a></li>
+              <li><a href="http://www.jedi.be/blog/" title="">Jong En Dynamische Informatica</a></li>
+              <li><a href="http://www.planetdevops.net/" title="">planetdevops</a></li>
+              <li><a href="http://www.kitchensoap.com/" title="《网站运维》作者，Etsy 运维">Kitchen Soap</a></li>
+              <li><a href="http://blog.johngoulah.com" title="Musings of linux, open source, cloud computing and systems">John Goulah</a></li>
+              <li><a href="http://serverfault.com/" title="stackexchange下属的系统工程师问答网站">serverfault</a></li>
+              <li><a href="http://www.thegeekstuff.com/" title="各种超酷Linux命令用法">TheGeekStuff</a></li>
+              <li><a href="http://neilb.org/" title="The good,the bad,and the beautiful">neilb</a></li>
+              <li><a href="http://www.reddit.com/r/perl/" title="">reddit perl 频道</a></li>
+              <li><a href="http://jpetazzo.github.io/" title="">~jpetazzo</a></li>
+              <li><a href="http://www.perfplanet.com/" title="News and views from the web performance blogosphere">Performance Planet</a></li>
+              <li><a href="http://cuddletech.com/blog/" title="Use UNIX or die">Cuddle Tech</a></li>
+              <li><a href="http://showmetheco.de/" title="Viacheslav Tykhanovskyi(PocketIO/Text::Haml)">No time to wait</a></li>
+              <li><a href="http://blog.dataloop.io/" title="A new SaaS monitoring tool for DevOps & Operations">Dataloop.IO</a></li>
+              <li><a href="http://www.ducea.com/" title="">MDLog:/sysadmin</a></li>
+              <li><a href="http://planeteria.org/perl6/" title="Perl6 文集">Planet Perl 6</a></li>
+              <li><a href="http://www.metaforsoftware.com/blog/" title="">metafor</a></li>
+              <li><a href="http://blog.kablamo.org/" title="Eric Johnson，一个游走在伦敦和北京的 Perler">kablamo</a></li>
+              <li><a href="http://aphyr.com/posts" title="call me maybe 吐槽系列">Aphyr</a></li>
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(中文)</li>
+              <li><a href="http://www.nginxs.com/" title="">eric</a></li>
+              <li><a href="http://www.hellodb.net/" title="Ali DBA 张瑞">Hello DBA</a></li>
+              <li><a href="http://blog.nosqlfan.com/" title="not only sql信息集散地">NoSQLfan</a></li>
+              <li><a href="http://ourmysql.com/" title="">OurMySQL</a></li>
+              <li><a href="http://timo.piqiu.me/" title="TIMO IS MY OASIS">Timo</a></li>
+              <li><a href="http://www.liurongxing.com/" title="">刘荣星</a></li>
+              <li><a href="http://www.cnadn.net/" title="F5工程师">应用交付学习之路</a></li>
+              <li><a href="http://scmbob.org/" title="杭州NSN工程师，shell高人~">扛一肩记忆</a></li>
+              <li><a href="http://www.php-oa.com/" title="音悦台技术经理">扶凯</a></li>
+              <li><a href="http://www.lark.net.cn/" title="王剑">lark's cloud</a></li>
+              <li><a href="http://log.heartoutside.com/" title="HeartOutSide">HeartOutside</a></li>
+              <li><a href="http://blog.liulantao.com/" title="刘兰涛">Lax</a></li>
+              <li><a href="http://niubie.me/" title="莫言">莫言</a></li>
+              <li><a href="http://noops.me/" title="小米运维部">NoOps</a></li>
+              <li><a href="http://www.searchtech.pro/" title="">云端分布式搜索技术</a></li>
+              <li><a href="http://www.usefulshare.com" title="当当网安全运维">UsefulShare</a></li>
+              <li><a href="http://junqili.com/" title="深入研究puppet">纸飞机</a></li>
+              <li><a href="http://www.chinaxing.org/" title="">ChinaXing</a></li>
+              <li><a href="http://bubbyroom.com/" title="守住每一天">Liuyu's blog</a></li>
+              <li><a href="http://blog.aka-cool.net/" title="">Aka.Why</a></li>
+              <li><a href="http://blog.l8ii.com/" title="刘侨">LairdNote</a></li>
+              <li><a href="http://flw.tools/" title="">flw的工具箱</a></li>
+              <li><a href="http://blog.mcshell.org/" title="">mcshell</a></li>
+              <li><a href="http://novoland.github.io/" title="">克鲁斯卡尔的博客</a></li>
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="booklists" class="nav nav-list">
+          <li class="nav-header">我写的技术书籍</li>
+          <li><a href='http://product.china-pub.com/3769604'><img src='http://images.china-pub.com/ebook3765001-3770000/3769604/shupi.jpg' border='0' alt='网站运维技术与实践'/></a></li>
+          <li><a href='http://product.china-pub.com/64005'><img src='http://images.china-pub.com/ebook60001-65000/64005/shupi.jpg' border='0' alt='ELK Stack权威指南'/></a></li>
+          <li class="nav-header">我参与翻译的技术书籍</li>
+          <li><a href='http://product.china-pub.com/4582714'><img src='http://images.china-pub.com/ebook4580001-4585000/4582714/shupi.jpg' border='0' alt='Puppet 实战手册'/></a></li>
+        </div>
+      </div>
+    </div> <!-- row -->
+      <footer>
+        <p>&copy; 陈子 2015 
+          with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
+          and <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap</a>
+        </p>
+      </footer>
+    </div> <!-- /container -->
+  </body>
+</html>

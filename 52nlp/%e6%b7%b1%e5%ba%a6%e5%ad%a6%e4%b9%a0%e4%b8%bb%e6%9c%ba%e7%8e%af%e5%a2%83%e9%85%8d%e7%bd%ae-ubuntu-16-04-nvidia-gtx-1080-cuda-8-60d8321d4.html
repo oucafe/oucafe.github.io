@@ -1,0 +1,904 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<title>深度学习主机环境配置: Ubuntu16.04+Nvidia GTX 1080+CUDA8.0 | 我爱自然语言处理</title>
+<link rel="profile" href="http://gmpg.org/xfn/11" />
+<link rel="stylesheet" type="text/css" media="all" href="http://www.52nlp.cn/wp-content/themes/twentytenorg/style.css" />
+<link rel="pingback" href="http://www.52nlp.cn/xmlrpc.php" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; Feed" href="http://www.52nlp.cn/feed" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; 评论Feed" href="http://www.52nlp.cn/comments/feed" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; 深度学习主机环境配置: Ubuntu16.04+Nvidia GTX 1080+CUDA8.0评论Feed" href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae-ubuntu-16-04-nvidia-gtx-1080-cuda-8/feed" />
+		<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/2.2.1\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/2.2.1\/svg\/","svgExt":".svg","source":{"concatemoji":"http:\/\/www.52nlp.cn\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.7.1"}};
+			!function(a,b,c){function d(a){var b,c,d,e,f=String.fromCharCode;if(!k||!k.fillText)return!1;switch(k.clearRect(0,0,j.width,j.height),k.textBaseline="top",k.font="600 32px Arial",a){case"flag":return k.fillText(f(55356,56826,55356,56819),0,0),!(j.toDataURL().length<3e3)&&(k.clearRect(0,0,j.width,j.height),k.fillText(f(55356,57331,65039,8205,55356,57096),0,0),b=j.toDataURL(),k.clearRect(0,0,j.width,j.height),k.fillText(f(55356,57331,55356,57096),0,0),c=j.toDataURL(),b!==c);case"emoji4":return k.fillText(f(55357,56425,55356,57341,8205,55357,56507),0,0),d=j.toDataURL(),k.clearRect(0,0,j.width,j.height),k.fillText(f(55357,56425,55356,57341,55357,56507),0,0),e=j.toDataURL(),d!==e}return!1}function e(a){var c=b.createElement("script");c.src=a,c.defer=c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var f,g,h,i,j=b.createElement("canvas"),k=j.getContext&&j.getContext("2d");for(i=Array("flag","emoji4"),c.supports={everything:!0,everythingExceptFlag:!0},h=0;h<i.length;h++)c.supports[i[h]]=d(i[h]),c.supports.everything=c.supports.everything&&c.supports[i[h]],"flag"!==i[h]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[i[h]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(g=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",g,!1),a.addEventListener("load",g,!1)):(a.attachEvent("onload",g),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),f=c.source||{},f.concatemoji?e(f.concatemoji):f.wpemoji&&f.twemoji&&(e(f.twemoji),e(f.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+		<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<link rel='stylesheet' id='yarppWidgetCss-css'  href='http://www.52nlp.cn/wp-content/plugins/yet-another-related-posts-plugin/style/widget.css?ver=4.7.1' type='text/css' media='all' />
+<link rel='stylesheet' id='wp-syntax-css-css'  href='http://www.52nlp.cn/wp-content/plugins/wp-syntax/css/wp-syntax.css?ver=1.1' type='text/css' media='all' />
+<link rel='stylesheet' id='codecolorer-css'  href='http://www.52nlp.cn/wp-content/plugins/codecolorer/codecolorer.css?ver=0.9.9' type='text/css' media='screen' />
+<link rel='https://api.w.org/' href='http://www.52nlp.cn/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.52nlp.cn/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.52nlp.cn/wp-includes/wlwmanifest.xml" /> 
+<link rel='prev' title='Mecab安装过程中的一些坑' href='http://www.52nlp.cn/mecab%e5%ae%89%e8%a3%85%e8%bf%87%e7%a8%8b%e4%b8%ad%e7%9a%84%e4%b8%80%e4%ba%9b%e5%9d%91' />
+<link rel='next' title='深度学习主机环境配置: Ubuntu16.04+GeForce GTX 1080+TensorFlow' href='http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae-ubuntu16-04-geforce-gtx1080-tensorflow' />
+<meta name="generator" content="WordPress 4.7.1" />
+<link rel="canonical" href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae-ubuntu-16-04-nvidia-gtx-1080-cuda-8" />
+<link rel='shortlink' href='http://www.52nlp.cn/?p=9226' />
+<link rel="alternate" type="application/json+oembed" href="http://www.52nlp.cn/wp-json/oembed/1.0/embed?url=http%3A%2F%2Fwww.52nlp.cn%2F%25e6%25b7%25b1%25e5%25ba%25a6%25e5%25ad%25a6%25e4%25b9%25a0%25e4%25b8%25bb%25e6%259c%25ba%25e7%258e%25af%25e5%25a2%2583%25e9%2585%258d%25e7%25bd%25ae-ubuntu-16-04-nvidia-gtx-1080-cuda-8" />
+<link rel="alternate" type="text/xml+oembed" href="http://www.52nlp.cn/wp-json/oembed/1.0/embed?url=http%3A%2F%2Fwww.52nlp.cn%2F%25e6%25b7%25b1%25e5%25ba%25a6%25e5%25ad%25a6%25e4%25b9%25a0%25e4%25b8%25bb%25e6%259c%25ba%25e7%258e%25af%25e5%25a2%2583%25e9%2585%258d%25e7%25bd%25ae-ubuntu-16-04-nvidia-gtx-1080-cuda-8&#038;format=xml" />
+<!-- wp thread comment 1.4.9.4.002 -->
+<style type="text/css" media="screen">
+.editComment, .editableComment, .textComment{
+	display: inline;
+}
+.comment-childs{
+	border: 1px solid #999;
+	margin: 5px 2px 2px 4px;
+	padding: 4px 2px 2px 4px;
+	background-color: white;
+}
+.comment-childs > p {
+        word-break: break-word;
+        word-wrap: break-word;
+}
+.chalt{
+	background-color: #E2E2E2;
+}
+#newcomment{
+	border:1px dashed #777;width:90%;
+}
+#newcommentsubmit{
+	color:red;
+}
+.adminreplycomment{
+	border:1px dashed #777;
+	width:99%;
+	margin:4px;
+	padding:4px;
+}
+.mvccls{
+	color: #999;
+}
+			
+</style>
+</head>
+
+<body class="post-template-default single single-post postid-9226 single-format-standard">
+<div id="wrapper" class="hfeed">
+	<div id="header">
+		<div id="masthead">
+			<div id="branding" role="banner">
+								<div id="site-title">
+					<span>
+						<a href="http://www.52nlp.cn/" title="我爱自然语言处理" rel="home">我爱自然语言处理</a>
+					</span>
+				</div>
+				<div id="site-description">I Love Natural Language Processing</div>
+
+										<img src="http://www.52nlp.cn/wp-content/themes/twentytenorg/images/headers/path.jpg" width="940" height="198" alt="" />
+								</div><!-- #branding -->
+
+			<div id="access" role="navigation">
+			  				<div class="skip-link screen-reader-text"><a href="#content" title="跳至正文">跳至正文</a></div>
+								<div class="menu"><ul>
+<li ><a href="http://www.52nlp.cn/">首页</a></li><li class="page_item page-item-9088"><a href="http://www.52nlp.cn/%e4%b9%a6%e7%b1%8d">书籍</a></li>
+<li class="page_item page-item-2557 page_item_has_children"><a href="http://www.52nlp.cn/resources">资源</a>
+<ul class='children'>
+	<li class="page_item page-item-1271"><a href="http://www.52nlp.cn/resources/wpmatheditor">WpMathEditor</a></li>
+</ul>
+</li>
+<li class="page_item page-item-2"><a href="http://www.52nlp.cn/about">关于</a></li>
+<li class="page_item page-item-9013"><a href="http://weibo.com/52nlp" target="_blank">微博</a></li>
+</ul></div>
+ 
+				<div class="menu"><ul><li class="page_item page-item-2"></li><li class="page_item page-item-2"><a href="http://coursegraph.com" title="课程图谱" target="_blank">课程图谱</a></li><li class="page_item page-item-2"><a href="http://www.nlpjob.com" title="求职" target="_blank">求职招聘</a></li></ul></div>
+			</div><!-- #access -->
+		</div><!-- #masthead -->
+	</div><!-- #header -->
+
+	<div id="main">
+
+		<div id="container">
+			<div id="content" role="main">
+
+			
+
+				<div id="nav-above" class="navigation">
+					<div class="nav-previous"><a href="http://www.52nlp.cn/mecab%e5%ae%89%e8%a3%85%e8%bf%87%e7%a8%8b%e4%b8%ad%e7%9a%84%e4%b8%80%e4%ba%9b%e5%9d%91" rel="prev"><span class="meta-nav">&larr;</span> Mecab安装过程中的一些坑</a></div>
+					<div class="nav-next"><a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae-ubuntu16-04-geforce-gtx1080-tensorflow" rel="next">深度学习主机环境配置: Ubuntu16.04+GeForce GTX 1080+TensorFlow <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-above -->
+
+				<div id="post-9226" class="post-9226 post type-post status-publish format-standard hentry category-1153 tag-cuda tag-cuda8 tag-cuda8-0 tag-gpu tag-gtx1080 tag-nvidia-gtx-1080 tag-ubuntu tag-ubuntu16-04 tag-1018 tag-pc tag-1263 tag-1265 tag-1261 tag-1264 tag-1277 tag-1278 tag-1260">
+					<h1 class="entry-title">深度学习主机环境配置: Ubuntu16.04+Nvidia GTX 1080+CUDA8.0</h1>
+
+					<div class="entry-meta">
+						<span class="meta-prep meta-prep-author">发表于</span><a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae-ubuntu-16-04-nvidia-gtx-1080-cuda-8" title="09:00" rel="bookmark"><span class="entry-date">2016年07月15号</span></a><span class="meta-sep">由</span><span class="author vcard"><a class="url fn n" href="http://www.52nlp.cn/author/admin" title="查看所有由52nlp发布的文章">52nlp</a></span>					</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+						<p>接上文《<a href="http://www.52nlp.cn/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E4%B8%BB%E6%9C%BA%E6%94%92%E6%9C%BA%E5%B0%8F%E8%AE%B0" target="_blank">深度学习主机攒机小记</a>》，这台GTX1080主机准备好之后，就是配置深度学习环境了，这里选择了比较熟悉Ubuntu系统，不过是最新的16.04版本，另外在Nvidia GTX1080的基础上安装相关GPU驱动，外加CUDA8.0，因为都比较新，所以踩了很多坑。</p>
+<p><strong>1. 安装Ubuntu16.04</strong></p>
+<p>不考虑双系统，直接安装 Ubuntu16.04，从<a href="http://www.ubuntu.com/download/alternative-downloads" target="_blank">ubuntu官方</a>下载64位版本: ubuntu-16.04-desktop-amd64.iso 。</p>
+<p>在MAC下制作了 Ubuntu USB 安装盘，具体方法可参考: <a href="http://www.linuxidc.com/Linux/2013-04/82973.htm" target="_blank">在MAC下使用ISO制作Linux的安装USB盘</a>，之后通过Bios引导U盘启动安装Ubuntu系统：</p>
+<p>1）一开始安装就踩了一个坑，选择&#8221;Install Ubuntu&#8221;回车后过一会儿屏幕显示“输入不支持”，google了好多方案，最终和ubuntu对显卡的支持有关，需要手动添加显卡选项: nomodeset，使其支持Nvidia系列显卡，参考：<a href="http://blog.sciencenet.cn/blog-655584-877622.html" target="_blank">安装ubuntu黑屏问题的解决</a> or <a href="http://askubuntu.com/questions/38780/how-do-i-set-nomodeset-after-ive-already-installed-ubuntu" target="_blank">How do I set &#8216;nomodeset&#8217; after I&#8217;ve already installed Ubuntu?</a></p>
+<p>2) 磁盘分区，全部干掉之前<a href="http://www.52nlp.cn/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E4%B8%BB%E6%9C%BA%E6%94%92%E6%9C%BA%E5%B0%8F%E8%AE%B0">主机</a>自带的Window 10系统，分区为 /boot, /, /home 等几个目录，同时把第二块4T硬盘也挂载了上去，作为数据盘。</p>
+<p>3）安装完毕后Ubuntu 16.04的分辨率很低，在显卡驱动未安装之前，可以手动修改一下grub文件：</p>
+<p>sudo vim /etc/default/grub </p>
+<p><i># The resolution used on graphical terminal<br />
+# note that you can use only modes which your graphic card supports via VBE<br />
+# you can see them in real GRUB with the command `vbeinfo&#8217;<br />
+#GRUB_GFXMODE=640&#215;480<br />
+# 这里分辨率自行设置<br />
+GRUB_GFXMODE=1024&#215;768<br />
+</i></p>
+<p>sudo update-grub</p>
+<p>4）安装SSH Server，这样可以远程ssh访问这台GTX1080主机：</p>
+<p>sudo apt-get install openssh-server</p>
+<p>5）更新Ubuntu16.04源，用的是<a href="https://lug.ustc.edu.cn/wiki/mirrors/help/ubuntu" target="_blank">中科大的源</a>：</p>
+<p>cd /etc/apt/<br />
+sudo cp sources.list sources.list.bak<br />
+sudo vi sources.list</p>
+<p>把下面的这些源添加到source.list文件头部：</p>
+<p><i>deb http://mirrors.ustc.edu.cn/ubuntu/ xenial main restricted universe multiverse<br />
+deb http://mirrors.ustc.edu.cn/ubuntu/ xenial-security main restricted universe multiverse<br />
+deb http://mirrors.ustc.edu.cn/ubuntu/ xenial-updates main restricted universe multiverse<br />
+deb http://mirrors.ustc.edu.cn/ubuntu/ xenial-proposed main restricted universe multiverse<br />
+deb http://mirrors.ustc.edu.cn/ubuntu/ xenial-backports main restricted universe multiverse<br />
+deb-src http://mirrors.ustc.edu.cn/ubuntu/ xenial main restricted universe multiverse<br />
+deb-src http://mirrors.ustc.edu.cn/ubuntu/ xenial-security main restricted universe multiverse<br />
+deb-src http://mirrors.ustc.edu.cn/ubuntu/ xenial-updates main restricted universe multiverse<br />
+deb-src http://mirrors.ustc.edu.cn/ubuntu/ xenial-proposed main restricted universe multiverse<br />
+deb-src http://mirrors.ustc.edu.cn/ubuntu/ xenial-backports main restricted universe multiverse</i></p>
+<p>最后更新源和更新已安装的包：</p>
+<p>sudo apt-get update<br />
+sudo apt-get upgrade<br />
+<span id="more-9226"></span></p>
+<p>2. <strong>安装GTX1080驱动</strong></p>
+<p>安装 Nvidia 驱动 367.27</p>
+<p>sudo add-apt-repository ppa:graphics-drivers/ppa</p>
+<p>第一次运行出现如下的警告：</p>
+<blockquote><p> Fresh drivers from upstream, currently shipping Nvidia.</p>
+<p>## Current Status</p>
+<p>We currently recommend: `nvidia-361`, Nvidia&#8217;s current long lived branch.<br />
+For GeForce 8 and 9 series GPUs use `nvidia-340`<br />
+For GeForce 6 and 7 series GPUs use `nvidia-304`</p>
+<p>## What we&#8217;re working on right now:</p>
+<p>&#8211; Normal driver updates<br />
+&#8211; Investigating how to bring this goodness to distro on a cadence.</p>
+<p>## WARNINGS:</p>
+<p>This PPA is currently in testing, you should be experienced with packaging before you dive in here. Give us a few days to sort out the kinks.</p>
+<p>Volunteers welcome! See also: https://github.com/mamarley/nvidia-graphics-drivers/</p>
+<p>http://www.ubuntu.com/download/desktop/contribute<br />
+ 更多信息： https://launchpad.net/~graphics-drivers/+archive/ubuntu/ppa<br />
+按回车继续或者 Ctrl+c 取消添加</p></blockquote>
+<p>回车后继续:</p>
+<p>sudo apt-get update<br />
+sudo apt-get install nvidia-367<br />
+sudo apt-get install mesa-common-dev<br />
+sudo apt-get install freeglut3-dev</p>
+<p>之后重启系统让<a href="http://www.52nlp.cn/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E4%B8%BB%E6%9C%BA%E6%94%92%E6%9C%BA%E5%B0%8F%E8%AE%B0">GTX1080</a>显卡驱动生效。</p>
+<p><strong>3. 下载和安装CUDA</strong></p>
+<p>在安装<a href="https://developer.nvidia.com/cuda-toolkit" target="_blank">CUDA</a>之前，google了一下，发现在Ubuntu16.04下安装CUDA7.5问题多多，幸好CUDA8已出，支持GTX1080：</p>
+<blockquote><p>New in CUDA 8</p>
+<p>Pascal Architecture Support<br />
+Out of box performance improvements on Tesla P100, supports GeForce GTX 1080<br />
+Simplify programming using Unified memory on Pascal including support for large datasets, concurrent data access and atomics*<br />
+Optimize Unified Memory performance using new data migration APIs*<br />
+Faster Deep Learning using optimized cuBLAS routines for native FP16 computation<br />
+Developer Tools<br />
+Quickly identify latent system-level bottlenecks using the new critical path analysis feature<br />
+Improve productivity with up to 2x faster NVCC compilation speed<br />
+Tune OpenACC applications and overall host code using new profiling extensions<br />
+Libraries<br />
+Accelerate graph analytics algorithms with nvGRAPH<br />
+New cuBLAS matrix multiply optimizations for matrices with sizes smaller than 512 and for batched operation</p></blockquote>
+<p>不过下载CUDA需要注册和登陆NVIDIA开发者账号，<a href="https://developer.nvidia.com/cuda-release-candidate-download" target="_blank">CUDA8下载页面</a>提供了很详细的系统选择和安装说明，</p>
+<p>这里选择了Ubuntu16.04系统runfile安装方案，千万不要选择deb方案，前方无数坑：</p>
+<p><img src="http://www.52nlp.cn/wp-content/uploads/2016/07/屏幕快照-2016-07-15-上午8.25.37.png" alt="屏幕快照 2016-07-15 上午8.25.37" width="808" height="606" class="aligncenter size-full wp-image-9269" srcset="http://www.52nlp.cn/wp-content/uploads/2016/07/屏幕快照-2016-07-15-上午8.25.37.png 808w, http://www.52nlp.cn/wp-content/uploads/2016/07/屏幕快照-2016-07-15-上午8.25.37-300x225.png 300w, http://www.52nlp.cn/wp-content/uploads/2016/07/屏幕快照-2016-07-15-上午8.25.37-768x576.png 768w" sizes="(max-width: 808px) 100vw, 808px" /></p>
+<p>下载的“cuda_8.0.27_linux.run”有1.4G，按照Nivdia官方给出的方法安装CUDA8：</p>
+<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:620px;"><div class="text codecolorer">sudo sh cuda_8.0.27_linux.run --tmpdir=/opt/temp/</div></div>
+<p>这里加了&#8211;tmpdir主要是直接运行“sudo sh cuda_8.0.27_linux.run”会提示空间不足的错误，其实是全新的电脑主机，硬盘足够大的，google了以下发现加个tmpdir就可以了：</p>
+<blockquote><p>
+Not enough space on parition mounted at /.<br />
+Need 5091561472 bytes.</p>
+<p>Disk space check has failed. Installation cannot continue.</p></blockquote>
+<p>执行后会有一系列提示让你确认，非常非常非常非常关键的地方是是否安装361这个低版本的驱动：</p>
+<p>Install NVIDIA Accelerated Graphics Driver for Linux-x86_64 361.62?</p>
+<p>答案必须是n，否则之前安装的GTX1080驱动就白费了，而且问题多多。</p>
+<blockquote><p>Logging to /opt/temp//cuda_install_6583.log<br />
+Using more to view the EULA.<br />
+End User License Agreement<br />
+&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8212;&#8211;</p>
+<p>Preface<br />
+&#8212;&#8212;-</p>
+<p>The following contains specific license terms and conditions<br />
+for four separate NVIDIA products. By accepting this<br />
+agreement, you agree to comply with all the terms and<br />
+conditions applicable to the specific product(s) included<br />
+herein.</p>
+<p>Do you accept the previously read EULA?<br />
+accept/decline/quit: accept</p>
+<p>Install NVIDIA Accelerated Graphics Driver for Linux-x86_64 361.62?<br />
+(y)es/(n)o/(q)uit: n</p>
+<p>Install the CUDA 8.0 Toolkit?<br />
+(y)es/(n)o/(q)uit: y</p>
+<p>Enter Toolkit Location<br />
+ [ default is /usr/local/cuda-8.0 ]: </p>
+<p>Do you want to install a symbolic link at /usr/local/cuda?<br />
+(y)es/(n)o/(q)uit: y</p>
+<p>Install the CUDA 8.0 Samples?<br />
+(y)es/(n)o/(q)uit: y</p>
+<p>Enter CUDA Samples Location<br />
+ [ default is /home/textminer ]: </p>
+<p>Installing the CUDA Toolkit in /usr/local/cuda-8.0 &#8230;<br />
+Installing the CUDA Samples in /home/textminer &#8230;<br />
+Copying samples to /home/textminer/NVIDIA_CUDA-8.0_Samples now&#8230;<br />
+Finished copying samples.</p>
+<p>===========<br />
+= Summary =<br />
+===========</p>
+<p>Driver:   Not Selected<br />
+Toolkit:  Installed in /usr/local/cuda-8.0<br />
+Samples:  Installed in /home/textminer</p>
+<p>Please make sure that<br />
+ &#8211;   PATH includes /usr/local/cuda-8.0/bin<br />
+ &#8211;   LD_LIBRARY_PATH includes /usr/local/cuda-8.0/lib64, or, add /usr/local/cuda-8.0/lib64 to /etc/ld.so.conf and run ldconfig as root</p>
+<p>To uninstall the CUDA Toolkit, run the uninstall script in /usr/local/cuda-8.0/bin</p>
+<p>Please see CUDA_Installation_Guide_Linux.pdf in /usr/local/cuda-8.0/doc/pdf for detailed information on setting up CUDA.</p>
+<p>***WARNING: Incomplete installation! This installation did not install the CUDA Driver. A driver of version at least 361.00 is required for CUDA 8.0 functionality to work.<br />
+To install the driver using this installer, run the following command, replacing <CudaInstaller> with the name of this run file:<br />
+    sudo <CudaInstaller>.run -silent -driver</p>
+<p>Logfile is /opt/temp//cuda_install_6583.log</p></blockquote>
+<p>安装完毕后，再声明一下环境变量，并将其写入到 ~/.bashrc 的尾部:</p>
+<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:620px;"><div class="text codecolorer">export PATH=/usr/local/cuda-8.0/bin\${PATH:+:\${PATH}}<br />
+export LD_LIBRARY_PATH=/usr/local/cuda-8.0/lib64\${LD_LIBRARY_PATH:+:\${LD_LIBRARY_PATH}}</div></div>
+<p>最后再来测试一下CUDA，运行：</p>
+<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:620px;"><div class="text codecolorer">nvidia-smi</div></div>
+<p>结果如下所示：</p>
+<p><img src="http://www.52nlp.cn/wp-content/uploads/2016/07/屏幕快照-2016-07-15-上午8.44.43.png" alt="屏幕快照 2016-07-15 上午8.44.43" width="656" height="324" class="aligncenter size-full wp-image-9276" srcset="http://www.52nlp.cn/wp-content/uploads/2016/07/屏幕快照-2016-07-15-上午8.44.43.png 656w, http://www.52nlp.cn/wp-content/uploads/2016/07/屏幕快照-2016-07-15-上午8.44.43-300x148.png 300w" sizes="(max-width: 656px) 100vw, 656px" /></p>
+<p>再来试几个CUDA例子：</p>
+<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:620px;"><div class="text codecolorer">cd 1_Utilities/deviceQuery<br />
+make</div></div>
+<p>这里如果提示gcc版本过高，可以安装低版本的gcc并做软连接替换，具体方法请自行google，我用低版本的gcc4.9替换了ubuntu16.04自带的gcc5.x版本。</p>
+<blockquote><p>
+&#8220;/usr/local/cuda-8.0&#8243;/bin/nvcc -ccbin g++ -I../../common/inc  -m64    -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_60,code=sm_60 -gencode arch=compute_60,code=compute_60 -o deviceQuery.o -c deviceQuery.cpp<br />
+&#8220;/usr/local/cuda-8.0&#8243;/bin/nvcc -ccbin g++   -m64      -gencode arch=compute_20,code=sm_20 -gencode arch=compute_30,code=sm_30 -gencode arch=compute_35,code=sm_35 -gencode arch=compute_37,code=sm_37 -gencode arch=compute_50,code=sm_50 -gencode arch=compute_52,code=sm_52 -gencode arch=compute_60,code=sm_60 -gencode arch=compute_60,code=compute_60 -o deviceQuery deviceQuery.o<br />
+mkdir -p ../../bin/x86_64/linux/release<br />
+cp deviceQuery ../../bin/x86_64/linux/release</p></blockquote>
+<p>执行 ./deviceQuery ，得到:</p>
+<blockquote><p>./deviceQuery Starting&#8230;</p>
+<p> CUDA Device Query (Runtime API) version (CUDART static linking)</p>
+<p>Detected 1 CUDA Capable device(s)</p>
+<p>Device 0: &#8220;GeForce GTX 1080&#8221;<br />
+  CUDA Driver Version / Runtime Version          8.0 / 8.0<br />
+  CUDA Capability Major/Minor version number:    6.1<br />
+  Total amount of global memory:                 8112 MBytes (8506179584 bytes)<br />
+  (20) Multiprocessors, (128) CUDA Cores/MP:     2560 CUDA Cores<br />
+  GPU Max Clock rate:                            1835 MHz (1.84 GHz)<br />
+  Memory Clock rate:                             5005 Mhz<br />
+  Memory Bus Width:                              256-bit<br />
+  L2 Cache Size:                                 2097152 bytes<br />
+  Maximum Texture Dimension Size (x,y,z)         1D=(131072), 2D=(131072, 65536), 3D=(16384, 16384, 16384)<br />
+  Maximum Layered 1D Texture Size, (num) layers  1D=(32768), 2048 layers<br />
+  Maximum Layered 2D Texture Size, (num) layers  2D=(32768, 32768), 2048 layers<br />
+  Total amount of constant memory:               65536 bytes<br />
+  Total amount of shared memory per block:       49152 bytes<br />
+  Total number of registers available per block: 65536<br />
+  Warp size:                                     32<br />
+  Maximum number of threads per multiprocessor:  2048<br />
+  Maximum number of threads per block:           1024<br />
+  Max dimension size of a thread block (x,y,z): (1024, 1024, 64)<br />
+  Max dimension size of a grid size    (x,y,z): (2147483647, 65535, 65535)<br />
+  Maximum memory pitch:                          2147483647 bytes<br />
+  Texture alignment:                             512 bytes<br />
+  Concurrent copy and kernel execution:          Yes with 2 copy engine(s)<br />
+  Run time limit on kernels:                     Yes<br />
+  Integrated GPU sharing Host Memory:            No<br />
+  Support host page-locked memory mapping:       Yes<br />
+  Alignment requirement for Surfaces:            Yes<br />
+  Device has ECC support:                        Disabled<br />
+  Device supports Unified Addressing (UVA):      Yes<br />
+  Device PCI Domain ID / Bus ID / location ID:   0 / 1 / 0<br />
+  Compute Mode:<br />
+     < Default (multiple host threads can use ::cudaSetDevice() with device simultaneously) ></p>
+<p>deviceQuery, CUDA Driver = CUDART, CUDA Driver Version = 8.0, CUDA Runtime Version = 8.0, NumDevs = 1, Device0 = GeForce GTX 1080<br />
+Result = PASS</p></blockquote>
+<p>再测试试一下nobody：</p>
+<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:620px;"><div class="text codecolorer">cd ../../5_Simulations/nbody/<br />
+make</div></div>
+<p>执行：</p>
+<div class="codecolorer-container text default" style="overflow:auto;white-space:nowrap;width:620px;"><div class="text codecolorer">./nbody -benchmark -numbodies=256000 -device=0</div></div>
+<p>得到：</p>
+<blockquote><p>
+> Windowed mode<br />
+> Simulation data stored in video memory<br />
+> Single precision floating point simulation<br />
+> 1 Devices used for simulation<br />
+gpuDeviceInit() CUDA Device [0]: &#8220;GeForce GTX 1080<br />
+> Compute 6.1 CUDA device: [GeForce GTX 1080]<br />
+number of bodies = 256000<br />
+256000 bodies, total time for 10 iterations: 2291.469 ms<br />
+= 286.000 billion interactions per second<br />
+= 5719.998 single-precision GFLOP/s at 20 flops per interaction</p></blockquote>
+<p>参考:<br />
+<a href="http://yangcha.github.io/GTX-1080/" target="_blank">Nvidia GTX 1080 on Ubuntu 16.04 for Deep Learning</a><br />
+<a href="http://www.linuxdiyf.com/linux/22230.html" target="_blank">Ubuntu 16.04下安装Tensorflow(GPU)</a><br />
+<a href="http://blog.csdn.net/autocyz/article/details/51841157" target="_blank">ubuntu16.04安装 cuda7.5</a><br />
+<a href="https://www.zhihu.com/question/43711830" target="_blank">Ubuntu16.04无法安装CUDA吗？</a><br />
+<a href="http://www.jianshu.com/p/663029044efd" target="_blank">Ubuntu16.04+matlab2014a+anaconda2+OpenCV3.1+caffe安装</a><br />
+<a href="http://blog.csdn.net/Swearos/article/details/51307304" target="_blank">ubuntu 16.04 编译opencv3.1，opencv多版本切换</a><br />
+<a href="http://qiita.com/hidenorly/items/9f614534db1b151b3b93" target="_blank">TensorFlow, Caffe, Chainer と Deep Learning大御所を一気に source code build で GPU向けに setupしてみた</a><br />
+<a href="https://github.com/tensorflow/tensorflow/issues/2559" target="_blank">feature request: support for cuda 8.0 rc</a><br />
+<a href="https://www.pugetsystems.com/labs/hpc/GTX-1080-CUDA-performance-on-Linux-Ubuntu-16-04-preliminary-results-nbody-and-NAMD-803/" target="_blank">GTX 1080 CUDA performance on Linux (Ubuntu 16.04) preliminary results (nbody and NAMD)</a><br />
+<a href="https://www.reddit.com/r/MachineLearning/comments/4rxbvl/anyone_able_to_run_tensorflow_with_10701080_on/" target="_blank">Anyone able to run Tensorflow with 1070/1080 on Ubuntu 16.04/15.10/15.04?</a><br />
+<a href="http://yangcha.github.io/Tensorflow/" target="_blank">Tensorflow on Ubuntu 16.04 with Nvidia GTX 1080</a></p>
+<p>注：原创文章，转载请注明出处及保留链接“<a href="http://www.52nlp.cn">我爱自然语言处理</a>”：<a href="http://www.52nlp.cn">http://www.52nlp.cn</a></p>
+<p>本文链接地址：<a href="http://www.52nlp.cn/?p=9226">深度学习主机环境配置: Ubuntu16.04+Nvidia GTX 1080+CUDA8.0</a> <a href="http://www.52nlp.cn/?p=9226">http://www.52nlp.cn/?p=9226</a></p>
+<div class='yarpp-related'>
+<p>相关文章:<ol>
+<li><a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae-ubuntu16-04-geforce-gtx1080-tensorflow" rel="bookmark" title="深度学习主机环境配置: Ubuntu16.04+GeForce GTX 1080+TensorFlow">深度学习主机环境配置: Ubuntu16.04+GeForce GTX 1080+TensorFlow </a></li>
+<li><a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e6%94%92%e6%9c%ba%e5%b0%8f%e8%ae%b0" rel="bookmark" title="深度学习主机攒机小记">深度学习主机攒机小记 </a></li>
+<li><a href="http://www.52nlp.cn/mecab%e5%ae%89%e8%a3%85%e8%bf%87%e7%a8%8b%e4%b8%ad%e7%9a%84%e4%b8%80%e4%ba%9b%e5%9d%91" rel="bookmark" title="Mecab安装过程中的一些坑">Mecab安装过程中的一些坑 </a></li>
+<li><a href="http://www.52nlp.cn/ubuntu-64-bit-system-srilm-configuration" rel="bookmark" title="Ubuntu 64位系统下SRILM的配置详解">Ubuntu 64位系统下SRILM的配置详解 </a></li>
+<li><a href="http://www.52nlp.cn/ubuntu-moses-platform-build-process-record" rel="bookmark" title="Ubuntu8.10下moses测试平台搭建全记录">Ubuntu8.10下moses测试平台搭建全记录 </a></li>
+<li><a href="http://www.52nlp.cn/%e5%ae%89%e8%a3%85srilm%e7%9a%84%e4%b8%80%e7%82%b9%e6%96%b0%e5%8f%98%e5%8c%96" rel="bookmark" title="安装Srilm的一点新变化">安装Srilm的一点新变化 </a></li>
+<li><a href="http://www.52nlp.cn/translation-memory-products-summary" rel="bookmark" title="翻译记忆产品小结">翻译记忆产品小结 </a></li>
+<li><a href="http://www.52nlp.cn/moses%e7%9a%84%e4%b8%80%e4%ba%9b%e6%96%b0%e5%8f%98%e5%8c%96" rel="bookmark" title="Moses的一些新变化">Moses的一些新变化 </a></li>
+<li><a href="http://www.52nlp.cn/%e6%96%af%e5%9d%a6%e7%a6%8f%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%8e%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86%e9%ab%98%e7%ba%a7%e7%9a%84%e8%af%8d%e5%90%91%e9%87%8f%e8%a1%a8%e7%a4%ba" rel="bookmark" title="斯坦福大学深度学习与自然语言处理第三讲：高级的词向量表示">斯坦福大学深度学习与自然语言处理第三讲：高级的词向量表示 </a></li>
+<li><a href="http://www.52nlp.cn/%e5%9f%ba%e4%ba%8e%e5%93%88%e5%b8%8c%e8%a1%a8%e5%92%8c%e4%ba%8c%e5%8f%89%e6%a0%91%e7%9a%84%e8%af%8d%e5%85%b8%e7%a0%94%e7%a9%b6%e4%b8%80" rel="bookmark" title="基于哈希表和二叉树的词典研究(一)">基于哈希表和二叉树的词典研究(一) </a></li>
+</ol></p>
+</div>
+											</div><!-- .entry-content -->
+
+
+					<div class="entry-utility">
+						此条目发表在<a href="http://www.52nlp.cn/category/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0" rel="category tag">深度学习</a>分类目录，贴了<a href="http://www.52nlp.cn/tag/cuda" rel="tag">CUDA</a>, <a href="http://www.52nlp.cn/tag/cuda8" rel="tag">CUDA8</a>, <a href="http://www.52nlp.cn/tag/cuda8-0" rel="tag">CUDA8.0</a>, <a href="http://www.52nlp.cn/tag/gpu" rel="tag">GPU</a>, <a href="http://www.52nlp.cn/tag/gtx1080" rel="tag">GTX1080</a>, <a href="http://www.52nlp.cn/tag/gtx1080%e4%b8%bb%e6%9c%ba" rel="tag">GTX1080主机</a>, <a href="http://www.52nlp.cn/tag/gtx1080%e6%98%be%e5%8d%a1" rel="tag">GTX1080显卡</a>, <a href="http://www.52nlp.cn/tag/gtx1080%e6%98%be%e5%8d%a1%e9%a9%b1%e5%8a%a8" rel="tag">GTX1080显卡驱动</a>, <a href="http://www.52nlp.cn/tag/gtx1080%e9%a9%b1%e5%8a%a8" rel="tag">GTX1080驱动</a>, <a href="http://www.52nlp.cn/tag/nvidia-gtx-1080" rel="tag">Nvidia GTX 1080</a>, <a href="http://www.52nlp.cn/tag/ubuntu" rel="tag">ubuntu</a>, <a href="http://www.52nlp.cn/tag/ubuntu16-04" rel="tag">Ubuntu16.04</a>, <a href="http://www.52nlp.cn/tag/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0" rel="tag">深度学习</a>, <a href="http://www.52nlp.cn/tag/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0pc" rel="tag">深度学习PC</a>, <a href="http://www.52nlp.cn/tag/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba" rel="tag">深度学习主机</a>, <a href="http://www.52nlp.cn/tag/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e5%b7%a5%e4%bd%9c%e7%ab%99" rel="tag">深度学习工作站</a>, <a href="http://www.52nlp.cn/tag/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e6%9c%8d%e5%8a%a1%e5%99%a8" rel="tag">深度学习服务器</a>, <a href="http://www.52nlp.cn/tag/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e6%9c%ba%e5%99%a8" rel="tag">深度学习机器</a>, <a href="http://www.52nlp.cn/tag/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e7%8e%af%e5%a2%83" rel="tag">深度学习环境</a>, <a href="http://www.52nlp.cn/tag/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae" rel="tag">深度学习环境配置</a>, <a href="http://www.52nlp.cn/tag/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e7%94%b5%e8%84%91" rel="tag">深度学习电脑</a>标签。将<a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae-ubuntu-16-04-nvidia-gtx-1080-cuda-8" title="链向深度学习主机环境配置: Ubuntu16.04+Nvidia GTX 1080+CUDA8.0的固定链接" rel="bookmark">固定链接</a>加入收藏夹。											</div><!-- .entry-utility -->
+				</div><!-- #post-## -->
+
+				<div id="nav-below" class="navigation">
+					<div class="nav-previous"><a href="http://www.52nlp.cn/mecab%e5%ae%89%e8%a3%85%e8%bf%87%e7%a8%8b%e4%b8%ad%e7%9a%84%e4%b8%80%e4%ba%9b%e5%9d%91" rel="prev"><span class="meta-nav">&larr;</span> Mecab安装过程中的一些坑</a></div>
+					<div class="nav-next"><a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae-ubuntu16-04-geforce-gtx1080-tensorflow" rel="next">深度学习主机环境配置: Ubuntu16.04+GeForce GTX 1080+TensorFlow <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-below -->
+
+				
+			<div id="comments">
+
+
+			<h3 id="comments-title">《<em>深度学习主机环境配置: Ubuntu16.04+Nvidia GTX 1080+CUDA8.0</em>》有 26 条评论</h3>
+
+
+			<ol class="commentlist">
+					<li class="comment even thread-even depth-1" id="li-comment-234206">
+		<div id="comment-234206">
+		<div class="comment-author vcard">
+						<cite class="fn">iresine</cite><span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae-ubuntu-16-04-nvidia-gtx-1080-cuda-8#comment-234206">
+			2016年07月22号09:55</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>请问，虚拟机+16.04装完nvidia驱动后循环登录界面怎么解决？</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,234206,1,'iresine');">回复</a>]</p><div class="comment-childs chalt" id="comment-234207"><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">七月 22nd, 2016 at 10:59</small></p><p>驱动没有安装正确？能否切换到命令行模式登录重新安装驱动</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,234207,2,'52nlp');">回复</a>]</p></div><div class="comment-childs chalt" id="comment-234208"><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">七月 22nd, 2016 at 11:01</small></p><p>参考一下这个帖子 <a href="https://www.v2ex.com/t/275534" rel="nofollow">https://www.v2ex.com/t/275534</a> ，是否安装的是16.04自带的nvidia-361驱动，安装这个貌似有点问题</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,234208,2,'52nlp');">回复</a>]</p></div><div class="comment-childs chalt" id="comment-234360"><p><cite>FF</cite> 回复:<br /><small class="commentmetadata">七月 29th, 2016 at 09:36</small></p><p>虚拟机是不能装cuda的。虚拟机的显卡是虚拟出来的，不是nvidia的显卡</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,234360,2,'FF');">回复</a>]</p></div></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-235762">
+		<div id="comment-235762">
+		<div class="comment-author vcard">
+						<cite class="fn"><a href='http://www.soulmachine.me' rel='external nofollow' class='url'>soulmachine</a></cite><span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae-ubuntu-16-04-nvidia-gtx-1080-cuda-8#comment-235762">
+			2016年08月18号08:46</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>我也碰到了循环登录的问题，装完nvidia驱动后开机输入密码，会闪一下又返回登录界面，我是真机装的</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,235762,1,'soulmachine');">回复</a>]</p><div class="comment-childs chalt" id="comment-235774"><p><cite><a href='http://www.soulmachine.me' rel='external nofollow' class='url'>soulmachine</a></cite> 回复:<br /><small class="commentmetadata">八月 18th, 2016 at 12:55</small></p><p>解决了，必须要禁用主板的 Secure Boot</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,235774,2,'soulmachine');">回复</a>]</p></div></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="li-comment-235779">
+		<div id="comment-235779">
+		<div class="comment-author vcard">
+						<cite class="fn"><a href='http://www.soulmachine.me' rel='external nofollow' class='url'>soulmachine</a></cite><span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae-ubuntu-16-04-nvidia-gtx-1080-cuda-8#comment-235779">
+			2016年08月18号14:29</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>Driver:   Not Selected<br />
+Toolkit:  Installation Failed. Using unsupported Compiler.<br />
+Samples:  Cannot find Toolkit in /usr/local/cuda-8.0</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,235779,1,'soulmachine');">回复</a>]</p><div class="comment-childs chalt" id="comment-235780"><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">八月 18th, 2016 at 15:03</small></p><p>这一步安装cuda失败了，不过这个提示看不出哪一步出了问题。</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,235780,2,'52nlp');">回复</a>]</p></div></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-235943">
+		<div id="comment-235943">
+		<div class="comment-author vcard">
+						<cite class="fn">S. Qu</cite><span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae-ubuntu-16-04-nvidia-gtx-1080-cuda-8#comment-235943">
+			2016年08月21号14:03</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>Thank you. Before I saw your post I spent a lot of time trying to make the driver workingissue with the driver; you PPA approach solved my problem. </p>
+<p>On the following issue:<br />
+&#8220;这里如果提示gcc版本过高，可以安装低版本的gcc并做软连接替换，具体方法请自行google，我用低版本的gcc4.9替换了ubuntu16.04自带的gcc5.x版本&#8221;<br />
+I downloaded and ran nvidia&#8217;s fix file (sudo sh cuda_8.0.27.1_linux.run) after installation of cuda 8, and it worked. This fix might not be available when you wrote your post.</p>
+<p>Thanks again.</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,235943,1,'S. Qu');">回复</a>]</p><div class="comment-childs chalt" id="comment-235950"><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">八月 21st, 2016 at 15:31</small></p><p>谢谢提示</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,235950,2,'52nlp');">回复</a>]</p></div></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="li-comment-237758">
+		<div id="comment-237758">
+		<div class="comment-author vcard">
+						<cite class="fn">bbXU</cite><span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae-ubuntu-16-04-nvidia-gtx-1080-cuda-8#comment-237758">
+			2016年09月9号11:41</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>export 只能临时使用，重启后又无效了，，，</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,237758,1,'bbXU');">回复</a>]</p><div class="comment-childs chalt" id="comment-237759"><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">九月 9th, 2016 at 11:42</small></p><p>当然要写进 ~/.bashrc 里啊</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,237759,2,'52nlp');">回复</a>]</p></div></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-238028">
+		<div id="comment-238028">
+		<div class="comment-author vcard">
+						<cite class="fn">keith</cite><span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae-ubuntu-16-04-nvidia-gtx-1080-cuda-8#comment-238028">
+			2016年09月14号18:35</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>Hello.<br />
+i am new to tensorflow, and spent a lot of days to install tensorflow, but it didn&#8217;t work. Need help.</p>
+<p>sudo ./configure<br />
+~/tensorflow ~/tensorflow<br />
+Please specify the location of python. [Default is /usr/bin/python]:<br />
+Do you wish to build TensorFlow with Google Cloud Platform support? [y/N] n<br />
+No Google Cloud Platform support will be enabled for TensorFlow<br />
+Found possible Python library paths:<br />
+/usr/local/lib/python2.7/dist-packages<br />
+/usr/lib/python2.7/dist-packages<br />
+Please input the desired Python library path to use. Default is [/usr/local/lib/python2.7/dist-packages]</p>
+<p>/usr/local/lib/python2.7/dist-packages<br />
+Do you wish to build TensorFlow with GPU support? [y/N] y<br />
+GPU support will be enabled for TensorFlow<br />
+Please specify which gcc should be used by nvcc as the host compiler. [Default is /usr/bin/gcc]:<br />
+Please specify the Cuda SDK version you want to use, e.g. 7.0. [Leave empty to use system default]: 8.0<br />
+Please specify the location where CUDA 8.0 toolkit is installed. Refer to README.md for more details. [Default is /usr/local/cuda]:<br />
+Please specify the Cudnn version you want to use. [Leave empty to use system default]: 4<br />
+Please specify the location where cuDNN 4 library is installed. Refer to README.md for more details. [Default is /usr/local/cuda]:<br />
+Please specify a list of comma-separated Cuda compute capabilities you want to build with.<br />
+You can find the compute capability of your device at: <a href="https://developer.nvidia.com/cuda-gpus" rel="nofollow">https://developer.nvidia.com/cuda-gpus</a>.<br />
+Please note that each additional compute capability significantly increases your build time and binary size.</p>
+<p>Found stale PID file (pid=3471). Server probably died abruptly, continuing&#8230;<br />
+..<br />
+INFO: Starting clean (this may take a while). Consider using &#8211;expunge_async if the clean takes more than several minutes.<br />
+.<br />
+ERROR: /home/keithyin/tensorflow/tensorflow/contrib/session_bundle/BUILD:134:1: no such target &#8216;//tensorflow/core:android_lib_lite&#8217;: target &#8216;android_lib_lite&#8217; not declared in package &#8216;tensorflow/core&#8217; defined by /home/keithyin/tensorflow/tensorflow/core/BUILD and referenced by &#8216;//tensorflow/contrib/session_bundle:session_bundle_lite&#8217;.<br />
+ERROR: /home/keithyin/tensorflow/tensorflow/core/platform/default/build_config/BUILD:56:1: no such package &#8216;@jpeg_archive//&#8217;: Error downloading from <a href="http://www.ijg.org/files/jpegsrc.v9a.tar.gz" rel="nofollow">http://www.ijg.org/files/jpegsrc.v9a.tar.gz</a> to /home/keithyin/.cache/bazel/_bazel_root/9192340d7b606ddb9ea35b29a97154c1/external/jpeg_archive: Error downloading <a href="http://www.ijg.org/files/jpegsrc.v9a.tar.gz" rel="nofollow">http://www.ijg.org/files/jpegsrc.v9a.tar.gz</a> to /home/keithyin/.cache/bazel/_bazel_root/9192340d7b606ddb9ea35b29a97154c1/external/jpeg_archive/jpegsrc.v9a.tar.gz: Connection timed out and referenced by &#8216;//tensorflow/core/platform/default/build_config:platformlib&#8217;.<br />
+ERROR: Evaluation of query &#8220;deps((//&#8230; union @bazel_tools//tools/jdk:toolchain))&#8221; failed: errors were encountered while computing transitive closure.<br />
+Configuration finished</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,238028,1,'keith');">回复</a>]</p><div class="comment-childs chalt" id="comment-238032"><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">九月 14th, 2016 at 22:47</small></p><p>you can refer this issue: <a href="https://github.com/tensorflow/tensorflow/issues/4312" rel="nofollow">https://github.com/tensorflow/tensorflow/issues/4312</a></p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,238032,2,'52nlp');">回复</a>]</p></div></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="li-comment-240347">
+		<div id="comment-240347">
+		<div class="comment-author vcard">
+						<cite class="fn">洪伟</cite><span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae-ubuntu-16-04-nvidia-gtx-1080-cuda-8#comment-240347">
+			2016年10月18号13:31</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>我的配置是华硕z170a，CPU是i7 6700k，显卡是GTX1080，想安装Ubuntu系统，安装完重启后就一个桌面一个鼠标，在右键打开终端后在source文件中添加源，然后安装英伟达的驱动，再重启后就一直在登录界面死循环，闪一下又回到登录界面，咋回事啊，有没有配置成功的大神指点一下迷津，我邮箱是425591614@qq.com，求救</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,240347,1,'洪伟');">回复</a>]</p><div class="comment-childs chalt" id="comment-241151"><p><cite>马里奥赛德</cite> 回复:<br /><small class="commentmetadata">十一月 1st, 2016 at 20:40</small></p><p>在安装驱动之前试试更新下软件和系统，保证系统最新，有时候会出现兼容问题的</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,241151,2,'马里奥赛德');">回复</a>]</p></div></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-242410">
+		<div id="comment-242410">
+		<div class="comment-author vcard">
+						<cite class="fn">kun</cite><span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae-ubuntu-16-04-nvidia-gtx-1080-cuda-8#comment-242410">
+			2016年11月22号19:29</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>你好，1080/ubuntu 14.04，驱动都装利索了。跑mnist的例程，prototxt定义GPU，最后 loss 2.3， acc只有0.113。用CPU跑的话acc 0.99，求解这是怎么回事儿&#8230;网上找不到相关信息</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,242410,1,'kun');">回复</a>]</p><div class="comment-childs chalt" id="comment-242838"><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">十一月 24th, 2016 at 12:06</small></p><p>从你这个描述来看我也没有办法帮你解决，至少给一些报错信息或者warning之类的log信息。</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,242838,2,'52nlp');">回复</a>]</p></div></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="li-comment-243352">
+		<div id="comment-243352">
+		<div class="comment-author vcard">
+						<cite class="fn">马继昌</cite><span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae-ubuntu-16-04-nvidia-gtx-1080-cuda-8#comment-243352">
+			2016年11月27号06:24</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>你好，安装好Ubuntu16.04后，重启进入grub，按住e进行编辑，将quiet splash $vt_handoff 改为quiet splash nomodeset 但是还是会出现紫色屏幕，然后黑屏，紧接着会提示“the input tming is not supported&#8230;&#8230;..” ,这个问题怎样去解决呢?</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,243352,1,'马继昌');">回复</a>]</p></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-243612">
+		<div id="comment-243612">
+		<div class="comment-author vcard">
+						<cite class="fn">Away</cite><span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae-ubuntu-16-04-nvidia-gtx-1080-cuda-8#comment-243612">
+			2016年11月29号22:47</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>我想使用windows10的仿Linux子系统配置，不知道可行吗。周末试下，真行就好了，还能用vs。。</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,243612,1,'Away');">回复</a>]</p></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="li-comment-243613">
+		<div id="comment-243613">
+		<div class="comment-author vcard">
+						<cite class="fn">Away</cite><span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae-ubuntu-16-04-nvidia-gtx-1080-cuda-8#comment-243613">
+			2016年11月29号22:48</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>我想使用windows10自带的仿Linux子系统配置，不知道可行吗。周末试下，真行就好了，还能用vs。。</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,243613,1,'Away');">回复</a>]</p><div class="comment-childs chalt" id="comment-243615"><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">十一月 29th, 2016 at 23:04</small></p><p>抱歉，不清楚这个仿Linux子系统配置</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,243615,2,'52nlp');">回复</a>]</p></div></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-246079">
+		<div id="comment-246079">
+		<div class="comment-author vcard">
+						<cite class="fn">杨振</cite><span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae-ubuntu-16-04-nvidia-gtx-1080-cuda-8#comment-246079">
+			2016年12月27号16:31</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>博主，您好，请问您的根目录、home目录都是是挂载在固态硬盘嘛。</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,246079,1,'杨振');">回复</a>]</p><div class="comment-childs chalt" id="comment-246080"><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">十二月 27th, 2016 at 16:39</small></p><p>是的</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,246080,2,'52nlp');">回复</a>]</p><div class="comment-childs" id="comment-246083"><p><cite>杨振</cite> 回复:<br /><small class="commentmetadata">十二月 27th, 2016 at 18:23</small></p><p>感谢回复，还想问下，你机械硬盘挂载在哪个目录？<br />
+然后网上有说，固态硬盘用来放训练数据会好点，是不是将固态硬盘挂载成数据盘的意思？</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,246083,3,'杨振');">回复</a>]</p><div class="comment-childs chalt" id="comment-246090"><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">十二月 27th, 2016 at 23:30</small></p><p>/opt目录；目前一般在SSD上训练模型，一些数据放在/opt目录下，数据量还不算大，所以基本上ok。</p>
+</div></div></div></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+			</ol>
+
+
+
+	<div id="respond" class="comment-respond">
+		<h3 id="reply-title" class="comment-reply-title">发表评论 <small><a rel="nofollow" id="cancel-comment-reply-link" href="/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae-ubuntu-16-04-nvidia-gtx-1080-cuda-8#respond" style="display:none;">取消回复</a></small></h3>			<form action="http://www.52nlp.cn/wp-comments-post.php" method="post" id="commentform" class="comment-form">
+				<p class="comment-notes"><span id="email-notes">电子邮件地址不会被公开。</span> 必填项已用<span class="required">*</span>标注</p><p class="comment-form-comment"><label for="comment">评论</label> <textarea id="comment" name="8f0a3-comment" cols="45" rows="8" maxlength="65525" aria-required="true" required="required"></textarea><textarea name="comment" style="display:none" rows="1" cols="1"></textarea></p><p class="comment-form-author"><label for="author">姓名 <span class="required">*</span></label> <input id="author" name="author" type="text" value="" size="30" maxlength="245" aria-required='true' required='required' /></p>
+<p class="comment-form-email"><label for="email">电子邮件 <span class="required">*</span></label> <input id="email" name="email" type="text" value="" size="30" maxlength="100" aria-describedby="email-notes" aria-required='true' required='required' /></p>
+<p class="comment-form-url"><label for="url">站点</label> <input id="url" name="url" type="text" value="" size="30" maxlength="200" /></p>
+<p class="form-submit"><input name="submit" type="submit" id="submit" class="submit" value="发表评论" /> <input type='hidden' name='comment_post_ID' value='9226' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+</p><p><input type="hidden" id="comment_reply_ID" name="comment_reply_ID" value="0" /><input type="hidden" id="comment_reply_dp" name="comment_reply_dp" value="0" /></p><div id="cancel_reply" style="display:none;"><a href="javascript:void(0)" onclick="movecfm(null,0,1,null);" style="color:red;">点击取消回复</a></div><script type="text/javascript">
+/* <![CDATA[ */
+var commentformid = "commentform";
+var USERINFO = false;
+var atreply = "none";
+/* ]]> */
+</script>
+<script type="text/javascript" src="http://www.52nlp.cn/wp-content/plugins/wp-thread-comment/wp-thread-comment.js.php?jsver=common"></script>
+			</form>
+			</div><!-- #respond -->
+	
+</div><!-- #comments -->
+
+
+			</div><!-- #content -->
+		</div><!-- #container -->
+
+﻿
+		<div id="primary" class="widget-area" role="complementary">
+			<ul class="xoxo">
+<!-- begin l_sidebar -->
+	<div id="l_sidebar">
+<li id="text-5" class="widget-container widget_text"><h3 class="widget-title">关注我们的微信公众号</h3>			<div class="textwidget"><a href="http://blog.nlpjob.com/wp-content/uploads/2013/03/qrcode_for_gh_5034e4edc067_430.jpg"><img class="wp-image-85 size-medium" src="http://blog.nlpjob.com/wp-content/uploads/2013/03/qrcode_for_gh_5034e4edc067_430-300x300.jpg" alt="NLPJob" width="210" height="210"></a></div>
+		</li><li id="search-3" class="widget-container widget_search"><h3 class="widget-title">站内搜索</h3><form role="search" method="get" id="searchform" class="searchform" action="http://www.52nlp.cn/">
+				<div>
+					<label class="screen-reader-text" for="s">搜索：</label>
+					<input type="text" value="" name="s" id="s" />
+					<input type="submit" id="searchsubmit" value="搜索" />
+				</div>
+			</form></li>		<li id="recent-posts-2" class="widget-container widget_recent_entries">		<h3 class="widget-title">最新文章</h3>		<ul>
+					<li>
+				<a href="http://www.52nlp.cn/%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86%e5%b7%a5%e5%85%b7%e5%8c%85spacy%e4%bb%8b%e7%bb%8d">自然语言处理工具包spaCy介绍</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e5%8f%8d%e5%90%91%e4%bc%a0%e6%92%ad%e7%ae%97%e6%b3%95%e5%85%a5%e9%97%a8%e8%b5%84%e6%ba%90%e7%b4%a2%e5%bc%95">反向传播算法入门资源索引</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae-ubuntu16-04-geforce-gtx1080-tensorflow">深度学习主机环境配置: Ubuntu16.04+GeForce GTX 1080+TensorFlow</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae-ubuntu-16-04-nvidia-gtx-1080-cuda-8">深度学习主机环境配置: Ubuntu16.04+Nvidia GTX 1080+CUDA8.0</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/mecab%e5%ae%89%e8%a3%85%e8%bf%87%e7%a8%8b%e4%b8%ad%e7%9a%84%e4%b8%80%e4%ba%9b%e5%9d%91">Mecab安装过程中的一些坑</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e6%94%92%e6%9c%ba%e5%b0%8f%e8%ae%b0">深度学习主机攒机小记</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/qa%e9%97%ae%e7%ad%94%e7%b3%bb%e7%bb%9f%e4%b8%ad%e7%9a%84%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e6%8a%80%e6%9c%af%e5%ae%9e%e7%8e%b0">QA问答系统中的深度学习技术实现</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e8%be%be%e8%a7%82%e6%95%b0%e6%8d%ae%e6%90%9c%e7%b4%a2%e5%bc%95%e6%93%8e%e7%9a%84query%e8%87%aa%e5%8a%a8%e7%ba%a0%e9%94%99%e6%8a%80%e6%9c%af%e5%92%8c%e6%9e%b6%e6%9e%84%e8%af%a6%e8%a7%a3">达观数据搜索引擎的Query自动纠错技术和架构详解</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/forgetnlp4">非主流自然语言处理——遗忘算法系列（四）：改进TF-IDF权重公式</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/forgetnlp3">非主流自然语言处理——遗忘算法系列（三）：分词</a>
+						</li>
+				</ul>
+		</li>					</ul>
+		</div><!-- #primary .widget-area -->
+
+
+		<div id="secondary" class="widget-area" role="complementary">
+			<ul class="xoxo">
+				<li id="categories-309398091" class="widget-container widget_categories"><h3 class="widget-title">分类目录</h3>		<ul>
+	<li class="cat-item cat-item-72"><a href="http://www.52nlp.cn/category/mit-nlp" title="麻省理工学院开放式课程&quot;自然语言处理“的相关翻译文章">MIT自然语言处理</a> (23)
+</li>
+	<li class="cat-item cat-item-976"><a href="http://www.52nlp.cn/category/pattern-recognition-and-machine-learning-2" >PRML</a> (15)
+</li>
+	<li class="cat-item cat-item-469"><a href="http://www.52nlp.cn/category/topic-model" >Topic Model</a> (10)
+</li>
+	<li class="cat-item cat-item-87"><a href="http://www.52nlp.cn/category/wordpress" >wordpress</a> (6)
+</li>
+	<li class="cat-item cat-item-317"><a href="http://www.52nlp.cn/category/%e4%b8%93%e9%a2%98" >专题</a> (6)
+</li>
+	<li class="cat-item cat-item-263"><a href="http://www.52nlp.cn/category/chinese-information-processing" >中文信息处理</a> (23)
+</li>
+	<li class="cat-item cat-item-62"><a href="http://www.52nlp.cn/category/word-segmentation" >中文分词</a> (41)
+</li>
+	<li class="cat-item cat-item-420"><a href="http://www.52nlp.cn/category/%e5%b9%b6%e8%a1%8c%e7%ae%97%e6%b3%95" >并行算法</a> (1)
+</li>
+	<li class="cat-item cat-item-268"><a href="http://www.52nlp.cn/category/%e6%8b%9b%e8%81%98" >招聘</a> (4)
+</li>
+	<li class="cat-item cat-item-560"><a href="http://www.52nlp.cn/category/%e6%8e%a8%e8%8d%90%e7%b3%bb%e7%bb%9f" >推荐系统</a> (3)
+</li>
+	<li class="cat-item cat-item-354"><a href="http://www.52nlp.cn/category/%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98" >数据挖掘</a> (3)
+</li>
+	<li class="cat-item cat-item-241"><a href="http://www.52nlp.cn/category/text-classification" >文本分类</a> (3)
+</li>
+	<li class="cat-item cat-item-1149"><a href="http://www.52nlp.cn/category/wen-ben-chu-li-yan-shi-xi-tong" >文本处理演示系统</a> (3)
+</li>
+	<li class="cat-item cat-item-193"><a href="http://www.52nlp.cn/category/maximum-entropy-model" >最大熵模型</a> (7)
+</li>
+	<li class="cat-item cat-item-344"><a href="http://www.52nlp.cn/category/%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0" >机器学习</a> (36)
+</li>
+	<li class="cat-item cat-item-1"><a href="http://www.52nlp.cn/category/machine-translation" >机器翻译</a> (54)
+</li>
+	<li class="cat-item cat-item-195"><a href="http://www.52nlp.cn/category/%e6%9d%a1%e4%bb%b6%e9%9a%8f%e6%9c%ba%e5%9c%ba" >条件随机场</a> (3)
+</li>
+	<li class="cat-item cat-item-153"><a href="http://www.52nlp.cn/category/tagging" >标注</a> (15)
+</li>
+	<li class="cat-item cat-item-1153"><a href="http://www.52nlp.cn/category/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0" >深度学习</a> (9)
+</li>
+	<li class="cat-item cat-item-885"><a href="http://www.52nlp.cn/category/%e7%a7%91%e5%ad%a6%e8%ae%a1%e7%ae%97" >科学计算</a> (1)
+</li>
+	<li class="cat-item cat-item-538"><a href="http://www.52nlp.cn/category/%e7%bb%9f%e8%ae%a1%e5%ad%a6" >统计学</a> (10)
+</li>
+	<li class="cat-item cat-item-126"><a href="http://www.52nlp.cn/category/translation-model" >翻译模型</a> (2)
+</li>
+	<li class="cat-item cat-item-51"><a href="http://www.52nlp.cn/category/nlp" >自然语言处理</a> (245)
+</li>
+	<li class="cat-item cat-item-106"><a href="http://www.52nlp.cn/category/computational-linguistics" >计算语言学</a> (39)
+</li>
+	<li class="cat-item cat-item-22"><a href="http://www.52nlp.cn/category/dictionary" >词典</a> (8)
+</li>
+	<li class="cat-item cat-item-221"><a href="http://www.52nlp.cn/category/semantics" >语义学</a> (1)
+</li>
+	<li class="cat-item cat-item-1121"><a href="http://www.52nlp.cn/category/%e8%af%ad%e4%b9%89%e7%9b%b8%e4%bc%bc%e5%ba%a6" >语义相似度</a> (1)
+</li>
+	<li class="cat-item cat-item-161"><a href="http://www.52nlp.cn/category/semantic-web" >语义网</a> (3)
+</li>
+	<li class="cat-item cat-item-37"><a href="http://www.52nlp.cn/category/corpus" >语料库</a> (12)
+</li>
+	<li class="cat-item cat-item-86"><a href="http://www.52nlp.cn/category/language-model" >语言模型</a> (24)
+</li>
+	<li class="cat-item cat-item-156"><a href="http://www.52nlp.cn/category/speech-recognition" >语音识别</a> (4)
+</li>
+	<li class="cat-item cat-item-314"><a href="http://www.52nlp.cn/category/%e8%b4%9d%e5%8f%b6%e6%96%af%e6%a8%a1%e5%9e%8b" >贝叶斯模型</a> (1)
+</li>
+	<li class="cat-item cat-item-110"><a href="http://www.52nlp.cn/category/reprint" >转载</a> (28)
+</li>
+	<li class="cat-item cat-item-451"><a href="http://www.52nlp.cn/category/%e9%97%ae%e7%ad%94%e7%b3%bb%e7%bb%9f" >问答系统</a> (2)
+</li>
+	<li class="cat-item cat-item-3"><a href="http://www.52nlp.cn/category/informal-essay" >随笔</a> (64)
+</li>
+	<li class="cat-item cat-item-60"><a href="http://www.52nlp.cn/category/hidden-markov-model" >隐马尔科夫模型</a> (37)
+</li>
+		</ul>
+</li><li id="recentcomments" class="widget-container widget_recentcomments"><h3 class="widget-title">最近评论</h3><ul><li class="rc-navi rc-clearfix"><span class="rc-loading">正在加载...</span></li><li id="rc-comment-temp" class="rc-item rc-comment rc-clearfix"><div class="rc-info"></div><div class="rc-timestamp"></div><div class="rc-excerpt"></div></li><li id="rc-ping-temp" class="rc-item rc-ping rc-clearfix"><span class="rc-label"></span></li></ul></li><li id="linkcat-103" class="widget-container widget_links"><h3 class="widget-title">NLP相关网站</h3>
+	<ul class='xoxo blogroll'>
+<li><a href="http://www.aclweb.org/" rel="co-worker" title="The Association for Computational Linguistics" target="_blank">ACL</a></li>
+<li><a href="http://aclweb.org/aclwiki/index.php?title=Main_Page" rel="colleague" title="the Wiki of the Association for Computational Linguistics" target="_blank">ACL Wiki</a></li>
+<li><a href="http://www.euromatrix.net/" rel="colleague" target="_blank">EuroMatrix</a></li>
+<li><a href="http://www.clsp.jhu.edu/workshops/" rel="colleague" target="_blank">JHU Workshop</a></li>
+<li><a href="http://www.ldc.upenn.edu/" rel="colleague" title="Linguistic Data Consortium" target="_blank">LDC</a></li>
+<li><a href="http://www.statmt.org/moses/" rel="colleague" title="A factored phrase-based beam-search decoder for machine translation" target="_blank">Moses</a></li>
+<li><a href="http://nlpers.blogspot.com/" rel="colleague" title="国外一个非常不错的自然语言处理博客" target="_blank">nlper</a></li>
+<li><a href="http://www.nlpjob.com" target="_blank">NLPJob</a></li>
+<li><a href="http://sentimentanalysis.net/" target="_blank">Sentiment Analysis</a></li>
+<li><a href="http://www.speech.sri.com/projects/srilm/" rel="colleague" title="&#8211; The SRI Language Modeling Toolkit" target="_blank">SRILM</a></li>
+<li><a href="http://www.statmt.org/" rel="colleague" title="This website is dedicated to research in statistical machine translation" target="_blank">Statistical Machine Translation</a></li>
+<li><a href="http://tensorflowtutorial.net/" target="_blank">TensorFlow Tutorial</a></li>
+<li><a href="http://textanalysisonline.com/" target="_blank">Text Analysis</a></li>
+<li><a href="http://textminingonline.com/" target="_blank">Text Mining</a></li>
+<li><a href="http://textprocessing.org/" target="_blank">Text Processing</a></li>
+<li><a href="http://textsummarization.net/" target="_blank">Text Summarization</a></li>
+<li><a href="http://www.mt-archive.info/" rel="colleague" title="Repository and bibliography of articles, books and papers on topics" target="_blank">机器翻译档案计划</a></li>
+<li><a href="http://www.statmt.org/europarl/" rel="colleague" target="_blank">欧洲议会平行语料库</a></li>
+<li><a href="http://www.nlpir.org/" rel="friend" title="由张华平博士发起，由北京理工大学网络搜索与挖掘实验室运营，旨在推动NLP(自然语言处理)与IR(信息检索)领域的共享与共赢" target="_blank">自然语言处理与信息检索共享平台</a></li>
+
+	</ul>
+</li>
+<li id="linkcat-2" class="widget-container widget_links"><h3 class="widget-title">友情链接</h3>
+	<ul class='xoxo blogroll'>
+<li><a href="http://www.52nlp.com" rel="me" title="52nlp的英文站" target="_blank">52nlpcom</a></li>
+<li><a href="http://speak2me.org/">Speak2Me</a></li>
+<li><a href="http://texttospeechonline.org/">Text To Speech</a></li>
+<li><a href="http://bbs.w3china.org/" rel="friend" title="中国万维网联盟讨论区" target="_blank">W3CHINA讨论区</a></li>
+<li><a href="http://www.ailab.cn/" rel="friend" target="_blank">人工智能网</a></li>
+<li><a href="http://mindhacks.cn/" rel="friend" title="一个很有思想的价值博客!" target="_blank">刘未鹏之Mind Hacks</a></li>
+<li><a href="http://www.cnblogs.com/finallyliuyu/" rel="friend" target="_blank">原地转圈的驴子</a></li>
+<li><a href="http://xunren.thuir.org/" target="_blank">微博寻人（梁博）</a></li>
+<li><a href="http://52opencourse.com" rel="friend" title="我爱公开课，高质量公开课交流平台" target="_blank">我爱公开课</a></li>
+<li><a href="http://www.52cs.org/" target="_blank">我爱计算机</a></li>
+<li><a href="http://www.flickering.cn/" target="_blank">火光摇曳</a></li>
+<li><a href="http://www.ieee.org.cn/" rel="friend" title="计算机科学论坛" target="_blank">计算机科学论坛</a></li>
+<li><a href="http://coursegraph.com/">课程图谱</a></li>
+<li><a href="http://blog.coursegraph.com" rel="friend">课程图谱博客</a></li>
+
+	</ul>
+</li>
+<li id="meta-4" class="widget-container widget_meta"><h3 class="widget-title">功能</h3>			<ul>
+						<li><a href="http://www.52nlp.cn/wp-login.php">登录</a></li>
+			<li><a href="http://www.52nlp.cn/feed">文章<abbr title="Really Simple Syndication">RSS</abbr></a></li>
+			<li><a href="http://www.52nlp.cn/comments/feed">评论<abbr title="Really Simple Syndication">RSS</abbr></a></li>
+			<li><a href="https://cn.wordpress.org/" title="基于WordPress，一个优美、先进的个人信息发布平台。">WordPress.org</a></li>			</ul>
+			</li>			</ul>
+		</div><!-- #secondary .widget-area -->
+
+	</div><!-- #main -->
+
+	<div id="footer" role="contentinfo">
+		<div id="colophon">
+
+
+
+			<div id="site-info">
+				<a href="http://www.52nlp.cn/" title="我爱自然语言处理" rel="home">
+					我爱自然语言处理				</a>
+			</div><!-- #site-info -->
+
+			<div id="site-generator">
+								<a href="http://cn.wordpress.org/"
+						title="优雅的个人发布平台" rel="generator">
+					自豪地采用WordPress。				</a>
+			</div><!-- #site-generator -->
+
+		</div><!-- #colophon -->
+	</div><!-- #footer -->
+
+</div><!-- #wrapper -->
+
+<script>
+/* <![CDATA[ */
+var rcGlobal = {
+	serverUrl		:'http://www.52nlp.cn',
+	infoTemp		:'%REVIEWER% 在 %POST%',
+	loadingText		:'正在加载',
+	noCommentsText	:'没有任何评论',
+	newestText		:'&laquo; 最新的',
+	newerText		:'&laquo; 上一页',
+	olderText		:'下一页 &raquo;',
+	showContent		:'',
+	external		:'',
+	avatarSize		:'0',
+	avatarPosition	:'left',
+	anonymous		:'匿名'
+};
+/* ]]> */
+</script>
+<link rel='stylesheet' id='yarppRelatedCss-css'  href='http://www.52nlp.cn/wp-content/plugins/yet-another-related-posts-plugin/style/related.css?ver=4.7.1' type='text/css' media='all' />
+<script type='text/javascript' src='http://www.52nlp.cn/wp-content/plugins/wp-recentcomments/js/wp-recentcomments.js?ver=2.2.7'></script>
+<script type='text/javascript' src='http://www.52nlp.cn/wp-includes/js/wp-embed.min.js?ver=4.7.1'></script>
+<script>var pltNewTabURLs = ["http:\/\/weibo.com\/52nlp"];(function(){(function(e){var t;t=e.jQueryWP||e.jQuery;return t(function(e){return typeof e.fn.on=="function"?e("body").on("click","a",function(t){var n;n=e(this);if(e.inArray(n.attr("href"),pltNewTabURLs)>-1)return n.attr("target","_blank")}):typeof console!="undefined"&&console!==null?console.log("Page Links To: Some other code has overridden the WordPress copy of jQuery. This is bad. Because of this, Page Links To cannot open links in a new window."):void 0})})(window)}).call(this);</script>	<p align="center"> 本站架设在 <a href="http://www.52nlp.cn/digitalocean%E4%BD%BF%E7%94%A8%E5%B0%8F%E8%AE%B0">DigitalOcean</a> 上, 采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本站内容必须也遵循“署名-非商业用途-保持一致”的创作共用协议.</p>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: { equationNumbers: { autoNumber: "AMS" } },
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+    inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+    displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+    processEscapes: true
+  },
+  "HTML-CSS": { availableFonts: ["TeX"] }
+});
+</script><script type="text/javascript" src="http://www.52nlp.cn/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(["trackPageView"]);
+  _paq.push(["enableLinkTracking"]);
+
+  (function() {
+    var u=(("https:" == document.location.protocol) ? "https" : "http") + "://42.96.171.40/piwik/";
+    _paq.push(["setTrackerUrl", u+"piwik.php"]);
+    _paq.push(["setSiteId", "7"]);
+    var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0]; g.type="text/javascript";
+    g.defer=true; g.async=true; g.src=u+"piwik.js"; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Piwik Code -->
+</body>
+</html>

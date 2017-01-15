@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>SIREn 插件试用</title>
+    <meta name="author" content="陈子">
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!-- Le styles -->
+    <link href="/assets/themes/twitter/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/assets/themes/twitter/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+    <link href="/assets/themes/twitter/css/pygments/default.css" rel="stylesheet" type="text/css">
+    <!-- Le fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+  </head>
+  <body>
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="/">三斗室</a>
+          <ul class="nav">
+      	<li><a href="/archive/">归档</a></li>
+      	<li><a href="/categories/">分类</a></li>
+      	<li><a href="/elk-errata/">《ELK stack权威指南》勘误</a></li>
+      	<li><a href="/errata/">《网站运维技术与实践》勘误</a></li>
+      	<li><a href="/pages/">Pages</a></li>
+      	<li><a href="/projects/">学习记录</a></li>
+      	<li><a href="/tags/">标签</a></li>
+            <li><a href="http://chenlinux.com/poetry/index.html" />诗文集</a></li>
+            <li><link title="RSS 2.0" type="application/rss+xml" href="http://chenlinux.com/feed.xml" rel="alternate" /><a href="http://chenlinux.com/feed.xml" target="_blank">RSS订阅</a></li>
+          </ul>
+          <ul class="nav pull-right"><li><a href="/about.html">有关我</a></li></ul>
+        </div>
+      </div>
+    </div>
+    <div class="container">
+    <div class="row">
+      <div class="span7">
+<div class="row">
+  <div class="page-header">
+    <h1>SIREn 插件试用 <small></small></h1>
+    <div class="date"><span>29 October 2015</span></div>
+  </div>
+  <div style='background-color: #FFF;'>
+    <p>SIREn 是一个基于 Lucene 做的，专门针对 nested object 数据做优化的方案。其官网地址：<a href="http://siren.solutions">http://siren.solutions</a>。SIREn 自己并不提供完整的软件，而是以 Solr 或者 Elasticsearch 插件的形式存在。在 SIREn 官网首页写着，自己是 trush schemaless，high performance nested query。而我之前已经写博客说过，Elasticsearch 的 schemaless 是有限制的，同一个 index 下，field 的 mapping 是必须唯一一致的。否则，或者写入失败，或者搜索异常。</p>
+<p>那么我们来试一下这个 SIREn 看看。首先是下载运行：</p>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="c"># wget http://siren.solutions/download/siren-elasticsearch-1.4-bin.zip</span>
+<span class="c"># unzip siren-elasticsearch-1.4-bin.zip</span>
+<span class="c"># cd siren-elasticsearch-1.4-bin</span>
+<span class="c"># ./example/bin/elasticsearch</span>
+</code></pre>
+</div>
+<p>然后我们尝试写入几条 mapping 有冲突的数据：</p>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="c"># curl -XDELETE "http://localhost:9200/napr"</span>
+<span class="c"># curl -XPOST "http://localhost:9200/napr"</span>
+<span class="c"># curl -XPUT "http://localhost:9200/napr/chargepoint/_mapping" -d '</span>
+<span class="o">{</span>
+    <span class="s2">"chargepoint"</span> : <span class="o">{</span>
+        <span class="s2">"properties"</span> : <span class="o">{</span>
+            <span class="s2">"_siren_source"</span> : <span class="o">{</span>
+                <span class="s2">"analyzer"</span> : <span class="s2">"concise"</span>,
+                <span class="s2">"postings_format"</span> : <span class="s2">"Siren10AFor"</span>,
+                <span class="s2">"store"</span> : <span class="s2">"no"</span>,
+                <span class="s2">"type"</span> : <span class="s2">"string"</span>
+            <span class="o">}</span>
+        <span class="o">}</span>,
+        <span class="s2">"_siren"</span> : <span class="o">{}</span>
+    <span class="o">}</span>
+<span class="o">}</span><span class="s1">'
+# curl -XPUT "http://localhost:9200/napr/chargepoint/1" -d '</span>
+<span class="o">{</span>
+    <span class="s2">"ChargeDeviceName"</span>: <span class="s2">"1c Design Limited, Glasgow (1)"</span>,
+    <span class="s2">"Accessible24Hours"</span>: <span class="nb">false</span>
+<span class="o">}</span><span class="s1">'
+# curl -XPUT "http://localhost:9200/napr/chargepoint/2" -d '</span>
+<span class="o">{</span>
+    <span class="s2">"ChargeDeviceName"</span>: <span class="s2">"2c Design Limited, Glasgow (2)"</span>,
+    <span class="s2">"Accessible24Hours"</span>: <span class="s2">"true"</span>
+<span class="o">}</span><span class="s1">'
+# curl -XPUT "http://localhost:9200/napr/chargepoint/3" -d '</span>
+<span class="o">{</span>
+    <span class="s2">"ChargeDeviceName"</span>: <span class="s2">"3c Design Limited, Glasgow (3)"</span>,
+    <span class="s2">"Accessible24Hours"</span>: 123
+<span class="o">}</span><span class="s1">'
+# curl -XPUT "http://localhost:9200/nepr/chargepoint/4" -d '</span>
+<span class="o">{</span>
+    <span class="s2">"ChargeDeviceName"</span>: <span class="s2">"4c Design Limited, Glasgow (4)"</span>,
+    <span class="s2">"Accessible24Hours"</span>: <span class="o">[</span>123, 234, 345, 456]
+<span class="o">}</span><span class="s1">'
+</span></code></pre>
+</div>
+<p>ok，三条数据都写入成功了。</p>
+<p>然后我们用原始的 Elasticsearch 语法尝试去获取『大于100』的数据：</p>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="c"># curl -XPOST "http://localhost:9200/nepr/_search?q=Accessible24Hours:&gt;100"</span>
+<span class="o">{</span><span class="s2">"took"</span>:16,<span class="s2">"timed_out"</span>:false,<span class="s2">"_shards"</span>:<span class="o">{</span><span class="s2">"total"</span>:5,<span class="s2">"successful"</span>:5,<span class="s2">"failed"</span>:0<span class="o">}</span>,<span class="s2">"hits"</span>:<span class="o">{</span><span class="s2">"total"</span>:0,<span class="s2">"max_score"</span>:null,<span class="s2">"hits"</span>:[]<span class="o">}}</span>
+</code></pre>
+</div>
+<p>可以看到，搜索结果是空。</p>
+<p>而用 SIREn 的树状结构语法获取：</p>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="c"># curl -XPOST "http://localhost:9200/nepr/_search" -d '</span>
+<span class="o">{</span>
+  <span class="s2">"query"</span>: <span class="o">{</span>
+    <span class="s2">"tree"</span> : <span class="o">{</span>
+      <span class="s2">"node"</span> : <span class="o">{</span>
+        <span class="s2">"attribute"</span> : <span class="s2">"Accessible24Hours"</span>,
+        <span class="s2">"query"</span> : <span class="s2">"xsd:long([100 TO *])"</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span><span class="s1">'
+{"took":29,"timed_out":false,"_shards":{"total":5,"successful":5,"failed":0},"hits":{"total":2,"max_score":4.0,"hits":[{"_index":"nepr","_type":"chargepoint","_id":"4","_score":4.0,"_source":
+{
+    "ChargeDeviceName": "4c Design Limited, Glasgow (4)",
+    "Accessible24Hours": [123, 234, 345, 456]
+}},{"_index":"nepr","_type":"chargepoint","_id":"3","_score":1.0,"_source":
+{
+    "ChargeDeviceName": "3c Design Limited, Glasgow (3)",
+    "Accessible24Hours": 123
+}}]}}%
+</span></code></pre>
+</div>
+<p>yes，我们拿到了这条数据！</p>
+<p>更复杂一点，我们再来:</p>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="c"># curl -XPOST "http://localhost:9200/nepr/_search" -d '</span>
+<span class="o">{</span>
+  <span class="s2">"query"</span>: <span class="o">{</span>
+    <span class="s2">"tree"</span> : <span class="o">{</span>
+      <span class="s2">"node"</span> : <span class="o">{</span>
+        <span class="s2">"attribute"</span> : <span class="s2">"Accessible24Hours"</span>,
+        <span class="s2">"range"</span> : <span class="o">[</span>2,3],
+        <span class="s2">"query"</span> : <span class="s2">"xsd:long([10 TO *])"</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+  <span class="o">}</span>,
+  <span class="s2">"aggs"</span>: <span class="o">{</span>
+    <span class="s2">"1"</span>: <span class="o">{</span>
+      <span class="s2">"terms"</span>: <span class="o">{</span>
+        <span class="s2">"field"</span>: <span class="s2">"ChargeDeviceName"</span>
+      <span class="o">}</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+<span class="o">}</span><span class="s1">'
+</span></code></pre>
+</div>
+<p>这里添加了一个 <code class="highlighter-rouge">range</code> 选项，SIREn 对所有的数组默认就做 nested 处理了，所有是有序的。这个选项的意思就是，只对数组中第 2 到 3 位节点的数据做搜索请求。这下，搜索结果变成了：</p>
+<div class="highlighter-rouge"><pre class="highlight"><code><span class="p">{</span><span class="nt">"took"</span><span class="p">:</span><span class="mi">9</span><span class="p">,</span><span class="nt">"timed_out"</span><span class="p">:</span><span class="kc">false</span><span class="p">,</span><span class="nt">"_shards"</span><span class="p">:{</span><span class="nt">"total"</span><span class="p">:</span><span class="mi">5</span><span class="p">,</span><span class="nt">"successful"</span><span class="p">:</span><span class="mi">5</span><span class="p">,</span><span class="nt">"failed"</span><span class="p">:</span><span class="mi">0</span><span class="p">},</span><span class="nt">"hits"</span><span class="p">:{</span><span class="nt">"total"</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span><span class="nt">"max_score"</span><span class="p">:</span><span class="mf">2.0</span><span class="p">,</span><span class="nt">"hits"</span><span class="p">:[{</span><span class="nt">"_index"</span><span class="p">:</span><span class="s2">"nepr"</span><span class="p">,</span><span class="nt">"_type"</span><span class="p">:</span><span class="s2">"chargepoint"</span><span class="p">,</span><span class="nt">"_id"</span><span class="p">:</span><span class="s2">"4"</span><span class="p">,</span><span class="nt">"_score"</span><span class="p">:</span><span class="mf">2.0</span><span class="p">,</span><span class="nt">"_source"</span><span class="p">:</span><span class="w">
+    </span><span class="p">{</span><span class="w">
+            </span><span class="nt">"ChargeDeviceName"</span><span class="p">:</span><span class="w"> </span><span class="s2">"4c Design Limited, Glasgow (4)"</span><span class="p">,</span><span class="w">
+                </span><span class="nt">"Accessible24Hours"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">123</span><span class="p">,</span><span class="mi">234</span><span class="p">,</span><span class="mi">345</span><span class="p">,</span><span class="mi">456</span><span class="p">]</span><span class="w">
+    </span><span class="p">}}]},</span><span class="nt">"aggregations"</span><span class="p">:{</span><span class="nt">"1"</span><span class="p">:{</span><span class="nt">"buckets"</span><span class="p">:[{</span><span class="nt">"key"</span><span class="p">:</span><span class="s2">"4"</span><span class="p">,</span><span class="nt">"doc_count"</span><span class="p">:</span><span class="mi">1</span><span class="p">},{</span><span class="nt">"key"</span><span class="p">:</span><span class="s2">"4c"</span><span class="p">,</span><span class="nt">"doc_count"</span><span class="p">:</span><span class="mi">1</span><span class="p">},{</span><span class="nt">"key"</span><span class="p">:</span><span class="s2">"design"</span><span class="p">,</span><span class="nt">"doc_count"</span><span class="p">:</span><span class="mi">1</span><span class="p">},{</span><span class="nt">"key"</span><span class="p">:</span><span class="s2">"glasgow"</span><span class="p">,</span><span class="nt">"doc_count"</span><span class="p">:</span><span class="mi">1</span><span class="p">},{</span><span class="nt">"key"</span><span class="p">:</span><span class="s2">"limited"</span><span class="p">,</span><span class="nt">"doc_count"</span><span class="p">:</span><span class="mi">1</span><span class="p">}]}}}</span><span class="err">%</span><span class="w">
+</span></code></pre>
+</div>
+<p>可以看到，因为 <code class="highlighter-rouge">_id</code> 为 3 的文档里 Accessible24Hours 字段只有一个值，所以无法匹配上从第二个值开始的多个值的对比，也就没被过滤出来了。</p>
+<hr />
+<p>不过 SIREn 目前比较尴尬的是，他只基于 ES 做了 query 部分，aggregation 部分还是老样子，必须类型一致才行，这也导致 SIREn 示例文件数据里把一些冲突日志去掉了的原因。</p>
+<p>如果使用的是 Solr，SIREn 插件的做法是只定义两个 field，一个是 UUID，一个是 JSON。然后 siren 处理的所有数据存在这个 JSON 字段里(类似 ES 插件里的那个 <code class="highlighter-rouge">_siren_source</code> 字段)。这也就能达到全部 JSON schemaless。此外，SIREn 的 Solr 插件还实现了 nested facet 支持，也可以尝试。</p>
+<p>总之，SIREn 扩展采用树形方式自行处理一个在 ES、Solr 看来多出来的字段，而并不影响原有字段的处理流程。所以，这对 ES 有几个影响：</p>
+<ul>
+  <li>其他字段还是会判断数据类型并生成 mapping，所以写入依然会有问题。</li>
+  <li>aggregation 还是走 ES 的实现，导致根据 number 过滤出来的文档，在 aggregation 时却会按照 boolean(即 mapping 中的记录)检测，aggregation 请求直接报错不计算。</li>
+  <li>重复一遍树状索引数据，导致膨胀率翻倍增高。实测，一段大小约为 30MB 的数据，在 ES 默认环境中会膨胀到 50MB，而在开启 SIREn 插件的环境下则膨胀到了 120MB！</li>
+</ul>
+    <hr>
+    <div class="pagination">
+      <ul>
+        <li class="prev"><a href="/2015/10/25/escc/" title="ESCC 参会笔记">&larr; Previous</a></li>
+        <li><a href="/archive.html">Archive</a></li>
+        <li class="next"><a href="/2015/11/25/rsyslog-mmnormalize/" title="Rsyslog 的 mmnormalize 模块用法">Next &rarr;</a></li>
+      </ul>
+    </div>
+    <hr>
+  <!-- JiaThis Button BEGIN -->
+<div class="jiathis_style">
+<span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_tsina">新浪微博</a>
+<a class="jiathis_button_weixin">微信</a>
+<a class="jiathis_button_renren">人人网</a>
+<a class="jiathis_button_ydnote">有道云笔记</a>
+<a class="jiathis_button_gmail">Gmail邮箱</a>
+<a class="jiathis_button_twitter">Twitter</a>
+<a class="jiathis_button_googleplus">Google+</a>
+<a class="jiathis_button_hi">百度空间</a>
+<a class="jiathis_button_fb">Facebook</a>
+<a class="jiathis_button_douban">豆瓣</a>
+<a href="http://www.jiathis.com/share?uid=1589850" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+<a class="jiathis_counter_style"></a>
+</div>
+<script type="text/javascript" >
+var jiathis_config={
+	data_track_clickback:true,
+	summary:"",
+	ralateuid:{
+		"tsina":"1035836154"
+	},
+	shortUrl:false,
+	hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1589850" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" id="UYScript" src="http://v1.uyan.cc/js/iframe.js?UYUserId=1589850" async=""></script>
+<!-- UY END -->
+  </div>
+</div>
+      </div>
+      <div class="span4">
+          <div class="well sidebar-nav">
+             <ul id="relate_blog" class="nav nav-list">
+               <li class="nav-header">最近文章</li>
+                 <li><a href="/2016/12/30/report-of-this-year/">2016 年度个人总结</a></li>
+                 <li><a href="/2016/11/15/important-unuseful-feature-in-log-analysis/">日志分析中 6 个常见但没啥用的功能</a></li>
+                 <li><a href="/2016/08/19/es-rally/">Elastic 官方压测工具 rally 试用</a></li>
+                 <li><a href="/2016/07/21/sampler-aggregation/">elasticsearch 的 sampler 聚合</a></li>
+                 <li><a href="/2016/07/18/event-pattern/">山寨一个 Splunk 的事件模式功能</a></li>
+                 <li><a href="/2016/07/07/hapi-auth/">hapi.js 框架的认证授权插件示例</a></li>
+                 <li><a href="/2016/04/04/lucene-proximity-querystring/">Lucene 查询中的距离查询(proximity query)</a></li>
+                 <li><a href="/2016/04/01/javaflamegraph/">用火焰图看 elasticsearch 的资源占用</a></li>
+                 <li><a href="/2016/03/19/machine-vs-ops/">机器战胜人类了，伺候机器的运维呢？</a></li>
+            </ul>
+          </div>
+        <div class="well sidebar-nav">
+          <iframe width="100%" height="550" class="share_self"  frameborder="0" scrolling="no" src="http://widget.weibo.com/weiboshow/index.php?language=&width=0&height=550&fansRow=1&ptype=1&speed=0&skin=2&isTitle=1&noborder=1&isWeibo=1&isFans=1&uid=1035836154&verifier=a26926d5&dpc=1"></iframe>
+        </div>
+        <div class="well sidebar-nav">
+            <div id="uyan_list_time_frame"></div>
+            <script type="text/javascript" id="UYScriptTime" src="http://v1.uyan.cc/js/iframe_time_list.js?UYUserId=1589850&rankType=time" async=""></script>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(英文)</li>
+              <li><a href="http://codeascraft.com/" title="Etsy 运维团队博客">Code as Craft</a></li>
+              <li><a href="http://devopsanywhere.blogspot.jp/" title="">devopsanywhere</a></li>
+              <li><a href="http://www.jedi.be/blog/" title="">Jong En Dynamische Informatica</a></li>
+              <li><a href="http://www.planetdevops.net/" title="">planetdevops</a></li>
+              <li><a href="http://www.kitchensoap.com/" title="《网站运维》作者，Etsy 运维">Kitchen Soap</a></li>
+              <li><a href="http://blog.johngoulah.com" title="Musings of linux, open source, cloud computing and systems">John Goulah</a></li>
+              <li><a href="http://serverfault.com/" title="stackexchange下属的系统工程师问答网站">serverfault</a></li>
+              <li><a href="http://www.thegeekstuff.com/" title="各种超酷Linux命令用法">TheGeekStuff</a></li>
+              <li><a href="http://neilb.org/" title="The good,the bad,and the beautiful">neilb</a></li>
+              <li><a href="http://www.reddit.com/r/perl/" title="">reddit perl 频道</a></li>
+              <li><a href="http://jpetazzo.github.io/" title="">~jpetazzo</a></li>
+              <li><a href="http://www.perfplanet.com/" title="News and views from the web performance blogosphere">Performance Planet</a></li>
+              <li><a href="http://cuddletech.com/blog/" title="Use UNIX or die">Cuddle Tech</a></li>
+              <li><a href="http://showmetheco.de/" title="Viacheslav Tykhanovskyi(PocketIO/Text::Haml)">No time to wait</a></li>
+              <li><a href="http://blog.dataloop.io/" title="A new SaaS monitoring tool for DevOps & Operations">Dataloop.IO</a></li>
+              <li><a href="http://www.ducea.com/" title="">MDLog:/sysadmin</a></li>
+              <li><a href="http://planeteria.org/perl6/" title="Perl6 文集">Planet Perl 6</a></li>
+              <li><a href="http://www.metaforsoftware.com/blog/" title="">metafor</a></li>
+              <li><a href="http://blog.kablamo.org/" title="Eric Johnson，一个游走在伦敦和北京的 Perler">kablamo</a></li>
+              <li><a href="http://aphyr.com/posts" title="call me maybe 吐槽系列">Aphyr</a></li>
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="linklists" class="nav nav-list">
+            <li class="nav-header">友情链接(中文)</li>
+              <li><a href="http://www.nginxs.com/" title="">eric</a></li>
+              <li><a href="http://www.hellodb.net/" title="Ali DBA 张瑞">Hello DBA</a></li>
+              <li><a href="http://blog.nosqlfan.com/" title="not only sql信息集散地">NoSQLfan</a></li>
+              <li><a href="http://ourmysql.com/" title="">OurMySQL</a></li>
+              <li><a href="http://timo.piqiu.me/" title="TIMO IS MY OASIS">Timo</a></li>
+              <li><a href="http://www.liurongxing.com/" title="">刘荣星</a></li>
+              <li><a href="http://www.cnadn.net/" title="F5工程师">应用交付学习之路</a></li>
+              <li><a href="http://scmbob.org/" title="杭州NSN工程师，shell高人~">扛一肩记忆</a></li>
+              <li><a href="http://www.php-oa.com/" title="音悦台技术经理">扶凯</a></li>
+              <li><a href="http://www.lark.net.cn/" title="王剑">lark's cloud</a></li>
+              <li><a href="http://log.heartoutside.com/" title="HeartOutSide">HeartOutside</a></li>
+              <li><a href="http://blog.liulantao.com/" title="刘兰涛">Lax</a></li>
+              <li><a href="http://niubie.me/" title="莫言">莫言</a></li>
+              <li><a href="http://noops.me/" title="小米运维部">NoOps</a></li>
+              <li><a href="http://www.searchtech.pro/" title="">云端分布式搜索技术</a></li>
+              <li><a href="http://www.usefulshare.com" title="当当网安全运维">UsefulShare</a></li>
+              <li><a href="http://junqili.com/" title="深入研究puppet">纸飞机</a></li>
+              <li><a href="http://www.chinaxing.org/" title="">ChinaXing</a></li>
+              <li><a href="http://bubbyroom.com/" title="守住每一天">Liuyu's blog</a></li>
+              <li><a href="http://blog.aka-cool.net/" title="">Aka.Why</a></li>
+              <li><a href="http://blog.l8ii.com/" title="刘侨">LairdNote</a></li>
+              <li><a href="http://flw.tools/" title="">flw的工具箱</a></li>
+              <li><a href="http://blog.mcshell.org/" title="">mcshell</a></li>
+              <li><a href="http://novoland.github.io/" title="">克鲁斯卡尔的博客</a></li>
+          </ul>
+        </div>
+        <div class="well sidebar-nav">
+          <ul id="booklists" class="nav nav-list">
+          <li class="nav-header">我写的技术书籍</li>
+          <li><a href='http://product.china-pub.com/3769604'><img src='http://images.china-pub.com/ebook3765001-3770000/3769604/shupi.jpg' border='0' alt='网站运维技术与实践'/></a></li>
+          <li><a href='http://product.china-pub.com/64005'><img src='http://images.china-pub.com/ebook60001-65000/64005/shupi.jpg' border='0' alt='ELK Stack权威指南'/></a></li>
+          <li class="nav-header">我参与翻译的技术书籍</li>
+          <li><a href='http://product.china-pub.com/4582714'><img src='http://images.china-pub.com/ebook4580001-4585000/4582714/shupi.jpg' border='0' alt='Puppet 实战手册'/></a></li>
+        </div>
+      </div>
+    </div> <!-- row -->
+      <footer>
+        <p>&copy; 陈子 2015 
+          with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
+          and <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap</a>
+        </p>
+      </footer>
+    </div> <!-- /container -->
+  </body>
+</html>

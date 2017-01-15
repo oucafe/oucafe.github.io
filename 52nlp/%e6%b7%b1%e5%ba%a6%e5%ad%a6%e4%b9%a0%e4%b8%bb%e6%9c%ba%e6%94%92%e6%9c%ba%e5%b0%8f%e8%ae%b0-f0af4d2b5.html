@@ -1,0 +1,855 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<title>深度学习主机攒机小记 | 我爱自然语言处理</title>
+<link rel="profile" href="http://gmpg.org/xfn/11" />
+<link rel="stylesheet" type="text/css" media="all" href="http://www.52nlp.cn/wp-content/themes/twentytenorg/style.css" />
+<link rel="pingback" href="http://www.52nlp.cn/xmlrpc.php" />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; Feed" href="http://www.52nlp.cn/feed" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; 评论Feed" href="http://www.52nlp.cn/comments/feed" />
+<link rel="alternate" type="application/rss+xml" title="我爱自然语言处理 &raquo; 深度学习主机攒机小记评论Feed" href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e6%94%92%e6%9c%ba%e5%b0%8f%e8%ae%b0/feed" />
+		<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/2.2.1\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/2.2.1\/svg\/","svgExt":".svg","source":{"concatemoji":"http:\/\/www.52nlp.cn\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.7.1"}};
+			!function(a,b,c){function d(a){var b,c,d,e,f=String.fromCharCode;if(!k||!k.fillText)return!1;switch(k.clearRect(0,0,j.width,j.height),k.textBaseline="top",k.font="600 32px Arial",a){case"flag":return k.fillText(f(55356,56826,55356,56819),0,0),!(j.toDataURL().length<3e3)&&(k.clearRect(0,0,j.width,j.height),k.fillText(f(55356,57331,65039,8205,55356,57096),0,0),b=j.toDataURL(),k.clearRect(0,0,j.width,j.height),k.fillText(f(55356,57331,55356,57096),0,0),c=j.toDataURL(),b!==c);case"emoji4":return k.fillText(f(55357,56425,55356,57341,8205,55357,56507),0,0),d=j.toDataURL(),k.clearRect(0,0,j.width,j.height),k.fillText(f(55357,56425,55356,57341,55357,56507),0,0),e=j.toDataURL(),d!==e}return!1}function e(a){var c=b.createElement("script");c.src=a,c.defer=c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var f,g,h,i,j=b.createElement("canvas"),k=j.getContext&&j.getContext("2d");for(i=Array("flag","emoji4"),c.supports={everything:!0,everythingExceptFlag:!0},h=0;h<i.length;h++)c.supports[i[h]]=d(i[h]),c.supports.everything=c.supports.everything&&c.supports[i[h]],"flag"!==i[h]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[i[h]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(g=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",g,!1),a.addEventListener("load",g,!1)):(a.attachEvent("onload",g),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),f=c.source||{},f.concatemoji?e(f.concatemoji):f.wpemoji&&f.twemoji&&(e(f.twemoji),e(f.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+		<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<link rel='stylesheet' id='yarppWidgetCss-css'  href='http://www.52nlp.cn/wp-content/plugins/yet-another-related-posts-plugin/style/widget.css?ver=4.7.1' type='text/css' media='all' />
+<link rel='stylesheet' id='wp-syntax-css-css'  href='http://www.52nlp.cn/wp-content/plugins/wp-syntax/css/wp-syntax.css?ver=1.1' type='text/css' media='all' />
+<link rel='stylesheet' id='codecolorer-css'  href='http://www.52nlp.cn/wp-content/plugins/codecolorer/codecolorer.css?ver=0.9.9' type='text/css' media='screen' />
+<link rel='https://api.w.org/' href='http://www.52nlp.cn/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.52nlp.cn/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.52nlp.cn/wp-includes/wlwmanifest.xml" /> 
+<link rel='prev' title='QA问答系统中的深度学习技术实现' href='http://www.52nlp.cn/qa%e9%97%ae%e7%ad%94%e7%b3%bb%e7%bb%9f%e4%b8%ad%e7%9a%84%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e6%8a%80%e6%9c%af%e5%ae%9e%e7%8e%b0' />
+<link rel='next' title='Mecab安装过程中的一些坑' href='http://www.52nlp.cn/mecab%e5%ae%89%e8%a3%85%e8%bf%87%e7%a8%8b%e4%b8%ad%e7%9a%84%e4%b8%80%e4%ba%9b%e5%9d%91' />
+<meta name="generator" content="WordPress 4.7.1" />
+<link rel="canonical" href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e6%94%92%e6%9c%ba%e5%b0%8f%e8%ae%b0" />
+<link rel='shortlink' href='http://www.52nlp.cn/?p=9081' />
+<link rel="alternate" type="application/json+oembed" href="http://www.52nlp.cn/wp-json/oembed/1.0/embed?url=http%3A%2F%2Fwww.52nlp.cn%2F%25e6%25b7%25b1%25e5%25ba%25a6%25e5%25ad%25a6%25e4%25b9%25a0%25e4%25b8%25bb%25e6%259c%25ba%25e6%2594%2592%25e6%259c%25ba%25e5%25b0%258f%25e8%25ae%25b0" />
+<link rel="alternate" type="text/xml+oembed" href="http://www.52nlp.cn/wp-json/oembed/1.0/embed?url=http%3A%2F%2Fwww.52nlp.cn%2F%25e6%25b7%25b1%25e5%25ba%25a6%25e5%25ad%25a6%25e4%25b9%25a0%25e4%25b8%25bb%25e6%259c%25ba%25e6%2594%2592%25e6%259c%25ba%25e5%25b0%258f%25e8%25ae%25b0&#038;format=xml" />
+<!-- wp thread comment 1.4.9.4.002 -->
+<style type="text/css" media="screen">
+.editComment, .editableComment, .textComment{
+	display: inline;
+}
+.comment-childs{
+	border: 1px solid #999;
+	margin: 5px 2px 2px 4px;
+	padding: 4px 2px 2px 4px;
+	background-color: white;
+}
+.comment-childs > p {
+        word-break: break-word;
+        word-wrap: break-word;
+}
+.chalt{
+	background-color: #E2E2E2;
+}
+#newcomment{
+	border:1px dashed #777;width:90%;
+}
+#newcommentsubmit{
+	color:red;
+}
+.adminreplycomment{
+	border:1px dashed #777;
+	width:99%;
+	margin:4px;
+	padding:4px;
+}
+.mvccls{
+	color: #999;
+}
+			
+</style>
+</head>
+
+<body class="post-template-default single single-post postid-9081 single-format-standard">
+<div id="wrapper" class="hfeed">
+	<div id="header">
+		<div id="masthead">
+			<div id="branding" role="banner">
+								<div id="site-title">
+					<span>
+						<a href="http://www.52nlp.cn/" title="我爱自然语言处理" rel="home">我爱自然语言处理</a>
+					</span>
+				</div>
+				<div id="site-description">I Love Natural Language Processing</div>
+
+										<img src="http://www.52nlp.cn/wp-content/themes/twentytenorg/images/headers/path.jpg" width="940" height="198" alt="" />
+								</div><!-- #branding -->
+
+			<div id="access" role="navigation">
+			  				<div class="skip-link screen-reader-text"><a href="#content" title="跳至正文">跳至正文</a></div>
+								<div class="menu"><ul>
+<li ><a href="http://www.52nlp.cn/">首页</a></li><li class="page_item page-item-9088"><a href="http://www.52nlp.cn/%e4%b9%a6%e7%b1%8d">书籍</a></li>
+<li class="page_item page-item-2557 page_item_has_children"><a href="http://www.52nlp.cn/resources">资源</a>
+<ul class='children'>
+	<li class="page_item page-item-1271"><a href="http://www.52nlp.cn/resources/wpmatheditor">WpMathEditor</a></li>
+</ul>
+</li>
+<li class="page_item page-item-2"><a href="http://www.52nlp.cn/about">关于</a></li>
+<li class="page_item page-item-9013"><a href="http://weibo.com/52nlp" target="_blank">微博</a></li>
+</ul></div>
+ 
+				<div class="menu"><ul><li class="page_item page-item-2"></li><li class="page_item page-item-2"><a href="http://coursegraph.com" title="课程图谱" target="_blank">课程图谱</a></li><li class="page_item page-item-2"><a href="http://www.nlpjob.com" title="求职" target="_blank">求职招聘</a></li></ul></div>
+			</div><!-- #access -->
+		</div><!-- #masthead -->
+	</div><!-- #header -->
+
+	<div id="main">
+
+		<div id="container">
+			<div id="content" role="main">
+
+			
+
+				<div id="nav-above" class="navigation">
+					<div class="nav-previous"><a href="http://www.52nlp.cn/qa%e9%97%ae%e7%ad%94%e7%b3%bb%e7%bb%9f%e4%b8%ad%e7%9a%84%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e6%8a%80%e6%9c%af%e5%ae%9e%e7%8e%b0" rel="prev"><span class="meta-nav">&larr;</span> QA问答系统中的深度学习技术实现</a></div>
+					<div class="nav-next"><a href="http://www.52nlp.cn/mecab%e5%ae%89%e8%a3%85%e8%bf%87%e7%a8%8b%e4%b8%ad%e7%9a%84%e4%b8%80%e4%ba%9b%e5%9d%91" rel="next">Mecab安装过程中的一些坑 <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-above -->
+
+				<div id="post-9081" class="post-9081 post type-post status-publish format-standard hentry category-1153 tag-gtx1080 tag-1257 tag-1259 tag-1258 tag-1018 tag-pc tag-1263 tag-1265 tag-1261 tag-1264 tag-1260">
+					<h1 class="entry-title">深度学习主机攒机小记</h1>
+
+					<div class="entry-meta">
+						<span class="meta-prep meta-prep-author">发表于</span><a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e6%94%92%e6%9c%ba%e5%b0%8f%e8%ae%b0" title="09:56" rel="bookmark"><span class="entry-date">2016年07月5号</span></a><span class="meta-sep">由</span><span class="author vcard"><a class="url fn n" href="http://www.52nlp.cn/author/admin" title="查看所有由52nlp发布的文章">52nlp</a></span>					</div><!-- .entry-meta -->
+
+					<div class="entry-content">
+						<p>五月中下旬的时候，<a href="http://www.geforce.com/hardware/10series/geforce-gtx-1080">GTX1080</a>的公布和发售直接刺激了我攒一台深度学习主机的欲望，攒机对于我来说已经相隔十多年，大学时候的第一台PC就是攒出来的，其实也就是在5000元的预算内，去电脑城里找商家组装了一台台式机，美其名曰DIY。</p>
+<p>虽然已经锁定显卡，但是对于其他的搭配还是很模糊，只是需要“好CPU”，“大内存&#8221;, “大硬盘&#8221;, 于是开始google “深度学习电脑”，“深度学习服务器”，“深度学习PC”， “深度学习主机”，“深度学习机器”，“深度学习工作站”这些关键词，并很快锁定了这篇文章《<a href="http://www.r-bloggers.com/lang/chinese/2042">如何搭建一台深度学习服务器</a>》作为主要参考：</p>
+<blockquote><p>硬件选择：基本思路是单显卡机器，保留升级空间</p>
+<p>&#8230;&#8230;</p>
+<p>CPU选择：<br />
+在深度学习任务中，CPU并不负责主要任务，单显卡计算时只有一个核心达到100%负荷，所以CPU的核心数量和显卡数量一致即可，太多没有必要，但是处理PCIE的带宽要到40。</p>
+<p>主板选择：<br />
+需要支持X99架构，支持PCIe3.0，还要支持4通道DDR4内存架构。如果要搞四显卡并行，PCIE带宽支持要达到40，并且支持4-Way NVIDA SLI技术。</p>
+<p>内存：<br />
+达到显存的二倍即可，当然有钱的话越大越好。</p>
+<p>电源问题：一个显卡的功率接近300W，四显卡建议电源在1500W以上，为了以后扩展，选择了1600W的电源。</p>
+<p>机箱散热：<br />
+因为各种部件相当庞大，需要有良好散热功能的大机箱，选择了Tt Thermaltake Core V51机箱，标配3个12cm风扇。未来如果需要还可以加装水冷设备。</p>
+<p>&#8230;&#8230;</p>
+<p>最后的硬件配置：<br />
+CPU: Intel X99平台 i7 5960K<br />
+内存: DDR4 2800 32G(8G*4)<br />
+主板: GIGABYTE X99-UD4<br />
+显卡: GTX Titan X<br />
+硬盘: SSD+普通硬盘</p></blockquote>
+<p><span id="more-9081"></span></p>
+<p>按照这篇文章的配置，在淘宝查了一下相关价格，这个配置大概20000+的水平，如果作者再搞个4路显卡并行，绝对土豪。不过这里面的i7 5960K很少见，应该对应的是i7 5960X。</p>
+<p>对于我来说，主要是围绕着GTX1080来配置深度学习服务器，不过这个时候上文所说的一些概念还比较模糊，于是以一个游戏玩家的身份跑了一趟电脑城，当我向商家说明来意，要配置一个GTX1080主机时，商家除了纷纷表示GTX1080货源紧缺，需要预定外，也有的会在打完几个电话后告诉我有现货但需要加价，极端的一个例子是华硕的公版GTX1080当时加到了6900。不过几乎无一例外，他们给的配置清单基本上是这样的：</p>
+<blockquote><p>CPU: Intel i7 6700K<br />
+内存: DDR4 32G(8G*4)<br />
+主板: 华硕Z170-P or Z170-AR<br />
+显卡: GTX 1080<br />
+硬盘: SSD+普通硬盘<br />
+&#8230;&#8230;</p></blockquote>
+<p>加上其他配件，大概12000+的样子。当然，我只是通过市场调研一下，并不急于入手，于是回到家里，继续google。</p>
+<p><a href="http://diy.pconline.com.cn/678/6785196_all.html" target="_blank">i7-6700K</a> 是去年发布的6代酷睿i系列处理器，它最大的变化是 “14nm工艺+新架构（Skylake），对于老态龙钟的Haswell有着工艺和架构的双&#8217;料&#8217;改进！新架构意味着同频性能更强，新工艺意味着功耗更低”。另外i7-6700K是“四核心八线程、8MB三级缓存，CPU频率基准4.0GHz、最高4.2GHz，总线支持十六条PCI-E 3.0，内存支持双通道DDR4-2133、DDR3L-1600”。特别注意这里的PCIE 3.0，总计只有16条，这个就很有局限了。同样它所支持Z170等系列主板，无论在显卡支持数量和最大内存容量上都不如X99的可扩展性强。譬如这里的华硕Z170主板，必须是Z170-A或者在Z170-AR才能支持双路显卡，稍差一点的Z170-P仅支持一个显卡。内存插槽上，Z170多是4个，而X99一般都是8个。</p>
+<p>于是将目光又一次转向了X99平台，重新审视了<a href="http://diy.pconline.com.cn/534/5347656_all.html" target="_blank">i7-5960X</a>, <a href="http://diy.pconline.com.cn/620/6206816_all.html" target="_blank">i7-5930K</a>, <a href="http://diy.pconline.com.cn/548/5484537_all.html" target="_blank">i7-5820k</a>这几个两年前英特尔发布的22纳米工艺的Haswell-E系列的CPU。下面这幅图其实一目了然：</p>
+<p><img class="aligncenter size-full wp-image-9140" src="http://www.52nlp.cn/wp-content/uploads/2016/07/5960x5930x5820.png" alt="5960x5930x5820" width="600" height="338" srcset="http://www.52nlp.cn/wp-content/uploads/2016/07/5960x5930x5820.png 600w, http://www.52nlp.cn/wp-content/uploads/2016/07/5960x5930x5820-300x169.png 300w" sizes="(max-width: 600px) 100vw, 600px" /></p>
+<p>注意其中的PCIE-3.0个数，5960x和5930k都是40，而5820K只有28，这样的话“具备完整的40条PCI-E的i7-5960X和i7-5930K可以以“x16+x8+x8+x8”的带宽分配方式组建四路的SLI或者CrossFire，而“小弟”i7-5820K最多只能组建“x16+x8”或“x8+x8+x8”的双路或者三路显卡并联系统。”</p>
+<p>显然，在可扩展性上，5960x和5930k更好，不过在价格上自然也有区分，目前淘宝上5960x大概7000左右，5930k在4000左右，5820k在2700左右。</p>
+<p>对于我来说，还没有打算做多路显卡并联，但是为了可扩展性，所以初步选择了5390k或者5820K作为CPU备选。但是最大的问题还是GTX1080的货源问题，淘宝天猫上全是预定，托朋友关系咨询当地技嘉总代，拿GTX1080必须搭配其他显卡销售，不过有个很优惠的价格可以拿到 GTX Titan X ，为此还在微博上咨询了一下是选择GTX1080还是GTX Titan X，<a href="http://weibo.com/mli65">李沐M</a>和其他几个同学的回答基本让我确定等待GTX1080。另外李沐大神有几篇关于<a href="http://mli.github.io/gpu/2016/01/17/build-gpu-clusters/" target="_blank">GPU</a>的文章，不过都是超级土豪的，感兴趣的同学可以参考。</p>
+<p>之前曾google到一篇GTX1080机器的文章：<a href="http://news.mydrivers.com/1/483/483320.htm" target="_blank">国产首款GTX 1080游戏PC开售</a>，不过当时对这些配置还无感，调研了一番回头再看的时候，发现雷霆世纪所推的这款<a href="http://union.click.jd.com/jdc?e=0&amp;p=AyIOZRprFgobAFAbXiVGTV8LRGtMR1dGXgVFTUdGW0pADgpQTFtLGFMcBRcHUAQCUF5PNy5%2BIB1fbnsleylvfHFXS2ssY2d3YDUXVyUFFwBRE1wdAyICUxlaJTJzdWVNNRUDEwZUGloQBRA3UBtTFQoRB1ESaxUHFQFSHVwUAxQCXRJrEjJEVxZTGl1STVFlK2s%3D&amp;t=W1dCFBBFC1pXUwkEAEAdQFkJBVgdCxUCVR5ETEdOWg%3D%3D" target="_blank">GTX1080主机</a>性价比超高，可惜这个主机第一轮预定完之后到目前为止一直显示无货：</p>
+<blockquote><p>CPU：Intel i7-6800K（6核12线程）<br />
+主板：华硕X99-E<br />
+显卡：GTX 1080<br />
+SSD：三星SM951 256G（M.2接口）<br />
+电源：海韵X-850 850W（80 PLUS全模组）<br />
+机箱：迎广805C红 中塔式机箱（铝合金，双面钢化玻璃侧透）<br />
+散热：采融B81 V2黑色雷霆定制版（纯铜底、6热管、PMW风扇）<br />
+内存：自行购买（DDR4）<br />
+系统：预装Windows 10测试版系统</p></blockquote>
+<p>这套配置里面提到了i7-6800K，查了一下，是最近Intel刚刚推出的<a href="http://news.mydrivers.com/1/484/484839_all.htm" target="_blank">发烧级桌面处理器Broadwell-E</a>系列中的一员：</p>
+<p><img class="aligncenter size-full wp-image-9167" src="http://www.52nlp.cn/wp-content/uploads/2016/07/6800k.jpg" alt="6800k" width="600" height="337" srcset="http://www.52nlp.cn/wp-content/uploads/2016/07/6800k.jpg 600w, http://www.52nlp.cn/wp-content/uploads/2016/07/6800k-300x169.jpg 300w" sizes="(max-width: 600px) 100vw, 600px" /></p>
+<p>网上有评论i7-6800k是i7-5820k的升级版，虽然同样支持X99架构主板，但是同样的问题也是PCIE-3.0个数只有28个。不过同为升级版，不差钱的同学可以考虑将上文中i7-5960X的配置替换为Broadell-E系列里的旗舰产品i7-6950X，10核心20线程顶级配置，淘宝报价目前在15000左右。</p>
+<p>雷霆世纪这款GTX1080主机虽然很诱惑，但是一直显示无货，不过在浏览相关的产品的时候发现另一款 “<a href="http://union.click.jd.com/jdc?e=0&amp;p=AyIOZRprFwIQBlwaUiVGTV8LRGtMR1dGXgVFTUdGW0pADgpQTFtLGVsXAxsGXAQCUF5PNw5TLUxXa30MewhjZlNnDxoFVX1AYzUXVyUFFwBRE1wdAyICUxlaJTJzdWVNNRUDEwZUGloQBRA3UBtTFQoRB1ESaxUHFQFSHV0cBxQHUh5rEjJEVxZTGl1STVFlK2s%3D&amp;t=W1dCFBBFC1pXUwkEAEAdQFkJBVkVABMOVBJETEdOWg%3D%3D" target="_blank">The one 2 Plus自由版</a>” ，除了没有显卡，主板型号略微有点差异外，其他配置和上一款GTX1080机器基本相同，当然都没有内存。此时恰逢京东618期间的活动，价格比原价7488还低了600，6888可以搞定，稍微淘宝了一下相关的配件价格，粗略计算自己配的话大概需要8500+，所以马上付定金预定。当时的页面显示，6.26号付全款，6.28号之后按付款顺序发货。</p>
+<p>所以必须等了，不过这期间一个朋友通过种种努力在当地技嘉总代帮我搞定了一块非公版GTX1080显卡：<a href="http://diy.pconline.com.cn/804/8042001_all.html" target="_blank">技嘉GTX1080 G1 GAMING</a> ，于是，在拿到显卡的当天，发了一条微博：<a href="http://weibo.com/2104931705/DAOwEqHXc" target="_blank">为信仰充值</a>。之后又在淘宝上买来了4条16G内存条和一块4T硬盘（组SSD+普通硬盘），外加显示器和鼠标硬盘，这套所谓的GTX1080深度学习主机配置是这样的：</p>
+<blockquote><p>CPU：英特尔（Intel）酷睿六核i7-6800K 2011-V3接口 盒装CPU处理器<br />
+主板：华硕（ASUS）X99-A/USB 3.1 主板 （Intel X99/LGA 2011-v3）<br />
+显卡：技嘉GTX1080 G1 GAMING 非公版<br />
+硬盘：三星 SM951 M.2 256G SSD + 西部数据 WD40EZRZ 4T台式机硬盘（蓝盘64M）<br />
+内存：64G 金士顿骇客Fury DDR4 2400 16G单条 * 4<br />
+机箱：迎广(IN WIN)805c红 ATX中塔式机箱 黑紅色 铝合金/钢化玻璃/双面侧透(U2*2+U3*1+U3.1*1)<br />
+电源：海韵（Seasonic）额定850W X-850 电源（80PLUS金牌/全模组/全日系电容/支持SLI/支持背线）<br />
+散热器：采融 B81 V2（黑色）</p></blockquote>
+<p>总计15000多一点：主要配置（6888）+ 显卡（5000）+ 4条内存（1800，最近内存涨得比较猛）+ 硬盘（780）+ 显示器（800）。前几天终于拿到主机，并找来雷霆售后师傅帮我把散热、内存、显卡、硬盘安装调试好，系统预装的是Windows10试用版，当然，很快它就会被Ubuntu取代，最后上几张图：</p>
+<p><img class="aligncenter size-full wp-image-9186" src="http://www.52nlp.cn/wp-content/uploads/2016/07/296275349.jpg" alt="296275349" width="1280" height="721" srcset="http://www.52nlp.cn/wp-content/uploads/2016/07/296275349.jpg 1280w, http://www.52nlp.cn/wp-content/uploads/2016/07/296275349-300x169.jpg 300w, http://www.52nlp.cn/wp-content/uploads/2016/07/296275349-768x433.jpg 768w, http://www.52nlp.cn/wp-content/uploads/2016/07/296275349-1024x577.jpg 1024w" sizes="(max-width: 1280px) 100vw, 1280px" /></p>
+<p><img class="aligncenter size-full wp-image-9187" src="http://www.52nlp.cn/wp-content/uploads/2016/07/614287776.jpg" alt="614287776" width="1280" height="721" srcset="http://www.52nlp.cn/wp-content/uploads/2016/07/614287776.jpg 1280w, http://www.52nlp.cn/wp-content/uploads/2016/07/614287776-300x169.jpg 300w, http://www.52nlp.cn/wp-content/uploads/2016/07/614287776-768x433.jpg 768w, http://www.52nlp.cn/wp-content/uploads/2016/07/614287776-1024x577.jpg 1024w" sizes="(max-width: 1280px) 100vw, 1280px" /></p>
+<p><img class="aligncenter size-full wp-image-9188" src="http://www.52nlp.cn/wp-content/uploads/2016/07/1743460326.jpg" alt="1743460326" width="1280" height="721" srcset="http://www.52nlp.cn/wp-content/uploads/2016/07/1743460326.jpg 1280w, http://www.52nlp.cn/wp-content/uploads/2016/07/1743460326-300x169.jpg 300w, http://www.52nlp.cn/wp-content/uploads/2016/07/1743460326-768x433.jpg 768w, http://www.52nlp.cn/wp-content/uploads/2016/07/1743460326-1024x577.jpg 1024w" sizes="(max-width: 1280px) 100vw, 1280px" /></p>
+<p><img class="aligncenter size-full wp-image-9185" src="http://www.52nlp.cn/wp-content/uploads/2016/07/274517047.jpg" alt="274517047" width="1280" height="721" srcset="http://www.52nlp.cn/wp-content/uploads/2016/07/274517047.jpg 1280w, http://www.52nlp.cn/wp-content/uploads/2016/07/274517047-300x169.jpg 300w, http://www.52nlp.cn/wp-content/uploads/2016/07/274517047-768x433.jpg 768w, http://www.52nlp.cn/wp-content/uploads/2016/07/274517047-1024x577.jpg 1024w" sizes="(max-width: 1280px) 100vw, 1280px" /></p>
+<p>参考资料：</p>
+<p>如何搭建一台深度学习服务器：<a href="http://www.r-bloggers.com/lang/chinese/2042" target="_blank">http://www.r-bloggers.com/lang/chinese/2042</a><br />
+GPU集群折腾手记——2015：<a href="http://mli.github.io/gpu/2016/01/17/build-gpu-clusters/" target="_blank">http://mli.github.io/gpu/2016/01/17/build-gpu-clusters/</a><br />
+Nvidia新的Pascal值不值得买（升级）：<a href="http://mli.github.io/2016/06/14/new-pascal/" target="_blank">http://mli.github.io/2016/06/14/new-pascal/</a><br />
+如何配置一台适用于深度学习的工作站：<a href="https://www.zhihu.com/question/33996159" target="_blank">https://www.zhihu.com/question/33996159</a><br />
+Which GPU(s) to Get for Deep Learning: <a href="http://timdettmers.com/2014/08/14/which-gpu-for-deep-learning/" target="_blank">http://timdettmers.com/2014/08/14/which-gpu-for-deep-learning/</a><br />
+A Full Hardware Guide to Deep Learning：<a href="http://timdettmers.com/2015/03/09/deep-learning-hardware-guide/" target="_blank">http://timdettmers.com/2015/03/09/deep-learning-hardware-guide/</a><br />
+Building a Deep Learning (Dream) Machine：<a href="http://graphific.github.io/posts/building-a-deep-learning-dream-machine/" target="_blank">http://graphific.github.io/posts/building-a-deep-learning-dream-machine/</a><br />
+Reddit: <a href="https://www.reddit.com/r/MachineLearning/comments/4nul9j/gtx1080_vs_1070_for_machine_learning/">gtx1080 vs 1070 for machine learning</a>?</p>
+<p>注：原创文章，转载请注明出处及保留链接“<a href="http://www.52nlp.cn">我爱自然语言处理</a>”：<a href="http://www.52nlp.cn">http://www.52nlp.cn</a></p>
+<p>本文链接地址：<a href="http://www.52nlp.cn/?p=9081">深度学习主机攒机小记</a> <a href="http://www.52nlp.cn/?p=9081">http://www.52nlp.cn/?p=9081</a></p>
+<div class='yarpp-related'>
+<p>相关文章:<ol>
+<li><a href="http://www.52nlp.cn/%e6%96%af%e5%9d%a6%e7%a6%8f%e5%a4%a7%e5%ad%a6%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%8e%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86%e7%ac%ac%e4%b8%80%e8%ae%b2%e5%bc%95%e8%a8%80" rel="bookmark" title="斯坦福大学深度学习与自然语言处理第一讲：引言">斯坦福大学深度学习与自然语言处理第一讲：引言 </a></li>
+<li><a href="http://www.52nlp.cn/%e6%96%af%e5%9d%a6%e7%a6%8f%e5%a4%a7%e5%ad%a6%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%8e%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86%e7%ac%ac%e4%ba%8c%e8%ae%b2%e8%af%8d%e5%90%91%e9%87%8f" rel="bookmark" title="斯坦福大学深度学习与自然语言处理第二讲：词向量">斯坦福大学深度学习与自然语言处理第二讲：词向量 </a></li>
+<li><a href="http://www.52nlp.cn/%e5%88%86%e4%ba%ab%ef%bc%9aconceptbro%e8%af%ad%e4%b9%89%e7%bd%91%e6%b5%8f%e8%a7%88%e5%99%a8" rel="bookmark" title="分享：ConceptBro语义网浏览器">分享：ConceptBro语义网浏览器 </a></li>
+<li><a href="http://www.52nlp.cn/%e6%96%af%e5%9d%a6%e7%a6%8f%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%8enlp%e7%ac%ac%e5%9b%9b%e8%ae%b2%e8%af%8d%e7%aa%97%e5%8f%a3%e5%88%86%e7%b1%bb%e5%92%8c%e7%a5%9e%e7%bb%8f%e7%bd%91%e7%bb%9c" rel="bookmark" title="斯坦福大学深度学习与自然语言处理第四讲：词窗口分类和神经网络">斯坦福大学深度学习与自然语言处理第四讲：词窗口分类和神经网络 </a></li>
+<li><a href="http://www.52nlp.cn/qa%e9%97%ae%e7%ad%94%e7%b3%bb%e7%bb%9f%e4%b8%ad%e7%9a%84%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e6%8a%80%e6%9c%af%e5%ae%9e%e7%8e%b0" rel="bookmark" title="QA问答系统中的深度学习技术实现">QA问答系统中的深度学习技术实现 </a></li>
+<li><a href="http://www.52nlp.cn/%e6%96%af%e5%9d%a6%e7%a6%8f%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%8e%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86%e9%ab%98%e7%ba%a7%e7%9a%84%e8%af%8d%e5%90%91%e9%87%8f%e8%a1%a8%e7%a4%ba" rel="bookmark" title="斯坦福大学深度学习与自然语言处理第三讲：高级的词向量表示">斯坦福大学深度学习与自然语言处理第三讲：高级的词向量表示 </a></li>
+</ol></p>
+</div>
+											</div><!-- .entry-content -->
+
+
+					<div class="entry-utility">
+						此条目发表在<a href="http://www.52nlp.cn/category/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0" rel="category tag">深度学习</a>分类目录，贴了<a href="http://www.52nlp.cn/tag/gtx1080" rel="tag">GTX1080</a>, <a href="http://www.52nlp.cn/tag/gtx1080%e4%b8%bb%e6%9c%ba" rel="tag">GTX1080主机</a>, <a href="http://www.52nlp.cn/tag/%e4%b8%bb%e6%9c%ba" rel="tag">主机</a>, <a href="http://www.52nlp.cn/tag/%e5%b7%a5%e4%bd%9c%e7%ab%99" rel="tag">工作站</a>, <a href="http://www.52nlp.cn/tag/%e6%8a%80%e5%98%89gtx1080" rel="tag">技嘉GTX1080</a>, <a href="http://www.52nlp.cn/tag/%e6%9c%8d%e5%8a%a1%e5%99%a8" rel="tag">服务器</a>, <a href="http://www.52nlp.cn/tag/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0" rel="tag">深度学习</a>, <a href="http://www.52nlp.cn/tag/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0pc" rel="tag">深度学习PC</a>, <a href="http://www.52nlp.cn/tag/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba" rel="tag">深度学习主机</a>, <a href="http://www.52nlp.cn/tag/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e5%b7%a5%e4%bd%9c%e7%ab%99" rel="tag">深度学习工作站</a>, <a href="http://www.52nlp.cn/tag/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e6%9c%8d%e5%8a%a1%e5%99%a8" rel="tag">深度学习服务器</a>, <a href="http://www.52nlp.cn/tag/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e6%9c%ba%e5%99%a8" rel="tag">深度学习机器</a>, <a href="http://www.52nlp.cn/tag/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e7%94%b5%e8%84%91" rel="tag">深度学习电脑</a>标签。将<a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e6%94%92%e6%9c%ba%e5%b0%8f%e8%ae%b0" title="链向深度学习主机攒机小记的固定链接" rel="bookmark">固定链接</a>加入收藏夹。											</div><!-- .entry-utility -->
+				</div><!-- #post-## -->
+
+				<div id="nav-below" class="navigation">
+					<div class="nav-previous"><a href="http://www.52nlp.cn/qa%e9%97%ae%e7%ad%94%e7%b3%bb%e7%bb%9f%e4%b8%ad%e7%9a%84%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e6%8a%80%e6%9c%af%e5%ae%9e%e7%8e%b0" rel="prev"><span class="meta-nav">&larr;</span> QA问答系统中的深度学习技术实现</a></div>
+					<div class="nav-next"><a href="http://www.52nlp.cn/mecab%e5%ae%89%e8%a3%85%e8%bf%87%e7%a8%8b%e4%b8%ad%e7%9a%84%e4%b8%80%e4%ba%9b%e5%9d%91" rel="next">Mecab安装过程中的一些坑 <span class="meta-nav">&rarr;</span></a></div>
+				</div><!-- #nav-below -->
+
+				
+			<div id="comments">
+
+
+			<h3 id="comments-title">《<em>深度学习主机攒机小记</em>》有 47 条评论</h3>
+
+
+			<ol class="commentlist">
+					<li class="comment even thread-even depth-1" id="li-comment-233763">
+		<div id="comment-233763">
+		<div class="comment-author vcard">
+						<cite class="fn">anonymous</cite><span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e6%94%92%e6%9c%ba%e5%b0%8f%e8%ae%b0#comment-233763">
+			2016年07月7号00:27</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>如果只是想要40条PCIE，可以考虑i7-4820K和LGA2011的X79主板，不过貌似已经停产，而且只支持DDR3</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,233763,1,'anonymous');">回复</a>]</p><div class="comment-childs chalt" id="comment-233773"><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">七月 7th, 2016 at 11:25</small></p><p>这个确实考虑过，不过这个CPU淘宝上报价太乱了，后来有搭配好的全套，就算了。</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,233773,2,'52nlp');">回复</a>]</p></div><div class="comment-childs chalt" id="comment-234389"><p><cite>winstar</cite> 回复:<br /><small class="commentmetadata">七月 31st, 2016 at 16:53</small></p><p>40Lane 最新版cpu 性价比最高的是 Xeon E5 v1620 v4， 最新技术14nm，3.5GHZ</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,234389,2,'winstar');">回复</a>]</p><div class="comment-childs" id="comment-234390"><p><cite>winstar</cite> 回复:<br /><small class="commentmetadata">七月 31st, 2016 at 16:56</small></p><p>补充下，该u价格淘宝 2050，算是能找到的14nm技术的最便宜的了</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,234390,3,'winstar');">回复</a>]</p></div></div></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-233772">
+		<div id="comment-233772">
+		<div class="comment-author vcard">
+						<cite class="fn"><a href='http://acgtyrant.com' rel='external nofollow' class='url'>御宅暴君</a></cite><span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e6%94%92%e6%9c%ba%e5%b0%8f%e8%ae%b0#comment-233772">
+			2016年07月7号09:27</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>技嘉 GTX 1080 的内存才 8G, 够用吗？</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,233772,1,'御宅暴君');">回复</a>]</p><div class="comment-childs chalt" id="comment-233774"><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">七月 7th, 2016 at 11:27</small></p><p>先用起来再说，之前考虑过titan x，不过确实1080比较诱惑。</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,233774,2,'52nlp');">回复</a>]</p></div></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="li-comment-233841">
+		<div id="comment-233841">
+		<div class="comment-author vcard">
+						<cite class="fn">andy huang</cite><span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e6%94%92%e6%9c%ba%e5%b0%8f%e8%ae%b0#comment-233841">
+			2016年07月11号15:34</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>z9pe-d8<br />
+e5-2670<br />
+ddr3内存<br />
+cpu和内存都是洋垃圾，配好64g内存，32核心处理器，4000左右能拿下来。<br />
+记得多看洋垃圾</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,233841,1,'andy huang');">回复</a>]</p></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-233843">
+		<div id="comment-233843">
+		<div class="comment-author vcard">
+						<cite class="fn">foursking</cite><span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e6%94%92%e6%9c%ba%e5%b0%8f%e8%ae%b0#comment-233843">
+			2016年07月11号17:13</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p><a href="http://item.jd.com/3207810.html" rel="nofollow">http://item.jd.com/3207810.html</a> 这一款1070怎么样，  显存一样的，训练的时候慢多少？</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,233843,1,'foursking');">回复</a>]</p><div class="comment-childs chalt" id="comment-233845"><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">七月 11th, 2016 at 21:50</small></p><p>1080和1070的一个主要区别是cuda计算单元的个数，前者是2560个，后者是1920个，具体没有评测过，请自行google。</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,233845,2,'52nlp');">回复</a>]</p></div></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="li-comment-234094">
+		<div id="comment-234094">
+		<div class="comment-author vcard">
+						<cite class="fn">wwz</cite><span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e6%94%92%e6%9c%ba%e5%b0%8f%e8%ae%b0#comment-234094">
+			2016年07月19号10:51</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>您好<br />
+这个配件买好后，自己安装有难度吗，尤其CPU装到主板上</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,234094,1,'wwz');">回复</a>]</p><div class="comment-childs chalt" id="comment-234099"><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">七月 19th, 2016 at 11:29</small></p><p>根据个人情况而定，如果你比较熟悉DIY，全套配件自己搞也行，如果不熟悉，请个安装师傅搞更好.</p>
+<p>PS: 我这套机器由于是在京东雷霆世纪买的，到手时除了散热、内存、显卡、第二块硬盘没有安装外，其他他们都搞好了。</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,234099,2,'52nlp');">回复</a>]</p></div></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-234391">
+		<div id="comment-234391">
+		<div class="comment-author vcard">
+						<cite class="fn">winstar</cite><span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e6%94%92%e6%9c%ba%e5%b0%8f%e8%ae%b0#comment-234391">
+			2016年07月31号17:16</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>和楼主同样的追求，不同的道路。折腾两月，机器配置如下：<br />
+cpu: Xeon E5 v1620 v4  14nm 3.5GHz  4核8线程<br />
+内存：海盗船8G*2 2400MHz<br />
+显卡：华硕GTX1070 公版（为了将来做SLI，无论兼容性还是PCIe插槽占用，都是公版最合适，so最终回到公版）<br />
+主板：华硕X99EWS （真正支持4路SLI的超强主板，新货很贵，闲鱼入的2手）<br />
+电源：海韵X1250 1200W （也是2手货，目前用起来看没啥问题）<br />
+硬盘：240G intel SSD + 希捷2T 混合硬盘 + 120G 三星老硬盘（以前老笔记本淘汰下来的，本来做移动硬盘用的，现在重新上PC跑ubuntu）<br />
+机箱：比较看中散热+静音，同时又必须支持EATX主板+8个PCIe槽口，最终选定Tt F51 静音版（很超值）<br />
+显示器：2手收了台dell u2515h，2k屏</p>
+<p>总计下来：1.5万左右</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,234391,1,'winstar');">回复</a>]</p><div class="comment-childs chalt" id="comment-234392"><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">七月 31st, 2016 at 18:15</small></p><p>牛逼，看来你动手能力很强</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,234392,2,'52nlp');">回复</a>]</p></div><div class="comment-childs chalt" id="comment-234572"><p><cite>pipi</cite> 回复:<br /><small class="commentmetadata">八月 4th, 2016 at 15:30</small></p><p>请问双卡搞深度学习也是要sli桥接的对吗？两张卡一个主卡作为控制？</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,234572,2,'pipi');">回复</a>]</p></div><div class="comment-childs chalt" id="comment-238020"><p><cite>kangtian0</cite> 回复:<br /><small class="commentmetadata">九月 14th, 2016 at 13:03</small></p><p>装的什么系统？<br />
+Ubuntu安装是不是有问题？<br />
+想用用深度学习，环境还没搭好，<br />
+特别是软件环境。</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,238020,2,'kangtian0');">回复</a>]</p></div></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="li-comment-234974">
+		<div id="comment-234974">
+		<div class="comment-author vcard">
+						<cite class="fn">六六六</cite><span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e6%94%92%e6%9c%ba%e5%b0%8f%e8%ae%b0#comment-234974">
+			2016年08月8号11:01</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>我没这么多钱折腾了，今年只换了10系显卡<br />
+配置是<br />
+e3 1230v2+2*8g ddr3 1600+128G pro ssd+WD绿盘3T+GTX1070微星红龙</p>
+<p>其实我之前也考虑过5820k或者是6800k的组合的，不过确实资金上都是我自费的，太吃力</p>
+<p>作者是学校老师还是什么的？应该是报账采购的吧</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,234974,1,'六六六');">回复</a>]</p><div class="comment-childs chalt" id="comment-236782"><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">八月 29th, 2016 at 14:59</small></p><p>不是</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,236782,2,'52nlp');">回复</a>]</p></div></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-237636">
+		<div id="comment-237636">
+		<div class="comment-author vcard">
+						<cite class="fn">Freeman</cite><span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e6%94%92%e6%9c%ba%e5%b0%8f%e8%ae%b0#comment-237636">
+			2016年09月7号19:21</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>你的配置里i7-6800K没有核芯显卡，X99主板也没有集成显卡，所以显示和计算都是用GTX 1080吧，这样会不会有问题，尤其是装驱动的时候，GPU单独用来做deep learning会不会更好？</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,237636,1,'Freeman');">回复</a>]</p><div class="comment-childs chalt" id="comment-237704"><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">九月 8th, 2016 at 21:19</small></p><p>集成显卡的影响可有忽略不计吧</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,237704,2,'52nlp');">回复</a>]</p></div></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="li-comment-237829">
+		<div id="comment-237829">
+		<div class="comment-author vcard">
+						<cite class="fn">Freeman</cite><span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e6%94%92%e6%9c%ba%e5%b0%8f%e8%ae%b0#comment-237829">
+			2016年09月10号14:22</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>现在您的配置中没有集成显卡，所以您说的影响是？</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,237829,1,'Freeman');">回复</a>]</p><div class="comment-childs chalt" id="comment-237847"><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">九月 10th, 2016 at 23:12</small></p><p>我的意思是在有了独立显卡之后，无论是否有集成显卡影响都很小吧</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,237847,2,'52nlp');">回复</a>]</p><div class="comment-childs" id="comment-237876"><p><cite>Freeman</cite> 回复:<br /><small class="commentmetadata">九月 11th, 2016 at 12:56</small></p><p>所以您的1080是既用来显示器显示，也用做深度学习计算咯？把GPU专门用来做计算会不会更好？</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,237876,3,'Freeman');">回复</a>]</p><div class="comment-childs chalt" id="comment-237895"><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">九月 11th, 2016 at 23:38</small></p><p>我觉得你太纠结这个问题了，如果纯粹考虑计算，你可以考虑那些专用于计算的显卡；事实上，这里显示对于计算的影响很小很小。</p>
+</div><div class="comment-childs chalt" id="comment-237927"><p><cite>Freeman</cite> 回复:<br /><small class="commentmetadata">九月 12th, 2016 at 09:31</small></p><p>了然，非常感谢您的解答！</p>
+</div></div></div></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-238018">
+		<div id="comment-238018">
+		<div class="comment-author vcard">
+						<cite class="fn">noooop</cite><span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e6%94%92%e6%9c%ba%e5%b0%8f%e8%ae%b0#comment-238018">
+			2016年09月14号11:32</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>E5-2650 2 GHz-2.8 GHz  八核十六线程 PCI Express 3.0 * 40 淘宝 235<br />
+E5-2660 2.2 GHz-3 GHz 八核十六线程 PCI Express 3.0 * 40 淘宝 450<br />
+E5-2670 2.6 GHz-3.3 GHz  八核十六线程 PCI Express 3.0 * 40 淘宝 320<br />
+E5-2680 2.7 GHz-3.5 GHz 八核十六线程 PCI Express 3.0 * 40 淘宝 780</p>
+<p>上双路或者四路要啥自行车</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,238018,1,'noooop');">回复</a>]</p></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="li-comment-241690">
+		<div id="comment-241690">
+		<div class="comment-author vcard">
+						<cite class="fn">youwei ren</cite><span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e6%94%92%e6%9c%ba%e5%b0%8f%e8%ae%b0#comment-241690">
+			2016年11月10号12:58</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>4条内存该是2800吧。不知道多少人是我这样，受文章影响攒了一台主机，想想还有点小激动。。</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,241690,1,'youwei ren');">回复</a>]</p><div class="comment-childs chalt" id="comment-241728"><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">十一月 10th, 2016 at 22:09</small></p><p>这段时间内存涨价太快了，双十一攒机确实是一个机会，谢谢</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,241728,2,'52nlp');">回复</a>]</p></div></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-242338">
+		<div id="comment-242338">
+		<div class="comment-author vcard">
+						<cite class="fn">stan wong</cite><span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e6%94%92%e6%9c%ba%e5%b0%8f%e8%ae%b0#comment-242338">
+			2016年11月21号17:31</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>不错 也在考虑配置主机中 在等ZEN出来看看 平时就用Theano验证一下逻辑正确与否，我的还是笔记本显卡GT630M，cudnn无法支持，哎</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,242338,1,'stan wong');">回复</a>]</p></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="li-comment-242832">
+		<div id="comment-242832">
+		<div class="comment-author vcard">
+						<cite class="fn">马继昌</cite><span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e6%94%92%e6%9c%ba%e5%b0%8f%e8%ae%b0#comment-242832">
+			2016年11月24号11:52</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>博主，您好。请问您的Ubuntu系统安装成功了吗？我在安装Ubuntu的时候出现了the inpu timing not supported by the monitor display&#8230;..。你在安装的时候有遇到过这样的问题吗。 机器配置与你的同样，系统为win10企业版。</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,242832,1,'马继昌');">回复</a>]</p><div class="comment-childs chalt" id="comment-242837"><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">十一月 24th, 2016 at 12:04</small></p><p>当然安装了，这个坑确实踩过，可以参考这个系列的续集：http://www.52nlp.cn/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E4%B8%BB%E6%9C%BA%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE-ubuntu-16-04-nvidia-gtx-1080-cuda-8</p>
+<p>1）一开始安装就踩了一个坑，选择”Install Ubuntu”回车后过一会儿屏幕显示“输入不支持”，google了好多方案，最终和ubuntu对显卡的支持有关，需要手动添加显卡选项: nomodeset，使其支持Nvidia系列显卡，参考：安装ubuntu黑屏问题的解决 or How do I set ‘nomodeset’ after I’ve already installed Ubuntu?</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,242837,2,'52nlp');">回复</a>]</p><div class="comment-childs" id="comment-243022"><p><cite>马继昌</cite> 回复:<br /><small class="commentmetadata">十一月 25th, 2016 at 18:01</small></p><p>大神，没想到看见了你的回复，很感谢。从机器买回来到现在2天了，一直在搞安装。真的万分感谢，这个安装大坑您一定要拉小弟一把，先谢谢你了。经过几天的摸索，初步确定的问题，和您描述的一样，Ubuntu系统的安装包与英伟达的显卡驱动不支持，所以才会出现“输入不支持”，也试过很多版本的Ubuntu，不知道您安装的是哪个版本的Ubuntu系统，包括U盘启动，硬盘启动，然并卵。很想与您进一步交流，我也是不小心上了GTX1080的船，恰巧又上了机器学习的船，一步步的选择注定我们要相识，我的微信：15822086959。同时也欢迎闲的蛋疼+兴趣的同仁，并有志于机器学习和linux系统的同仁建立联系、交流问题，帮助别人提升自己，谢谢。</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,243022,3,'马继昌');">回复</a>]</p><div class="comment-childs chalt" id="comment-243443"><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">十一月 27th, 2016 at 22:53</small></p><p>抱歉，比较忙，没有时间加微信给你指导了。</p>
+</div></div><div class="comment-childs" id="comment-243051"><p><cite>马继昌</cite> 回复:<br /><small class="commentmetadata">十一月 25th, 2016 at 21:11</small></p><p>另外，请问一下大神，您的显示器和显卡是用的HDMI的线缆吗？</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,243051,3,'马继昌');">回复</a>]</p><div class="comment-childs chalt" id="comment-243445"><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">十一月 27th, 2016 at 23:03</small></p><p>是的</p>
+</div></div><div class="comment-childs" id="comment-243068"><p><cite>马继昌</cite> 回复:<br /><small class="commentmetadata">十一月 25th, 2016 at 23:40</small></p><p>按照您说的，在选择“install Ubuntu”后，需要进入对Ubuntu的编辑模式，手动添加N卡驱动选项。我按“e”和“F6”均进不了Ubuntu的编辑界面，请问您当时是如何进入这个编辑模式的。拜托了。</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,243068,3,'马继昌');">回复</a>]</p></div><div class="comment-childs" id="comment-243097"><p><cite>马继昌</cite> 回复:<br /><small class="commentmetadata">十一月 26th, 2016 at 02:33</small></p><p>大神，又经过一番倒腾，现在已经成功显示了ubuntu的安装界面，但是在安装中途提示：不能在指定位置安装启动引导程序。请问您在安装的时候，这个问题是怎么解决的呢？先谢谢你了。</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,243097,3,'马继昌');">回复</a>]</p></div><div class="comment-childs" id="comment-243452"><p><cite>马继昌</cite> 回复:<br /><small class="commentmetadata">十一月 28th, 2016 at 00:16</small></p><p>那请问博主，我安装好Ubuntu后，重启仍然进入黑屏。已经编辑了启动模式，在Quite splash 后面添加了nomodeset，按F10后，先是紫色屏幕，然后黑屏，紧接着就是 “输入格式不支持”。这个现象您当时遇到过吗，怎么解决的。<br />
+显卡GTX1080和显示器是HDMI连接。</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,243452,3,'马继昌');">回复</a>]</p><div class="comment-childs chalt" id="comment-243575"><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">十一月 29th, 2016 at 14:22</small></p><p>抱歉，貌似没有遇到。多Google，多折腾折腾，其实也没坏处。</p>
+</div></div></div><div class="comment-childs chalt" id="comment-243605"><p><cite>马继昌</cite> 回复:<br /><small class="commentmetadata">十一月 29th, 2016 at 19:58</small></p><p>谢谢大神指导，已经解决了黑屏现象，成功安装Ubuntu。</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,243605,2,'马继昌');">回复</a>]</p><div class="comment-childs" id="comment-243614"><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">十一月 29th, 2016 at 23:03</small></p><p>搞定就好，没帮什么忙</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,243614,3,'52nlp');">回复</a>]</p></div></div></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-243569">
+		<div id="comment-243569">
+		<div class="comment-author vcard">
+						<cite class="fn">杨振</cite><span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e6%94%92%e6%9c%ba%e5%b0%8f%e8%ae%b0#comment-243569">
+			2016年11月29号09:55</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>博主，您好，请问做深度学习，长时间训练，有必要上水冷吗？</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,243569,1,'杨振');">回复</a>]</p><div class="comment-childs chalt" id="comment-243576"><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">十一月 29th, 2016 at 14:23</small></p><p>有条件就上。</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,243576,2,'52nlp');">回复</a>]</p></div></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="li-comment-245161">
+		<div id="comment-245161">
+		<div class="comment-author vcard">
+						<cite class="fn">lxawu</cite><span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e6%94%92%e6%9c%ba%e5%b0%8f%e8%ae%b0#comment-245161">
+			2016年12月18号17:06</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>楼主，“The one 2 Plus自由版”主机， 用七彩虹igame 1070卡跑深度学些如何？</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,245161,1,'lxawu');">回复</a>]</p><div class="comment-childs chalt" id="comment-245184"><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">十二月 18th, 2016 at 20:32</small></p><p>一般的需求应该都是可以的</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,245184,2,'52nlp');">回复</a>]</p></div></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment odd alt thread-odd thread-alt depth-1" id="li-comment-247478">
+		<div id="comment-247478">
+		<div class="comment-author vcard">
+						<cite class="fn">xu</cite><span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e6%94%92%e6%9c%ba%e5%b0%8f%e8%ae%b0#comment-247478">
+			2017年01月10号17:12</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>求问我这个配置如何？<br />
+主板：华硕 X99-E WS/USB<br />
+显卡：索泰 GTX1080至尊PLUS OC 1860MHz ✖️4<br />
+cpu： i7-5930K 2011-V3接口<br />
+机箱：海盗船 900D<br />
+电源：海盗船 AX1500i<br />
+散热：九州风神大霜塔<br />
+内存：芝奇AEGIS系列 DDR4 2400频率 16G  ✖️2<br />
+SSD：浦科特 M8PeG 512G M.2 NVMe固态硬盘</p>
+<p>话说我在网上看到说没法四路1080？<br />
+另外有必要上水冷吗？</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,247478,1,'xu');">回复</a>]</p><div class="comment-childs chalt" id="comment-247659"><p><cite><a href='http://www.52nlp.cn' rel='external nofollow' class='url'>52nlp</a></cite> 回复:<br /><small class="commentmetadata">一月 12th, 2017 at 14:09</small></p><p>主板和cpu都满足条件，没法4路的原因是什么呢？配置很棒了，不差钱就上水冷。</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,247659,2,'52nlp');">回复</a>]</p></div></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+	<li class="comment even thread-even depth-1" id="li-comment-247530">
+		<div id="comment-247530">
+		<div class="comment-author vcard">
+						<cite class="fn">Kit</cite><span class="says">说：</span>		</div><!-- .comment-author .vcard -->
+		
+		<div class="comment-meta commentmetadata"><a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e6%94%92%e6%9c%ba%e5%b0%8f%e8%ae%b0#comment-247530">
+			2017年01月11号16:36</a>		</div><!-- .comment-meta .commentmetadata -->
+
+		<div class="comment-body"><p>然而深度学习的机器不需要SLI啊</p>
+<p class="thdrpy">[<a href="javascript:void(0)" onclick="movecfm(event,247530,1,'Kit');">回复</a>]</p></div>
+
+		<div class="reply">
+					</div><!-- .reply -->
+	</div><!-- #comment-##  -->
+
+	</li><!-- #comment-## -->
+			</ol>
+
+
+
+	<div id="respond" class="comment-respond">
+		<h3 id="reply-title" class="comment-reply-title">发表评论 <small><a rel="nofollow" id="cancel-comment-reply-link" href="/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e6%94%92%e6%9c%ba%e5%b0%8f%e8%ae%b0#respond" style="display:none;">取消回复</a></small></h3>			<form action="http://www.52nlp.cn/wp-comments-post.php" method="post" id="commentform" class="comment-form">
+				<p class="comment-notes"><span id="email-notes">电子邮件地址不会被公开。</span> 必填项已用<span class="required">*</span>标注</p><p class="comment-form-comment"><label for="comment">评论</label> <textarea id="comment" name="8f0a3-comment" cols="45" rows="8" maxlength="65525" aria-required="true" required="required"></textarea><textarea name="comment" style="display:none" rows="1" cols="1"></textarea></p><p class="comment-form-author"><label for="author">姓名 <span class="required">*</span></label> <input id="author" name="author" type="text" value="" size="30" maxlength="245" aria-required='true' required='required' /></p>
+<p class="comment-form-email"><label for="email">电子邮件 <span class="required">*</span></label> <input id="email" name="email" type="text" value="" size="30" maxlength="100" aria-describedby="email-notes" aria-required='true' required='required' /></p>
+<p class="comment-form-url"><label for="url">站点</label> <input id="url" name="url" type="text" value="" size="30" maxlength="200" /></p>
+<p class="form-submit"><input name="submit" type="submit" id="submit" class="submit" value="发表评论" /> <input type='hidden' name='comment_post_ID' value='9081' id='comment_post_ID' />
+<input type='hidden' name='comment_parent' id='comment_parent' value='0' />
+</p><p><input type="hidden" id="comment_reply_ID" name="comment_reply_ID" value="0" /><input type="hidden" id="comment_reply_dp" name="comment_reply_dp" value="0" /></p><div id="cancel_reply" style="display:none;"><a href="javascript:void(0)" onclick="movecfm(null,0,1,null);" style="color:red;">点击取消回复</a></div><script type="text/javascript">
+/* <![CDATA[ */
+var commentformid = "commentform";
+var USERINFO = false;
+var atreply = "none";
+/* ]]> */
+</script>
+<script type="text/javascript" src="http://www.52nlp.cn/wp-content/plugins/wp-thread-comment/wp-thread-comment.js.php?jsver=common"></script>
+			</form>
+			</div><!-- #respond -->
+	
+</div><!-- #comments -->
+
+
+			</div><!-- #content -->
+		</div><!-- #container -->
+
+﻿
+		<div id="primary" class="widget-area" role="complementary">
+			<ul class="xoxo">
+<!-- begin l_sidebar -->
+	<div id="l_sidebar">
+<li id="text-5" class="widget-container widget_text"><h3 class="widget-title">关注我们的微信公众号</h3>			<div class="textwidget"><a href="http://blog.nlpjob.com/wp-content/uploads/2013/03/qrcode_for_gh_5034e4edc067_430.jpg"><img class="wp-image-85 size-medium" src="http://blog.nlpjob.com/wp-content/uploads/2013/03/qrcode_for_gh_5034e4edc067_430-300x300.jpg" alt="NLPJob" width="210" height="210"></a></div>
+		</li><li id="search-3" class="widget-container widget_search"><h3 class="widget-title">站内搜索</h3><form role="search" method="get" id="searchform" class="searchform" action="http://www.52nlp.cn/">
+				<div>
+					<label class="screen-reader-text" for="s">搜索：</label>
+					<input type="text" value="" name="s" id="s" />
+					<input type="submit" id="searchsubmit" value="搜索" />
+				</div>
+			</form></li>		<li id="recent-posts-2" class="widget-container widget_recent_entries">		<h3 class="widget-title">最新文章</h3>		<ul>
+					<li>
+				<a href="http://www.52nlp.cn/%e8%87%aa%e7%84%b6%e8%af%ad%e8%a8%80%e5%a4%84%e7%90%86%e5%b7%a5%e5%85%b7%e5%8c%85spacy%e4%bb%8b%e7%bb%8d">自然语言处理工具包spaCy介绍</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e5%8f%8d%e5%90%91%e4%bc%a0%e6%92%ad%e7%ae%97%e6%b3%95%e5%85%a5%e9%97%a8%e8%b5%84%e6%ba%90%e7%b4%a2%e5%bc%95">反向传播算法入门资源索引</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae-ubuntu16-04-geforce-gtx1080-tensorflow">深度学习主机环境配置: Ubuntu16.04+GeForce GTX 1080+TensorFlow</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e7%8e%af%e5%a2%83%e9%85%8d%e7%bd%ae-ubuntu-16-04-nvidia-gtx-1080-cuda-8">深度学习主机环境配置: Ubuntu16.04+Nvidia GTX 1080+CUDA8.0</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/mecab%e5%ae%89%e8%a3%85%e8%bf%87%e7%a8%8b%e4%b8%ad%e7%9a%84%e4%b8%80%e4%ba%9b%e5%9d%91">Mecab安装过程中的一些坑</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e4%b8%bb%e6%9c%ba%e6%94%92%e6%9c%ba%e5%b0%8f%e8%ae%b0">深度学习主机攒机小记</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/qa%e9%97%ae%e7%ad%94%e7%b3%bb%e7%bb%9f%e4%b8%ad%e7%9a%84%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0%e6%8a%80%e6%9c%af%e5%ae%9e%e7%8e%b0">QA问答系统中的深度学习技术实现</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/%e8%be%be%e8%a7%82%e6%95%b0%e6%8d%ae%e6%90%9c%e7%b4%a2%e5%bc%95%e6%93%8e%e7%9a%84query%e8%87%aa%e5%8a%a8%e7%ba%a0%e9%94%99%e6%8a%80%e6%9c%af%e5%92%8c%e6%9e%b6%e6%9e%84%e8%af%a6%e8%a7%a3">达观数据搜索引擎的Query自动纠错技术和架构详解</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/forgetnlp4">非主流自然语言处理——遗忘算法系列（四）：改进TF-IDF权重公式</a>
+						</li>
+					<li>
+				<a href="http://www.52nlp.cn/forgetnlp3">非主流自然语言处理——遗忘算法系列（三）：分词</a>
+						</li>
+				</ul>
+		</li>					</ul>
+		</div><!-- #primary .widget-area -->
+
+
+		<div id="secondary" class="widget-area" role="complementary">
+			<ul class="xoxo">
+				<li id="categories-309398091" class="widget-container widget_categories"><h3 class="widget-title">分类目录</h3>		<ul>
+	<li class="cat-item cat-item-72"><a href="http://www.52nlp.cn/category/mit-nlp" title="麻省理工学院开放式课程&quot;自然语言处理“的相关翻译文章">MIT自然语言处理</a> (23)
+</li>
+	<li class="cat-item cat-item-976"><a href="http://www.52nlp.cn/category/pattern-recognition-and-machine-learning-2" >PRML</a> (15)
+</li>
+	<li class="cat-item cat-item-469"><a href="http://www.52nlp.cn/category/topic-model" >Topic Model</a> (10)
+</li>
+	<li class="cat-item cat-item-87"><a href="http://www.52nlp.cn/category/wordpress" >wordpress</a> (6)
+</li>
+	<li class="cat-item cat-item-317"><a href="http://www.52nlp.cn/category/%e4%b8%93%e9%a2%98" >专题</a> (6)
+</li>
+	<li class="cat-item cat-item-263"><a href="http://www.52nlp.cn/category/chinese-information-processing" >中文信息处理</a> (23)
+</li>
+	<li class="cat-item cat-item-62"><a href="http://www.52nlp.cn/category/word-segmentation" >中文分词</a> (41)
+</li>
+	<li class="cat-item cat-item-420"><a href="http://www.52nlp.cn/category/%e5%b9%b6%e8%a1%8c%e7%ae%97%e6%b3%95" >并行算法</a> (1)
+</li>
+	<li class="cat-item cat-item-268"><a href="http://www.52nlp.cn/category/%e6%8b%9b%e8%81%98" >招聘</a> (4)
+</li>
+	<li class="cat-item cat-item-560"><a href="http://www.52nlp.cn/category/%e6%8e%a8%e8%8d%90%e7%b3%bb%e7%bb%9f" >推荐系统</a> (3)
+</li>
+	<li class="cat-item cat-item-354"><a href="http://www.52nlp.cn/category/%e6%95%b0%e6%8d%ae%e6%8c%96%e6%8e%98" >数据挖掘</a> (3)
+</li>
+	<li class="cat-item cat-item-241"><a href="http://www.52nlp.cn/category/text-classification" >文本分类</a> (3)
+</li>
+	<li class="cat-item cat-item-1149"><a href="http://www.52nlp.cn/category/wen-ben-chu-li-yan-shi-xi-tong" >文本处理演示系统</a> (3)
+</li>
+	<li class="cat-item cat-item-193"><a href="http://www.52nlp.cn/category/maximum-entropy-model" >最大熵模型</a> (7)
+</li>
+	<li class="cat-item cat-item-344"><a href="http://www.52nlp.cn/category/%e6%9c%ba%e5%99%a8%e5%ad%a6%e4%b9%a0" >机器学习</a> (36)
+</li>
+	<li class="cat-item cat-item-1"><a href="http://www.52nlp.cn/category/machine-translation" >机器翻译</a> (54)
+</li>
+	<li class="cat-item cat-item-195"><a href="http://www.52nlp.cn/category/%e6%9d%a1%e4%bb%b6%e9%9a%8f%e6%9c%ba%e5%9c%ba" >条件随机场</a> (3)
+</li>
+	<li class="cat-item cat-item-153"><a href="http://www.52nlp.cn/category/tagging" >标注</a> (15)
+</li>
+	<li class="cat-item cat-item-1153"><a href="http://www.52nlp.cn/category/%e6%b7%b1%e5%ba%a6%e5%ad%a6%e4%b9%a0" >深度学习</a> (9)
+</li>
+	<li class="cat-item cat-item-885"><a href="http://www.52nlp.cn/category/%e7%a7%91%e5%ad%a6%e8%ae%a1%e7%ae%97" >科学计算</a> (1)
+</li>
+	<li class="cat-item cat-item-538"><a href="http://www.52nlp.cn/category/%e7%bb%9f%e8%ae%a1%e5%ad%a6" >统计学</a> (10)
+</li>
+	<li class="cat-item cat-item-126"><a href="http://www.52nlp.cn/category/translation-model" >翻译模型</a> (2)
+</li>
+	<li class="cat-item cat-item-51"><a href="http://www.52nlp.cn/category/nlp" >自然语言处理</a> (245)
+</li>
+	<li class="cat-item cat-item-106"><a href="http://www.52nlp.cn/category/computational-linguistics" >计算语言学</a> (39)
+</li>
+	<li class="cat-item cat-item-22"><a href="http://www.52nlp.cn/category/dictionary" >词典</a> (8)
+</li>
+	<li class="cat-item cat-item-221"><a href="http://www.52nlp.cn/category/semantics" >语义学</a> (1)
+</li>
+	<li class="cat-item cat-item-1121"><a href="http://www.52nlp.cn/category/%e8%af%ad%e4%b9%89%e7%9b%b8%e4%bc%bc%e5%ba%a6" >语义相似度</a> (1)
+</li>
+	<li class="cat-item cat-item-161"><a href="http://www.52nlp.cn/category/semantic-web" >语义网</a> (3)
+</li>
+	<li class="cat-item cat-item-37"><a href="http://www.52nlp.cn/category/corpus" >语料库</a> (12)
+</li>
+	<li class="cat-item cat-item-86"><a href="http://www.52nlp.cn/category/language-model" >语言模型</a> (24)
+</li>
+	<li class="cat-item cat-item-156"><a href="http://www.52nlp.cn/category/speech-recognition" >语音识别</a> (4)
+</li>
+	<li class="cat-item cat-item-314"><a href="http://www.52nlp.cn/category/%e8%b4%9d%e5%8f%b6%e6%96%af%e6%a8%a1%e5%9e%8b" >贝叶斯模型</a> (1)
+</li>
+	<li class="cat-item cat-item-110"><a href="http://www.52nlp.cn/category/reprint" >转载</a> (28)
+</li>
+	<li class="cat-item cat-item-451"><a href="http://www.52nlp.cn/category/%e9%97%ae%e7%ad%94%e7%b3%bb%e7%bb%9f" >问答系统</a> (2)
+</li>
+	<li class="cat-item cat-item-3"><a href="http://www.52nlp.cn/category/informal-essay" >随笔</a> (64)
+</li>
+	<li class="cat-item cat-item-60"><a href="http://www.52nlp.cn/category/hidden-markov-model" >隐马尔科夫模型</a> (37)
+</li>
+		</ul>
+</li><li id="recentcomments" class="widget-container widget_recentcomments"><h3 class="widget-title">最近评论</h3><ul><li class="rc-navi rc-clearfix"><span class="rc-loading">正在加载...</span></li><li id="rc-comment-temp" class="rc-item rc-comment rc-clearfix"><div class="rc-info"></div><div class="rc-timestamp"></div><div class="rc-excerpt"></div></li><li id="rc-ping-temp" class="rc-item rc-ping rc-clearfix"><span class="rc-label"></span></li></ul></li><li id="linkcat-103" class="widget-container widget_links"><h3 class="widget-title">NLP相关网站</h3>
+	<ul class='xoxo blogroll'>
+<li><a href="http://www.aclweb.org/" rel="co-worker" title="The Association for Computational Linguistics" target="_blank">ACL</a></li>
+<li><a href="http://aclweb.org/aclwiki/index.php?title=Main_Page" rel="colleague" title="the Wiki of the Association for Computational Linguistics" target="_blank">ACL Wiki</a></li>
+<li><a href="http://www.euromatrix.net/" rel="colleague" target="_blank">EuroMatrix</a></li>
+<li><a href="http://www.clsp.jhu.edu/workshops/" rel="colleague" target="_blank">JHU Workshop</a></li>
+<li><a href="http://www.ldc.upenn.edu/" rel="colleague" title="Linguistic Data Consortium" target="_blank">LDC</a></li>
+<li><a href="http://www.statmt.org/moses/" rel="colleague" title="A factored phrase-based beam-search decoder for machine translation" target="_blank">Moses</a></li>
+<li><a href="http://nlpers.blogspot.com/" rel="colleague" title="国外一个非常不错的自然语言处理博客" target="_blank">nlper</a></li>
+<li><a href="http://www.nlpjob.com" target="_blank">NLPJob</a></li>
+<li><a href="http://sentimentanalysis.net/" target="_blank">Sentiment Analysis</a></li>
+<li><a href="http://www.speech.sri.com/projects/srilm/" rel="colleague" title="&#8211; The SRI Language Modeling Toolkit" target="_blank">SRILM</a></li>
+<li><a href="http://www.statmt.org/" rel="colleague" title="This website is dedicated to research in statistical machine translation" target="_blank">Statistical Machine Translation</a></li>
+<li><a href="http://tensorflowtutorial.net/" target="_blank">TensorFlow Tutorial</a></li>
+<li><a href="http://textanalysisonline.com/" target="_blank">Text Analysis</a></li>
+<li><a href="http://textminingonline.com/" target="_blank">Text Mining</a></li>
+<li><a href="http://textprocessing.org/" target="_blank">Text Processing</a></li>
+<li><a href="http://textsummarization.net/" target="_blank">Text Summarization</a></li>
+<li><a href="http://www.mt-archive.info/" rel="colleague" title="Repository and bibliography of articles, books and papers on topics" target="_blank">机器翻译档案计划</a></li>
+<li><a href="http://www.statmt.org/europarl/" rel="colleague" target="_blank">欧洲议会平行语料库</a></li>
+<li><a href="http://www.nlpir.org/" rel="friend" title="由张华平博士发起，由北京理工大学网络搜索与挖掘实验室运营，旨在推动NLP(自然语言处理)与IR(信息检索)领域的共享与共赢" target="_blank">自然语言处理与信息检索共享平台</a></li>
+
+	</ul>
+</li>
+<li id="linkcat-2" class="widget-container widget_links"><h3 class="widget-title">友情链接</h3>
+	<ul class='xoxo blogroll'>
+<li><a href="http://www.52nlp.com" rel="me" title="52nlp的英文站" target="_blank">52nlpcom</a></li>
+<li><a href="http://speak2me.org/">Speak2Me</a></li>
+<li><a href="http://texttospeechonline.org/">Text To Speech</a></li>
+<li><a href="http://bbs.w3china.org/" rel="friend" title="中国万维网联盟讨论区" target="_blank">W3CHINA讨论区</a></li>
+<li><a href="http://www.ailab.cn/" rel="friend" target="_blank">人工智能网</a></li>
+<li><a href="http://mindhacks.cn/" rel="friend" title="一个很有思想的价值博客!" target="_blank">刘未鹏之Mind Hacks</a></li>
+<li><a href="http://www.cnblogs.com/finallyliuyu/" rel="friend" target="_blank">原地转圈的驴子</a></li>
+<li><a href="http://xunren.thuir.org/" target="_blank">微博寻人（梁博）</a></li>
+<li><a href="http://52opencourse.com" rel="friend" title="我爱公开课，高质量公开课交流平台" target="_blank">我爱公开课</a></li>
+<li><a href="http://www.52cs.org/" target="_blank">我爱计算机</a></li>
+<li><a href="http://www.flickering.cn/" target="_blank">火光摇曳</a></li>
+<li><a href="http://www.ieee.org.cn/" rel="friend" title="计算机科学论坛" target="_blank">计算机科学论坛</a></li>
+<li><a href="http://coursegraph.com/">课程图谱</a></li>
+<li><a href="http://blog.coursegraph.com" rel="friend">课程图谱博客</a></li>
+
+	</ul>
+</li>
+<li id="meta-4" class="widget-container widget_meta"><h3 class="widget-title">功能</h3>			<ul>
+						<li><a href="http://www.52nlp.cn/wp-login.php">登录</a></li>
+			<li><a href="http://www.52nlp.cn/feed">文章<abbr title="Really Simple Syndication">RSS</abbr></a></li>
+			<li><a href="http://www.52nlp.cn/comments/feed">评论<abbr title="Really Simple Syndication">RSS</abbr></a></li>
+			<li><a href="https://cn.wordpress.org/" title="基于WordPress，一个优美、先进的个人信息发布平台。">WordPress.org</a></li>			</ul>
+			</li>			</ul>
+		</div><!-- #secondary .widget-area -->
+
+	</div><!-- #main -->
+
+	<div id="footer" role="contentinfo">
+		<div id="colophon">
+
+
+
+			<div id="site-info">
+				<a href="http://www.52nlp.cn/" title="我爱自然语言处理" rel="home">
+					我爱自然语言处理				</a>
+			</div><!-- #site-info -->
+
+			<div id="site-generator">
+								<a href="http://cn.wordpress.org/"
+						title="优雅的个人发布平台" rel="generator">
+					自豪地采用WordPress。				</a>
+			</div><!-- #site-generator -->
+
+		</div><!-- #colophon -->
+	</div><!-- #footer -->
+
+</div><!-- #wrapper -->
+
+<script>
+/* <![CDATA[ */
+var rcGlobal = {
+	serverUrl		:'http://www.52nlp.cn',
+	infoTemp		:'%REVIEWER% 在 %POST%',
+	loadingText		:'正在加载',
+	noCommentsText	:'没有任何评论',
+	newestText		:'&laquo; 最新的',
+	newerText		:'&laquo; 上一页',
+	olderText		:'下一页 &raquo;',
+	showContent		:'',
+	external		:'',
+	avatarSize		:'0',
+	avatarPosition	:'left',
+	anonymous		:'匿名'
+};
+/* ]]> */
+</script>
+<link rel='stylesheet' id='yarppRelatedCss-css'  href='http://www.52nlp.cn/wp-content/plugins/yet-another-related-posts-plugin/style/related.css?ver=4.7.1' type='text/css' media='all' />
+<script type='text/javascript' src='http://www.52nlp.cn/wp-content/plugins/wp-recentcomments/js/wp-recentcomments.js?ver=2.2.7'></script>
+<script type='text/javascript' src='http://www.52nlp.cn/wp-includes/js/wp-embed.min.js?ver=4.7.1'></script>
+<script>var pltNewTabURLs = ["http:\/\/weibo.com\/52nlp"];(function(){(function(e){var t;t=e.jQueryWP||e.jQuery;return t(function(e){return typeof e.fn.on=="function"?e("body").on("click","a",function(t){var n;n=e(this);if(e.inArray(n.attr("href"),pltNewTabURLs)>-1)return n.attr("target","_blank")}):typeof console!="undefined"&&console!==null?console.log("Page Links To: Some other code has overridden the WordPress copy of jQuery. This is bad. Because of this, Page Links To cannot open links in a new window."):void 0})})(window)}).call(this);</script>	<p align="center"> 本站架设在 <a href="http://www.52nlp.cn/digitalocean%E4%BD%BF%E7%94%A8%E5%B0%8F%E8%AE%B0">DigitalOcean</a> 上, 采用创作共用版权协议, 要求署名、非商业用途和保持一致. 转载本站内容必须也遵循“署名-非商业用途-保持一致”的创作共用协议.</p>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    TeX: { equationNumbers: { autoNumber: "AMS" } },
+    extensions: ["tex2jax.js"],
+    jax: ["input/TeX", "output/HTML-CSS"],
+    tex2jax: {
+    inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+    displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+    processEscapes: true
+  },
+  "HTML-CSS": { availableFonts: ["TeX"] }
+});
+</script><script type="text/javascript" src="http://www.52nlp.cn/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+<!-- Piwik -->
+<script type="text/javascript">
+  var _paq = _paq || [];
+  _paq.push(["trackPageView"]);
+  _paq.push(["enableLinkTracking"]);
+
+  (function() {
+    var u=(("https:" == document.location.protocol) ? "https" : "http") + "://42.96.171.40/piwik/";
+    _paq.push(["setTrackerUrl", u+"piwik.php"]);
+    _paq.push(["setSiteId", "7"]);
+    var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0]; g.type="text/javascript";
+    g.defer=true; g.async=true; g.src=u+"piwik.js"; s.parentNode.insertBefore(g,s);
+  })();
+</script>
+<!-- End Piwik Code -->
+</body>
+</html>
