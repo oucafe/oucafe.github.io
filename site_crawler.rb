@@ -13,7 +13,7 @@ require 'uri'
 config = YAML.load_file("_data/crawler.yml")
 
 def make_absolute( href, root )
-  URI.parse(root).merge(URI.parse(href)).to_s
+  URI.parse(root).merge(URI.parse(URI.escape href)).to_s
 end
 
 config.shuffle.each do |site|
