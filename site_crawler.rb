@@ -31,7 +31,7 @@ config.shuffle.each do |site|
   FileUtils.mkdir_p("./images/#{site_name}/") unless File.exists?("./images/#{site_name}/")
 
   begin
-    page = Nokogiri::HTML(open(list_url))
+    page = Nokogiri::HTML(open(list_url, :open_timeout => 15, :read_timeout => 60))
   rescue Errno::ETIMEDOUT => e
     p e
     next
@@ -53,7 +53,7 @@ config.shuffle.each do |site|
     unless File.exists?(local_fname)
       puts "Fetching #{remote_url}..."
       begin
-        page_content = open(remote_url, site['headers_hash']).read
+        page_content = open(remote_url, {:open_timeout => 15, :read_timeout => 60}.merge(site['headers_hash'])).read
       rescue Exception=>e
         puts "Error: #{e}"
         sleep 5
@@ -79,7 +79,7 @@ config.shuffle.each do |site|
           uri = make_absolute(src, remote_url)
           p uri
           begin
-            File.open("./images/#{site_name}/#{src_digest}.jpg", 'wb') { |f| f.write(open(URI.encode(uri), :read_timeout => 60, :proxy => 'http://42.120.23.151:13128').read) }
+            File.open("./images/#{site_name}/#{src_digest}.jpg", 'wb') { |f| f.write(open(URI.encode(uri), :open_timeout => 15, :read_timeout => 60).read) }
           rescue => e
             puts "#  ---   ./images/#{site_name}/#{src_digest}.jpg"
             p e
@@ -95,7 +95,7 @@ config.shuffle.each do |site|
           uri = make_absolute(data, remote_url)
           p uri
           begin
-            File.open("./images/#{site_name}/#{data_digest}.#{ext}", 'wb') { |f| f.write(open(uri, :read_timeout => 60, :proxy => 'http://42.120.23.151:13128').read) }
+            File.open("./images/#{site_name}/#{data_digest}.#{ext}", 'wb') { |f| f.write(open(uri, :open_timeout => 15, :read_timeout => 60).read) }
           rescue => e
             puts "#  ---   ./images/#{site_name}/#{data_digest}.#{ext}"
             p e
