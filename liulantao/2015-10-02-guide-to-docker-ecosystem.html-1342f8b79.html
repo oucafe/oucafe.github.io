@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="description" content="Idea, Code, Life 思考的点点滴滴">
+<meta name="keywords" content="HTML, CSS, JS, JavaScript, framework, bootstrap, front-end, frontend, web development, showcase, expo">
+<meta name="author" content="Lax" />
+
+<title>
+  
+    Docker 生态圈指南 &#124; Peek Poke
+  
+</title>
+
+<link rel="stylesheet" href="/blog/css/jekyll.css">
+<script src="/blog/js/jekyll.js"></script>
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+
+<!-- RSS Feed -->
+<link rel="alternate" type="application/rss+xml" title="RSS" href="/blog/feed.xml">
+<link rel="alternate" type="application/atom+xml" title="Atom" href="/blog/atom.xml" />
+
+<!-- Favicons -->
+<link rel="icon" href="/blog/favicon.ico">
+<link rel="apple-touch-icon" href="/blog/apple-touch-icon.png">
+
+  </head>
+  <body data-spy="scroll" data-target="#toc">
+    <div class="container">
+  <div class="header clearfix">
+    <nav>
+      <ul class="nav nav-pills pull-right">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Home</a>
+        </li>
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+            
+              <li class="nav-item">
+                <a class="nav-link" href="/about/">关于我</a>
+              </li>
+            
+          
+        
+          
+        
+          
+            
+              <li class="nav-item">
+                <a class="nav-link" href="/documents/">文档</a>
+              </li>
+            
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+            
+              <li class="nav-item">
+                <a class="nav-link" href="/links/">资源链接</a>
+              </li>
+            
+          
+        
+          
+        
+          
+            
+              <li class="nav-item">
+                <a class="nav-link" href="/projects/">项目</a>
+              </li>
+            
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </ul>
+    </nav>
+    <h3 class="text-muted" data-toc-skip><a href="/">Peek Poke</a></h3>
+  </div>
+</div>
+
+
+    <div class="container">
+      <div class="post">
+
+  <header class="post-header">
+    <h1>Docker 生态圈指南</h1>
+    <p class="meta">Oct 2, 2015</p>
+    
+<share>
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style"><span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_tsina" data-proofer-ignore></a>
+<a class="jiathis_button_weixin" data-proofer-ignore></a>
+<a class="jiathis_button_twitter" data-proofer-ignore></a>
+<a class="jiathis_button_linkedin" data-proofer-ignore></a>
+<a class="jiathis_button_instapaper" data-proofer-ignore></a>
+<a class="jiathis_button_fav" data-proofer-ignore></a>
+<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+<a class="jiathis_counter_style" data-proofer-ignore></a>
+</div>
+<script type="text/javascript" >
+var jiathis_config={
+	sm:"tsina,weixin,fav,copy,twitter,linkedin",
+	summary:"",
+	ralateuid:{
+		"tsina":"1653644220"
+	},
+	shortUrl:false,
+	hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+</share>
+
+
+  </header>
+
+  <div class="clearfix"></div>
+
+  <hr class="masthead-hr">
+
+  <div class="row">
+    <div class="col-sm-9">
+      <article class="post-content">
+      <p>【编者的话】如火如荼的容器化运动中，引擎、服务商和工具等方面都涌现了一大批优秀的成果，本文对这些方面做出简要总结。</p>
+
+<p>Docker 是近一两年来发展最快的技术。
+几乎所有的公司都在使用 Docker（或容器）技术。
+有的只用 Docker 来构建开发环境，越来越多的公司在利用容器技术彻底改造已有的架构和部署流程。
+本文对当今的容器生态环境做一个简单介绍。</p>
+
+<!--excerpt-->
+
+<h3 id="section">引擎 / 运行环境</h3>
+
+<p>容器引擎是容器技术的核心。
+引擎用来创建和运行容器。
+谈论 Docker 时，一般指的就是 Docker 引擎。</p>
+
+<ul>
+  <li><strong><a href="https://www.docker.com/docker-engine">Docker Engine</a></strong> 是当前最流行的引擎，也是事实的工业标准。</li>
+  <li><strong><a href="https://coreos.com/rkt/docs/latest/">rkt</a></strong> CoreOS 团队主导的开源引擎，用于替换 Docker 引擎。</li>
+</ul>
+
+<h3 id="docker-">支持 Docker 的云服务商</h3>
+
+<p>在云主机上安装 Docker 运行容器，当然没有任何问题。</p>
+
+<p>不过，云服务商的容器服务，能提供更简洁友好的管理工具。</p>
+
+<ul>
+  <li><strong><a href="https://aws.amazon.com/ecs/details/">Amazon EC2 Container Service</a></strong> 在 EC2 实例上运行容器服务。容器服务免费，只需要支付 EC2 费用。</li>
+  <li><strong><a href="https://cloud.google.com/container-engine/">Google Container Engine</a></strong> 构建于 <a href="http://kubernetes.io/">Kubernetes</a> 之上。Google 提供。</li>
+  <li><strong><a href="https://azure.microsoft.com/en-us/blog/building-the-intelligent-cloud-announcing-new-azure-innovations-to-transform-business/">Azure</a></strong> 机遇 Mesos。Microsoft 提供。</li>
+  <li><strong><a href="https://stackdock.com/">Stackdock</a></strong> 提供 Docker 容器托管。</li>
+  <li><strong><a href="https://www.tutum.co/">Tutum</a></strong> 提供 Docker 容器托管。</li>
+  <li><strong><a href="https://giantswarm.io/">GiantSwarm</a></strong> 是一家云平台，提供容器中运行的微服务架构的定制和托管。</li>
+  <li><strong><a href="https://www.joyent.com/">Joyent Triton</a></strong> 提供 Docker 容器监控和托管。</li>
+  <li><strong><a href="https://jelastic.com/docker/">Jelastic Docker</a></strong></li>
+</ul>
+
+<h3 id="section-1">容器封装工具</h3>
+
+<p>封装工具现在是最热闹的领域。
+管理少数几个容器很简单，但是管理大量容器保持高扩展性却很有挑战。</p>
+
+<p>容器封装工具解决了很多繁琐的问题：</p>
+
+<ul>
+  <li>容器资源分配</li>
+  <li>容错</li>
+  <li>共享存储</li>
+  <li>负载均衡</li>
+  <li>网络拓扑管理</li>
+</ul>
+
+<p>常见的项目有：</p>
+
+<ul>
+  <li><strong><a href="http://kubernetes.io/">Kubernetes</a></strong> Google 开源的工具，在功能特性方面是当前最先进的工具。</li>
+  <li><strong><a href="https://docs.docker.com/swarm/">Docker Swarm</a></strong> 与 Docker 环境紧密集成。</li>
+  <li><strong><a href="http://rancher.com/">Rancher</a></strong> 以 <code class="highlighter-rouge">stack</code>(linked containers) 为单位管理容器。有直观的界面和良好的文档。</li>
+  <li><strong><a href="https://mesosphere.com/">Mesosphere</a></strong> 通用的数据中心管理系统。不是专为 Docker 开发，能轻松管理容器，也可以与其它系统如 Kubernetes 集成。</li>
+  <li><strong><a href="https://coreos.com/using-coreos/clustering/">CoreOS fleet</a></strong> CoreOS 的一部分，负责在 CoreOS 集群中调度容器。</li>
+  <li><strong><a href="https://www.nomadproject.io/">Nomad</a></strong> 通用的应用调度工具，内置支持 Docker。</li>
+  <li><strong><a href="https://github.com/newrelic/centurion">Centurion</a></strong> Newrelic 的内部部署工具。</li>
+  <li><strong><a href="https://clusterhq.com/flocker/introduction/">Flocker</a></strong> 容器间数据的管理工具。</li>
+  <li><strong><a href="http://weave.works/run/">Weave Run</a></strong> 提供服务发现、路由、负载均衡和微服务架构的地址管理。</li>
+</ul>
+
+<h3 id="section-2">操作系统</h3>
+
+<p>几乎任何操作系统都可以用来运行容器。</p>
+
+<p>为运行容器，一般使用最小化的系统镜像。
+很多公司提供包含多种实用工具的镜像。</p>
+
+<ul>
+  <li><strong><a href="https://coreos.com/">CoreOS</a></strong></li>
+  <li><strong><a href="http://www.projectatomic.io/">Project Atomic</a></strong> Docker / Kubernetes / rpm / systemd。</li>
+  <li><strong><a href="http://rancher.com/rancher-os/">Rancher OS</a></strong> 只有 20MB 大小。区分 <code class="highlighter-rouge">系统容器</code> 和 <code class="highlighter-rouge">用户容器</code>。</li>
+  <li><strong><a href="https://blogs.vmware.com/cloudnative/introducing-photon/">Project Photon</a></strong> VMWare 开源的工具。</li>
+</ul>
+
+<h3 id="registry">容器镜像仓库 Registry</h3>
+
+<p>Registry 实现和服务商有：</p>
+
+<ul>
+  <li><strong><a href="https://github.com/docker/distribution">Docker Registry</a></strong> 最流行的开源实现。</li>
+  <li><strong><a href="https://hub.docker.com/">DockerHub</a></strong> 公开的 Registry 服务。</li>
+  <li><strong><a href="https://quay.io/">Quay.io</a></strong> CoreOS 开发的容器仓库。</li>
+  <li><strong><a href="https://coreos.com/products/enterprise-registry/">CoreOS Enterprise Registry</a></strong></li>
+</ul>
+
+<h3 id="section-3">监控</h3>
+
+<p>容器输出的日志，很方便与已有日志收集工具整合。</p>
+
+<p>容器监控一般关注资源使用（CPU，内存）。</p>
+
+<ul>
+  <li><strong><a href="https://github.com/google/cadvisor">cAdvisor</a></strong> Google 开源项目。分析资源使用和性能特性，可以用 InfluxDB 作为数据存储，以便后续分析。</li>
+  <li><strong><a href="https://www.datadoghq.com/blog/monitor-docker-datadog/">Datadog Docker</a></strong> 收集容器的运行信息，发送到 Datadog 分析。</li>
+  <li><strong><a href="http://newrelic.com/docker">NewRelic Docker</a></strong> 发送容器统计信息到 NewRelic 的云服务。</li>
+  <li><strong><a href="https://sysdig.com/let-light-sysdig-adds-container-visibility/">Sysdig</a></strong> 监控容器资源使用情况。</li>
+  <li><strong><a href="http://weave.works/scope/">Weave Scope</a></strong> 自动生成容器关系图，有助于理解、监控和控制应用服务。</li>
+  <li><strong><a href="http://www.appformix.com/">AppFormix</a></strong> 实时基础设施监控，支持 Docker 容器。</li>
+</ul>
+
+<p>原文链接：<a href="http://blog.dennybritz.com/2015/10/01/a-brief-guide-to-the-docker-ecosystem/">英文原文</a> （翻译：<a href="http://blog.liulantao.com">刘兰涛 http://blog.liulantao.com</a> ）</p>
+
+<hr />
+<p>译者介绍：<br />
+<a href="https://github.com/Lax">刘兰涛</a>，长期关注自动化运维、系统与网络、数据分析和 CDN 技术。业余 iOS 开发者。<br />
+现为<a href="http://www.easemob.com/">环信</a>运维负责人。<br />
+如果你对高并发的即时通讯和客服系统的容器化工作感兴趣，欢迎与我联系。</p>
+
+      </article>
+
+      <hr class="masthead-hr">
+      <div class="meta">
+  
+    <a class="basic-alignment left" href="http://blog.liulantao.com/blog/2015/2015-09-30-kubernetes-101-study-notes.html" title="Previous Post: Kubernetes 101 学习笔记" data-instant>&laquo; Kubernetes 101 学习笔记</a>
+  
+  
+    <a class="basic-alignment right pull-right" href="http://blog.liulantao.com/blog/2015/2015-10-04-apache-tcp-backlog.html" title="Next Post: Apache TCP Backlog 分析" data-instant>Apache TCP Backlog 分析 &raquo;</a>
+  
+</div>
+
+
+      <hr class="masthead-hr">
+      
+<comments>
+
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1936498"></script>
+<!-- UY END -->
+
+</comments>
+
+
+    </div>
+
+    <div class="col-sm-3">
+      <nav id="toc" data-spy="affix" data-toggle="toc"></nav>
+    </div>
+  </div>
+
+</div>
+
+    </div>
+
+    <!--
+<a href="https://github.com/Lax/blog/"><img style="position: absolute; top: 0; right: 0; border: 0;" src="/images/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub!" /></a>
+-->
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-1658815-3");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+
+<script type="application/ld+json">
+{ "@context" : "http://schema.org",
+  "@type" : "Person",
+  "name" : "Liu Lantao",
+  "url" : "http://blog.liulantao.com",
+  "sameAs" : [
+    "https://twitter.com/liulantao"
+    "https://www.linkedin.com/in/liulantao",
+    "https://www.google.com/+LiuLantao",
+    "https://www.facebook.com/liu.lantao",
+    "https://instagram.com/liulantao",
+    "http://weibo.com/u/1653644220"
+  ]
+}
+</script>
+
+
+  </body>
+</html><!--
+environment: dotcom
+build_revision: 4a071e293f2d0462c6a58130a77cf5309b263ddc
+url: http://blog.liulantao.com/blog
+jekyll : 3.3.1
+jekyll-sass-converter : 1.3.0
+kramdown : 1.11.1
+liquid : 3.0.6
+rouge : 1.11.1
+github-pages-health-check : 1.3.0
+jekyll-redirect-from : 0.11.0
+jekyll-sitemap : 0.12.0
+jekyll-feed : 0.8.0
+jekyll-gist : 1.4.0
+jekyll-paginate : 1.1.0
+jekyll-coffeescript : 1.0.1
+jekyll-seo-tag : 2.1.0
+jekyll-github-metadata : 2.2.0
+jekyll-avatar : 0.4.2
+jemoji : 0.7.0
+jekyll-mentions : 1.2.0
+jekyll-relative-links : 0.2.1
+jekyll-optional-front-matter : 0.1.2
+jekyll-readme-index : 0.0.3
+jekyll-default-layout : 0.1.4
+jekyll-titles-from-headings : 0.1.3
+listen : 3.0.6
+activesupport : 4.2.7
+minima : 2.0.0
+jekyll-swiss : 0.4.0
+jekyll-theme-primer : 0.1.5
+jekyll-theme-architect : 0.0.3
+jekyll-theme-cayman : 0.0.3
+jekyll-theme-dinky : 0.0.3
+jekyll-theme-hacker : 0.0.3
+jekyll-theme-leap-day : 0.0.3
+jekyll-theme-merlot : 0.0.3
+jekyll-theme-midnight : 0.0.3
+jekyll-theme-minimal : 0.0.3
+jekyll-theme-modernist : 0.0.3
+jekyll-theme-slate : 0.0.3
+jekyll-theme-tactile : 0.0.3
+jekyll-theme-time-machine : 0.0.3
+ruby : 2.3.3
+github-pages : 112
+html-pipeline : 2.4.2
+sass : 3.4.23
+safe_yaml : 1.0.4
+-->

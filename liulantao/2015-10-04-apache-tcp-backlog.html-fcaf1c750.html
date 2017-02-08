@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="description" content="Idea, Code, Life 思考的点点滴滴">
+<meta name="keywords" content="HTML, CSS, JS, JavaScript, framework, bootstrap, front-end, frontend, web development, showcase, expo">
+<meta name="author" content="Lax" />
+
+<title>
+  
+    Apache TCP Backlog 分析 &#124; Peek Poke
+  
+</title>
+
+<link rel="stylesheet" href="/blog/css/jekyll.css">
+<script src="/blog/js/jekyll.js"></script>
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+
+<!-- RSS Feed -->
+<link rel="alternate" type="application/rss+xml" title="RSS" href="/blog/feed.xml">
+<link rel="alternate" type="application/atom+xml" title="Atom" href="/blog/atom.xml" />
+
+<!-- Favicons -->
+<link rel="icon" href="/blog/favicon.ico">
+<link rel="apple-touch-icon" href="/blog/apple-touch-icon.png">
+
+  </head>
+  <body data-spy="scroll" data-target="#toc">
+    <div class="container">
+  <div class="header clearfix">
+    <nav>
+      <ul class="nav nav-pills pull-right">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Home</a>
+        </li>
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+            
+              <li class="nav-item">
+                <a class="nav-link" href="/about/">关于我</a>
+              </li>
+            
+          
+        
+          
+        
+          
+            
+              <li class="nav-item">
+                <a class="nav-link" href="/documents/">文档</a>
+              </li>
+            
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+            
+              <li class="nav-item">
+                <a class="nav-link" href="/links/">资源链接</a>
+              </li>
+            
+          
+        
+          
+        
+          
+            
+              <li class="nav-item">
+                <a class="nav-link" href="/projects/">项目</a>
+              </li>
+            
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </ul>
+    </nav>
+    <h3 class="text-muted" data-toc-skip><a href="/">Peek Poke</a></h3>
+  </div>
+</div>
+
+
+    <div class="container">
+      <div class="post">
+
+  <header class="post-header">
+    <h1>Apache TCP Backlog 分析</h1>
+    <p class="meta">Oct 4, 2015</p>
+    
+<share>
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style"><span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_tsina" data-proofer-ignore></a>
+<a class="jiathis_button_weixin" data-proofer-ignore></a>
+<a class="jiathis_button_twitter" data-proofer-ignore></a>
+<a class="jiathis_button_linkedin" data-proofer-ignore></a>
+<a class="jiathis_button_instapaper" data-proofer-ignore></a>
+<a class="jiathis_button_fav" data-proofer-ignore></a>
+<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+<a class="jiathis_counter_style" data-proofer-ignore></a>
+</div>
+<script type="text/javascript" >
+var jiathis_config={
+	sm:"tsina,weixin,fav,copy,twitter,linkedin",
+	summary:"",
+	ralateuid:{
+		"tsina":"1653644220"
+	},
+	shortUrl:false,
+	hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+</share>
+
+
+  </header>
+
+  <div class="clearfix"></div>
+
+  <hr class="masthead-hr">
+
+  <div class="row">
+    <div class="col-sm-9">
+      <article class="post-content">
+      <p>本文来自 Ryan Frantz 的一篇博文。
+文章介绍了针对 Apache 的 TCP Backlog 做调优的过程中遇到的问题，和最终的惊喜发现。</p>
+
+<!--excerpt-->
+
+<h2 id="apache-tcp-backlog">Apache TCP Backlog</h2>
+
+<h3 id="tcp-listen-backlog">TCP Listen Backlog</h3>
+
+<p>创建 TCP socket 时可以定义接收 backlog 的值。
+用于确定等待被进程 <code class="highlighter-rouge">accept()</code> 的 fully acknowledged(SYNC-&gt;SYNC/ACK-&gt;ACK) 最大连接数。
+请求处理足够快时，backlog 值应该为0，或者很低。</p>
+
+<h4 id="apache-listenbacklog">Apache ListenBacklog</h4>
+
+<p>Apache 中默认值为 511，使用 <code class="highlighter-rouge">ListenBacklog</code> 语法调整。
+Linux kernel 则有另外的处理：
+如果 <code class="highlighter-rouge">ListenBacklog</code> 值超过 sysctl 设置的 <code class="highlighter-rouge">net.core.somaxconn</code>（默认128），内核自动将它降到 sysctl 的值。</p>
+
+<h3 id="tuning-apache-and-ss">Tuning Apache and <strong>ss</strong></h3>
+
+<p>作者在项目中维护仅有的几台 Apache 服务（~3000请求每秒，2或4台服务器）。
+服务器比较少，需要优化 Apache 和内核。</p>
+
+<p>开始调整 Apache 配置，使用 siege 压测性能。
+基于 TCP listen backlog 知识，调整了 <code class="highlighter-rouge">net.core.somaxconn</code>，以及 Apache 服务器的 <em>Workers</em> 参数。
+期望的是 <code class="highlighter-rouge">ss</code> 能显示测试中的 TCP listen backlog，当时没达到效果。
+之后的工作主要是为了显示单个 socket 的 listen backlog。</p>
+
+<p>此外，通过测试找到 <code class="highlighter-rouge">net.core.somaxconn</code> 和 Apache 配置的平衡点，请求全被处理，而且连接没有被丢弃。
+至少，使用 <code class="highlighter-rouge">netstat</code> 可以监控系统全局的 <code class="highlighter-rouge">ListenDrops</code> 和 <code class="highlighter-rouge">ListenOverflow</code>。
+通过调整实现了用少量服务器提供大流量的目标。</p>
+
+<h3 id="trawling-the-kernel-and-ss-source">Trawling the Kernel and <strong>ss</strong> Source</h3>
+
+<p>作者开始分析内核源码，从中发现了蛛丝马迹。
+首先在 <code class="highlighter-rouge">include/net/sock.h</code> 中直接发现一行说明：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>*        @sk_ack_backlog: current listen backlog
+</code></pre>
+</div>
+
+<p><code class="highlighter-rouge">net/ipv4/tcp.c</code> 里有个方法 <code class="highlighter-rouge">tcp_get_info()</code>，将 TCP 状态信息展示到名为 <code class="highlighter-rouge">tcp_info</code> 的结构体。
+如果 socket 处于 <code class="highlighter-rouge">LISTEN</code> 状态，它会将 listen backlog 的值映射为叫做 <code class="highlighter-rouge">tcpi_unacked</code> 的属性：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>    if (sk-&gt;sk_state == TCP_LISTEN) {
+        info-&gt;tcpi_unacked = sk-&gt;sk_ack_backlog;
+</code></pre>
+</div>
+
+<p>抱着 <code class="highlighter-rouge">ss</code> 能派上用场的希望，作者查看了它的源码（来自 iproute2-3.10），并发现确实能行。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>    if (info-&gt;tcpi_unacked)
+        printf(" unacked:%u", info-&gt;tcpi_unacked);
+</code></pre>
+</div>
+
+<p>原来是 <strong><em>backlog</em></strong> 在这里使用了另外的名字(unacked)。</p>
+
+<h4 id="displaying-backlogged-connections-with-ss">Displaying Backlogged Connections with <strong>ss</strong></h4>
+
+<p>既已知 backlog 里的连接被定义为 <strong><em>unacked</em></strong>，则可以使用 <code class="highlighter-rouge">ss</code> 查看 HTTP socket 是否在 backlog：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>[root@apache01:~] $ ss -lti '( sport = :http )'
+State      Recv-Q Send-Q                                                       Local Address:Port                                                           Peer Address:Port
+LISTEN     223    511                                                                      *:http                                                                      *:*
+          rto:1000 mss:536 cwnd:10 unacked:223
+</code></pre>
+</div>
+
+<p>可看出有 223 个 socket 处于 unacked(backing up)。
+获得以上输出时正在用 <code class="highlighter-rouge">siege</code> 压测 Apache。</p>
+
+<h3 id="finally-muthan-graphs">Finally, Mutha$%^&amp;@n’ Graphs!</h3>
+
+<p><img src="/images/2015/apache_tcp_backlog.png" alt="Apache Listen backlog graph" /></p>
+
+<p>减小 Apache 的可用 worker 数，动态降低 <code class="highlighter-rouge">net.core.somaxconn</code> 的值，然后用 <code class="highlighter-rouge">siege</code> 压测，得到了上图的曲线。
+可以看到一个个连接在等待从队列中取出，交由 Apache 处理，很有趣。</p>
+
+<p>**
+一般来说，这个应该保持为零，或者非常非常低的值。
+如果升高并且保持不下，则说明了 Apache 不足以处理接收到的请求量级。
+**</p>
+
+<h2 id="references">References:</h2>
+
+<ul>
+  <li>Original: <a href="http://ryanfrantz.com/posts/apache-tcp-backlog/?url_type=39&amp;object_type=webpage&amp;pos=1">Apache TCP Backlog</a></li>
+  <li><a href="https://git.kernel.org/cgit/linux/kernel/git/stable/linux-stable.git/tree/include/net/sock.h#n265">https://git.kernel.org/cgit/linux/kernel/git/stable/linux-stable.git/tree/include/net/sock.h#n265</a></li>
+  <li><a href="https://git.kernel.org/cgit/linux/kernel/git/stable/linux-stable.git/tree/net/ipv4/tcp.c#n2673">https://git.kernel.org/cgit/linux/kernel/git/stable/linux-stable.git/tree/net/ipv4/tcp.c#n2673</a></li>
+  <li><a href="http://veithen.github.io/2014/01/01/how-tcp-backlog-works-in-linux.html">http://veithen.github.io/2014/01/01/how-tcp-backlog-works-in-linux.html</a></li>
+</ul>
+
+      </article>
+
+      <hr class="masthead-hr">
+      <div class="meta">
+  
+    <a class="basic-alignment left" href="http://blog.liulantao.com/blog/2015/2015-10-02-guide-to-docker-ecosystem.html" title="Previous Post: Docker 生态圈指南" data-instant>&laquo; Docker 生态圈指南</a>
+  
+  
+    <a class="basic-alignment right pull-right" href="http://blog.liulantao.com/blog/2015/2015-10-05-kubernetes-201-study-notes.html" title="Next Post: Kubernetes 201 学习笔记" data-instant>Kubernetes 201 学习笔记 &raquo;</a>
+  
+</div>
+
+
+      <hr class="masthead-hr">
+      
+<comments>
+
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1936498"></script>
+<!-- UY END -->
+
+</comments>
+
+
+    </div>
+
+    <div class="col-sm-3">
+      <nav id="toc" data-spy="affix" data-toggle="toc"></nav>
+    </div>
+  </div>
+
+</div>
+
+    </div>
+
+    <!--
+<a href="https://github.com/Lax/blog/"><img style="position: absolute; top: 0; right: 0; border: 0;" src="/images/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub!" /></a>
+-->
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-1658815-3");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+
+<script type="application/ld+json">
+{ "@context" : "http://schema.org",
+  "@type" : "Person",
+  "name" : "Liu Lantao",
+  "url" : "http://blog.liulantao.com",
+  "sameAs" : [
+    "https://twitter.com/liulantao"
+    "https://www.linkedin.com/in/liulantao",
+    "https://www.google.com/+LiuLantao",
+    "https://www.facebook.com/liu.lantao",
+    "https://instagram.com/liulantao",
+    "http://weibo.com/u/1653644220"
+  ]
+}
+</script>
+
+
+  </body>
+</html><!--
+environment: dotcom
+build_revision: 4a071e293f2d0462c6a58130a77cf5309b263ddc
+url: http://blog.liulantao.com/blog
+jekyll : 3.3.1
+jekyll-sass-converter : 1.3.0
+kramdown : 1.11.1
+liquid : 3.0.6
+rouge : 1.11.1
+github-pages-health-check : 1.3.0
+jekyll-redirect-from : 0.11.0
+jekyll-sitemap : 0.12.0
+jekyll-feed : 0.8.0
+jekyll-gist : 1.4.0
+jekyll-paginate : 1.1.0
+jekyll-coffeescript : 1.0.1
+jekyll-seo-tag : 2.1.0
+jekyll-github-metadata : 2.2.0
+jekyll-avatar : 0.4.2
+jemoji : 0.7.0
+jekyll-mentions : 1.2.0
+jekyll-relative-links : 0.2.1
+jekyll-optional-front-matter : 0.1.2
+jekyll-readme-index : 0.0.3
+jekyll-default-layout : 0.1.4
+jekyll-titles-from-headings : 0.1.3
+listen : 3.0.6
+activesupport : 4.2.7
+minima : 2.0.0
+jekyll-swiss : 0.4.0
+jekyll-theme-primer : 0.1.5
+jekyll-theme-architect : 0.0.3
+jekyll-theme-cayman : 0.0.3
+jekyll-theme-dinky : 0.0.3
+jekyll-theme-hacker : 0.0.3
+jekyll-theme-leap-day : 0.0.3
+jekyll-theme-merlot : 0.0.3
+jekyll-theme-midnight : 0.0.3
+jekyll-theme-minimal : 0.0.3
+jekyll-theme-modernist : 0.0.3
+jekyll-theme-slate : 0.0.3
+jekyll-theme-tactile : 0.0.3
+jekyll-theme-time-machine : 0.0.3
+ruby : 2.3.3
+github-pages : 112
+html-pipeline : 2.4.2
+sass : 3.4.23
+safe_yaml : 1.0.4
+-->

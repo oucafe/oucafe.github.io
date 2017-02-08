@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Mesos 实战-2：Mesos 框架初探 &middot; Peek Poke</title>
+<meta name="description" content="Mesos 提供了集群化的资源管理功能。 为了将实际业务与 Mesos 结合起来，就需要用到 Mesos Framework（Mesos 框架），即基于 Mesos 的应用。 基于官方的 Mesos 框架示例代码，我们来分析看框架的基本结构，并了解社区已有框架的现状。">
+<link type="application/atom+xml" rel="alternate" href="http://blog.liulantao.com/feed.xml" title="Peek Poke" />
+<link type="application/rss+xml" rel="alternate" href="http://blog.liulantao.com/rss.xml" title="Peek Poke" />
+
+<!-- Begin Jekyll SEO tag v2.1.0 -->
+<meta property="og:title" content="Mesos 实战-2：Mesos 框架初探" />
+<meta name="description" content="Mesos 提供了集群化的资源管理功能。 为了将实际业务与 Mesos 结合起来，就需要用到 Mesos Framework（Mesos 框架），即基于 Mesos 的应用。 基于官方的 Mesos 框架示例代码，我们来分析看框架的基本结构，并了解社区已有框架的现状。" />
+<meta property="og:description" content="Mesos 提供了集群化的资源管理功能。 为了将实际业务与 Mesos 结合起来，就需要用到 Mesos Framework（Mesos 框架），即基于 Mesos 的应用。 基于官方的 Mesos 框架示例代码，我们来分析看框架的基本结构，并了解社区已有框架的现状。" />
+<link rel="canonical" href="http://blog.liulantao.com/mesos-frameworks.html" />
+<meta property="og:url" content="http://blog.liulantao.com/mesos-frameworks.html" />
+<meta property="og:site_name" content="Peek Poke" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2016-10-12T00:00:00+08:00" />
+<meta name="google-site-verification" content="nbadZjFSg9HTG-wGudhj-qFFFEAxOSpvhSkiQxYrsU4" />
+<script type="application/ld+json">
+{"@context": "http://schema.org",
+"@type": "BlogPosting",
+"headline": "Mesos 实战-2：Mesos 框架初探",
+"datePublished": "2016-10-12T00:00:00+08:00",
+"description": "Mesos 提供了集群化的资源管理功能。 为了将实际业务与 Mesos 结合起来，就需要用到 Mesos Framework（Mesos 框架），即基于 Mesos 的应用。 基于官方的 Mesos 框架示例代码，我们来分析看框架的基本结构，并了解社区已有框架的现状。",
+"url": "http://blog.liulantao.com/mesos-frameworks.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="apple-touch-icon" type="image/x-icon" href="/apple-touch-icon.png">
+
+<link rel="stylesheet" media="all" href="/assets/css/common.css" data-turbolinks-track="reload" />
+<link rel="stylesheet" href="/assets/main.css">
+
+<script src="/assets/js/common.js" data-turbolinks-track="reload"></script>
+<script src="/assets/main.js" data-turbolinks-track="reload"></script>
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-1658815-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+  
+
+
+</head>
+
+
+  <body data-spy="scroll" data-target="#toc">
+    <nav class='navbar navbar-default navbar-fixed-top' id='top'>
+  <div class='container'>
+    <div class='navbar-header'>
+      <button aria-expanded='false' class='navbar-toggle collapsed' data-target='#navbar-header-collapse-menu' data-toggle='collapse' type='button'>
+        <span class='sr-only'>Toggle navigation</span>
+        <span class='icon-bar'></span>
+        <span class='icon-bar'></span>
+        <span class='icon-bar'></span>
+      </button>
+      <a class='navbar-brand back-to-top' href='http://blog.liulantao.com/'>
+        <img alt='☕️Peek Poke' data-proofer-ignore>
+      </a>
+    </div>
+    <div class='collapse navbar-collapse' id='navbar-header-collapse-menu'>
+      
+<form class="navbar-form navbar-right hidden-xs hidden-sm" action="https://www.google.com/search" target="_blank">
+  <div class="form-group">
+    <input type="text" class="form-control" placeholder="Search for..." name="q" id="q" value="Mesos">
+    <input type="hidden" name="as_sitesearch" value="liulantao.com">
+  </div>
+  <button type="submit" class="btn btn-default">Search</button>
+</form>
+
+      
+
+<ul class='nav navbar-nav nav-pills pull-right'>
+  <li role='presentation'><a href="http://blog.liulantao.com/">Home</a></li>
+
+  <li role='presentation'><a href="/about/">🍵关于我</a></li>
+
+  <li role='presentation'><a href="/documents/">🍹文档</a></li>
+
+  <li role='presentation'><a href="/links/">🍸资源链接</a></li>
+
+  <li role='presentation'><a href="/subscribe/">🍺订阅</a></li>
+
+</ul>
+
+    </div>
+  </div>
+</nav>
+
+
+
+    <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <div class="jumbotron">
+    <div class="container">
+      <header class="post-header well">
+        <h1 class="post-title" itemprop="name headline" data-toc-skip>Mesos 实战-2：Mesos 框架初探<small></small></h1>
+
+        <blockquote></blockquote>
+
+
+        <p>Mesos</p>
+
+
+        <p>Post on <span class="label label-default">Technology</span></p>
+
+        <small class="post-meta"><time datetime="2016-10-12T00:00:00+08:00" itemprop="datePublished">Oct 12, 2016</time></small>
+      </header>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="row">
+
+      <div class="col-sm-9">
+        <div class="post-content" itemprop="articleBody">
+          <p>Mesos 提供了集群化的资源管理功能。
+为了将实际业务与 Mesos 结合起来，就需要用到 Mesos Framework（Mesos 框架），即基于 Mesos 的应用。</p>
+
+<p>基于官方的 Mesos 框架示例代码，我们来分析看框架的基本结构，并了解社区已有框架的现状。</p>
+
+<!--excerpt-->
+
+<p>随 <a href="https://github.com/apache/mesos/releases">Mesos 源码</a>发布的 Demo 有 <a href="https://github.com/apache/mesos/tree/1.0.x/src/examples">C++</a>/<a href="https://github.com/apache/mesos/tree/1.0.x/src/examples/java">Java</a>/<a href="https://github.com/apache/mesos/tree/1.0.x/src/examples/python">Python</a> 三种实现。
+我们选取其中的 Python 和 Java 代码来学习框架的基本代码结构。</p>
+
+<p>今天的学习内容有：</p>
+
+<ul>
+  <li>Mesos Framework 基础知识</li>
+  <li>Mesos Demo 源码分析（Java和Python）</li>
+  <li>Mesos Frameworks 现状概览</li>
+</ul>
+
+<h3 id="mesos-framework-">Mesos Framework 基础知识</h3>
+
+<p><a href="http://mesos.apache.org/documentation/latest/app-framework-development-guide/">Framework Development Guide</a> 是了解基础知识最直接的文档。</p>
+
+<h4 id="section">基本要求</h4>
+
+<p>Mesos 框架主要实现 scheduler 的接口，其中定义 executor 的细节。</p>
+
+<p>每一个 Mesos Framework 的实现都需要满足以下要求：</p>
+
+<ul>
+  <li>实现一个调度器类，需要继承 Scheduler 类</li>
+  <li>创建一个 SchedulerDriver 实例，用于框架和 Mesos 之间通讯，并执行 <code class="highlighter-rouge">SchedulerDriver.run()</code></li>
+</ul>
+
+<h4 id="framework-">Framework 初始化流程</h4>
+
+<p>框架初始化时需要做一系列准备工作。
+Framework 初始化的流程可以用下图表示：</p>
+
+<p><img src="/images/2016/mesos-framework-init-process.jpg" alt="Mesos Framework Init" /></p>
+
+<p>开发框架时，只需按照以上顺序实例化相应的类，并在最后一步调用 <code class="highlighter-rouge">SchedulerDriver.run</code>。</p>
+
+<h5 id="scheduler-api">Scheduler API</h5>
+
+<p>调度器的实现部分，是框架的主要开发工作。</p>
+
+<p>框架的调度器需要实现 Scheduler 预先定义的的回调接口。
+接口定义在 <a href="https://github.com/apache/mesos/blob/1.0.x/include/mesos/scheduler.hpp">include/mesos/scheduler.hpp</a> 这个文件中。</p>
+
+<p>以下为每个接口被调用时期的简要说明：</p>
+
+<ul>
+  <li>registered: 调度器在 mesos master 上注册成功时</li>
+  <li>reregistered: 发生 mesos master 重新选举后，将调度器注册到新的 mesos master</li>
+  <li>disconnected: 调度器从 mesos master 断开时，如 master 进程挂掉而新的 master 尚未选出时</li>
+  <li>resourceOffers: master 分配资源给框架时。注意：
+    <ul>
+      <li>每次分配只包含一个 slave 节点的资源</li>
+      <li>在框架使用资源之前，不会再被提供同一资源。除非框架拒绝使用这些资源，或者资源被取消</li>
+      <li>资源可能被同时分配给多个框架，因此只有第一个使用资源的框架能成功，其它的任务将以 TASK_LOST 状态失败</li>
+    </ul>
+  </li>
+  <li>offerRescinded: 资源不可用／被取消时</li>
+  <li>statusUpdate: 计算任务的状态发生变化</li>
+  <li>frameworkMessage: executor 发送了消息</li>
+  <li>slaveLost: slave 变为不可用</li>
+  <li>executorLost: executor 退出或被终止</li>
+  <li>error: scheduler 或者 scheduler driver 发生不可恢复错误后</li>
+</ul>
+
+<h5 id="schedulerdriver-api">SchedulerDriver API</h5>
+
+<p>SchedulerDriver 的接口一般不需要自行实现。
+可以直接使用 MesosSchedulerDriver。</p>
+
+<h3 id="mesos-demo-">Mesos Demo 源码</h3>
+
+<h4 id="javascheduler-">Java：Scheduler 类里重要的接口实现</h4>
+
+<p>以下选几个重要的接口来研究。</p>
+
+<h5 id="resourceoffers">resourceOffers</h5>
+
+<p>这个回调函数实现的功能分为三个阶段，分别是：</p>
+
+<ul>
+  <li>第一阶段，先计算这一批获得的资源量。
+    如果资源足够启动至少一个 task，则执行下一步。</li>
+  <li>第二阶段，启动新的 task，从资源池分配资源给新建的 task。重复创建 task 直至资源不足。</li>
+  <li>第三阶段，将所创建的进程信息，和使用的资源，通过 driver 标记为已用 <code class="highlighter-rouge">driver.acceptOffers(offerIds, operations, filters);</code>。</li>
+</ul>
+
+<p>这个过程的示意图如下：</p>
+
+<p><img src="/images/2016/mesos-framework-scheduler-workflow.jpg" alt="Mesos Framework Scheduler Workflow" /></p>
+
+<p>定位到<a href="https://github.com/apache/mesos/blob/1.0.x/src/examples/java/TestFramework.java#L61">对应代码</a></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>    public void resourceOffers(SchedulerDriver driver,
+                               List&lt;Offer&gt; offers)
+</code></pre>
+</div>
+
+<p>注意这里面的创建 task 时的关键代码，展示了如何创建 task。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>          TaskID taskId = TaskID.newBuilder()
+            .setValue(Integer.toString(launchedTasks++)).build();
+
+          TaskInfo task = TaskInfo.newBuilder()
+            .setName("task " + taskId.getValue())
+            .setTaskId(taskId)
+            .setSlaveId(offer.getSlaveId())
+            .addResources(Resource.newBuilder()
+                          .setName("cpus")
+                          .setType(Value.Type.SCALAR)
+                          .setScalar(Value.Scalar.newBuilder().setValue(CPUS_PER_TASK)))
+            .addResources(Resource.newBuilder()
+                          .setName("mem")
+                          .setType(Value.Type.SCALAR)
+                          .setScalar(Value.Scalar.newBuilder().setValue(MEM_PER_TASK)))
+            .setExecutor(ExecutorInfo.newBuilder(executor))
+            .build();
+
+          launch.addTaskInfos(TaskInfo.newBuilder(task));
+</code></pre>
+</div>
+
+<h5 id="statusupdate">statusUpdate</h5>
+
+<p>定位到<a href="https://github.com/apache/mesos/blob/1.0.x/src/examples/java/TestFramework.java#L138">对应代码</a></p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>    public void statusUpdate(SchedulerDriver driver, TaskStatus status)
+</code></pre>
+</div>
+
+<p>当状态为 <code class="highlighter-rouge">TASK_FINISHED</code> 时，统计完成的 task 数量，决定是否结束框架的运行。
+当状态为 <code class="highlighter-rouge">TASK_LOST</code>/<code class="highlighter-rouge">TASK_KILLED</code>/<code class="highlighter-rouge">TASK_FAILED</code> 时，则做了不同的处理，使用<code class="highlighter-rouge">driver.abort</code>直接终止了框架的运行。</p>
+
+<h4 id="javaframework-">Java：Framework 初始化的过程</h4>
+
+<p>前面提到了框架初始化的过程。
+下面主要看一下 driver 初始化的代码。</p>
+
+<h5 id="driver-">driver 初始化</h5>
+
+<p>关注测试类的主函数中，MesosSchedulerDriver 的用法。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>      driver = new MesosSchedulerDriver(
+          scheduler,
+          frameworkBuilder.build(),
+          args[0],
+          implicitAcknowledgements,
+          credentialBuilder.build());
+    }
+</code></pre>
+</div>
+
+<p><code class="highlighter-rouge">driver</code> 初始化之后，执行 <code class="highlighter-rouge">driver.run</code> 就可以更新到框架执行的状态。</p>
+
+<h4 id="python-demo">Python Demo</h4>
+
+<p>Python Demo 的实现的功能与 Java 基本一致。
+从代码上可以看到 Python 发挥了语法的优势，节省了比较多代码量。
+多语言的接口实现一致性也是项目采用 <code class="highlighter-rouge">Protocol Buffers</code>(<code class="highlighter-rouge">protobuf</code>) 之后的一大优势。</p>
+
+<p>Python 代码不具体列出了，学习是重点关注自定义 Schedule 类的实现和框架初始化过程。</p>
+
+<h4 id="demo-">Demo 学习总结</h4>
+
+<p>通过观察现有的 Demo 实现，我们学习了一个简单 Framework 的基本代码结果，有利于以后学习更多的框架实现。</p>
+
+<p>另外，使用 Mesos Command Executor 可以很容易创建基于命令行的任务，由于非常方便，所以应用非常广泛。</p>
+
+<h3 id="mesos-framework--1">Mesos Framework 现状</h3>
+
+<p>Mesos 官网的 <a href="http://mesos.apache.org/documentation/latest/frameworks/">Software Projects Built on Mesos</a> 页面列出了基于 Mesos 的一些流行框架。
+这些框架的种类涵盖了大数据平台、批处理系统、数据存储、长期运行的服务和运维平台。
+我们可以方便的使用这些框架集成到自有的系统中。</p>
+
+<p>后面的学习过程中，我们还会比较多的接触一些常用框架，比如 Marathon、Chronos、Vamp 等。</p>
+
+<p>由于 Mesos 框架使用方便，资源调度很容易，对运维人力有显著的解放左右，也让组织可以更顺畅的建设构建发布流程。</p>
+
+<h3 id="section-1">总结</h3>
+
+<p>本文主要对 Mesos Framework 的官方 Demo 进行了简要分析。
+通过代码的学习，帮助我们了解 Mesos Frameworkd 基本结构，既有益于以后开发自己的框架，也有助于使用社区的其它框架时方便理解设计的原理。</p>
+
+        </div>
+
+        <hr class="masthead-hr">
+        <div class="meta">
+  
+    <a class="basic-alignment left" href="/mesos.html" title="Previous Post: Mesos 实战-1：Mesos 起步" data-instant>&laquo; Mesos 实战-1：Mesos 起步</a>
+  
+  
+    <a class="basic-alignment right pull-right" href="/marathon-operation-platform.html" title="Next Post: Mesos 实战-3：Marathon 作为运维管理平台" data-instant>Mesos 实战-3：Marathon 作为运维管理平台 &raquo;</a>
+  
+</div>
+
+
+        <br />
+
+        <hr class="masthead-hr">
+        
+<share>
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style"><span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_tsina" data-proofer-ignore></a>
+<a class="jiathis_button_weixin" data-proofer-ignore></a>
+<a class="jiathis_button_twitter" data-proofer-ignore></a>
+<a class="jiathis_button_linkedin" data-proofer-ignore></a>
+<a class="jiathis_button_instapaper" data-proofer-ignore></a>
+<a class="jiathis_button_fav" data-proofer-ignore></a>
+<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+<a class="jiathis_counter_style" data-proofer-ignore></a>
+</div>
+<script type="text/javascript" >
+var jiathis_config={
+	sm:"tsina,weixin,fav,copy,twitter,linkedin",
+	summary:"",
+	ralateuid:{
+		"tsina":"1653644220"
+	},
+	shortUrl:false,
+	hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+</share>
+
+
+
+        <br />
+
+        <hr class="masthead-hr">
+        
+<comments>
+  
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1936498"></script>
+<!-- UY END -->
+
+
+
+  
+  <hr class="masthead-hr">
+    
+  
+
+  <div id="disqus_thread"></div>
+  <script>
+    var disqus_config = function () {
+      this.page.url = 'http://blog.liulantao.com/mesos-frameworks.html';
+      this.page.identifier = 'http://blog.liulantao.com/mesos-frameworks.html';
+    };
+
+    (function() {
+      var d = document, s = d.createElement('script');
+
+      s.src = 'https://peekpoke.disqus.com/embed.js';
+
+      s.setAttribute('data-timestamp', +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+  
+</comments>
+
+
+      </div>
+
+      <div class="col-sm-3">
+        
+<a target="_blank" href="http://list.qq.com/cgi-bin/qf_invite?id=ea22910634332acb43893da712be6dcd21fa33ae808043f5">订阅</a>
+
+
+        <nav id="toc" data-spy="affix" data-toggle="toc"></nav>
+      </div>
+
+    </div>
+  </div>
+
+</article>
+
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Peek Poke</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>
+
+            Peek Poke
+
+          </li>
+
+
+          <li><a href="https://paypal.me/liulantao/30cny">请我喝咖啡</a></li>
+
+
+  
+    
+          <li><a href="http://iftti.com">IT技术干货</a></li>
+    
+          <li><a href="http://news.academical.io">Academical News</a></li>
+    
+          <li><a href="http://relax.org.cn">Relax</a></li>
+    
+          <li><a href="http://1000bit.com">1000bit</a></li>
+    
+  
+
+        </ul>
+        <p>Idea, Code, Life 思考的点点滴滴。 一个关注iOS开发的Ruby开发者，主要工作内容却是系统运维。 喜欢用数据和专业的眼光来解释现象，坚持用事实说话的践行者。
+</p>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/Lax"><span class="icon icon--github"><svg viewBox="0 0 16 16" width="16px" height="16px"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">Lax</span></a>
+
+          </li>
+          
+
+          
+          <li>
+            <a href="https://twitter.com/liulantao"><span class="icon icon--twitter"><svg viewBox="0 0 16 16" width="16px" height="16px"><path fill="#828282" d="M15.969,3.058c-0.586,0.26-1.217,0.436-1.878,0.515c0.675-0.405,1.194-1.045,1.438-1.809c-0.632,0.375-1.332,0.647-2.076,0.793c-0.596-0.636-1.446-1.033-2.387-1.033c-1.806,0-3.27,1.464-3.27,3.27 c0,0.256,0.029,0.506,0.085,0.745C5.163,5.404,2.753,4.102,1.14,2.124C0.859,2.607,0.698,3.168,0.698,3.767 c0,1.134,0.577,2.135,1.455,2.722C1.616,6.472,1.112,6.325,0.671,6.08c0,0.014,0,0.027,0,0.041c0,1.584,1.127,2.906,2.623,3.206 C3.02,9.402,2.731,9.442,2.433,9.442c-0.211,0-0.416-0.021-0.615-0.059c0.416,1.299,1.624,2.245,3.055,2.271 c-1.119,0.877-2.529,1.4-4.061,1.4c-0.264,0-0.524-0.015-0.78-0.046c1.447,0.928,3.166,1.469,5.013,1.469 c6.015,0,9.304-4.983,9.304-9.304c0-0.142-0.003-0.283-0.009-0.423C14.976,4.29,15.531,3.714,15.969,3.058z"/></svg>
+</span><span class="username">liulantao</span></a>
+
+          </li>
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        
+<!--以下是QQ邮件列表订阅嵌入代码--><script >var nId = "d0bc38ab08a858d5dbb912ba6a4b0f74427a3df5f892f16b",nWidth="auto",sColor="light",sText="留下email，订阅兰涛的非常思维话题" ;</script><script src="http://list.qq.com/zh_CN/htmledition/js/qf/page/qfcode.js" charset="gb18030"></script>
+
+
+      </div>
+    </div>
+
+  </div>
+
+<script type="application/ld+json">
+{ "@context" : "http://schema.org",
+  "@type" : "Person",
+  "name" : "Liu Lantao",
+  "url" : "http://blog.liulantao.com",
+  "sameAs" : [
+    "https://twitter.com/liulantao"
+    "https://www.linkedin.com/in/liulantao",
+    "https://www.google.com/+LiuLantao",
+    "https://www.facebook.com/liu.lantao",
+    "https://instagram.com/liulantao",
+    "http://weibo.com/u/1653644220"
+  ]
+}
+</script>
+
+</footer>
+
+  </body>
+</html><!--
+environment: dotcom
+build_revision: a1f39dbfaa7c5e4415250c42f440dff3ad099157
+url: http://blog.liulantao.com
+jekyll : 3.3.1
+jekyll-sass-converter : 1.5.0
+kramdown : 1.11.1
+liquid : 3.0.6
+rouge : 1.11.1
+github-pages-health-check : 1.3.0
+jekyll-redirect-from : 0.11.0
+jekyll-sitemap : 0.12.0
+jekyll-feed : 0.8.0
+jekyll-gist : 1.4.0
+jekyll-paginate : 1.1.0
+jekyll-coffeescript : 1.0.1
+jekyll-seo-tag : 2.1.0
+jekyll-github-metadata : 2.3.1
+jekyll-avatar : 0.4.2
+jemoji : 0.7.0
+jekyll-mentions : 1.2.0
+jekyll-relative-links : 0.2.1
+jekyll-optional-front-matter : 0.1.2
+jekyll-readme-index : 0.0.3
+jekyll-default-layout : 0.1.4
+jekyll-titles-from-headings : 0.1.4
+listen : 3.0.6
+activesupport : 4.2.7
+nokogiri : 1.6.8.1
+minima : 2.0.0
+jekyll-swiss : 0.4.0
+jekyll-theme-primer : 0.1.7
+jekyll-theme-architect : 0.0.3
+jekyll-theme-cayman : 0.0.3
+jekyll-theme-dinky : 0.0.3
+jekyll-theme-hacker : 0.0.3
+jekyll-theme-leap-day : 0.0.3
+jekyll-theme-merlot : 0.0.3
+jekyll-theme-midnight : 0.0.3
+jekyll-theme-minimal : 0.0.3
+jekyll-theme-modernist : 0.0.3
+jekyll-theme-slate : 0.0.3
+jekyll-theme-tactile : 0.0.3
+jekyll-theme-time-machine : 0.0.3
+ruby : 2.3.3
+github-pages : 117
+html-pipeline : 2.5.0
+sass : 3.4.23
+safe_yaml : 1.0.4
+-->

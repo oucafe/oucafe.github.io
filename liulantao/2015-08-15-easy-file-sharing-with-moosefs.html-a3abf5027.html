@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="description" content="Idea, Code, Life 思考的点点滴滴">
+<meta name="keywords" content="HTML, CSS, JS, JavaScript, framework, bootstrap, front-end, frontend, web development, showcase, expo">
+<meta name="author" content="Lax" />
+
+<title>
+  
+    分布式文件系统 MooseFS：告别 NFS &#124; Peek Poke
+  
+</title>
+
+<link rel="stylesheet" href="/blog/css/jekyll.css">
+<script src="/blog/js/jekyll.js"></script>
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+
+<!-- RSS Feed -->
+<link rel="alternate" type="application/rss+xml" title="RSS" href="/blog/feed.xml">
+<link rel="alternate" type="application/atom+xml" title="Atom" href="/blog/atom.xml" />
+
+<!-- Favicons -->
+<link rel="icon" href="/blog/favicon.ico">
+<link rel="apple-touch-icon" href="/blog/apple-touch-icon.png">
+
+  </head>
+  <body data-spy="scroll" data-target="#toc">
+    <div class="container">
+  <div class="header clearfix">
+    <nav>
+      <ul class="nav nav-pills pull-right">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Home</a>
+        </li>
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+            
+              <li class="nav-item">
+                <a class="nav-link" href="/about/">关于我</a>
+              </li>
+            
+          
+        
+          
+        
+          
+            
+              <li class="nav-item">
+                <a class="nav-link" href="/documents/">文档</a>
+              </li>
+            
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+            
+              <li class="nav-item">
+                <a class="nav-link" href="/links/">资源链接</a>
+              </li>
+            
+          
+        
+          
+        
+          
+            
+              <li class="nav-item">
+                <a class="nav-link" href="/projects/">项目</a>
+              </li>
+            
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </ul>
+    </nav>
+    <h3 class="text-muted" data-toc-skip><a href="/">Peek Poke</a></h3>
+  </div>
+</div>
+
+
+    <div class="container">
+      <div class="post">
+
+  <header class="post-header">
+    <h1>分布式文件系统 MooseFS：告别 NFS</h1>
+    <p class="meta">Aug 15, 2015</p>
+    
+<share>
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style"><span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_tsina" data-proofer-ignore></a>
+<a class="jiathis_button_weixin" data-proofer-ignore></a>
+<a class="jiathis_button_twitter" data-proofer-ignore></a>
+<a class="jiathis_button_linkedin" data-proofer-ignore></a>
+<a class="jiathis_button_instapaper" data-proofer-ignore></a>
+<a class="jiathis_button_fav" data-proofer-ignore></a>
+<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+<a class="jiathis_counter_style" data-proofer-ignore></a>
+</div>
+<script type="text/javascript" >
+var jiathis_config={
+	sm:"tsina,weixin,fav,copy,twitter,linkedin",
+	summary:"",
+	ralateuid:{
+		"tsina":"1653644220"
+	},
+	shortUrl:false,
+	hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+</share>
+
+
+  </header>
+
+  <div class="clearfix"></div>
+
+  <hr class="masthead-hr">
+
+  <div class="row">
+    <div class="col-sm-9">
+      <article class="post-content">
+      <p>本文介绍 <code class="highlighter-rouge">MooseFS</code> 架构原理，安装配置和使用方法。</p>
+
+<p><code class="highlighter-rouge">MooseFS</code> 是一种容错的分布式文件系统。它将数据分散到多个物理位置（服务器），在用户看来是一个统一的资源。
+<code class="highlighter-rouge">MooseFS</code> 支持 <code class="highlighter-rouge">FUSE</code> 标准接口，能够无缝实现从本地文件的迁移。
+同时，<code class="highlighter-rouge">MooseFS</code> 提供比 <code class="highlighter-rouge">NFS</code> 更好的可运维性。</p>
+
+<!--excerpt-->
+
+<h3 id="section">功能特性</h3>
+
+<p>对于标准的文件操作，<code class="highlighter-rouge">MooseFS</code> 表现与其它类 Unix 文件系统一致。</p>
+
+<p>支持的通用文件系统特性有：</p>
+
+<ul>
+  <li>层次结构（目录数），是一种操作友好的文件系统。</li>
+  <li>兼容 POSIX 文件属性</li>
+  <li>支持特殊文件（块设备与字符设备，管道和套接字）</li>
+  <li>符号链接（软链接）和硬链接。</li>
+  <li>基于 IP 地址和（或）密码的访问权限控制</li>
+</ul>
+
+<p><code class="highlighter-rouge">MooseFS</code> 独特的特性有：</p>
+
+<ul>
+  <li>高可靠性（数据的多个副本存储在多个不同服务器上）</li>
+  <li>容量动态扩展。只要增加新的机器／磁盘</li>
+  <li>删除的文件保留一段时间（可配），像是文件系统的回收站。</li>
+  <li>即使文件在被读写，也可以持续做文件快照。</li>
+</ul>
+
+<hr />
+
+<h3 id="section-1">架构原理</h3>
+
+<p>MooseFS 包含 4 个组件</p>
+
+<ul>
+  <li>管理节点 master servers。支持单活。存储所有文件的元数据</li>
+  <li>数据节点 chunk servers 数量不限。存储文件数据，相互同步文件。</li>
+  <li>元数据备份服务器 metalogger server。数量不限。保存元数据变更日志，周期性的下载元数据文件。主节点失效时可以替代主节点。</li>
+  <li>客户端。挂载使用文件系统。</li>
+</ul>
+
+<p>文件的读写流程可以根据以下图示来理解：</p>
+
+<p><img src="/images/2015/mfs-read-process.png" alt="MooseFS Read Process" title="MooseFS Read Process" /></p>
+
+<p><img src="/images/2015/mfs-write-process.png" alt="MooseFS Write Process" title="MooseFS Write Process" /></p>
+
+<h4 id="section-2">关于分片</h4>
+
+<p>文件数据分片（chunks）后保存，分片默认最大值为 64MiB。分片对应 chunkserver 中的文件。
+分片数据是版本化的，如果文件执行更新后，某台机器还有旧版本的数据，则会删除该机器上的旧版本文件，并同步到改文件的最新版本。</p>
+
+<h4 id="section-3">容错／高可靠</h4>
+
+<p>将文件分发多份到多个服务器中存储，以实现高可靠。通过设置单个文件的 <code class="highlighter-rouge">goal</code> 来指定文件应该可以保留的副本数。
+重要数据建议将 goal 设置大于2；而将 goal 设为 1，则文件只在1台数据节点上保存</p>
+
+<hr />
+
+<h3 id="section-4">安装配置</h3>
+
+<h4 id="section-5">配置要求</h4>
+
+<p><strong>管理节点</strong> 是系统的核心，需要使用稳定性高的硬件设备，如冗余电源，ECC 内存，RAID1/RAID5/RAID10。
+根据文件数量的不同，也需要配置比较多的内存（一般来说，100 万个文件对应 300MiB 内存）。
+硬盘容量需要考虑文件数量和文件操作数量（一般来说，20GiB 磁盘可以保存2500万文件的元数据，或者 50 小时的文件操作日志）。
+管理节点如此重要，也需要根据情况做好安全设置。</p>
+
+<p><strong>元数据备份服务器</strong> 只需要和管理节点有同样多的内存和磁盘来存储数据即可。</p>
+
+<p><strong>数据节点</strong> 只需要保持足够的磁盘容量。</p>
+
+<h4 id="section-6">安装过程</h4>
+
+<p>在 CentOS 系统上安装。</p>
+
+<p>首先配置使用软件仓库。</p>
+
+<p>将 moosefs 仓库到 GPG KEY 加入本地软件包管理工具。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>curl "http://ppa.moosefs.com/RPM-GPG-KEY-MooseFS" -o /etc/pki/rpm-gpg/RPM-GPG-KEY-MooseFS
+</code></pre>
+</div>
+
+<p>增加仓库配置项。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>curl "http://ppa.moosefs.com/MooseFS-stable-el$(grep -o '[0-9]*' /etc/centos-release |head -1).repo" -o /etc/yum.repos.d/MooseFS.repo
+</code></pre>
+</div>
+
+<p>使用以下命令来安装软件包：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code># For Master Server:
+yum install moosefs-master moosefs-cli moosefs-cgi moosefs-cgiserv
+
+# For Chunkservers:
+yum install moosefs-chunkserver
+
+# For Metaloggers:
+yum install moosefs-metalogger
+
+# For Clients:
+yum install moosefs-client
+</code></pre>
+</div>
+
+<p>启动文件系统</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code># To start process manually:
+mfsmaster start
+mfschunkserver start
+# For sysv os family - EL5, EL6:
+service moosefs-master start
+service moosefs-chunkserver start
+# For systemd os family - EL7:
+systemctl start moosefs-master.service
+systemctl start moosefs-chunkserver.service
+</code></pre>
+</div>
+
+<p>系统参数</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code># for master server
+sysctl vm.overcommit_memory=1
+</code></pre>
+</div>
+
+<hr />
+
+<h3 id="section-7">使用方法</h3>
+
+<h4 id="section-8">挂载</h4>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ sudo mfsmount -H &lt;mfs-master&gt; [-P 9421] [-S /] [-o rw|ro] /mnt/mfs
+</code></pre>
+</div>
+
+<p>其中，
+<code class="highlighter-rouge">-H</code> / <code class="highlighter-rouge">-P</code> 代表 mfsmaster 的 IP 和端口；
+<code class="highlighter-rouge">-S</code> 挂载 MooseFS 中的路径；
+<code class="highlighter-rouge">-o rw</code> 或 <code class="highlighter-rouge">-o ro</code> 设置读写或只读模式；
+<code class="highlighter-rouge">/mnt/mfs</code> 为本地挂载路径。</p>
+
+<h4 id="section-9">设置冗余度</h4>
+
+<p>通过配置冗余度来保证出现失效时不丢失数据。
+冗余度为 N 时，能够在不超过 N-1 个 chunkserver 同时出现失效时不丢失数据。</p>
+
+<p>默认我们设置文件的冗余度为 2，即支持有 1 个 chunkserver 失败时不影响使用。</p>
+
+<p>调整数据冗余度(goal)</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ sudo mfssetgoal -r 2 /mnt/mfs
+</code></pre>
+</div>
+
+<p>其中，
+<code class="highlighter-rouge">-r</code> 选项代表递归目录及子目录的文件。</p>
+
+<p>可以通过 <code class="highlighter-rouge">mfsgetgoal</code> 来读取当前的冗余度</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ sudo mfsgetgoal /mnt/mfs
+/mnt/mfs 2
+</code></pre>
+</div>
+
+<p>可以通过 <code class="highlighter-rouge">mfscheckfile</code> 来读取特定文件的冗余度设置与生效情况</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ sudo mfscheckfile /mnt/mfs/testfile
+/mnt/mfs/testfile:
+2 copies: 1 chunks
+</code></pre>
+</div>
+
+<p>建议：</p>
+
+<ul>
+  <li>最低设置为 2，保证不出现文件丢失；</li>
+  <li>一般情况下设置为 3，应该是足够安全的；</li>
+  <li>对于足够重要的数据，可以设置为 4 或者更高，但是不能超过 chunkserver 实例数量。</li>
+</ul>
+
+<h4 id="trash-time">设置 Trash time</h4>
+
+<p>文件删除后会在 moosefs 的垃圾站中保留一段时间。
+通过 <code class="highlighter-rouge">mfsgettrashtime</code> 能读取过期时间的设置。</p>
+
+<h4 id="section-10">使用快照</h4>
+
+<p>使用 MooseFS 的一个好处是可以支持文件或目录的快照。
+我们知道 MooseFS 的分块都是版本化的，因此支持快照的方式保留一个文件的副本。
+在文件被修改前，这个副本并不会占用额外的空间。</p>
+
+<h4 id="section-11">启动顺序与停止顺序</h4>
+
+<p>启动顺序</p>
+
+<ul>
+  <li>启动 mfsmaster</li>
+  <li>启动 mfschunkserver</li>
+  <li>启动 mfsmetalogger</li>
+  <li>在 client 节点执行 mfsmount</li>
+</ul>
+
+<p>停止顺序</p>
+
+<ul>
+  <li>在所有 client 节点执行 umount</li>
+  <li>mfschunkserver stop</li>
+  <li>mfsmetalogger stop</li>
+  <li>mfsmaster stop</li>
+</ul>
+
+<h4 id="section-12">数据恢复</h4>
+
+<p>当出现 master 节点出现问题时，可以通过 <code class="highlighter-rouge">mfsmetarestore</code> 来恢复元数据。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>mfsmetarestore -a -d /storage/mfsmaster
+</code></pre>
+</div>
+
+<p>如果 master 节点故障严重无法启动，可以利用 metalogger 节点的元数据备份来恢复。
+首先在选定的节点上按照 mfsmaster，使用之前 master 节点的相同配置；
+从备份设备或 metalogger 拷贝 <code class="highlighter-rouge">metadata.mfs.back</code> 文件到新 master 节点；
+从 metalogger 拷贝失败前元数据最新的 changelog 文件（<code class="highlighter-rouge">changelog.*.mfs</code>）；
+执行 <code class="highlighter-rouge">mfsmetarestore -a</code>。</p>
+
+<h4 id="automated-failover">Automated Failover</h4>
+
+<p>生产环境使用 MooseFS 时，需要保证 master 节点的高可用。
+使用 <code class="highlighter-rouge">ucarp</code> 是一种比较成熟的方案。</p>
+
+<p><code class="highlighter-rouge">ucarp</code> 类似于 <code class="highlighter-rouge">keepalived</code>，通过主备服务器间的健康检查来发现集群状态，并执行相应操作。</p>
+
+<hr />
+
+<h3 id="section-13">总结</h3>
+
+<p>使用 <code class="highlighter-rouge">MooseFS</code> 为应用提供了更高的可用性，为运维提供了很好的操作便利。</p>
+
+      </article>
+
+      <hr class="masthead-hr">
+      <div class="meta">
+  
+    <a class="basic-alignment left" href="http://blog.liulantao.com/blog/2015/2015-07-18-publish-gem-to-rubygems.html" title="Previous Post: 命令行工具实践——测试驱动的开发方法" data-instant>&laquo; 命令行工具实践——测试驱动的开发方法</a>
+  
+  
+    <a class="basic-alignment right pull-right" href="http://blog.liulantao.com/blog/2015/2015-09-30-kubernetes-101-study-notes.html" title="Next Post: Kubernetes 101 学习笔记" data-instant>Kubernetes 101 学习笔记 &raquo;</a>
+  
+</div>
+
+
+      <hr class="masthead-hr">
+      
+<comments>
+
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1936498"></script>
+<!-- UY END -->
+
+</comments>
+
+
+    </div>
+
+    <div class="col-sm-3">
+      <nav id="toc" data-spy="affix" data-toggle="toc"></nav>
+    </div>
+  </div>
+
+</div>
+
+    </div>
+
+    <!--
+<a href="https://github.com/Lax/blog/"><img style="position: absolute; top: 0; right: 0; border: 0;" src="/images/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub!" /></a>
+-->
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-1658815-3");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+
+<script type="application/ld+json">
+{ "@context" : "http://schema.org",
+  "@type" : "Person",
+  "name" : "Liu Lantao",
+  "url" : "http://blog.liulantao.com",
+  "sameAs" : [
+    "https://twitter.com/liulantao"
+    "https://www.linkedin.com/in/liulantao",
+    "https://www.google.com/+LiuLantao",
+    "https://www.facebook.com/liu.lantao",
+    "https://instagram.com/liulantao",
+    "http://weibo.com/u/1653644220"
+  ]
+}
+</script>
+
+
+  </body>
+</html><!--
+environment: dotcom
+build_revision: 4a071e293f2d0462c6a58130a77cf5309b263ddc
+url: http://blog.liulantao.com/blog
+jekyll : 3.3.1
+jekyll-sass-converter : 1.3.0
+kramdown : 1.11.1
+liquid : 3.0.6
+rouge : 1.11.1
+github-pages-health-check : 1.3.0
+jekyll-redirect-from : 0.11.0
+jekyll-sitemap : 0.12.0
+jekyll-feed : 0.8.0
+jekyll-gist : 1.4.0
+jekyll-paginate : 1.1.0
+jekyll-coffeescript : 1.0.1
+jekyll-seo-tag : 2.1.0
+jekyll-github-metadata : 2.2.0
+jekyll-avatar : 0.4.2
+jemoji : 0.7.0
+jekyll-mentions : 1.2.0
+jekyll-relative-links : 0.2.1
+jekyll-optional-front-matter : 0.1.2
+jekyll-readme-index : 0.0.3
+jekyll-default-layout : 0.1.4
+jekyll-titles-from-headings : 0.1.3
+listen : 3.0.6
+activesupport : 4.2.7
+minima : 2.0.0
+jekyll-swiss : 0.4.0
+jekyll-theme-primer : 0.1.5
+jekyll-theme-architect : 0.0.3
+jekyll-theme-cayman : 0.0.3
+jekyll-theme-dinky : 0.0.3
+jekyll-theme-hacker : 0.0.3
+jekyll-theme-leap-day : 0.0.3
+jekyll-theme-merlot : 0.0.3
+jekyll-theme-midnight : 0.0.3
+jekyll-theme-minimal : 0.0.3
+jekyll-theme-modernist : 0.0.3
+jekyll-theme-slate : 0.0.3
+jekyll-theme-tactile : 0.0.3
+jekyll-theme-time-machine : 0.0.3
+ruby : 2.3.3
+github-pages : 112
+html-pipeline : 2.4.2
+sass : 3.4.23
+safe_yaml : 1.0.4
+-->

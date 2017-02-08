@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Nginx访问计数和频率控制 &middot; Peek Poke</title>
+<meta name="description" content="在使用了负载均衡设施的网站中，对 HTTP 请求做访问控制（频率控制）是个经常遇到的需求。 频率控制的主要目的，传统应用场景中要保护后端系统。 在多租户的云服务上，通过频率控制对不同租户的资源使用量进行有效分配，从而避免相互影响访问质量。 频率控制的精细度，也需要控制在集群级别，而非传统意义的单进程级别。">
+<link type="application/atom+xml" rel="alternate" href="http://blog.liulantao.com/feed.xml" title="Peek Poke" />
+<link type="application/rss+xml" rel="alternate" href="http://blog.liulantao.com/rss.xml" title="Peek Poke" />
+
+<!-- Begin Jekyll SEO tag v2.1.0 -->
+<meta property="og:title" content="Nginx访问计数和频率控制" />
+<meta name="description" content="在使用了负载均衡设施的网站中，对 HTTP 请求做访问控制（频率控制）是个经常遇到的需求。 频率控制的主要目的，传统应用场景中要保护后端系统。 在多租户的云服务上，通过频率控制对不同租户的资源使用量进行有效分配，从而避免相互影响访问质量。 频率控制的精细度，也需要控制在集群级别，而非传统意义的单进程级别。" />
+<meta property="og:description" content="在使用了负载均衡设施的网站中，对 HTTP 请求做访问控制（频率控制）是个经常遇到的需求。 频率控制的主要目的，传统应用场景中要保护后端系统。 在多租户的云服务上，通过频率控制对不同租户的资源使用量进行有效分配，从而避免相互影响访问质量。 频率控制的精细度，也需要控制在集群级别，而非传统意义的单进程级别。" />
+<link rel="canonical" href="http://blog.liulantao.com/nginx-rate-limit.html" />
+<meta property="og:url" content="http://blog.liulantao.com/nginx-rate-limit.html" />
+<meta property="og:site_name" content="Peek Poke" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2016-12-20T00:00:00+08:00" />
+<meta name="google-site-verification" content="nbadZjFSg9HTG-wGudhj-qFFFEAxOSpvhSkiQxYrsU4" />
+<script type="application/ld+json">
+{"@context": "http://schema.org",
+"@type": "BlogPosting",
+"headline": "Nginx访问计数和频率控制",
+"datePublished": "2016-12-20T00:00:00+08:00",
+"description": "在使用了负载均衡设施的网站中，对 HTTP 请求做访问控制（频率控制）是个经常遇到的需求。 频率控制的主要目的，传统应用场景中要保护后端系统。 在多租户的云服务上，通过频率控制对不同租户的资源使用量进行有效分配，从而避免相互影响访问质量。 频率控制的精细度，也需要控制在集群级别，而非传统意义的单进程级别。",
+"url": "http://blog.liulantao.com/nginx-rate-limit.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="apple-touch-icon" type="image/x-icon" href="/apple-touch-icon.png">
+
+<link rel="stylesheet" media="all" href="/assets/css/common.css" data-turbolinks-track="reload" />
+<link rel="stylesheet" href="/assets/main.css">
+
+<script src="/assets/js/common.js" data-turbolinks-track="reload"></script>
+<script src="/assets/main.js" data-turbolinks-track="reload"></script>
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-1658815-3', 'auto');
+  ga('send', 'pageview');
+
+</script>
+  
+
+
+</head>
+
+
+  <body data-spy="scroll" data-target="#toc">
+    <nav class='navbar navbar-default navbar-fixed-top' id='top'>
+  <div class='container'>
+    <div class='navbar-header'>
+      <button aria-expanded='false' class='navbar-toggle collapsed' data-target='#navbar-header-collapse-menu' data-toggle='collapse' type='button'>
+        <span class='sr-only'>Toggle navigation</span>
+        <span class='icon-bar'></span>
+        <span class='icon-bar'></span>
+        <span class='icon-bar'></span>
+      </button>
+      <a class='navbar-brand back-to-top' href='http://blog.liulantao.com/'>
+        <img alt='☕️Peek Poke' data-proofer-ignore>
+      </a>
+    </div>
+    <div class='collapse navbar-collapse' id='navbar-header-collapse-menu'>
+      
+<form class="navbar-form navbar-right hidden-xs hidden-sm" action="https://www.google.com/search" target="_blank">
+  <div class="form-group">
+    <input type="text" class="form-control" placeholder="Search for..." name="q" id="q" value="Redis">
+    <input type="hidden" name="as_sitesearch" value="liulantao.com">
+  </div>
+  <button type="submit" class="btn btn-default">Search</button>
+</form>
+
+      
+
+<ul class='nav navbar-nav nav-pills pull-right'>
+  <li role='presentation'><a href="http://blog.liulantao.com/">Home</a></li>
+
+  <li role='presentation'><a href="/about/">🍵关于我</a></li>
+
+  <li role='presentation'><a href="/documents/">🍹文档</a></li>
+
+  <li role='presentation'><a href="/links/">🍸资源链接</a></li>
+
+  <li role='presentation'><a href="/subscribe/">🍺订阅</a></li>
+
+</ul>
+
+    </div>
+  </div>
+</nav>
+
+
+
+    <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <div class="jumbotron">
+    <div class="container">
+      <header class="post-header well">
+        <h1 class="post-title" itemprop="name headline" data-toc-skip>Nginx访问计数和频率控制<small></small></h1>
+
+
+        <p>Nginx, Redis, and Lua</p>
+
+
+        <p>Post on <span class="label label-default">Technology</span></p>
+
+        <small class="post-meta"><time datetime="2016-12-20T00:00:00+08:00" itemprop="datePublished">Dec 20, 2016</time></small>
+      </header>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="row">
+
+      <div class="col-sm-9">
+        <div class="post-content" itemprop="articleBody">
+          <p>在使用了负载均衡设施的网站中，对 HTTP 请求做访问控制（频率控制）是个经常遇到的需求。</p>
+
+<p>频率控制的主要目的，传统应用场景中要<strong><em>保护后端系统</em></strong>。</p>
+
+<p>在多租户的云服务上，通过频率控制<strong>对不同租户的资源使用量进行有效分配</strong>，从而避免相互影响访问质量。</p>
+
+<p>频率控制的精细度，也需要控制在集群级别，而非传统意义的单进程级别。</p>
+
+<!--excerpt-->
+
+<h3 id="nginx-">Nginx 的频率控制</h3>
+
+<p><code class="highlighter-rouge">Nginx</code> 是现在最常见的负载均衡软件，比较早的版本即有频率控制功能。</p>
+
+<p>Nginx 中通常采用模块的形式提供各种功能，频率控制方面常用的有两个模块：</p>
+
+<ul>
+  <li><a href="http://nginx.org/en/docs/http/ngx_http_limit_req_module.html">ngx_http_limit_req_module</a></li>
+</ul>
+
+<p>针对指定的 key，限制<code class="highlighter-rouge">请求处理频率</code>。</p>
+
+<ul>
+  <li><a href="http://nginx.org/en/docs/http/ngx_http_limit_conn_module.html">ngx_http_limit_conn_module</a></li>
+</ul>
+
+<p>针对指定的 key，限制<code class="highlighter-rouge">同时连接数</code>。</p>
+
+<p>这两个模块是按秒或分的时间精度来限制，使用 <code class="highlighter-rouge">10r/s</code> 或 <code class="highlighter-rouge">1r/m</code> 这种方式能够比较容易配置。
+<code class="highlighter-rouge">Tengine</code> 改进了频率控制相关功能，但是仍然简单粗暴，支持的策略比较少，难以满足个性化的时间窗口需要。。</p>
+
+<p>另外，以上2个模块针对进程级别做控制，多个 Nginx 部署之间不共享数据。</p>
+
+<p>实际部署中，<code class="highlighter-rouge">Nginx</code> 作为负载均衡设施，一般会部署多台组成集群。
+这时的目的是对这个集群进行保护，不是对单个server的访问限制，所以基于单机的限制有了明显的局限性。</p>
+
+<h3 id="section">频率控制系统的设计目标</h3>
+
+<p>这样一个频率控制系统，我们有以下设计目标：</p>
+
+<ol>
+  <li>
+    <p>状态数据共享</p>
+
+    <p>从单机限制到集群化整体限制，需要有统一维护状态的存储</p>
+  </li>
+  <li>
+    <p>简化配置</p>
+
+    <p>数据metrics可定制key，尽量减少（各种判断）逻辑</p>
+  </li>
+  <li>
+    <p>资源消耗低</p>
+
+    <p>高效的字符串操作</p>
+
+    <p>网络流量低，使用长连接</p>
+  </li>
+  <li>
+    <p>实时反馈</p>
+
+    <p>可允许边缘情况限制部准确，但是不能有延时。</p>
+
+    <p>这也决定了基于日志分析的方案不能达到。</p>
+  </li>
+  <li>
+    <p>数据持久化</p>
+
+    <p>历史数据保存，可追溯</p>
+  </li>
+  <li>
+    <p>失败保护</p>
+
+    <p>作为辅助系统，内部失败时应该能使对外服务正常进行。</p>
+  </li>
+</ol>
+
+<p>根据实际业务需求协商确定出公认的目标，是实现的关键步骤。</p>
+
+<h3 id="section-1">架构设计</h3>
+
+<p>在设计目标指引下，选择使用稳定高效的开源软件来实现。
+最终形成了 <code class="highlighter-rouge">Nginx</code> + <code class="highlighter-rouge">Lua</code> + <code class="highlighter-rouge">Redis</code> 的方案。</p>
+
+<p>基于负载均衡层的流控系统，可以串联部署在负载均衡后端，作为应用层的代理，也可以并联部署在负载均衡后端旁路。
+我们采用了旁路的方式来部署。</p>
+
+<p>架构图：</p>
+
+<p><img src="/images/diagram/loadbalancer-ratelimit-architecture.png" alt="Loadbalancer Ratelimit" /></p>
+
+<h4 id="section-2">组件失败保护：</h4>
+
+<ul>
+  <li>Nginx 作为基础服务，有前端 keepalived 提供故障转移</li>
+  <li>Lua 作为配置的一部分，上线前经过测试环境的单元测试验证</li>
+  <li>Redis 出现宕机导致失败后，可以选择直接跳出控制逻辑，根据实际情况默认返回允许或拒绝。</li>
+</ul>
+
+<h3 id="section-3">关键配置</h3>
+
+<h4 id="section-4">1. 规范化频率控制的键</h4>
+
+<p>针对每个请求URL，使用 <code class="highlighter-rouge">nginx</code> 的 <code class="highlighter-rouge">map</code> 功能或 <code class="highlighter-rouge">location regex</code> 进行提取，并规范化为限制规则使用的键名。</p>
+
+<figure class="highlight"><pre><code class="language-nginx" data-lang="nginx"><span class="k">location</span> <span class="p">~</span><span class="sr">*</span> <span class="s">^/(?P&lt;org_name&gt;[0-9a-zA-Z-_]+)/(?P&lt;app_name&gt;[0-9a-zA-Z-]+)/users</span>$
+<span class="p">{</span>
+	<span class="kn">set</span> <span class="nv">$ratelimit_metric</span> <span class="s">"</span><span class="nv">$org_name</span><span class="c1">#$app_name#users"
+</span>
+	<span class="s">proxy_pass</span> <span class="s">http://backend_rest_servers</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>我们将 URL 中提取的信息使用 <code class="highlighter-rouge">set</code> 语法拼接，将它保存在 <code class="highlighter-rouge">$ratelimit_metric</code> 变量作为频率控制的键，</p>
+
+<h4 id="lua">2. 加载 lua</h4>
+
+<p>lua 基础功能需要在 nginx 编译阶段指定选项。如果当前版本不支持 lua 功能，需要重新编译，并在编译时至指定 <code class="highlighter-rouge">--with-lua</code> 选项。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>./configure --with-lua
+</code></pre>
+</div>
+
+<p>实现逻辑时需要访问 <code class="highlighter-rouge">redis</code>，因此还需要加载 lua 的 redis 库：<a href="https://github.com/openresty/lua-resty-redis">lua-resty-redis</a>。</p>
+
+<p>在配置文件的 <code class="highlighter-rouge">http</code> 上下文部分加一行配置：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>lua_package_path "lua/lua-resty-redis/lib/?.lua;;";
+</code></pre>
+</div>
+
+<p>然后加载我们实现逻辑的 lua 脚本，之后的所有逻辑操作都在这个文件中完成。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>access_by_lua_file 'ratelimit-with-redis.lua';
+</code></pre>
+</div>
+
+<h4 id="redis-">3. 初始化 redis 连接</h4>
+
+<p>首先加载 lua 的 redis 库，设置合理的超时时间。
+当连接失败时，则直接从限流逻辑中跳出。</p>
+
+<figure class="highlight"><pre><code class="language-lua" data-lang="lua"><span class="kd">local</span> <span class="n">cjson</span> <span class="o">=</span> <span class="nb">require</span> <span class="s2">"cjson"</span>
+<span class="kd">local</span> <span class="n">redis</span> <span class="o">=</span> <span class="nb">require</span> <span class="s2">"resty.redis"</span>
+<span class="kd">local</span> <span class="n">red</span> <span class="o">=</span> <span class="n">redis</span><span class="p">:</span><span class="n">new</span><span class="p">()</span>
+
+<span class="n">red</span><span class="p">:</span><span class="n">set_timeout</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+
+<span class="kd">local</span> <span class="n">ok</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">red</span><span class="p">:</span><span class="n">connect</span><span class="p">(</span><span class="s2">"127.0.0.1"</span><span class="p">,</span> <span class="mi">6379</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">ok</span> <span class="k">then</span>
+	<span class="c1">-- ngx.say("failed to connect: ", err)</span>
+	<span class="k">return</span>
+<span class="k">end</span></code></pre></figure>
+
+<h4 id="counter-incr-">4. counter incr 操作</h4>
+
+<p>对于每一次客户请求，都需要去更新指定的 key。</p>
+
+<figure class="highlight"><pre><code class="language-lua" data-lang="lua"><span class="kd">local</span> <span class="n">counter_key</span> <span class="o">=</span> <span class="n">ngx</span><span class="p">.</span><span class="n">var</span><span class="p">.</span><span class="n">ratelimit_metric</span>
+<span class="c1">-- ngx.say("counter key: ", counter_key)</span>
+
+<span class="n">count</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">red</span><span class="p">:</span><span class="n">incr</span><span class="p">(</span><span class="n">counter_key</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">count</span> <span class="k">then</span>
+	<span class="c1">-- ngx.say("failed to incr: ", err)</span>
+	<span class="k">return</span>
+<span class="k">end</span></code></pre></figure>
+
+<h4 id="section-5">5. 根据键值控制访问</h4>
+<p>假定默认限制超过 100 次后，对后续访问进行限制，返回状态码 429。</p>
+
+<figure class="highlight"><pre><code class="language-lua" data-lang="lua"><span class="k">if</span> <span class="n">count</span> <span class="o">&gt;</span> <span class="mi">100</span> <span class="k">then</span>
+	<span class="n">ngx</span><span class="p">.</span><span class="n">status</span> <span class="o">=</span> <span class="mi">429</span>
+	<span class="c1">--ngx.say("fooc: ", ok)</span>
+	<span class="n">ngx</span><span class="p">.</span><span class="n">say</span><span class="p">(</span><span class="s2">"rate limit: "</span><span class="p">,</span> <span class="n">count</span><span class="p">,</span> <span class="s2">" &gt; "</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+	<span class="n">ngx</span><span class="p">.</span><span class="n">exit</span><span class="p">(</span><span class="n">ngx</span><span class="p">.</span><span class="n">HTTP_SERVICE_UNAVAILABLE</span><span class="p">)</span>
+<span class="k">end</span></code></pre></figure>
+
+<h4 id="redis--1">6. 与 Redis 保持长连接</h4>
+
+<figure class="highlight"><pre><code class="language-lua" data-lang="lua"><span class="kd">local</span> <span class="n">ok</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">red</span><span class="p">:</span><span class="n">set_keepalive</span><span class="p">(</span><span class="mi">100000</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">ok</span> <span class="k">then</span>
+	<span class="c1">-- ngx.say("failed to set keepalive: ", err)</span>
+	<span class="k">return</span>
+<span class="k">end</span></code></pre></figure>
+
+<h4 id="section-6">7. 时间维度限制</h4>
+
+<p>前面示例所做的限制没有考虑时间维度，即超出限制被禁后，不会随时间清零。
+现在我们改造一下 key 的格式，使得 counter 只在一个时间周期内有效。</p>
+
+<p>修改 counter_key 的定义：</p>
+
+<figure class="highlight"><pre><code class="language-lua" data-lang="lua"><span class="kd">local</span> <span class="n">counter_key</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span><span class="o">/</span><span class="mi">60</span> <span class="o">..</span> <span class="s2">":"</span> <span class="o">..</span> <span class="n">ngx</span><span class="p">.</span><span class="n">var</span><span class="p">.</span><span class="n">ratelimit_metric</span></code></pre></figure>
+
+<h4 id="limit-">8. 读取 limit 上限设置</h4>
+
+<figure class="highlight"><pre><code class="language-lua" data-lang="lua"><span class="n">limit</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">red</span><span class="p">:</span><span class="n">get</span><span class="p">(</span><span class="s2">"limit:"</span> <span class="o">..</span> <span class="n">ngx</span><span class="p">.</span><span class="n">var</span><span class="p">.</span><span class="n">ratelimit_metric</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">limit</span> <span class="k">then</span>
+	<span class="c1">-- ngx.say("use default limit: ", 100)</span>
+	<span class="n">limit</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="k">end</span></code></pre></figure>
+
+<p>限制默认为 100</p>
+
+<h4 id="redis-pipelininghttpredisiotopicspipelining">9. 利用 <a href="http://redis.io/topics/pipelining">Redis Pipelining</a></h4>
+<p>同一次请求会产生多个 redis 操作，没有前后依赖关系，使用 redis 的 batch 方式减少交互</p>
+
+<p>red:init_pipeline</p>
+
+<p>local results, err = red:commit_pipeline()
+if not results then
+    ngx.say(“failed to commit the pipelined requests: “, err)
+    return
+end
+print(cjson.encode(results))</p>
+
+<p>for i, res in ipairs(results) do
+    if type(res) == “table” then
+        if not res[1] then
+            ngx.say(“failed to run command “, i, “: “, res[2])
+        else
+            – process the table value
+        end
+    else
+        – process the scalar value
+    end
+end</p>
+
+<h3 id="section-7">效果、功能与性能评估关键点</h3>
+
+<ul>
+  <li>nginx <code class="highlighter-rouge">响应时间</code>的对比（proxy and static）</li>
+  <li>redis <code class="highlighter-rouge">连接数</code></li>
+  <li>nginx 和 redis 的 <code class="highlighter-rouge">cpu 利用率</code></li>
+  <li>redis <code class="highlighter-rouge">failover</code></li>
+  <li>边缘情况测试</li>
+</ul>
+
+<p>可以使用 <code class="highlighter-rouge">ab (apache benchmarking)</code> 进行测试。</p>
+
+<h3 id="section-8">思路总结</h3>
+
+<p>最终方案中，各部分功能都采用了成熟的开源方案，有一些综合的优势：</p>
+
+<ul>
+  <li>需要的代码量比较小</li>
+  <li>在性能和稳定性方面能够满足较长时间的需求</li>
+  <li>Redis 容量可以通过 codis 等工具进一步扩展</li>
+</ul>
+
+<p>但是在使用场景方面有局限性，针对 HTTP 数据都分析则不适合。
+如果遇到与业务深度分析的场景时，Nginx 端实现则会有比较大的代价，既包括人工付出，也可能有一些性能方面的退化。
+比如针对 API 请求中的 JSON 数据做有效性校验，使用 lua 去处理业务逻辑，以及容错方面的代码量将显著增加。
+从开发成本来看这不是一个好的选择，对 Nginx 维护人员的能力也是挑战。</p>
+
+<h3 id="section-9">展望</h3>
+
+<p>可以进一步优化为使用 redis scripting(也是 lua 脚本)，将所有逻辑放到 redis 中实现。
+既能够达到现有方案使用 [Redis Pipelining] 的降低延时效果，还能进一步减少 nginx &lt;-&gt; redis 之间的读写操作次数，从而进一步降低延时。</p>
+
+        </div>
+
+        <hr class="masthead-hr">
+        <div class="meta">
+  
+    <a class="basic-alignment left" href="/scientific-method-startups.html" title="Previous Post: 创业公司的科学方法" data-instant>&laquo; 创业公司的科学方法</a>
+  
+  
+    <a class="basic-alignment right pull-right" href="/request-for-startups-water.html" title="Next Post: 用科技解决洁净水资源供应难题" data-instant>用科技解决洁净水资源供应难题 &raquo;</a>
+  
+</div>
+
+
+        <br />
+
+        <hr class="masthead-hr">
+        
+<share>
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style"><span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_tsina" data-proofer-ignore></a>
+<a class="jiathis_button_weixin" data-proofer-ignore></a>
+<a class="jiathis_button_twitter" data-proofer-ignore></a>
+<a class="jiathis_button_linkedin" data-proofer-ignore></a>
+<a class="jiathis_button_instapaper" data-proofer-ignore></a>
+<a class="jiathis_button_fav" data-proofer-ignore></a>
+<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+<a class="jiathis_counter_style" data-proofer-ignore></a>
+</div>
+<script type="text/javascript" >
+var jiathis_config={
+	sm:"tsina,weixin,fav,copy,twitter,linkedin",
+	summary:"",
+	ralateuid:{
+		"tsina":"1653644220"
+	},
+	shortUrl:false,
+	hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+</share>
+
+
+
+        <br />
+
+        <hr class="masthead-hr">
+        
+<comments>
+  
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1936498"></script>
+<!-- UY END -->
+
+
+
+  
+  <hr class="masthead-hr">
+    
+  
+
+  <div id="disqus_thread"></div>
+  <script>
+    var disqus_config = function () {
+      this.page.url = 'http://blog.liulantao.com/nginx-rate-limit.html';
+      this.page.identifier = 'http://blog.liulantao.com/nginx-rate-limit.html';
+    };
+
+    (function() {
+      var d = document, s = d.createElement('script');
+
+      s.src = 'https://peekpoke.disqus.com/embed.js';
+
+      s.setAttribute('data-timestamp', +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+  
+</comments>
+
+
+      </div>
+
+      <div class="col-sm-3">
+        
+<a target="_blank" href="http://list.qq.com/cgi-bin/qf_invite?id=ea22910634332acb43893da712be6dcd21fa33ae808043f5">订阅</a>
+
+
+        <nav id="toc" data-spy="affix" data-toggle="toc"></nav>
+      </div>
+
+    </div>
+  </div>
+
+</article>
+
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Peek Poke</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>
+
+            Peek Poke
+
+          </li>
+
+
+          <li><a href="https://paypal.me/liulantao/30cny">请我喝咖啡</a></li>
+
+
+  
+    
+          <li><a href="http://iftti.com">IT技术干货</a></li>
+    
+          <li><a href="http://news.academical.io">Academical News</a></li>
+    
+          <li><a href="http://relax.org.cn">Relax</a></li>
+    
+          <li><a href="http://1000bit.com">1000bit</a></li>
+    
+  
+
+        </ul>
+        <p>Idea, Code, Life 思考的点点滴滴。 一个关注iOS开发的Ruby开发者，主要工作内容却是系统运维。 喜欢用数据和专业的眼光来解释现象，坚持用事实说话的践行者。
+</p>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/Lax"><span class="icon icon--github"><svg viewBox="0 0 16 16" width="16px" height="16px"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">Lax</span></a>
+
+          </li>
+          
+
+          
+          <li>
+            <a href="https://twitter.com/liulantao"><span class="icon icon--twitter"><svg viewBox="0 0 16 16" width="16px" height="16px"><path fill="#828282" d="M15.969,3.058c-0.586,0.26-1.217,0.436-1.878,0.515c0.675-0.405,1.194-1.045,1.438-1.809c-0.632,0.375-1.332,0.647-2.076,0.793c-0.596-0.636-1.446-1.033-2.387-1.033c-1.806,0-3.27,1.464-3.27,3.27 c0,0.256,0.029,0.506,0.085,0.745C5.163,5.404,2.753,4.102,1.14,2.124C0.859,2.607,0.698,3.168,0.698,3.767 c0,1.134,0.577,2.135,1.455,2.722C1.616,6.472,1.112,6.325,0.671,6.08c0,0.014,0,0.027,0,0.041c0,1.584,1.127,2.906,2.623,3.206 C3.02,9.402,2.731,9.442,2.433,9.442c-0.211,0-0.416-0.021-0.615-0.059c0.416,1.299,1.624,2.245,3.055,2.271 c-1.119,0.877-2.529,1.4-4.061,1.4c-0.264,0-0.524-0.015-0.78-0.046c1.447,0.928,3.166,1.469,5.013,1.469 c6.015,0,9.304-4.983,9.304-9.304c0-0.142-0.003-0.283-0.009-0.423C14.976,4.29,15.531,3.714,15.969,3.058z"/></svg>
+</span><span class="username">liulantao</span></a>
+
+          </li>
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        
+<!--以下是QQ邮件列表订阅嵌入代码--><script >var nId = "d0bc38ab08a858d5dbb912ba6a4b0f74427a3df5f892f16b",nWidth="auto",sColor="light",sText="留下email，订阅兰涛的非常思维话题" ;</script><script src="http://list.qq.com/zh_CN/htmledition/js/qf/page/qfcode.js" charset="gb18030"></script>
+
+
+      </div>
+    </div>
+
+  </div>
+
+<script type="application/ld+json">
+{ "@context" : "http://schema.org",
+  "@type" : "Person",
+  "name" : "Liu Lantao",
+  "url" : "http://blog.liulantao.com",
+  "sameAs" : [
+    "https://twitter.com/liulantao"
+    "https://www.linkedin.com/in/liulantao",
+    "https://www.google.com/+LiuLantao",
+    "https://www.facebook.com/liu.lantao",
+    "https://instagram.com/liulantao",
+    "http://weibo.com/u/1653644220"
+  ]
+}
+</script>
+
+</footer>
+
+  </body>
+</html><!--
+environment: dotcom
+build_revision: a1f39dbfaa7c5e4415250c42f440dff3ad099157
+url: http://blog.liulantao.com
+jekyll : 3.3.1
+jekyll-sass-converter : 1.5.0
+kramdown : 1.11.1
+liquid : 3.0.6
+rouge : 1.11.1
+github-pages-health-check : 1.3.0
+jekyll-redirect-from : 0.11.0
+jekyll-sitemap : 0.12.0
+jekyll-feed : 0.8.0
+jekyll-gist : 1.4.0
+jekyll-paginate : 1.1.0
+jekyll-coffeescript : 1.0.1
+jekyll-seo-tag : 2.1.0
+jekyll-github-metadata : 2.3.1
+jekyll-avatar : 0.4.2
+jemoji : 0.7.0
+jekyll-mentions : 1.2.0
+jekyll-relative-links : 0.2.1
+jekyll-optional-front-matter : 0.1.2
+jekyll-readme-index : 0.0.3
+jekyll-default-layout : 0.1.4
+jekyll-titles-from-headings : 0.1.4
+listen : 3.0.6
+activesupport : 4.2.7
+nokogiri : 1.6.8.1
+minima : 2.0.0
+jekyll-swiss : 0.4.0
+jekyll-theme-primer : 0.1.7
+jekyll-theme-architect : 0.0.3
+jekyll-theme-cayman : 0.0.3
+jekyll-theme-dinky : 0.0.3
+jekyll-theme-hacker : 0.0.3
+jekyll-theme-leap-day : 0.0.3
+jekyll-theme-merlot : 0.0.3
+jekyll-theme-midnight : 0.0.3
+jekyll-theme-minimal : 0.0.3
+jekyll-theme-modernist : 0.0.3
+jekyll-theme-slate : 0.0.3
+jekyll-theme-tactile : 0.0.3
+jekyll-theme-time-machine : 0.0.3
+ruby : 2.3.3
+github-pages : 117
+html-pipeline : 2.5.0
+sass : 3.4.23
+safe_yaml : 1.0.4
+-->

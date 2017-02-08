@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="description" content="Idea, Code, Life 思考的点点滴滴">
+<meta name="keywords" content="HTML, CSS, JS, JavaScript, framework, bootstrap, front-end, frontend, web development, showcase, expo">
+<meta name="author" content="Lax" />
+
+<title>
+  
+    Kubernetes 101 学习笔记 &#124; Peek Poke
+  
+</title>
+
+<link rel="stylesheet" href="/blog/css/jekyll.css">
+<script src="/blog/js/jekyll.js"></script>
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+
+<!-- RSS Feed -->
+<link rel="alternate" type="application/rss+xml" title="RSS" href="/blog/feed.xml">
+<link rel="alternate" type="application/atom+xml" title="Atom" href="/blog/atom.xml" />
+
+<!-- Favicons -->
+<link rel="icon" href="/blog/favicon.ico">
+<link rel="apple-touch-icon" href="/blog/apple-touch-icon.png">
+
+  </head>
+  <body data-spy="scroll" data-target="#toc">
+    <div class="container">
+  <div class="header clearfix">
+    <nav>
+      <ul class="nav nav-pills pull-right">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Home</a>
+        </li>
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+            
+              <li class="nav-item">
+                <a class="nav-link" href="/about/">关于我</a>
+              </li>
+            
+          
+        
+          
+        
+          
+            
+              <li class="nav-item">
+                <a class="nav-link" href="/documents/">文档</a>
+              </li>
+            
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+            
+              <li class="nav-item">
+                <a class="nav-link" href="/links/">资源链接</a>
+              </li>
+            
+          
+        
+          
+        
+          
+            
+              <li class="nav-item">
+                <a class="nav-link" href="/projects/">项目</a>
+              </li>
+            
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </ul>
+    </nav>
+    <h3 class="text-muted" data-toc-skip><a href="/">Peek Poke</a></h3>
+  </div>
+</div>
+
+
+    <div class="container">
+      <div class="post">
+
+  <header class="post-header">
+    <h1>Kubernetes 101 学习笔记</h1>
+    <p class="meta">Sep 30, 2015</p>
+    
+<share>
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style"><span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_tsina" data-proofer-ignore></a>
+<a class="jiathis_button_weixin" data-proofer-ignore></a>
+<a class="jiathis_button_twitter" data-proofer-ignore></a>
+<a class="jiathis_button_linkedin" data-proofer-ignore></a>
+<a class="jiathis_button_instapaper" data-proofer-ignore></a>
+<a class="jiathis_button_fav" data-proofer-ignore></a>
+<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+<a class="jiathis_counter_style" data-proofer-ignore></a>
+</div>
+<script type="text/javascript" >
+var jiathis_config={
+	sm:"tsina,weixin,fav,copy,twitter,linkedin",
+	summary:"",
+	ralateuid:{
+		"tsina":"1653644220"
+	},
+	shortUrl:false,
+	hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+</share>
+
+
+  </header>
+
+  <div class="clearfix"></div>
+
+  <hr class="masthead-hr">
+
+  <div class="row">
+    <div class="col-sm-9">
+      <article class="post-content">
+      <p>Kubernetes 101 内容涵盖 <code class="highlighter-rouge">kubectl</code>, <code class="highlighter-rouge">pods</code>, <code class="highlighter-rouge">volumes</code> 和<code class="highlighter-rouge">多容器</code>的知识。
+学习时注意区分各个概念与 Docker 概念的对应关系和差异。</p>
+
+<!--excerpt-->
+
+<p>大致的知识树如下：</p>
+
+<ul>
+  <li>Kubernetes 101 - Kubectl CLI and Pods
+    <ul>
+      <li>Kubectl CLI</li>
+      <li>Pods
+        <ul>
+          <li>Pod Definition</li>
+          <li>Pod Management</li>
+          <li>Volumes</li>
+          <li>Volume Types</li>
+          <li>Multiple Containers</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="kubectl-cli">Kubectl CLI</h3>
+
+<p>与 Kubernetes 交互最便捷的方式是实用 <code class="highlighter-rouge">kubectl</code> 命令行。</p>
+
+<p><code class="highlighter-rouge">kubectl</code> 的详细用法、命令和参数，可以查看：<a href="http://kubernetes.io/v1.0/docs/user-guide/kubectl/kubectl.html">kubectl CLI reference</a></p>
+
+<h3 id="pods">Pods</h3>
+
+<p>Pod 是 kubernetes 管理的基本单位。</p>
+
+<p>在 Kubernetes 里，一个或多个容器的群组叫做 <code class="highlighter-rouge">pod</code>。<code class="highlighter-rouge">pod</code> 中的容器同时部署，作为一组整体来启动、停止和复制。
+<a href="http://kubernetes.io/v1.0/docs/user-guide/pods.html">Pod 详解</a></p>
+
+<h4 id="pod-definition">Pod Definition</h4>
+
+<p>最简单的 <code class="highlighter-rouge">pod 定义</code>可以描述单个容器的部署。</p>
+
+<p>例如，一台 <code class="highlighter-rouge">nginx</code> 服务器的 <code class="highlighter-rouge">pod 定义</code>：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    ports:
+    - containerPort: 80
+</code></pre>
+</div>
+
+<p><code class="highlighter-rouge">Pod 定义</code>（<code class="highlighter-rouge">pod defination</code>） 是对<code class="highlighter-rouge">期望状态</code>（<code class="highlighter-rouge">desired state</code>）的声明。</p>
+
+<p><code class="highlighter-rouge">期望状态</code>是 Kubernetes 模型中很重要的概念。
+Kubernetes 的职责是确保当前状态符合<code class="highlighter-rouge">期望状态</code>。</p>
+
+<p>例如，创建 <code class="highlighter-rouge">Pod</code> 时声明其中的容器处于 <code class="highlighter-rouge">running</code> 状态。
+如果容器恰好没有运行（由于程序失败或其它原因），Kubernetes 为了达到期望状态，将持续（重新）创建它们。
+除非 <code class="highlighter-rouge">Pod</code> 被删除，Kubernetes 不会停止。</p>
+
+<h4 id="pod-management">Pod Management</h4>
+
+<p>创建刚才定义的包含 nginx 容器的 pod：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ kubectl create -f docs/user-guide/walkthrough/pod-nginx.yaml
+</code></pre>
+</div>
+
+<p>列出所有 pod:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ kubectl get pods
+</code></pre>
+</div>
+
+<p>如果 IP 能通，可以访问到 80 端口：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ curl http://$(kubectl get pod nginx -o=template -t={{.status.podIP}})
+</code></pre>
+</div>
+
+<p>大部分 provider 中，外部不能访问 pod 的 IP。
+最简单的方式是创建一个 busybox pod，通过它远程运行命令。
+参考：<a href="http://kubernetes.io/v1.0/docs/user-guide/kubectl/kubectl_exec.html">command execution documentation</a></p>
+
+<p>删除指定名字的 pod：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ kubectl delete pod nginx
+</code></pre>
+</div>
+
+<h4 id="volumes">Volumes</h4>
+
+<p>上面是一个简单的 web 服务器，容器中文件系统的生命周期和容器本身相同。
+如果应用需要在迁移、重启和崩溃后仍然保存状态，就需要配置持久存储。</p>
+
+<p>举个例子，创建一个 Redis pod，包含一个<code class="highlighter-rouge">命名 volume</code>，和定义了这个 volume 目标路径的 <code class="highlighter-rouge">volume 挂载</code>。</p>
+
+<p>1) 定义 volume</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>volumes:
+- name: redis-persistent-storage
+  emptyDir: {}
+</code></pre>
+</div>
+
+<p>2) 在容器定义内部定义 <code class="highlighter-rouge">volume 挂载</code>:</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>volumeMounts:
+# name must match the volume name below
+- name: redis-persistent-storage
+  # mount path within the container
+  mountPath: /data/redis
+</code></pre>
+</div>
+
+<p>带持久存储的 Redis pod 完整配置示例：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>apiVersion: v1
+kind: Pod
+metadata:
+  name: redis
+spec:
+  containers:
+  - name: redis
+    image: redis
+    volumeMounts:
+    - name: redis-persistent-storage
+      mountPath: /data/redis
+  volumes:
+  - name: redis-persistent-storage
+    emptyDir: {}
+</code></pre>
+</div>
+
+<ul>
+  <li><code class="highlighter-rouge">volume 挂载</code>的名字指向一个空目录 volume。</li>
+  <li><code class="highlighter-rouge">volume 挂载</code>的路径指向空目录 volume 挂载到容器内的路径。</li>
+</ul>
+
+<h4 id="volume-types">Volume Types</h4>
+
+<ul>
+  <li><strong>EmptyDir</strong>: 创建一个目录，容器失败和重启后仍然可用。</li>
+  <li><strong>HostPath</strong>: 挂载主机节点上已有的目录（如 /var/logs）。</li>
+</ul>
+
+<h4 id="multiple-containers">Multiple Containers</h4>
+
+<p>然而，我们经常希望两个不同的容器共同工作。</p>
+
+<p>举个例子，启动一个 web 服务器，和从 git 仓库拉取更新的辅助任务。</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>apiVersion: v1
+kind: Pod
+metadata:
+  name: www
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    volumeMounts:
+    - mountPath: /srv/www
+      name: www-data
+      readOnly: true
+  - name: git-monitor
+    image: kubernetes/git-monitor
+    env:
+    - name: GIT_REPO
+      value: http://github.com/some/repo.git
+    volumeMounts:
+    - mountPath: /data
+      name: www-data
+  volumes:
+  - name: www-data
+    emptyDir: {}
+</code></pre>
+</div>
+
+<p>这里使用了一个 volume。
+此 volume 挂载到两个容器中。</p>
+
+<p>在 web 服务器的容器中，volume 标记为 readOnly，因为不需要写入此目录。</p>
+
+<p>还在 git-monitor 容器中引入了一个环境变量，可以给容器传参数，指定 git 仓库地址。</p>
+
+<h3 id="next">NEXT</h3>
+
+<p><a href="/blog/2015/2015-10-05-kubernetes-201-study-notes.html">Kubernetes 201</a> / <a href="http://kubernetes.io/v1.0/docs/user-guide/walkthrough/k8s201.html">en</a></p>
+
+      </article>
+
+      <hr class="masthead-hr">
+      <div class="meta">
+  
+    <a class="basic-alignment left" href="http://blog.liulantao.com/blog/2015/2015-08-15-easy-file-sharing-with-moosefs.html" title="Previous Post: 分布式文件系统 MooseFS：告别 NFS" data-instant>&laquo; 分布式文件系统 MooseFS：告别 NFS</a>
+  
+  
+    <a class="basic-alignment right pull-right" href="http://blog.liulantao.com/blog/2015/2015-10-02-guide-to-docker-ecosystem.html" title="Next Post: Docker 生态圈指南" data-instant>Docker 生态圈指南 &raquo;</a>
+  
+</div>
+
+
+      <hr class="masthead-hr">
+      
+<comments>
+
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1936498"></script>
+<!-- UY END -->
+
+</comments>
+
+
+    </div>
+
+    <div class="col-sm-3">
+      <nav id="toc" data-spy="affix" data-toggle="toc"></nav>
+    </div>
+  </div>
+
+</div>
+
+    </div>
+
+    <!--
+<a href="https://github.com/Lax/blog/"><img style="position: absolute; top: 0; right: 0; border: 0;" src="/images/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub!" /></a>
+-->
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-1658815-3");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+
+<script type="application/ld+json">
+{ "@context" : "http://schema.org",
+  "@type" : "Person",
+  "name" : "Liu Lantao",
+  "url" : "http://blog.liulantao.com",
+  "sameAs" : [
+    "https://twitter.com/liulantao"
+    "https://www.linkedin.com/in/liulantao",
+    "https://www.google.com/+LiuLantao",
+    "https://www.facebook.com/liu.lantao",
+    "https://instagram.com/liulantao",
+    "http://weibo.com/u/1653644220"
+  ]
+}
+</script>
+
+
+  </body>
+</html><!--
+environment: dotcom
+build_revision: 4a071e293f2d0462c6a58130a77cf5309b263ddc
+url: http://blog.liulantao.com/blog
+jekyll : 3.3.1
+jekyll-sass-converter : 1.3.0
+kramdown : 1.11.1
+liquid : 3.0.6
+rouge : 1.11.1
+github-pages-health-check : 1.3.0
+jekyll-redirect-from : 0.11.0
+jekyll-sitemap : 0.12.0
+jekyll-feed : 0.8.0
+jekyll-gist : 1.4.0
+jekyll-paginate : 1.1.0
+jekyll-coffeescript : 1.0.1
+jekyll-seo-tag : 2.1.0
+jekyll-github-metadata : 2.2.0
+jekyll-avatar : 0.4.2
+jemoji : 0.7.0
+jekyll-mentions : 1.2.0
+jekyll-relative-links : 0.2.1
+jekyll-optional-front-matter : 0.1.2
+jekyll-readme-index : 0.0.3
+jekyll-default-layout : 0.1.4
+jekyll-titles-from-headings : 0.1.3
+listen : 3.0.6
+activesupport : 4.2.7
+minima : 2.0.0
+jekyll-swiss : 0.4.0
+jekyll-theme-primer : 0.1.5
+jekyll-theme-architect : 0.0.3
+jekyll-theme-cayman : 0.0.3
+jekyll-theme-dinky : 0.0.3
+jekyll-theme-hacker : 0.0.3
+jekyll-theme-leap-day : 0.0.3
+jekyll-theme-merlot : 0.0.3
+jekyll-theme-midnight : 0.0.3
+jekyll-theme-minimal : 0.0.3
+jekyll-theme-modernist : 0.0.3
+jekyll-theme-slate : 0.0.3
+jekyll-theme-tactile : 0.0.3
+jekyll-theme-time-machine : 0.0.3
+ruby : 2.3.3
+github-pages : 112
+html-pipeline : 2.4.2
+sass : 3.4.23
+safe_yaml : 1.0.4
+-->

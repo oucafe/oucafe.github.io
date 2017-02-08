@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+  <head>
+    <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="description" content="Idea, Code, Life 思考的点点滴滴">
+<meta name="keywords" content="HTML, CSS, JS, JavaScript, framework, bootstrap, front-end, frontend, web development, showcase, expo">
+<meta name="author" content="Lax" />
+
+<title>
+  
+    命令行工具实践——测试驱动的开发方法 &#124; Peek Poke
+  
+</title>
+
+<link rel="stylesheet" href="/blog/css/jekyll.css">
+<script src="/blog/js/jekyll.js"></script>
+
+<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+<!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+
+<!-- RSS Feed -->
+<link rel="alternate" type="application/rss+xml" title="RSS" href="/blog/feed.xml">
+<link rel="alternate" type="application/atom+xml" title="Atom" href="/blog/atom.xml" />
+
+<!-- Favicons -->
+<link rel="icon" href="/blog/favicon.ico">
+<link rel="apple-touch-icon" href="/blog/apple-touch-icon.png">
+
+  </head>
+  <body data-spy="scroll" data-target="#toc">
+    <div class="container">
+  <div class="header clearfix">
+    <nav>
+      <ul class="nav nav-pills pull-right">
+        <li class="nav-item">
+          <a class="nav-link" href="/">Home</a>
+        </li>
+        
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+            
+              <li class="nav-item">
+                <a class="nav-link" href="/about/">关于我</a>
+              </li>
+            
+          
+        
+          
+        
+          
+            
+              <li class="nav-item">
+                <a class="nav-link" href="/documents/">文档</a>
+              </li>
+            
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+          
+            
+              <li class="nav-item">
+                <a class="nav-link" href="/links/">资源链接</a>
+              </li>
+            
+          
+        
+          
+        
+          
+            
+              <li class="nav-item">
+                <a class="nav-link" href="/projects/">项目</a>
+              </li>
+            
+          
+        
+          
+        
+          
+        
+          
+        
+          
+        
+      </ul>
+    </nav>
+    <h3 class="text-muted" data-toc-skip><a href="/">Peek Poke</a></h3>
+  </div>
+</div>
+
+
+    <div class="container">
+      <div class="post">
+
+  <header class="post-header">
+    <h1>命令行工具实践——测试驱动的开发方法</h1>
+    <p class="meta">Jul 18, 2015</p>
+    
+<share>
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style"><span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_tsina" data-proofer-ignore></a>
+<a class="jiathis_button_weixin" data-proofer-ignore></a>
+<a class="jiathis_button_twitter" data-proofer-ignore></a>
+<a class="jiathis_button_linkedin" data-proofer-ignore></a>
+<a class="jiathis_button_instapaper" data-proofer-ignore></a>
+<a class="jiathis_button_fav" data-proofer-ignore></a>
+<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+<a class="jiathis_counter_style" data-proofer-ignore></a>
+</div>
+<script type="text/javascript" >
+var jiathis_config={
+	sm:"tsina,weixin,fav,copy,twitter,linkedin",
+	summary:"",
+	ralateuid:{
+		"tsina":"1653644220"
+	},
+	shortUrl:false,
+	hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+
+</share>
+
+
+  </header>
+
+  <div class="clearfix"></div>
+
+  <hr class="masthead-hr">
+
+  <div class="row">
+    <div class="col-sm-9">
+      <article class="post-content">
+      <p><strong>TL;DR;</strong>
+本文介绍了 <code class="highlighter-rouge">to_yaml</code> 的开发过程中如何采用 <code class="highlighter-rouge">TDD</code> 方法开发功能，以及用到的免费服务 <code class="highlighter-rouge">GitHub</code> / <code class="highlighter-rouge">TravisCI</code> / <code class="highlighter-rouge">RubyGems</code>。</p>
+
+<p><code class="highlighter-rouge">TDD</code> (测试驱动开发)是敏捷开发中的一项核心实践和技术，也是一种设计方法论。
+<code class="highlighter-rouge">TDD</code> 的原理是在开发功能代码之前，先编写单元测试用例代码，测试代码确定需要编写什么产品代码。</p>
+
+<p><code class="highlighter-rouge">to_yaml</code> 是一款命令行工具，<em>将 <code class="highlighter-rouge">JSON</code> 输入转为 <code class="highlighter-rouge">YAML</code> 文本输出</em>。</p>
+
+<!--excerpt-->
+
+<h3 id="section">背景</h3>
+
+<p>先从最近使用的 <code class="highlighter-rouge">ElasticSearch</code> 说起。
+作为通用的日志收集、分析与展示的工具集，<code class="highlighter-rouge">ELK</code> 工具栈已经相当普及。
+其中在管理 <code class="highlighter-rouge">ElasticSearch</code> 集群时，大部分时间都要使用 <code class="highlighter-rouge">HTTP</code> 接口跟 <code class="highlighter-rouge">JSON</code> 格式数据打交道。</p>
+
+<p>ES 输出 <code class="highlighter-rouge">JSON</code> 数据内容比较多，即使使用 <code class="highlighter-rouge">?pretty</code> 参数，仍然难看清数据的层次关系。
+<code class="highlighter-rouge">?pretty</code> 的一个副作用是输出内容过长，浪费了大量的屏幕纵向空间。</p>
+
+<p>使用 <code class="highlighter-rouge">YAML</code> 格式能够在很大程度上缓解空间的问题。
+基于这个想法，做了一个简单的工具出来，发布在了 <a href="https://rubygems.org">RubyGems.org</a>。</p>
+
+<h3 id="section-1">初步想法</h3>
+
+<p>在实际使用 <code class="highlighter-rouge">JSON</code> 时，希望的是能直接将接口输出内容直接转换为 <code class="highlighter-rouge">YAML</code> 格式。
+如这样的形式：</p>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>$ curl -s -XGET http://localhost:9200/_mappings | to_yaml
+</code></pre>
+</div>
+
+<p>另外，要把这个工具作为<code class="highlighter-rouge">软件包</code>发布出来，方便别的地方使用。
+<code class="highlighter-rouge">ruby</code> 程序的第一选择即是 <code class="highlighter-rouge">gem</code>。</p>
+
+<p>使用 <code class="highlighter-rouge">gem</code> 发布还有一个好处：可以利用 <code class="highlighter-rouge">ruby</code> 的开发工具，如 <code class="highlighter-rouge">bundle</code>、<code class="highlighter-rouge">rspec</code> 等，来发布质量可控的软件。</p>
+
+<h3 id="section-2">开始动手</h3>
+
+<h4 id="gem-">创建 <code class="highlighter-rouge">gem</code> 框架目录</h4>
+
+<p>现阶段最简单的工具是 <code class="highlighter-rouge">bundle gem</code>。</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>bundle gem to_yaml
+Creating gem <span class="s1">'to_yaml'</span>...
+Code of conduct enabled <span class="k">in </span>config
+MIT License enabled <span class="k">in </span>config
+      create  to_yaml/Gemfile
+      create  to_yaml/.gitignore
+      create  to_yaml/lib/to_yaml.rb
+      create  to_yaml/lib/to_yaml/version.rb
+      create  to_yaml/to_yaml.gemspec
+      create  to_yaml/Rakefile
+      create  to_yaml/README.md
+      create  to_yaml/bin/console
+      create  to_yaml/bin/setup
+      create  to_yaml/CODE_OF_CONDUCT.md
+      create  to_yaml/LICENSE.txt
+      create  to_yaml/.travis.yml
+      create  to_yaml/.rspec
+      create  to_yaml/spec/spec_helper.rb
+      create  to_yaml/spec/to_yaml_spec.rb
+Initializing git repo <span class="k">in</span> /private/tmp/to_yaml</code></pre></figure>
+
+<p>更改 <code class="highlighter-rouge">to_yaml.gemspec</code> 中的基本信息，所有标记 <code class="highlighter-rouge">TODO</code> 的全酌情修改。</p>
+
+<p>在 <code class="highlighter-rouge">github</code> 上创建一个代码库。然后
+<code class="highlighter-rouge">git add . &amp;&amp; git commit -am Init &amp;&amp; git push</code>。</p>
+
+<p>现在我们已经有了基本的框架。</p>
+
+<h4 id="section-3"><strong>代码未动，测试先行</strong></h4>
+
+<p>查看 <code class="highlighter-rouge">Rakefile</code> 内容如下</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="nb">require</span> <span class="s2">"bundler/gem_tasks"</span>
+<span class="nb">require</span> <span class="s2">"rspec/core/rake_task"</span>
+
+<span class="no">RSpec</span><span class="o">::</span><span class="no">Core</span><span class="o">::</span><span class="no">RakeTask</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="ss">:spec</span><span class="p">)</span>
+
+<span class="n">task</span> <span class="ss">:default</span> <span class="o">=&gt;</span> <span class="ss">:spec</span></code></pre></figure>
+
+<p>命令行执行 <code class="highlighter-rouge">rake spec</code> 或 <code class="highlighter-rouge">rake</code>，可以执行默认的测试用例。</p>
+
+<p>来让我们为 <code class="highlighter-rouge">to_yaml</code> 工具写一个最简单的用例。</p>
+
+<p>打开 <code class="highlighter-rouge">spec/to_yaml_spec.rb</code> 文件，在 <code class="highlighter-rouge">describe ToYaml</code> 与对应 <code class="highlighter-rouge">end</code> 直接增加一个用例</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">  <span class="n">it</span> <span class="s1">'parse json with cli'</span> <span class="k">do</span>
+    <span class="n">json_str</span> <span class="o">=</span> <span class="s1">'{"a": [1, 2, 3], "b": {"c": "d"}}'</span>
+    <span class="n">yaml_str</span> <span class="o">=</span> <span class="s1">'---\na:\n- 1\n- 2\n- 3\nb:\n  c: d\n'</span>
+
+    <span class="n">cli_output</span> <span class="o">=</span> <span class="n">run_cli</span><span class="p">(</span><span class="s1">'./exe/to_yaml'</span><span class="p">,</span> <span class="n">json_str</span><span class="p">)</span>
+    <span class="n">expect</span><span class="p">(</span><span class="n">cli_output</span><span class="p">).</span><span class="nf">to</span> <span class="n">eq</span><span class="p">(</span><span class="n">yaml_str</span><span class="p">)</span>
+  <span class="k">end</span></code></pre></figure>
+
+<p>修改 <code class="highlighter-rouge">spec/spec_helper.rb</code>，加入 helper 方法</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="nb">require</span> <span class="s1">'open3'</span>
+
+<span class="k">def</span> <span class="nf">run_cli</span><span class="p">(</span><span class="n">exe</span><span class="o">=</span><span class="s2">"./exe/to_yaml"</span><span class="p">,</span> <span class="n">input</span><span class="p">)</span>
+  <span class="n">cmd</span> <span class="o">=</span> <span class="sx">%Q{echo </span><span class="se">\'</span><span class="si">#{</span><span class="n">input</span><span class="si">}</span><span class="se">\'</span><span class="sx">| bundle exec </span><span class="si">#{</span><span class="n">exe</span><span class="si">}</span><span class="sx">}</span>
+  <span class="n">output</span> <span class="o">=</span> <span class="no">Open3</span><span class="p">.</span><span class="nf">popen3</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">stdin</span><span class="p">,</span> <span class="n">stdout</span><span class="p">,</span> <span class="n">stderr</span><span class="p">,</span> <span class="n">wait_thr</span><span class="o">|</span> <span class="n">stdout</span><span class="p">.</span><span class="nf">read</span> <span class="p">}</span>
+<span class="k">end</span></code></pre></figure>
+
+<p>注意这里面，我们构造一个 <code class="highlighter-rouge">JSON</code> 字符串 <code class="highlighter-rouge">json_str</code>，和一个 <code class="highlighter-rouge">YAML</code> 字符串 <code class="highlighter-rouge">yaml_str</code>。
+期望的行为是运行 <code class="highlighter-rouge">./exe/to_yaml</code> 命令处理 <code class="highlighter-rouge">json_str</code> 后，输出 <code class="highlighter-rouge">cli_output</code> 与 <code class="highlighter-rouge">yaml_str</code> 一致。</p>
+
+<p>现在执行这个测试 <code class="highlighter-rouge">rake spec</code> 或 <code class="highlighter-rouge">rake</code>，毫无悬念失败了。</p>
+
+<p>不过这是一个好的开头，我们有了明确的目标：让测试成功。</p>
+
+<h4 id="section-4">创建命令行</h4>
+
+<p>在 <code class="highlighter-rouge">to_yaml.gemspec</code> 中，通过 <code class="highlighter-rouge">spec.executables</code> 指定了可执行文件的路径为 <code class="highlighter-rouge">./exe/</code> 目录。</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby">  <span class="n">spec</span><span class="p">.</span><span class="nf">executables</span>   <span class="o">=</span> <span class="n">spec</span><span class="p">.</span><span class="nf">files</span><span class="p">.</span><span class="nf">grep</span><span class="p">(</span><span class="sr">%r{^exe/}</span><span class="p">)</span> <span class="p">{</span> <span class="o">|</span><span class="n">f</span><span class="o">|</span> <span class="no">File</span><span class="p">.</span><span class="nf">basename</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="p">}</span></code></pre></figure>
+
+<p><code class="highlighter-rouge">to_yaml</code> 命令文件就放在这里。</p>
+
+<p>现在创建 <code class="highlighter-rouge">exe/to_yaml</code> 文件，加入内容：</p>
+
+<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="c1">#!/usr/bin/env ruby</span>
+
+<span class="nb">require</span> <span class="s1">'json'</span>
+<span class="nb">require</span> <span class="s1">'yaml'</span>
+
+<span class="nb">puts</span> <span class="no">JSON</span><span class="p">.</span><span class="nf">load</span><span class="p">(</span><span class="no">STDIN</span><span class="p">).</span><span class="nf">to_yaml</span></code></pre></figure>
+
+<p>再简单不过的一个单行脚本。
+按我们的设想，从 <code class="highlighter-rouge">STDIN</code> 读入内容，转化为 <code class="highlighter-rouge">YAML</code> 格式。
+本着 <a href="https://en.wikipedia.org/wiki/You_aren%27t_gonna_need_it">YAGNI</a> 原则，没做任何额外的容错 - -!</p>
+
+<p>现在执行测试</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>rake spec
+
+ToYaml
+  has a version number
+  parse json with cli
+
+Finished <span class="k">in </span>0.77046 seconds <span class="o">(</span>files took 0.09961 seconds to load<span class="o">)</span>
+2 examples, 0 failures</code></pre></figure>
+
+<p>太棒了，测试用例全部成功。</p>
+
+<h4 id="again">测试，<strong>AGAIN</strong></h4>
+
+<p>目前为止的测试还在靠手工驱动执行。
+而在实践中，则需要<strong>将持续构建整合进开发流程</strong>，所有状态都<strong>可以追溯</strong>，并能<strong>及时反馈构建结果</strong>。</p>
+
+<p>在 <code class="highlighter-rouge">gem</code> 目录下，我们可以找到一个 <code class="highlighter-rouge">.travis.yml</code> 文件。
+<a href="https://travis-ci.org">travis-ci</a> 是开源世界应用最普遍的持续集成工具。</p>
+
+<p>使用 <code class="highlighter-rouge">travis-ci</code> 需要先做设置。
+到 https://travis-ci.org，使用 <code class="highlighter-rouge">github</code> 帐号登录，并从 <code class="highlighter-rouge">github</code> 中添加我们的 <code class="highlighter-rouge">to_yaml</code> 项目。</p>
+
+<p>设置完毕，下次我们 push 代码到 <code class="highlighter-rouge">github</code>，<code class="highlighter-rouge">travis-ci</code> 可以自动开始构建。
+为了方便从 <code class="highlighter-rouge">GitHub</code> 页面看到项目 Build 状态，在 <code class="highlighter-rouge">README.md</code> 文件里增加项目的状态图标</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="o">[</span>![Build Status]<span class="o">(</span>https://travis-ci.org/Lax/to_yaml.svg?branch<span class="o">=</span>master<span class="o">)](</span>https://travis-ci.org/Lax/to_yaml<span class="o">)</span></code></pre></figure>
+
+<p>刚才已经在本地测试成功，现在将代码 commit 并 push 到 <code class="highlighter-rouge">github</code>。
+从 <code class="highlighter-rouge">travis-ci</code> 页面，我们看到已经创建了第一次构建 <a href="https://travis-ci.org/Lax/to_yaml/builds/71275189">Build #1</a>。
+很幸运，这次构建到结果也成功了！</p>
+
+<h4 id="section-5">发布</h4>
+
+<p><code class="highlighter-rouge">rake release</code> 可以自动创建一个发布 tag，将代码 push 到 <code class="highlighter-rouge">github</code>。
+并 build 出 to_yaml.gem，通过 <code class="highlighter-rouge">gem push</code> 发布到 rubygems.org。</p>
+
+<h3 id="section-6">使用</h3>
+
+<p>下次使用时，直接 <code class="highlighter-rouge">gem install to_yaml</code>，既可以在 <code class="highlighter-rouge">PATH</code> 中搜索到 <code class="highlighter-rouge">to_yaml</code> 执行程序。</p>
+
+<p>测试一个公开的 <code class="highlighter-rouge">JSON</code> 服务：</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="gp">$ </span>curl -s http://jsonip.com
+<span class="o">{</span><span class="s2">"ip"</span>:<span class="s2">"123.45.67.89"</span>,<span class="s2">"about"</span>:<span class="s2">"/about"</span>,<span class="s2">"Pro!"</span>:<span class="s2">"http://getjsonip.com"</span><span class="o">}</span>
+
+<span class="gp">$ </span>curl -s http://jsonip.com | to_yaml
+---
+ip: 123.45.67.89
+about: /about
+Pro!: http://getjsonip.com</code></pre></figure>
+
+<p>很清爽，有木有！</p>
+
+<h3 id="section-7">总结展望</h3>
+
+<p>本文介绍的是一个极简工具的开发过程，希望你能感受到测试驱动开发所发挥的作用。</p>
+
+<p>作者在实际项目中也尽可能实践 <code class="highlighter-rouge">TDD</code> 方法，发布的工具如 <a href="https://github.com/Lax/aliyun">aliyun.gem</a> (一个阿里云API的客户端) 也采用了类似流程。
+甚至<a href="http://blog.liulantao.com">本博客</a>也引入了 travis-ci 做持续构建和测试，确保内容中引用的图片和链接无死链。</p>
+
+<p>如果你对本文描述的内容感兴趣，欢迎发布评论来交流。</p>
+
+      </article>
+
+      <hr class="masthead-hr">
+      <div class="meta">
+  
+    <a class="basic-alignment left" href="http://blog.liulantao.com/blog/2014/2014-10-24-using-ansible-with-a-bastion-host.html" title="Previous Post: 通过堡垒机代理SSH运行Ansible（译）" data-instant>&laquo; 通过堡垒机代理SSH运行Ansible（译）</a>
+  
+  
+    <a class="basic-alignment right pull-right" href="http://blog.liulantao.com/blog/2015/2015-08-15-easy-file-sharing-with-moosefs.html" title="Next Post: 分布式文件系统 MooseFS：告别 NFS" data-instant>分布式文件系统 MooseFS：告别 NFS &raquo;</a>
+  
+</div>
+
+
+      <hr class="masthead-hr">
+      
+<comments>
+
+<!-- UY BEGIN -->
+<div id="uyan_frame"></div>
+<script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid=1936498"></script>
+<!-- UY END -->
+
+</comments>
+
+
+    </div>
+
+    <div class="col-sm-3">
+      <nav id="toc" data-spy="affix" data-toggle="toc"></nav>
+    </div>
+  </div>
+
+</div>
+
+    </div>
+
+    <!--
+<a href="https://github.com/Lax/blog/"><img style="position: absolute; top: 0; right: 0; border: 0;" src="/images/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub!" /></a>
+-->
+
+<!-- Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-1658815-3");
+pageTracker._trackPageview();
+</script>
+<!-- Google Analytics end -->
+
+<script type="application/ld+json">
+{ "@context" : "http://schema.org",
+  "@type" : "Person",
+  "name" : "Liu Lantao",
+  "url" : "http://blog.liulantao.com",
+  "sameAs" : [
+    "https://twitter.com/liulantao"
+    "https://www.linkedin.com/in/liulantao",
+    "https://www.google.com/+LiuLantao",
+    "https://www.facebook.com/liu.lantao",
+    "https://instagram.com/liulantao",
+    "http://weibo.com/u/1653644220"
+  ]
+}
+</script>
+
+
+  </body>
+</html><!--
+environment: dotcom
+build_revision: 4a071e293f2d0462c6a58130a77cf5309b263ddc
+url: http://blog.liulantao.com/blog
+jekyll : 3.3.1
+jekyll-sass-converter : 1.3.0
+kramdown : 1.11.1
+liquid : 3.0.6
+rouge : 1.11.1
+github-pages-health-check : 1.3.0
+jekyll-redirect-from : 0.11.0
+jekyll-sitemap : 0.12.0
+jekyll-feed : 0.8.0
+jekyll-gist : 1.4.0
+jekyll-paginate : 1.1.0
+jekyll-coffeescript : 1.0.1
+jekyll-seo-tag : 2.1.0
+jekyll-github-metadata : 2.2.0
+jekyll-avatar : 0.4.2
+jemoji : 0.7.0
+jekyll-mentions : 1.2.0
+jekyll-relative-links : 0.2.1
+jekyll-optional-front-matter : 0.1.2
+jekyll-readme-index : 0.0.3
+jekyll-default-layout : 0.1.4
+jekyll-titles-from-headings : 0.1.3
+listen : 3.0.6
+activesupport : 4.2.7
+minima : 2.0.0
+jekyll-swiss : 0.4.0
+jekyll-theme-primer : 0.1.5
+jekyll-theme-architect : 0.0.3
+jekyll-theme-cayman : 0.0.3
+jekyll-theme-dinky : 0.0.3
+jekyll-theme-hacker : 0.0.3
+jekyll-theme-leap-day : 0.0.3
+jekyll-theme-merlot : 0.0.3
+jekyll-theme-midnight : 0.0.3
+jekyll-theme-minimal : 0.0.3
+jekyll-theme-modernist : 0.0.3
+jekyll-theme-slate : 0.0.3
+jekyll-theme-tactile : 0.0.3
+jekyll-theme-time-machine : 0.0.3
+ruby : 2.3.3
+github-pages : 112
+html-pipeline : 2.4.2
+sass : 3.4.23
+safe_yaml : 1.0.4
+-->
