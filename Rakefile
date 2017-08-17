@@ -1,14 +1,22 @@
-desc "Generate jekyll site"
-task :gen do
-  puts "## Generating Site with Jekyll"
-  system "jekyll build --lsi"
+require 'html-proofer'
+require 'jekyll'
+
+task :default => [:test]
+
+task :test => [:build, :html_proofer]
+
+task :build do
+  config = Jekyll.configuration({
+    'source' => './',
+    'destination' => './_site'
+  })
+  site = Jekyll::Site.new(config)
+  Jekyll::Commands::Build.build site, config
 end
 
-desc "Deploy to github/gitcafe"
-task :deploy do
-  puts "### Git push"
-  system "git push origin master"
-  system "git push gitcafe master:gitcafe-pages"
+task :html_proofer do
+  file_ignore = %w{./_site/SwiftQuickRef/index.html ./_site/SwiftBeginnersGuide/index.html ./_site/the-scientific-method-for-startups.html}
+  HTMLProofer.check_directory("./_site", {disable_external: true, check_favicon: true, file_ignore: file_ignore, parallel: { in_progresses: 3 }, typhoeus: { verbose: false }}).run
 end
 
 desc "Preview drafts"
