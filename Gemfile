@@ -28,4 +28,4 @@ gem 'html-proofer'
 gem "nokogiri"
 
 gem 'jekyll-compose', group: :jekyll_plugins
-gem 'jekyll-admin', group: :jekyll_plugins
+#gem 'jekyll-admin', group: :jekyll_plugins
