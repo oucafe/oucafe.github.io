@@ -1,0 +1,1858 @@
+<!DOCTYPE html>   
+<!--[if lt IE 7 ]> <html lang="en" class="no-js ie6"> <![endif]-->
+<!--[if IE 7 ]> <html lang="en" class="no-js ie7"> <![endif]-->
+<!--[if IE 8 ]> <html lang="en" class="no-js ie8"> <![endif]-->
+<!--[if IE 9 ]> <html lang="en" class="no-js ie9"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html lang="zh-CN" prefix="og: http://ogp.me/ns#" class="no-js"> <!--<![endif]-->
+
+
+<!-- BEGIN head -->
+<head>
+
+	<!-- Title -->
+	
+	
+	<!-- Meta Tags -->
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	
+	<!-- Favicon & Mobileicon -->
+	<link rel="shortcut icon" href="http://jbcdn2.b0.upaiyun.com/2013/12/favicon.png" />
+	<link rel="apple-touch-icon" href="http://jbcdn2.b0.upaiyun.com/2013/12/jobbole-blog-logo-mobile.png" />
+	
+	<!-- RSS, Atom & Pingbacks -->
+		<link rel="alternate" title="文章 &#8211; 伯乐在线 RSS Feed" href="http://blog.jobbole.com/feed/" />
+		<link rel="alternate" title="RSS .92" href="http://blog.jobbole.com/feed/rss/" />
+	<link rel="alternate" title="Atom 0.3" href="http://blog.jobbole.com/feed/atom/" />
+	<link rel="pingback" href="http://blog.jobbole.com/xmlrpc.php" />
+	
+	<!-- Theme Hook -->
+	
+<!-- This site is optimized with the Yoast WordPress SEO plugin v1.4.13 - http://yoast.com/wordpress/seo/ -->
+<title>使用 Graylog 和 Prometheus 监视 Kubernetes 集群 - 文章 - 伯乐在线</title>
+<meta name="description" content="在本文中，我将使用 Graylog （用于日志）和 Prometheus （用于指标）去打造一个 Kubernetes 集群的监视解决方案。"/>
+<link rel="canonical" href="http://blog.jobbole.com/113875/" />
+<meta property='og:locale' content='zh_CN'/>
+<meta property='og:type' content='article'/>
+<meta property='og:title' content='使用 Graylog 和 Prometheus 监视 Kubernetes 集群 - 文章 - 伯乐在线'/>
+<meta property='og:description' content='在本文中，我将使用 Graylog （用于日志）和 Prometheus （用于指标）去打造一个 Kubernetes 集群的监视解决方案。'/>
+<meta property='og:url' content='http://blog.jobbole.com/113875/'/>
+<meta property='og:site_name' content='文章 - 伯乐在线'/>
+<meta property='og:image' content='https://dn-linuxcn.qbox.me/data/attachment/album/201804/10/182842hu1toaq9hhh9uiou.png'/>
+<meta property='og:image' content='http://jbcdn2.b0.upaiyun.com/2018/04/0a84a2dc6e19e9e92a195dbe6c5eb6b1.png'/>
+<meta property='og:image' content='http://jbcdn2.b0.upaiyun.com/2018/04/5c2e2762a0bb2a81dd5939d4a657c69d.png'/>
+<meta property='og:image' content='http://jbcdn2.b0.upaiyun.com/2018/04/e8a7154940f22e1ee5c1035698a2fab3.png'/>
+<meta property='og:image' content='http://jbcdn2.b0.upaiyun.com/2018/04/77927d348a0c12ef4855bd1116947ef5.png'/>
+<meta property='og:image' content='http://jbcdn2.b0.upaiyun.com/2018/04/8e0dc56257a324ee2f0f33426b3c105e.png'/>
+<meta property='og:image' content='http://jbcdn2.b0.upaiyun.com/2018/04/6b187118ff50bc41d040ef954b607ffe.png'/>
+<meta property='og:image' content='http://jbcdn2.b0.upaiyun.com/2018/04/76a0a9d93a75c76c8033b51957615741.png'/>
+<meta property='og:image' content='http://jbcdn2.b0.upaiyun.com/2018/04/a708ae229aeffef775184db190b97c95.png'/>
+<!-- / Yoast WordPress SEO plugin. -->
+
+<link rel='stylesheet' id='dashicons-css'  href='http://blog.jobbole.com/wp-includes/css/dashicons.min.css?ver=4.5.14' type='text/css' media='all' />
+<link rel='stylesheet' id='thickbox-css'  href='http://blog.jobbole.com/wp-includes/js/thickbox/thickbox.css?ver=4.5.14' type='text/css' media='all' />
+<link rel='stylesheet' id='fancybox-css-css'  href='http://blog.jobbole.com/wp-content/plugins/jobbole-wp-plugin/css/jquery.fancybox.css?ver=2.1.5' type='text/css' media='all' />
+<link rel='stylesheet' id='jobbole-wp-css-css'  href='http://blog.jobbole.com/wp-content/plugins/jobbole-wp-plugin/css/jobbole-wp-plugin.css?ver=1.0.30' type='text/css' media='all' />
+<link rel='stylesheet' id='crayon_colorbox_css-css'  href='http://blog.jobbole.com/wp-content/plugins/crayon-syntax-highlighter/util/tag-editor/colorbox/colorbox.css?ver=2.7.1.1' type='text/css' media='all' />
+<link rel='stylesheet' id='crayon_style-css'  href='http://blog.jobbole.com/wp-content/plugins/crayon-syntax-highlighter/css/src/crayon_style.css?ver=2.7.1.1' type='text/css' media='all' />
+<link rel='stylesheet' id='crayon_global_style-css'  href='http://blog.jobbole.com/wp-content/plugins/crayon-syntax-highlighter/css/src/global_style.css?ver=2.7.1.1' type='text/css' media='all' />
+<link rel='stylesheet' id='crayon-theme-github-css'  href='http://blog.jobbole.com/wp-content/plugins/crayon-syntax-highlighter/themes/github/github.css?ver=2.7.1.1' type='text/css' media='all' />
+<link rel='stylesheet' id='crayon-font-monaco-css'  href='http://blog.jobbole.com/wp-content/plugins/crayon-syntax-highlighter/fonts/monaco.css?ver=2.7.1.1' type='text/css' media='all' />
+<link rel='stylesheet' id='v48fv_images-css'  href='http://blog.jobbole.com/wp-content/plugins/mu-widgets/library/base/public/css/images.css?ver=1.2.v48fv' type='text/css' media='all' />
+<link rel='stylesheet' id='v48fv_front-css'  href='http://blog.jobbole.com/wp-content/plugins/mu-widgets/library/base/public/css/front.css?ver=1.2.v48fv' type='text/css' media='all' />
+<link rel='stylesheet' id='v48fv_common-css'  href='http://blog.jobbole.com/wp-content/plugins/mu-widgets/library/base/public/css/common.css?ver=1.2.v48fv' type='text/css' media='all' />
+<script type='text/javascript' src='http://blog.jobbole.com/wp-includes/js/jquery/jquery.js?ver=1.12.4'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.4.1'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/plugins/jobbole-wp-plugin/js/jquery.fancybox.pack.js?ver=2.1.5'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/plugins/jobbole-wp-plugin/js/superfish.js?ver=1.4.8'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/plugins/jobbole-wp-plugin/js/menu-effects.js?ver=1.5.1'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var JobboleAjax = {"ajaxurl":"http:\/\/blog.jobbole.com\/wp-admin\/admin-ajax.php"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/plugins/jobbole-wp-plugin/js/jobbole-wp-plugin.js?ver=1.0.61'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/plugins/crayon-syntax-highlighter/util/tag-editor/colorbox/jquery.colorbox-min.js?ver=2.7.1.1'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var CrayonSyntaxSettings = {"version":"2.7.1.1","is_admin":"0","ajaxurl":"http:\/\/blog.jobbole.com\/wp-admin\/admin-ajax.php","prefix":"crayon-","setting":"crayon-setting","selected":"crayon-setting-selected","changed":"crayon-setting-changed","special":"crayon-setting-special","orig_value":"data-orig-value","debug":""};
+var CrayonSyntaxStrings = {"copy":"\u4f7f\u7528 %s \u590d\u5236\uff0c\u4f7f\u7528 %s \u7c98\u8d34\u3002","minimize":"\u70b9\u51fb\u5c55\u5f00\u4ee3\u7801"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/plugins/crayon-syntax-highlighter/js/src/util.js?ver=2.7.1.1'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var CrayonTagEditorSettings = {"home_url":"http:\/\/blog.jobbole.com","css":"crayon-te","css_selected":"crayon-selected","code_css":"#crayon-code","url_css":"#crayon-url","url_info_css":"#crayon-te-url-info","lang_css":"#crayon-lang","title_css":"#crayon-title","mark_css":"#crayon-mark","range_css":"#crayon-range","inline_css":"crayon-inline","inline_hide_css":"crayon-hide-inline","inline_hide_only_css":"crayon-hide-inline-only","hl_css":"#crayon-highlight","switch_html":"#content-html","switch_tmce":"#content-tmce","tinymce_button_generic":".mce-btn","tinymce_button":"a.mce_crayon_tinymce,.mce-i-crayon_tinymce","tinymce_button_unique":"mce_crayon_tinymce","tinymce_highlight":"mce-active","submit_css":"#crayon-te-ok","cancel_css":"#crayon-te-cancel","content_css":"#crayon-te-content","dialog_title_css":"#crayon-te-title","submit_wrapper_css":"#crayon-te-submit-wrapper","data_value":"data-value","attr_sep":":","css_sep":"_","fallback_lang":"default","add_text":"Add Code","edit_text":"Edit Code","quicktag_text":"crayon","submit_add":"\u63d2\u5165","submit_edit":"\u4fdd\u5b58","bar":"#crayon-te-bar","bar_content":"#crayon-te-bar-content","extensions":{"scpt":"applescript","applescript":"applescript","swf":"as","fla":"as","cs":"c#","h":"c++","hh":"c++","hpp":"c++","hxx":"c++","h++":"c++","cc":"c++","cpp":"c++","cxx":"c++","c++":"c++","pas":"delphi","java":"java","class":"java","jar":"java","mv":"miva","mvc":"miva","mvt":"miva","m":"objc","mm":"objc","psc":"papyrus","pl":"perl","py":"python","pyw":"python","pyc":"python","pyo":"python","pyd":"python","rb":"ruby","rbx":"ruby","rhtml":"ruby","vbs":"vb"}};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/plugins/crayon-syntax-highlighter/util/tag-editor/crayon_tag_editor.js?ver=2.7.1.1'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/plugins/crayon-syntax-highlighter/js/src/jquery.popup.js?ver=2.7.1.1'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/plugins/crayon-syntax-highlighter/js/src/crayon.js?ver=2.7.1.1'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/modernizr.js?ver=2.5.3'></script>
+<link rel='https://api.w.org/' href='http://blog.jobbole.com/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://blog.jobbole.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://blog.jobbole.com/wp-includes/wlwmanifest.xml" /> 
+<link rel='shortlink' href='http://blog.jobbole.com/?p=113875' />
+<link rel="alternate" type="application/json+oembed" href="http://blog.jobbole.com/wp-json/oembed/1.0/embed?url=http%3A%2F%2Fblog.jobbole.com%2F113875%2F" />
+<link rel="alternate" type="text/xml+oembed" href="http://blog.jobbole.com/wp-json/oembed/1.0/embed?url=http%3A%2F%2Fblog.jobbole.com%2F113875%2F&#038;format=xml" />
+    <script type="text/javascript">
+        jQuery(function($){
+            $('.comment-reply-link').click(function(e){
+                e.preventDefault();
+                var args = $(this).data('onclick');
+                args = args.replace(/.*\(|\)/gi, '').replace(/\"|\s+/g, '');
+                args = args.split(',');
+                tinymce.EditorManager.execCommand('mceRemoveEditor', true, 'comment_editor');
+                addComment.moveForm.apply( addComment, args );
+                tinymce.EditorManager.execCommand('mceAddEditor', true, 'comment_editor');
+            });
+
+            $('#cancel-comment-reply-link').click(function(e){
+                e.preventDefault();
+                tinymce.EditorManager.execCommand('mceRemoveEditor', true, 'comment_editor');
+                tinymce.EditorManager.execCommand('mceAddEditor', true, 'comment_editor');
+            });
+        });
+    </script>
+	
+	<!-- CSS -->
+    <link rel="stylesheet" type="text/css" media="screen" href="http://blog.jobbole.com/wp-content/themes/jobboleblogv3/style.css?ver=1.0.66">
+	<style>
+				*::selection { background: #0099cc; }
+		*::-moz-selection { background: #0099cc; }
+		body {
+            background: #ffffff         }
+
+        a,
+        .tabs ul.nav li a:hover,
+        .tabs ul.nav li.active a,
+        .dropcap,
+        .toggle.hover .toggle-title,
+        li.comment cite a:hover,
+        h3.widget-title,
+        .post-meta .meta-title:hover,
+        .the-latest a:hover h4,
+        .aw_socialcounter_widget li a:hover,
+        .aw_tabbed_widget #tab-latest-comments a:hover
+        {
+            color: #0099cc;
+        }
+
+		a:hover { color: #b30000; }
+		input:focus, textarea:focus { border-color: #0099cc; }
+
+		#searchsubmit,
+        .highlight,
+        .aw_tabbed_widget .tabs ul.nav li.active a, footer .aw_tabbed_widget .tabs ul.nav li.active a,
+        #top .aw_tabbed_widget .tabs ul.nav li.active a,
+        .aw_tabbed_widget .tabs ul.nav li a:hover,
+        footer .aw_tabbed_widget .tabs ul.nav li a:hover,
+        #top .aw_tabbed_widget .tabs ul.nav li a:hover,
+        .aw_twitter_widget .twitter-icon, .testimonial-icon,
+        #top-closed:hover,
+        .flex-control-nav a:hover,
+        .flex-control-nav a.flex-active {
+            background-color: #0099cc;
+        }
+
+		.submit { background-color: #0099cc; border-color: #007399; }
+		.submit:hover { background-color: #b30000; border-color: #860000; }
+		#searchsubmit:hover { background-color: #b30000; }
+		.toggle.hover .toggle-icon { border-top-color: #0099cc; }
+		.toggle.hover.active .toggle-icon { border-bottom-color: #0099cc; }
+		.flex-direction-nav li .flex-prev:hover { border-right-color: #0099cc; }
+		.flex-direction-nav li .flex-next:hover { border-left-color: #0099cc; }
+		@media only screen and (min-width: 768px) and (max-width: 959px) {
+			.aw_tabbed_widget .tabs ul.nav li a:hover, .tabs ul.nav li.active a { color: #0099cc; }
+		}
+		@media screen and (max-width: 767px) {
+			.tabs ul.nav li a:hover, .tabs ul.nav li.active a { color: #0099cc; }
+		}
+	</style>
+
+	<!--[if IE 8]>
+		<script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+		<script src="http://ie7-js.googlecode.com/svn/version/2.1(beta4)/IE9.js"></script>
+    <![endif]-->
+
+	<!-- Links: RSS + Atom Syndication + Pingback etc. -->
+	<link rel="alternate" type="application/rss+xml" title="文章 &#8211; 伯乐在线 RSS Feed" href="http://blog.jobbole.com/feed/" />
+	<link rel="alternate" type="text/xml" title="RSS .92" href="http://blog.jobbole.com/feed/rss/" />
+	<link rel="alternate" type="application/atom+xml" title="Atom 0.3" href="http://blog.jobbole.com/feed/atom/" />
+	<link rel="pingback" href="http://blog.jobbole.com/xmlrpc.php" />
+
+<!-- END head -->
+</head>
+
+<!-- BEGIN body -->
+<body class="single single-post postid-113875 single-format-standard unknown">
+
+		
+	    <nav id="top-nav" class="menu-nav">
+
+        <!-- BEGIN .container -->
+        <div class="container">
+
+            <div class="grid-7 hide-on-480 hide-on-767">
+                <ul id="menu-main-menu" class="menu left">
+                    <li class="menu-item">
+                        <a href="http://www.jobbole.com">首页</a>
+                    </li>
+                    <li class="menu-item">
+                        <a href="http://top.jobbole.com">资讯</a>
+                    </li>
+                    <li class="menu-item">
+                        <span><a href="http://blog.jobbole.com">文章 <i class="fa fa-angle-double-down"></i></a></span>
+                        <ul class="sub-menu sf-js-enabled">
+                            <li class="menu-item"><a href="http://blog.jobbole.com">全部文章</a></li>
+                            <li class="menu-item"><a href="http://web.jobbole.com">Web前端</a></li>
+                            <li class="menu-item"><a href="http://python.jobbole.com">Python开发</a></li>
+                            <li class="menu-item"><a href="http://www.importnew.com/?utm_source=home-top-nav">Java技术</a></li>
+                            <li class="menu-item"><a href="http://android.jobbole.com">Android应用</a></li>
+                            <li class="menu-item"><a href="http://ios.jobbole.com">iOS应用</a></li>
+                        </ul>
+                    </li>
+                    <li class="menu-item">
+                        <a href="http://hao.jobbole.com">资源</a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="http://date.jobbole.com"><i class="fa fa-heart-o pinkiconcolor"></i> 相亲</a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="grid-5">
+                <ul id="menu-main-menu" class="menu">
+                    <li class="menu-item hide-on-768-wider left">
+                        <span><a href="#">频道 <i class="fa fa-angle-double-down"></i></a></span>
+                        <ul class="sub-menu sf-js-enabled">
+                            <li class="menu-item"><a href="http://www.jobbole.com">首页</a></li>
+                            <li class="menu-item"><a href="http://top.jobbole.com">资讯</a></li>
+                            <li class="menu-item"><a href="http://group.jobbole.com">小组</a></li>
+                            <li class="menu-item"><a href="http://date.jobbole.com">相亲 <i class="fa fa-heart-o pinkiconcolor"></i></a></li>
+                            <li class="menu-item"><a href="http://hao.jobbole.com">资源</a></li>
+                            <li class="menu-item"><a href="http://blog.jobbole.com">全部文章</a></li>
+                            <li class="menu-item"><a href="http://web.jobbole.com">前端</a></li>
+                            <li class="menu-item"><a href="http://python.jobbole.com">Python</a></li>
+                            <li class="menu-item"><a href="http://www.importnew.com/">Java</a></li>
+                            <li class="menu-item"><a href="http://android.jobbole.com">安卓</a></li>
+                            <li class="menu-item"><a href="http://ios.jobbole.com">iOS</a></li>
+                        </ul>
+                    </li>
+
+                                            <li class="menu-item"><a href="http://www.jobbole.com/login?redirect=http%3A%2F%2Fblog.jobbole.com%2F113875%2F"><i class="fa fa-sign-in"></i> 登录</a></li>
+                        <li class="menu-item"><a href="http://www.jobbole.com/register"><i class="fa fa-user-plus"></i> 注册</a></li>
+                    
+                    
+                    <li class="menu-item"><a title="帮助" href="http://blog.jobbole.com/87622/"><i class="fa fa-question-circle fa-lg"></i></a></li>
+                </ul>
+            </div>
+            <div class="clear"></div>
+
+        </div>
+        <!-- END .container -->
+
+    </nav>
+    <!-- END #top-nav -->
+  	
+	<!-- BEGIN #wrapper -->
+	<div id="wrapper" class="container">
+
+		<!-- BEGIN header -->
+		<header>
+		
+						
+			<div class="header-wrapper">
+								
+				<!-- BEGIN #logo -->
+				<div id="logo" class="leaderboard-true">
+                    <a href="http://blog.jobbole.com"><img src="http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/img/jobbole-logo.png" alt="文章 &#8211; 伯乐在线" /></a>
+				</div>
+				<!-- END #logo -->
+				
+				<!-- BEGIN #leaderboard -->
+				<div id="leaderboard">
+				
+									
+				</div>
+				<!-- END #leaderboard -->
+				
+				<div class="clear"></div>
+			
+			</div>
+			
+						
+			<div class="clear"></div>
+
+            			<!-- BEGIN #main-nav -->
+			<nav id="main-nav" class="grid-12 menu-nav">
+                <div class="menu-sub-menu-container"><ul id="main-nav-menu" class="menu"><li id="menu-item-33290" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-33290"><a href="http://blog.jobbole.com/">首页</a></li>
+<li id="menu-item-33406" class="menu-item menu-item-type-post_type menu-item-object-page current_page_parent menu-item-33406"><a href="http://blog.jobbole.com/all-posts/">最新文章</a></li>
+<li id="menu-item-33390" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-33390"><a href="http://blog.jobbole.com/category/career/">IT 职场</a></li>
+<li id="menu-item-81047" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-81047"><a href="http://web.jobbole.com">前端</a>
+<ul class="sub-menu">
+	<li id="menu-item-107327" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-107327"><a href="http://web.jobbole.com/category/javascript-2/">JavaScript</a></li>
+	<li id="menu-item-107329" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-107329"><a href="http://web.jobbole.com/category/html5/">HTML5</a></li>
+	<li id="menu-item-107328" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-107328"><a href="http://web.jobbole.com/category/css/">CSS</a></li>
+</ul>
+</li>
+<li id="menu-item-107321" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-107321"><a href="#">后端</a>
+<ul class="sub-menu">
+	<li id="menu-item-81218" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-81218"><a href="http://python.jobbole.com">Python</a></li>
+	<li id="menu-item-53194" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-53194"><a href="http://www.importnew.com">Java</a></li>
+	<li id="menu-item-57616" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-57616"><a href="http://blog.jobbole.com/category/c-cpp/">C/C++</a></li>
+	<li id="menu-item-57003" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-57003"><a href="http://blog.jobbole.com/category/php-programmer/">PHP</a></li>
+	<li id="menu-item-97173" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-97173"><a href="http://blog.jobbole.com/tag/net/">.NET</a></li>
+	<li id="menu-item-55603" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55603"><a href="http://blog.jobbole.com/category/ruby/">Ruby</a></li>
+	<li id="menu-item-70347" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-70347"><a href="http://blog.jobbole.com/category/go/">Go</a></li>
+</ul>
+</li>
+<li id="menu-item-107322" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-107322"><a href="#">移动端</a>
+<ul class="sub-menu">
+	<li id="menu-item-81220" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-81220"><a href="http://android.jobbole.com">Android</a></li>
+	<li id="menu-item-81219" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-81219"><a href="http://ios.jobbole.com">iOS</a></li>
+</ul>
+</li>
+<li id="menu-item-107323" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-107323"><a href="http://blog.jobbole.com/tag/database/">数据库</a></li>
+<li id="menu-item-107324" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-107324"><a href="#">运维</a>
+<ul class="sub-menu">
+	<li id="menu-item-55604" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55604"><a href="http://blog.jobbole.com/tag/linux/">Linux</a></li>
+	<li id="menu-item-55607" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55607"><a href="http://blog.jobbole.com/tag/unix/">UNIX</a></li>
+</ul>
+</li>
+<li id="menu-item-107326" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-107326"><a href="#">其他技术</a>
+<ul class="sub-menu">
+	<li id="menu-item-55606" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55606"><a href="http://blog.jobbole.com/tag/git/">Git</a></li>
+	<li id="menu-item-89963" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-89963"><a href="http://blog.jobbole.com/tag/machinelearning/">机器学习</a></li>
+	<li id="menu-item-55635" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55635"><a href="http://blog.jobbole.com/tag/algorithm/">算法</a></li>
+	<li id="menu-item-55612" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55612"><a href="http://blog.jobbole.com/tag/%e6%b5%8b%e8%af%95/">测试</a></li>
+	<li id="menu-item-55618" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55618"><a href="http://blog.jobbole.com/tag/%e5%ae%89%e5%85%a8/">信息安全</a></li>
+	<li id="menu-item-55636" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-55636"><a href="http://blog.jobbole.com/tag/vim/">Vim</a></li>
+</ul>
+</li>
+</ul></div>				<div class="clear"></div>
+			</nav>
+			<!-- END #main-nav -->
+                        <div class="clear"></div>
+
+		</header>
+		<!-- END header -->
+		
+		<div id="breadcrumb" class="grid-12 margin-20"><div class="breadcrumb-wrapper"><!-- Breadcrumb NavXT 4.4.0 -->
+<a title="Go to 伯乐在线." href="http://www.jobbole.com" class="main-home">伯乐在线</a> &gt; <a href="http://blog.jobbole.com" class="home">首页</a> &gt; <a href="http://blog.jobbole.com/all-posts/" class="post-root post-post">所有文章</a> &gt; <a href="http://blog.jobbole.com/category/it-tech/" class="category">IT技术</a> &gt; 使用 Graylog 和 Prometheus 监视 Kubernetes 集群</div></div><div class="clear"></div>
+
+<!-- BEGIN .grid-8 -->
+<div class="grid-8">
+
+		
+	<!-- BEGIN .post -->
+<div class="post-113875 post type-post status-publish format-standard hentry category-it-tech tag-4377 odd" id="post-113875">
+	
+	<!-- BEGIN .entry-header -->
+	<div class="entry-header">
+	
+				
+		<h1>使用 Graylog 和 Prometheus 监视 Kubernetes 集群</h1>
+		
+							
+	</div>
+	<!-- BEGIN .entry-header -->
+	
+	<!-- BEGIN .entry-meta -->
+	<div class="entry-meta">
+	
+		<p class="entry-meta-hide-on-mobile">
+
+            2018/04/13 &middot;  <a href="http://blog.jobbole.com/category/it-tech/" rel="category tag">IT技术</a>
+            
+                            &middot; <a href="#article-comment"> 2 评论 </a>
+            
+
+            
+             &middot;  <a href="http://blog.jobbole.com/tag/%e9%9b%86%e7%be%a4/">集群</a>
+            
+</p>
+
+<!-- JiaThis Button BEGIN -->
+<div class="jiathis_style" style="display: block; margin: 0 0px; clear: both;"><span class="jiathis_txt">分享到：</span>
+<a class="jiathis_button_tsina"></a>
+<a class="jiathis_button_weixin"></a>
+<a class="jiathis_button_qzone"></a>
+<a class="jiathis_button_fb"></a>
+<a class="jiathis_button_douban"></a>
+<a class="jiathis_button_readitlater"></a>
+<a class="jiathis_button_evernote"></a>
+<a class="jiathis_button_ydnote"></a>
+<a href="http://www.jiathis.com/share?uid=1745061" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+<a class="jiathis_counter_style"></a>
+</div>
+<!-- JiaThis Button END -->
+
+
+	</div>
+	<!-- END .entry-meta -->
+
+	<!-- BEGIN .entry -->
+	<div class="entry">
+
+        			<div class="textwidget"></div>
+		
+		<div class='copyright-area'>原文出处： <a ref='nofollow' target='_blank' href='https://insights.ubuntu.com/2018/01/16/monitor-your-kubernetes-cluster/'>Kevin Monroe</a>&nbsp;&nbsp;&nbsp;译文出处：<a target='_blank' href='https://linux.cn/article-9534-1.html'>Linux中国/qhwdw</a>&nbsp;&nbsp;&nbsp;</div><p>这篇文章最初发表在 <a href="https://medium.com/@kwmonroe/monitor-your-kubernetes-cluster-a856d2603ec3">Kevin Monroe 的博客</a> 上。</p>
+<p>监视日志和指标状态是集群管理员的重点工作。它的好处很明显：指标能帮你设置一个合理的性能目标，而日志分析可以发现影响你工作负载的问题。然而，困难的是如何找到一个与大量运行的应用程序一起工作的监视解决方案。</p>
+<p>在本文中，我将使用 <a href="https://www.graylog.org/">Graylog</a> （用于日志）和 <a href="https://prometheus.io/">Prometheus</a> （用于指标）去打造一个 Kubernetes 集群的监视解决方案。当然了，这不仅是将三个东西连接起来那么简单，实现上，最终结果看起来应该如题图所示：</p>
+<p><img src="https://dn-linuxcn.qbox.me/data/attachment/album/201804/10/182842hu1toaq9hhh9uiou.png" alt="" /></p>
+<p>正如你所了解的，Kubernetes 不是一件东西 —— 它由主控节点、工作节点、网络连接、配置管理等等组成。同样，Graylog 是一个配角（apache2、mongodb、等等），Prometheus 也一样（telegraf、grafana 等等）。在部署中连接这些点看起来似乎有些让人恐惧，但是使用合适的工具将不会那么困难。</p>
+<p>我将使用 <a href="https://conjure-up.io/">conjure-up</a> 和 <a href="https://jujucharms.com/canonical-kubernetes">Canonical 版本的 Kubernetes</a> (CDK) 去探索 Kubernetes。我发现 <code>conjure-up</code> 接口对部署大型软件很有帮助，但是我知道一些人可能不喜欢 GUI、TUI 以及其它用户界面。对于这些人，我将用命令行再去部署一遍。</p>
+<p>在开始之前需要注意的一点是，Graylog 和 Prometheus 是部署在 Kubernetes 外侧而不是集群上。像 Kubernetes 仪表盘和 Heapster 是运行的集群的非常好的信息来源，但是我的目标是为日志/指标提供一个分析机制，而不管集群运行与否。</p>
+<h3 id="toc_1">开始探索</h3>
+<p>如果你的系统上没有 <code>conjure-up</code>，首先要做的第一件事情是，请先安装它，在 Linux 上，这很简单：</p><!-- Crayon Syntax Highlighter v2.7.1.1 -->
+
+		<div id="crayon-5ad7ff2d6caf9561244067" class="crayon-syntax crayon-theme-github crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-always" style=" margin-top: 12px; margin-bottom: 12px; font-size: 13px !important; line-height: 15px !important;">
+		
+			<div class="crayon-toolbar" data-settings=" show" style="font-size: 13px !important;height: 19.5px !important; line-height: 19.5px !important;"><span class="crayon-title"></span>
+			<div class="crayon-tools" style="font-size: 13px !important;height: 19.5px !important; line-height: 19.5px !important;"><div class="crayon-button crayon-nums-button" title="切换是否显示行编号"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="纯文本显示代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="切换自动换行"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="点击展开代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="复制代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="在新窗口中显示代码"><div class="crayon-button-icon"></div></div></div></div>
+			<div class="crayon-info" style="min-height: 18.2px !important; line-height: 18.2px !important;"></div>
+			<div class="crayon-plain-wrap"><textarea wrap="soft" class="crayon-plain print-no" data-settings="dblclick" readonly style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 13px !important; line-height: 15px !important;">
+sudo snap install conjure-up --classic
+</textarea></div>
+			<div class="crayon-main" style="">
+				<table class="crayon-table">
+					<tr class="crayon-row">
+				<td class="crayon-nums " data-settings="show">
+					<div class="crayon-nums-content" style="font-size: 13px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5ad7ff2d6caf9561244067-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5ad7ff2d6caf9561244067-2">2</div></div>
+				</td>
+						<td class="crayon-code"><div class="crayon-pre" style="font-size: 13px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5ad7ff2d6caf9561244067-1"><span class="crayon-e">sudo </span><span class="crayon-e">snap </span><span class="crayon-e">install </span><span class="crayon-v">conjure</span><span class="crayon-o">-</span><span class="crayon-v">up</span><span class="crayon-h"> </span><span class="crayon-o">--</span><span class="crayon-i">classic</span></div><div class="crayon-line crayon-striped-line" id="crayon-5ad7ff2d6caf9561244067-2">&nbsp;</div></div></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+<!-- [Format Time: 0.0015 seconds] -->
+<p>对于 macOS 用户也提供了 brew 包：</p><!-- Crayon Syntax Highlighter v2.7.1.1 -->
+
+		<div id="crayon-5ad7ff2d6cb03156925827" class="crayon-syntax crayon-theme-github crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-always" style=" margin-top: 12px; margin-bottom: 12px; font-size: 13px !important; line-height: 15px !important;">
+		
+			<div class="crayon-toolbar" data-settings=" show" style="font-size: 13px !important;height: 19.5px !important; line-height: 19.5px !important;"><span class="crayon-title"></span>
+			<div class="crayon-tools" style="font-size: 13px !important;height: 19.5px !important; line-height: 19.5px !important;"><div class="crayon-button crayon-nums-button" title="切换是否显示行编号"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="纯文本显示代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="切换自动换行"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="点击展开代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="复制代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="在新窗口中显示代码"><div class="crayon-button-icon"></div></div></div></div>
+			<div class="crayon-info" style="min-height: 18.2px !important; line-height: 18.2px !important;"></div>
+			<div class="crayon-plain-wrap"><textarea wrap="soft" class="crayon-plain print-no" data-settings="dblclick" readonly style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 13px !important; line-height: 15px !important;">
+brew install conjure-up
+</textarea></div>
+			<div class="crayon-main" style="">
+				<table class="crayon-table">
+					<tr class="crayon-row">
+				<td class="crayon-nums " data-settings="show">
+					<div class="crayon-nums-content" style="font-size: 13px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5ad7ff2d6cb03156925827-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5ad7ff2d6cb03156925827-2">2</div></div>
+				</td>
+						<td class="crayon-code"><div class="crayon-pre" style="font-size: 13px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5ad7ff2d6cb03156925827-1"><span class="crayon-e">brew </span><span class="crayon-e">install </span><span class="crayon-v">conjure</span><span class="crayon-o">-</span><span class="crayon-i">up</span></div><div class="crayon-line crayon-striped-line" id="crayon-5ad7ff2d6cb03156925827-2">&nbsp;</div></div></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+<!-- [Format Time: 0.0005 seconds] -->
+<p>你需要最新的 2.5.2 版，它的好处是添加了 CDK spell，因此，如果你的系统上已经安装了旧的版本，请使用 <code>sudo snap refresh conjure-up</code> 或者 <code>brew update &amp;&amp; brew upgrade conjure-up</code> 去更新它。</p>
+<p>安装完成后，运行它：</p><!-- Crayon Syntax Highlighter v2.7.1.1 -->
+
+		<div id="crayon-5ad7ff2d6cb07000272522" class="crayon-syntax crayon-theme-github crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-always" style=" margin-top: 12px; margin-bottom: 12px; font-size: 13px !important; line-height: 15px !important;">
+		
+			<div class="crayon-toolbar" data-settings=" show" style="font-size: 13px !important;height: 19.5px !important; line-height: 19.5px !important;"><span class="crayon-title"></span>
+			<div class="crayon-tools" style="font-size: 13px !important;height: 19.5px !important; line-height: 19.5px !important;"><div class="crayon-button crayon-nums-button" title="切换是否显示行编号"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="纯文本显示代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="切换自动换行"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="点击展开代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="复制代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="在新窗口中显示代码"><div class="crayon-button-icon"></div></div></div></div>
+			<div class="crayon-info" style="min-height: 18.2px !important; line-height: 18.2px !important;"></div>
+			<div class="crayon-plain-wrap"><textarea wrap="soft" class="crayon-plain print-no" data-settings="dblclick" readonly style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 13px !important; line-height: 15px !important;">
+conjure-up
+</textarea></div>
+			<div class="crayon-main" style="">
+				<table class="crayon-table">
+					<tr class="crayon-row">
+				<td class="crayon-nums " data-settings="show">
+					<div class="crayon-nums-content" style="font-size: 13px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5ad7ff2d6cb07000272522-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5ad7ff2d6cb07000272522-2">2</div></div>
+				</td>
+						<td class="crayon-code"><div class="crayon-pre" style="font-size: 13px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5ad7ff2d6cb07000272522-1"><span class="crayon-v">conjure</span><span class="crayon-o">-</span><span class="crayon-i">up</span></div><div class="crayon-line crayon-striped-line" id="crayon-5ad7ff2d6cb07000272522-2">&nbsp;</div></div></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+<!-- [Format Time: 0.0003 seconds] -->
+<p><img src="http://jbcdn2.b0.upaiyun.com/2018/04/0a84a2dc6e19e9e92a195dbe6c5eb6b1.png" alt="" /></p>
+<p>你将发现有一个 spell 列表。选择 CDK 然后按下回车。</p>
+<p><img src="http://jbcdn2.b0.upaiyun.com/2018/04/5c2e2762a0bb2a81dd5939d4a657c69d.png" alt="" /></p>
+<p>这个时候，你将看到 CDK spell 可用的附加组件。我们感兴趣的是 Graylog 和 Prometheus，因此选择这两个，然后点击 “Continue”。</p>
+<p>它将引导你选择各种云，以决定你的集群部署的地方。之后，你将看到一些部署的后续步骤，接下来是回顾屏幕，让你再次确认部署内容：</p>
+<p><img src="http://jbcdn2.b0.upaiyun.com/2018/04/e8a7154940f22e1ee5c1035698a2fab3.png" alt="" /></p>
+<p>除了典型的 K8s 相关的应用程序（etcd、flannel、load-balancer、master 以及 workers）之外，你将看到我们选择的日志和指标相关的额外应用程序。</p>
+<p>Graylog 栈包含如下：</p>
+<ul>
+<li>apache2：graylog web 界面的反向代理</li>
+<li>elasticsearch：日志使用的文档数据库</li>
+<li>filebeat：从 K8s master/workers 转发日志到 graylog</li>
+<li>graylog：为日志收集器提供一个 api，以及提供一个日志分析界面</li>
+<li>mongodb：保存 graylog 元数据的数据库</li>
+</ul>
+<p>Prometheus 栈包含如下：</p>
+<ul>
+<li>grafana：指标相关的仪表板的 web 界面</li>
+<li>prometheus：指标收集器以及时序数据库</li>
+<li>telegraf：发送主机的指标到 prometheus 中</li>
+</ul>
+<p>你可以在回顾屏幕上微调部署，但是默认组件是必选 的。点击 “Deploy all Remaining Applications” 继续。</p>
+<p>部署工作将花费一些时间，它将部署你的机器和配置你的云。完成后，<code>conjure-up</code> 将展示一个摘要屏幕，它包含一些链接，你可以用你的终端去浏览各种感兴趣的内容：</p>
+<p><img src="http://jbcdn2.b0.upaiyun.com/2018/04/77927d348a0c12ef4855bd1116947ef5.png" alt="" /></p>
+<h4 id="toc_2">浏览日志</h4>
+<p>现在，Graylog 已经部署和配置完成，我们可以看一下采集到的一些数据。默认情况下，filebeat 应用程序将从 Kubernetes 的 master 和 worker 中转发系统日志（ <code>/var/log/*.log</code> ）和容器日志（<code>/var/log/containers/*.log</code>）到 graylog 中。</p>
+<p>记住如下的 apache2 的地址和 graylog 的 admin 密码：</p><!-- Crayon Syntax Highlighter v2.7.1.1 -->
+
+		<div id="crayon-5ad7ff2d6cb0c647731425" class="crayon-syntax crayon-theme-github crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-always" style=" margin-top: 12px; margin-bottom: 12px; font-size: 13px !important; line-height: 15px !important;">
+		
+			<div class="crayon-toolbar" data-settings=" show" style="font-size: 13px !important;height: 19.5px !important; line-height: 19.5px !important;"><span class="crayon-title"></span>
+			<div class="crayon-tools" style="font-size: 13px !important;height: 19.5px !important; line-height: 19.5px !important;"><div class="crayon-button crayon-nums-button" title="切换是否显示行编号"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="纯文本显示代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="切换自动换行"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="点击展开代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="复制代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="在新窗口中显示代码"><div class="crayon-button-icon"></div></div></div></div>
+			<div class="crayon-info" style="min-height: 18.2px !important; line-height: 18.2px !important;"></div>
+			<div class="crayon-plain-wrap"><textarea wrap="soft" class="crayon-plain print-no" data-settings="dblclick" readonly style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 13px !important; line-height: 15px !important;">
+juju status --format yaml apache2/0 | grep public-address
+ public-address: &lt;your-apache2-ip&gt;
+juju run-action --wait graylog/0 show-admin-password
+ admin-password: &lt;your-graylog-password&gt;</textarea></div>
+			<div class="crayon-main" style="">
+				<table class="crayon-table">
+					<tr class="crayon-row">
+				<td class="crayon-nums " data-settings="show">
+					<div class="crayon-nums-content" style="font-size: 13px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5ad7ff2d6cb0c647731425-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5ad7ff2d6cb0c647731425-2">2</div><div class="crayon-num" data-line="crayon-5ad7ff2d6cb0c647731425-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5ad7ff2d6cb0c647731425-4">4</div></div>
+				</td>
+						<td class="crayon-code"><div class="crayon-pre" style="font-size: 13px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5ad7ff2d6cb0c647731425-1"><span class="crayon-e">juju </span><span class="crayon-v">status</span><span class="crayon-h"> </span><span class="crayon-o">--</span><span class="crayon-e">format </span><span class="crayon-e">yaml </span><span class="crayon-v">apache2</span><span class="crayon-o">/</span><span class="crayon-cn">0</span><span class="crayon-h"> </span><span class="crayon-o">|</span><span class="crayon-h"> </span><span class="crayon-e">grep </span><span class="crayon-m">public</span><span class="crayon-o">-</span><span class="crayon-e">address</span></div><div class="crayon-line crayon-striped-line" id="crayon-5ad7ff2d6cb0c647731425-2"><span class="crayon-e"> </span><span class="crayon-m">public</span><span class="crayon-o">-</span><span class="crayon-v">address</span><span class="crayon-o">:</span><span class="crayon-h"> </span><span class="crayon-o">&lt;</span><span class="crayon-v">your</span><span class="crayon-o">-</span><span class="crayon-v">apache2</span><span class="crayon-o">-</span><span class="crayon-v">ip</span><span class="crayon-o">&gt;</span></div><div class="crayon-line" id="crayon-5ad7ff2d6cb0c647731425-3"><span class="crayon-e">juju </span><span class="crayon-v">run</span><span class="crayon-o">-</span><span class="crayon-v">action</span><span class="crayon-h"> </span><span class="crayon-o">--</span><span class="crayon-e">wait </span><span class="crayon-v">graylog</span><span class="crayon-o">/</span><span class="crayon-cn">0</span><span class="crayon-h"> </span><span class="crayon-v">show</span><span class="crayon-o">-</span><span class="crayon-v">admin</span><span class="crayon-o">-</span><span class="crayon-e">password</span></div><div class="crayon-line crayon-striped-line" id="crayon-5ad7ff2d6cb0c647731425-4"><span class="crayon-e"> </span><span class="crayon-v">admin</span><span class="crayon-o">-</span><span class="crayon-v">password</span><span class="crayon-o">:</span><span class="crayon-h"> </span><span class="crayon-o">&lt;</span><span class="crayon-v">your</span><span class="crayon-o">-</span><span class="crayon-v">graylog</span><span class="crayon-o">-</span><span class="crayon-v">password</span><span class="crayon-o">&gt;</span></div></div></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+<!-- [Format Time: 0.0013 seconds] -->
+<p>在浏览器中输入 <code>http://&lt;your-apache2-ip&gt;</code> ，然后以管理员用户名（admin）和密码（&lt;your-graylog-password&gt;）登入。</p>
+<p><strong>注意：</strong> 如果这个界面不可用，请等待大约 5 分钟时间，以便于配置的反向代理生效。</p>
+<p>登入后，顶部的 “Sources” 选项卡可以看到从 K8s 的 master 和 workers 中收集日志的概述：</p>
+<p><img src="http://jbcdn2.b0.upaiyun.com/2018/04/8e0dc56257a324ee2f0f33426b3c105e.png" alt="" /></p>
+<p>通过点击 “System / Inputs” 选项卡深入这些日志，选择 “Show received messages” 查看 filebeat 的输入：</p>
+<p><img src="http://jbcdn2.b0.upaiyun.com/2018/04/6b187118ff50bc41d040ef954b607ffe.png" alt="" /></p>
+<p>在这里，你可以应用各种过滤或者设置 Graylog 仪表板去帮助识别大多数比较重要的事件。查看 <a href="http://docs.graylog.org/en/2.3/pages/dashboards.html">Graylog Dashboard</a> 文档，可以了解如何定制你的视图的详细资料。</p>
+<h4 id="toc_3">浏览指标</h4>
+<p>我们的部署通过 grafana 仪表板提供了两种类型的指标：系统指标，包括像 K8s master 和 worker 的 CPU /内存/磁盘使用情况，以及集群指标，包括像从 K8s cAdvisor 端点上收集的容器级指标。</p>
+<p>记住如下的 grafana 的地址和 admin 密码：</p><!-- Crayon Syntax Highlighter v2.7.1.1 -->
+
+		<div id="crayon-5ad7ff2d6cb11608533956" class="crayon-syntax crayon-theme-github crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-always" style=" margin-top: 12px; margin-bottom: 12px; font-size: 13px !important; line-height: 15px !important;">
+		
+			<div class="crayon-toolbar" data-settings=" show" style="font-size: 13px !important;height: 19.5px !important; line-height: 19.5px !important;"><span class="crayon-title"></span>
+			<div class="crayon-tools" style="font-size: 13px !important;height: 19.5px !important; line-height: 19.5px !important;"><div class="crayon-button crayon-nums-button" title="切换是否显示行编号"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="纯文本显示代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="切换自动换行"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="点击展开代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="复制代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="在新窗口中显示代码"><div class="crayon-button-icon"></div></div></div></div>
+			<div class="crayon-info" style="min-height: 18.2px !important; line-height: 18.2px !important;"></div>
+			<div class="crayon-plain-wrap"><textarea wrap="soft" class="crayon-plain print-no" data-settings="dblclick" readonly style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 13px !important; line-height: 15px !important;">
+juju status --format yaml grafana/0 | grep public-address
+ public-address: &lt;your-grafana-ip&gt;
+juju run-action --wait grafana/0 get-admin-password
+ password: &lt;your-grafana-password&gt;</textarea></div>
+			<div class="crayon-main" style="">
+				<table class="crayon-table">
+					<tr class="crayon-row">
+				<td class="crayon-nums " data-settings="show">
+					<div class="crayon-nums-content" style="font-size: 13px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5ad7ff2d6cb11608533956-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5ad7ff2d6cb11608533956-2">2</div><div class="crayon-num" data-line="crayon-5ad7ff2d6cb11608533956-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5ad7ff2d6cb11608533956-4">4</div></div>
+				</td>
+						<td class="crayon-code"><div class="crayon-pre" style="font-size: 13px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5ad7ff2d6cb11608533956-1"><span class="crayon-e">juju </span><span class="crayon-v">status</span><span class="crayon-h"> </span><span class="crayon-o">--</span><span class="crayon-e">format </span><span class="crayon-e">yaml </span><span class="crayon-v">grafana</span><span class="crayon-o">/</span><span class="crayon-cn">0</span><span class="crayon-h"> </span><span class="crayon-o">|</span><span class="crayon-h"> </span><span class="crayon-e">grep </span><span class="crayon-m">public</span><span class="crayon-o">-</span><span class="crayon-e">address</span></div><div class="crayon-line crayon-striped-line" id="crayon-5ad7ff2d6cb11608533956-2"><span class="crayon-e"> </span><span class="crayon-m">public</span><span class="crayon-o">-</span><span class="crayon-v">address</span><span class="crayon-o">:</span><span class="crayon-h"> </span><span class="crayon-o">&lt;</span><span class="crayon-v">your</span><span class="crayon-o">-</span><span class="crayon-v">grafana</span><span class="crayon-o">-</span><span class="crayon-v">ip</span><span class="crayon-o">&gt;</span></div><div class="crayon-line" id="crayon-5ad7ff2d6cb11608533956-3"><span class="crayon-e">juju </span><span class="crayon-v">run</span><span class="crayon-o">-</span><span class="crayon-v">action</span><span class="crayon-h"> </span><span class="crayon-o">--</span><span class="crayon-e">wait </span><span class="crayon-v">grafana</span><span class="crayon-o">/</span><span class="crayon-cn">0</span><span class="crayon-h"> </span><span class="crayon-v">get</span><span class="crayon-o">-</span><span class="crayon-v">admin</span><span class="crayon-o">-</span><span class="crayon-e">password</span></div><div class="crayon-line crayon-striped-line" id="crayon-5ad7ff2d6cb11608533956-4"><span class="crayon-e"> </span><span class="crayon-v">password</span><span class="crayon-o">:</span><span class="crayon-h"> </span><span class="crayon-o">&lt;</span><span class="crayon-v">your</span><span class="crayon-o">-</span><span class="crayon-v">grafana</span><span class="crayon-o">-</span><span class="crayon-v">password</span><span class="crayon-o">&gt;</span></div></div></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+<!-- [Format Time: 0.0022 seconds] -->
+<p>在浏览器中输入 <code>http://&lt;your-grafana-ip&gt;:3000</code>，输入管理员用户（admin）和密码（&lt;your-grafana-password&gt;）登入。成功登入后，点击 “Home” 下拉框，选取 “Kubernetes Metrics (via Prometheus)” 去查看集群指标仪表板：</p>
+<p><img src="http://jbcdn2.b0.upaiyun.com/2018/04/76a0a9d93a75c76c8033b51957615741.png" alt="" /></p>
+<p>我们也可以通过下拉框切换到 “Node Metrics (via Telegraf) ” 去查看 K8s 主机的系统指标。</p>
+<p><img src="http://jbcdn2.b0.upaiyun.com/2018/04/a708ae229aeffef775184db190b97c95.png" alt="" /></p>
+<h3 id="toc_4">另一种方法</h3>
+<p>正如在文章开始的介绍中提到的，我喜欢用 <code>conjure-up</code> 的向导去完成像 Kubernetes 这种复杂软件的部署。现在，我们来看一下 <code>conjure-up</code> 的另一种方法，你可能希望去看到实现相同结果的一些命令行的方法。还有其它的可能已经部署了前面的 CDK，并想去扩展使用上述的 Graylog/Prometheus 组件。不管什么原因你既然看到这了，既来之则安之，继续向下看吧。</p>
+<p>支持 <code>conjure-up</code> 的工具是 <a href="https://jujucharms.com/">Juju</a>。CDK spell 所做的一切，都可以使用 <code>juju</code> 命令行来完成。我们来看一下，如何一步步完成这些工作。</p>
+<h4 id="toc_5">从 Scratch 中启动</h4>
+<p>如果你使用的是 Linux，安装 Juju 很简单，命令如下：</p><!-- Crayon Syntax Highlighter v2.7.1.1 -->
+
+		<div id="crayon-5ad7ff2d6cb15047637674" class="crayon-syntax crayon-theme-github crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-always" style=" margin-top: 12px; margin-bottom: 12px; font-size: 13px !important; line-height: 15px !important;">
+		
+			<div class="crayon-toolbar" data-settings=" show" style="font-size: 13px !important;height: 19.5px !important; line-height: 19.5px !important;"><span class="crayon-title"></span>
+			<div class="crayon-tools" style="font-size: 13px !important;height: 19.5px !important; line-height: 19.5px !important;"><div class="crayon-button crayon-nums-button" title="切换是否显示行编号"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="纯文本显示代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="切换自动换行"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="点击展开代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="复制代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="在新窗口中显示代码"><div class="crayon-button-icon"></div></div></div></div>
+			<div class="crayon-info" style="min-height: 18.2px !important; line-height: 18.2px !important;"></div>
+			<div class="crayon-plain-wrap"><textarea wrap="soft" class="crayon-plain print-no" data-settings="dblclick" readonly style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 13px !important; line-height: 15px !important;">
+sudo snap install juju --classic
+</textarea></div>
+			<div class="crayon-main" style="">
+				<table class="crayon-table">
+					<tr class="crayon-row">
+				<td class="crayon-nums " data-settings="show">
+					<div class="crayon-nums-content" style="font-size: 13px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5ad7ff2d6cb15047637674-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5ad7ff2d6cb15047637674-2">2</div></div>
+				</td>
+						<td class="crayon-code"><div class="crayon-pre" style="font-size: 13px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5ad7ff2d6cb15047637674-1"><span class="crayon-e">sudo </span><span class="crayon-e">snap </span><span class="crayon-e">install </span><span class="crayon-v">juju</span><span class="crayon-h"> </span><span class="crayon-o">--</span><span class="crayon-i">classic</span></div><div class="crayon-line crayon-striped-line" id="crayon-5ad7ff2d6cb15047637674-2">&nbsp;</div></div></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+<!-- [Format Time: 0.0004 seconds] -->
+<p>对于 macOS，Juju 也可以从 brew 中安装：</p><!-- Crayon Syntax Highlighter v2.7.1.1 -->
+
+		<div id="crayon-5ad7ff2d6cb18479106378" class="crayon-syntax crayon-theme-github crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-always" style=" margin-top: 12px; margin-bottom: 12px; font-size: 13px !important; line-height: 15px !important;">
+		
+			<div class="crayon-toolbar" data-settings=" show" style="font-size: 13px !important;height: 19.5px !important; line-height: 19.5px !important;"><span class="crayon-title"></span>
+			<div class="crayon-tools" style="font-size: 13px !important;height: 19.5px !important; line-height: 19.5px !important;"><div class="crayon-button crayon-nums-button" title="切换是否显示行编号"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="纯文本显示代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="切换自动换行"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="点击展开代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="复制代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="在新窗口中显示代码"><div class="crayon-button-icon"></div></div></div></div>
+			<div class="crayon-info" style="min-height: 18.2px !important; line-height: 18.2px !important;"></div>
+			<div class="crayon-plain-wrap"><textarea wrap="soft" class="crayon-plain print-no" data-settings="dblclick" readonly style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 13px !important; line-height: 15px !important;">
+brew install juju
+</textarea></div>
+			<div class="crayon-main" style="">
+				<table class="crayon-table">
+					<tr class="crayon-row">
+				<td class="crayon-nums " data-settings="show">
+					<div class="crayon-nums-content" style="font-size: 13px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5ad7ff2d6cb18479106378-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5ad7ff2d6cb18479106378-2">2</div></div>
+				</td>
+						<td class="crayon-code"><div class="crayon-pre" style="font-size: 13px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5ad7ff2d6cb18479106378-1"><span class="crayon-e">brew </span><span class="crayon-e">install </span><span class="crayon-i">juju</span></div><div class="crayon-line crayon-striped-line" id="crayon-5ad7ff2d6cb18479106378-2">&nbsp;</div></div></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+<!-- [Format Time: 0.0005 seconds] -->
+<p>现在为你选择的云配置一个控制器。你或许会被提示请求一个凭据（用户名密码）：</p><!-- Crayon Syntax Highlighter v2.7.1.1 -->
+
+		<div id="crayon-5ad7ff2d6cb1b221065316" class="crayon-syntax crayon-theme-github crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-always" style=" margin-top: 12px; margin-bottom: 12px; font-size: 13px !important; line-height: 15px !important;">
+		
+			<div class="crayon-toolbar" data-settings=" show" style="font-size: 13px !important;height: 19.5px !important; line-height: 19.5px !important;"><span class="crayon-title"></span>
+			<div class="crayon-tools" style="font-size: 13px !important;height: 19.5px !important; line-height: 19.5px !important;"><div class="crayon-button crayon-nums-button" title="切换是否显示行编号"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="纯文本显示代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="切换自动换行"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="点击展开代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="复制代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="在新窗口中显示代码"><div class="crayon-button-icon"></div></div></div></div>
+			<div class="crayon-info" style="min-height: 18.2px !important; line-height: 18.2px !important;"></div>
+			<div class="crayon-plain-wrap"><textarea wrap="soft" class="crayon-plain print-no" data-settings="dblclick" readonly style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 13px !important; line-height: 15px !important;">
+juju bootstrap
+</textarea></div>
+			<div class="crayon-main" style="">
+				<table class="crayon-table">
+					<tr class="crayon-row">
+				<td class="crayon-nums " data-settings="show">
+					<div class="crayon-nums-content" style="font-size: 13px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5ad7ff2d6cb1b221065316-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5ad7ff2d6cb1b221065316-2">2</div></div>
+				</td>
+						<td class="crayon-code"><div class="crayon-pre" style="font-size: 13px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5ad7ff2d6cb1b221065316-1"><span class="crayon-e">juju </span><span class="crayon-i">bootstrap</span></div><div class="crayon-line crayon-striped-line" id="crayon-5ad7ff2d6cb1b221065316-2">&nbsp;</div></div></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+<!-- [Format Time: 0.0003 seconds] -->
+<p>我们接下来需要基于 CDK 捆绑部署：</p><!-- Crayon Syntax Highlighter v2.7.1.1 -->
+
+		<div id="crayon-5ad7ff2d6cb1e455479825" class="crayon-syntax crayon-theme-github crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-always" style=" margin-top: 12px; margin-bottom: 12px; font-size: 13px !important; line-height: 15px !important;">
+		
+			<div class="crayon-toolbar" data-settings=" show" style="font-size: 13px !important;height: 19.5px !important; line-height: 19.5px !important;"><span class="crayon-title"></span>
+			<div class="crayon-tools" style="font-size: 13px !important;height: 19.5px !important; line-height: 19.5px !important;"><div class="crayon-button crayon-nums-button" title="切换是否显示行编号"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="纯文本显示代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="切换自动换行"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="点击展开代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="复制代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="在新窗口中显示代码"><div class="crayon-button-icon"></div></div></div></div>
+			<div class="crayon-info" style="min-height: 18.2px !important; line-height: 18.2px !important;"></div>
+			<div class="crayon-plain-wrap"><textarea wrap="soft" class="crayon-plain print-no" data-settings="dblclick" readonly style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 13px !important; line-height: 15px !important;">
+juju deploy canonical-kubernetes
+</textarea></div>
+			<div class="crayon-main" style="">
+				<table class="crayon-table">
+					<tr class="crayon-row">
+				<td class="crayon-nums " data-settings="show">
+					<div class="crayon-nums-content" style="font-size: 13px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5ad7ff2d6cb1e455479825-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5ad7ff2d6cb1e455479825-2">2</div></div>
+				</td>
+						<td class="crayon-code"><div class="crayon-pre" style="font-size: 13px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5ad7ff2d6cb1e455479825-1"><span class="crayon-e">juju </span><span class="crayon-e">deploy </span><span class="crayon-v">canonical</span><span class="crayon-o">-</span><span class="crayon-i">kubernetes</span></div><div class="crayon-line crayon-striped-line" id="crayon-5ad7ff2d6cb1e455479825-2">&nbsp;</div></div></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+<!-- [Format Time: 0.0006 seconds] -->
+<p></p>
+<h4 id="toc_6">从 CDK 开始</h4>
+<p>使用我们部署的 Kubernetes 集群，我们需要去添加 Graylog 和 Prometheus 所需要的全部应用程序：</p><!-- Crayon Syntax Highlighter v2.7.1.1 -->
+
+		<div id="crayon-5ad7ff2d6cb22213534067" class="crayon-syntax crayon-theme-github crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-always" style=" margin-top: 12px; margin-bottom: 12px; font-size: 13px !important; line-height: 15px !important;">
+		
+			<div class="crayon-toolbar" data-settings=" show" style="font-size: 13px !important;height: 19.5px !important; line-height: 19.5px !important;"><span class="crayon-title"></span>
+			<div class="crayon-tools" style="font-size: 13px !important;height: 19.5px !important; line-height: 19.5px !important;"><div class="crayon-button crayon-nums-button" title="切换是否显示行编号"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="纯文本显示代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="切换自动换行"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="点击展开代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="复制代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="在新窗口中显示代码"><div class="crayon-button-icon"></div></div></div></div>
+			<div class="crayon-info" style="min-height: 18.2px !important; line-height: 18.2px !important;"></div>
+			<div class="crayon-plain-wrap"><textarea wrap="soft" class="crayon-plain print-no" data-settings="dblclick" readonly style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 13px !important; line-height: 15px !important;">
+## deploy graylog-related applications
+juju deploy xenial/apache2
+juju deploy xenial/elasticsearch
+juju deploy xenial/filebeat
+juju deploy xenial/graylog
+juju deploy xenial/mongodb
+</textarea></div>
+			<div class="crayon-main" style="">
+				<table class="crayon-table">
+					<tr class="crayon-row">
+				<td class="crayon-nums " data-settings="show">
+					<div class="crayon-nums-content" style="font-size: 13px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5ad7ff2d6cb22213534067-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5ad7ff2d6cb22213534067-2">2</div><div class="crayon-num" data-line="crayon-5ad7ff2d6cb22213534067-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5ad7ff2d6cb22213534067-4">4</div><div class="crayon-num" data-line="crayon-5ad7ff2d6cb22213534067-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5ad7ff2d6cb22213534067-6">6</div><div class="crayon-num" data-line="crayon-5ad7ff2d6cb22213534067-7">7</div></div>
+				</td>
+						<td class="crayon-code"><div class="crayon-pre" style="font-size: 13px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5ad7ff2d6cb22213534067-1"><span class="crayon-p">## deploy graylog-related applications</span></div><div class="crayon-line crayon-striped-line" id="crayon-5ad7ff2d6cb22213534067-2"><span class="crayon-e">juju </span><span class="crayon-e">deploy </span><span class="crayon-v">xenial</span><span class="crayon-o">/</span><span class="crayon-e">apache2</span></div><div class="crayon-line" id="crayon-5ad7ff2d6cb22213534067-3"><span class="crayon-e">juju </span><span class="crayon-e">deploy </span><span class="crayon-v">xenial</span><span class="crayon-o">/</span><span class="crayon-e">elasticsearch</span></div><div class="crayon-line crayon-striped-line" id="crayon-5ad7ff2d6cb22213534067-4"><span class="crayon-e">juju </span><span class="crayon-e">deploy </span><span class="crayon-v">xenial</span><span class="crayon-o">/</span><span class="crayon-e">filebeat</span></div><div class="crayon-line" id="crayon-5ad7ff2d6cb22213534067-5"><span class="crayon-e">juju </span><span class="crayon-e">deploy </span><span class="crayon-v">xenial</span><span class="crayon-o">/</span><span class="crayon-e">graylog</span></div><div class="crayon-line crayon-striped-line" id="crayon-5ad7ff2d6cb22213534067-6"><span class="crayon-e">juju </span><span class="crayon-e">deploy </span><span class="crayon-v">xenial</span><span class="crayon-o">/</span><span class="crayon-i">mongodb</span></div><div class="crayon-line" id="crayon-5ad7ff2d6cb22213534067-7">&nbsp;</div></div></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+<!-- [Format Time: 0.0008 seconds] -->
+<p></p><!-- Crayon Syntax Highlighter v2.7.1.1 -->
+
+		<div id="crayon-5ad7ff2d6cb25611470111" class="crayon-syntax crayon-theme-github crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-always" style=" margin-top: 12px; margin-bottom: 12px; font-size: 13px !important; line-height: 15px !important;">
+		
+			<div class="crayon-toolbar" data-settings=" show" style="font-size: 13px !important;height: 19.5px !important; line-height: 19.5px !important;"><span class="crayon-title"></span>
+			<div class="crayon-tools" style="font-size: 13px !important;height: 19.5px !important; line-height: 19.5px !important;"><div class="crayon-button crayon-nums-button" title="切换是否显示行编号"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="纯文本显示代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="切换自动换行"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="点击展开代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="复制代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="在新窗口中显示代码"><div class="crayon-button-icon"></div></div></div></div>
+			<div class="crayon-info" style="min-height: 18.2px !important; line-height: 18.2px !important;"></div>
+			<div class="crayon-plain-wrap"><textarea wrap="soft" class="crayon-plain print-no" data-settings="dblclick" readonly style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 13px !important; line-height: 15px !important;">
+## deploy prometheus-related applications
+juju deploy xenial/grafana
+juju deploy xenial/prometheus
+juju deploy xenial/telegraf
+</textarea></div>
+			<div class="crayon-main" style="">
+				<table class="crayon-table">
+					<tr class="crayon-row">
+				<td class="crayon-nums " data-settings="show">
+					<div class="crayon-nums-content" style="font-size: 13px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5ad7ff2d6cb25611470111-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5ad7ff2d6cb25611470111-2">2</div><div class="crayon-num" data-line="crayon-5ad7ff2d6cb25611470111-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5ad7ff2d6cb25611470111-4">4</div><div class="crayon-num" data-line="crayon-5ad7ff2d6cb25611470111-5">5</div></div>
+				</td>
+						<td class="crayon-code"><div class="crayon-pre" style="font-size: 13px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5ad7ff2d6cb25611470111-1"><span class="crayon-p">## deploy prometheus-related applications</span></div><div class="crayon-line crayon-striped-line" id="crayon-5ad7ff2d6cb25611470111-2"><span class="crayon-e">juju </span><span class="crayon-e">deploy </span><span class="crayon-v">xenial</span><span class="crayon-o">/</span><span class="crayon-e">grafana</span></div><div class="crayon-line" id="crayon-5ad7ff2d6cb25611470111-3"><span class="crayon-e">juju </span><span class="crayon-e">deploy </span><span class="crayon-v">xenial</span><span class="crayon-o">/</span><span class="crayon-e">prometheus</span></div><div class="crayon-line crayon-striped-line" id="crayon-5ad7ff2d6cb25611470111-4"><span class="crayon-e">juju </span><span class="crayon-e">deploy </span><span class="crayon-v">xenial</span><span class="crayon-o">/</span><span class="crayon-i">telegraf</span></div><div class="crayon-line" id="crayon-5ad7ff2d6cb25611470111-5">&nbsp;</div></div></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+<!-- [Format Time: 0.0006 seconds] -->
+<p>现在软件已经部署完毕，将它们连接到一起，以便于它们之间可以相互通讯：</p><!-- Crayon Syntax Highlighter v2.7.1.1 -->
+
+		<div id="crayon-5ad7ff2d6cb28774332068" class="crayon-syntax crayon-theme-github crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-always" style=" margin-top: 12px; margin-bottom: 12px; font-size: 13px !important; line-height: 15px !important;">
+		
+			<div class="crayon-toolbar" data-settings=" show" style="font-size: 13px !important;height: 19.5px !important; line-height: 19.5px !important;"><span class="crayon-title"></span>
+			<div class="crayon-tools" style="font-size: 13px !important;height: 19.5px !important; line-height: 19.5px !important;"><div class="crayon-button crayon-nums-button" title="切换是否显示行编号"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="纯文本显示代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="切换自动换行"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="点击展开代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="复制代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="在新窗口中显示代码"><div class="crayon-button-icon"></div></div></div></div>
+			<div class="crayon-info" style="min-height: 18.2px !important; line-height: 18.2px !important;"></div>
+			<div class="crayon-plain-wrap"><textarea wrap="soft" class="crayon-plain print-no" data-settings="dblclick" readonly style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 13px !important; line-height: 15px !important;">
+## relate graylog applications
+juju relate apache2:reverseproxy graylog:website
+juju relate graylog:elasticsearch elasticsearch:client
+juju relate graylog:mongodb mongodb:database
+juju relate filebeat:beats-host kubernetes-master:juju-info
+juju relate filebeat:beats-host kubernetes-worker:jujuu-info
+</textarea></div>
+			<div class="crayon-main" style="">
+				<table class="crayon-table">
+					<tr class="crayon-row">
+				<td class="crayon-nums " data-settings="show">
+					<div class="crayon-nums-content" style="font-size: 13px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5ad7ff2d6cb28774332068-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5ad7ff2d6cb28774332068-2">2</div><div class="crayon-num" data-line="crayon-5ad7ff2d6cb28774332068-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5ad7ff2d6cb28774332068-4">4</div><div class="crayon-num" data-line="crayon-5ad7ff2d6cb28774332068-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5ad7ff2d6cb28774332068-6">6</div><div class="crayon-num" data-line="crayon-5ad7ff2d6cb28774332068-7">7</div></div>
+				</td>
+						<td class="crayon-code"><div class="crayon-pre" style="font-size: 13px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5ad7ff2d6cb28774332068-1"><span class="crayon-p">## relate graylog applications</span></div><div class="crayon-line crayon-striped-line" id="crayon-5ad7ff2d6cb28774332068-2"><span class="crayon-e">juju </span><span class="crayon-e">relate </span><span class="crayon-v">apache2</span><span class="crayon-o">:</span><span class="crayon-e">reverseproxy </span><span class="crayon-v">graylog</span><span class="crayon-o">:</span><span class="crayon-e">website</span></div><div class="crayon-line" id="crayon-5ad7ff2d6cb28774332068-3"><span class="crayon-e">juju </span><span class="crayon-e">relate </span><span class="crayon-v">graylog</span><span class="crayon-o">:</span><span class="crayon-e">elasticsearch </span><span class="crayon-v">elasticsearch</span><span class="crayon-o">:</span><span class="crayon-e">client</span></div><div class="crayon-line crayon-striped-line" id="crayon-5ad7ff2d6cb28774332068-4"><span class="crayon-e">juju </span><span class="crayon-e">relate </span><span class="crayon-v">graylog</span><span class="crayon-o">:</span><span class="crayon-e">mongodb </span><span class="crayon-v">mongodb</span><span class="crayon-o">:</span><span class="crayon-e">database</span></div><div class="crayon-line" id="crayon-5ad7ff2d6cb28774332068-5"><span class="crayon-e">juju </span><span class="crayon-e">relate </span><span class="crayon-v">filebeat</span><span class="crayon-o">:</span><span class="crayon-v">beats</span><span class="crayon-o">-</span><span class="crayon-e">host </span><span class="crayon-v">kubernetes</span><span class="crayon-o">-</span><span class="crayon-v">master</span><span class="crayon-o">:</span><span class="crayon-v">juju</span><span class="crayon-o">-</span><span class="crayon-e">info</span></div><div class="crayon-line crayon-striped-line" id="crayon-5ad7ff2d6cb28774332068-6"><span class="crayon-e">juju </span><span class="crayon-e">relate </span><span class="crayon-v">filebeat</span><span class="crayon-o">:</span><span class="crayon-v">beats</span><span class="crayon-o">-</span><span class="crayon-e">host </span><span class="crayon-v">kubernetes</span><span class="crayon-o">-</span><span class="crayon-v">worker</span><span class="crayon-o">:</span><span class="crayon-v">jujuu</span><span class="crayon-o">-</span><span class="crayon-i">info</span></div><div class="crayon-line" id="crayon-5ad7ff2d6cb28774332068-7">&nbsp;</div></div></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+<!-- [Format Time: 0.0014 seconds] -->
+<p></p><!-- Crayon Syntax Highlighter v2.7.1.1 -->
+
+		<div id="crayon-5ad7ff2d6cb2b177399074" class="crayon-syntax crayon-theme-github crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-always" style=" margin-top: 12px; margin-bottom: 12px; font-size: 13px !important; line-height: 15px !important;">
+		
+			<div class="crayon-toolbar" data-settings=" show" style="font-size: 13px !important;height: 19.5px !important; line-height: 19.5px !important;"><span class="crayon-title"></span>
+			<div class="crayon-tools" style="font-size: 13px !important;height: 19.5px !important; line-height: 19.5px !important;"><div class="crayon-button crayon-nums-button" title="切换是否显示行编号"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="纯文本显示代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="切换自动换行"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="点击展开代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="复制代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="在新窗口中显示代码"><div class="crayon-button-icon"></div></div></div></div>
+			<div class="crayon-info" style="min-height: 18.2px !important; line-height: 18.2px !important;"></div>
+			<div class="crayon-plain-wrap"><textarea wrap="soft" class="crayon-plain print-no" data-settings="dblclick" readonly style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 13px !important; line-height: 15px !important;">
+## relate prometheus applications
+juju relate prometheus:grafana-source grafana:grafana-source
+juju relate telegraf:prometheus-client prometheus:target
+juju relate kubernetes-master:juju-info telegraf:juju-info
+juju relate kubernetes-worker:juju-info telegraf:juju-info
+</textarea></div>
+			<div class="crayon-main" style="">
+				<table class="crayon-table">
+					<tr class="crayon-row">
+				<td class="crayon-nums " data-settings="show">
+					<div class="crayon-nums-content" style="font-size: 13px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5ad7ff2d6cb2b177399074-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5ad7ff2d6cb2b177399074-2">2</div><div class="crayon-num" data-line="crayon-5ad7ff2d6cb2b177399074-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5ad7ff2d6cb2b177399074-4">4</div><div class="crayon-num" data-line="crayon-5ad7ff2d6cb2b177399074-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5ad7ff2d6cb2b177399074-6">6</div></div>
+				</td>
+						<td class="crayon-code"><div class="crayon-pre" style="font-size: 13px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5ad7ff2d6cb2b177399074-1"><span class="crayon-p">## relate prometheus applications</span></div><div class="crayon-line crayon-striped-line" id="crayon-5ad7ff2d6cb2b177399074-2"><span class="crayon-e">juju </span><span class="crayon-e">relate </span><span class="crayon-v">prometheus</span><span class="crayon-o">:</span><span class="crayon-v">grafana</span><span class="crayon-o">-</span><span class="crayon-e">source </span><span class="crayon-v">grafana</span><span class="crayon-o">:</span><span class="crayon-v">grafana</span><span class="crayon-o">-</span><span class="crayon-e">source</span></div><div class="crayon-line" id="crayon-5ad7ff2d6cb2b177399074-3"><span class="crayon-e">juju </span><span class="crayon-e">relate </span><span class="crayon-v">telegraf</span><span class="crayon-o">:</span><span class="crayon-v">prometheus</span><span class="crayon-o">-</span><span class="crayon-e">client </span><span class="crayon-v">prometheus</span><span class="crayon-o">:</span><span class="crayon-e">target</span></div><div class="crayon-line crayon-striped-line" id="crayon-5ad7ff2d6cb2b177399074-4"><span class="crayon-e">juju </span><span class="crayon-e">relate </span><span class="crayon-v">kubernetes</span><span class="crayon-o">-</span><span class="crayon-v">master</span><span class="crayon-o">:</span><span class="crayon-v">juju</span><span class="crayon-o">-</span><span class="crayon-e">info </span><span class="crayon-v">telegraf</span><span class="crayon-o">:</span><span class="crayon-v">juju</span><span class="crayon-o">-</span><span class="crayon-e">info</span></div><div class="crayon-line" id="crayon-5ad7ff2d6cb2b177399074-5"><span class="crayon-e">juju </span><span class="crayon-e">relate </span><span class="crayon-v">kubernetes</span><span class="crayon-o">-</span><span class="crayon-v">worker</span><span class="crayon-o">:</span><span class="crayon-v">juju</span><span class="crayon-o">-</span><span class="crayon-e">info </span><span class="crayon-v">telegraf</span><span class="crayon-o">:</span><span class="crayon-v">juju</span><span class="crayon-o">-</span><span class="crayon-i">info</span></div><div class="crayon-line crayon-striped-line" id="crayon-5ad7ff2d6cb2b177399074-6">&nbsp;</div></div></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+<!-- [Format Time: 0.0014 seconds] -->
+<p>这个时候，所有的应用程序已经可以相互之间进行通讯了，但是我们还需要多做一点配置（比如，配置 apache2 反向代理、告诉 prometheus 如何从 K8s 中取数、导入到 grafana 仪表板等等）：</p><!-- Crayon Syntax Highlighter v2.7.1.1 -->
+
+		<div id="crayon-5ad7ff2d6cb2e243272575" class="crayon-syntax crayon-theme-github crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-always" style=" margin-top: 12px; margin-bottom: 12px; font-size: 13px !important; line-height: 15px !important;">
+		
+			<div class="crayon-toolbar" data-settings=" show" style="font-size: 13px !important;height: 19.5px !important; line-height: 19.5px !important;"><span class="crayon-title"></span>
+			<div class="crayon-tools" style="font-size: 13px !important;height: 19.5px !important; line-height: 19.5px !important;"><div class="crayon-button crayon-nums-button" title="切换是否显示行编号"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="纯文本显示代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="切换自动换行"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="点击展开代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="复制代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="在新窗口中显示代码"><div class="crayon-button-icon"></div></div></div></div>
+			<div class="crayon-info" style="min-height: 18.2px !important; line-height: 18.2px !important;"></div>
+			<div class="crayon-plain-wrap"><textarea wrap="soft" class="crayon-plain print-no" data-settings="dblclick" readonly style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 13px !important; line-height: 15px !important;">
+## configure graylog applications
+juju config apache2 enable_modules="headers proxy_html proxy_http"
+juju config apache2 vhost_http_template="$(base64 &lt;vhost-tmpl&gt;)"
+juju config elasticsearch firewall_enabled="false"
+juju config filebeat \
+ logpath="/var/log/*.log /var/log/containers/*.log"
+juju config filebeat logstash_hosts=&lt;graylog-ip&gt;":5044"
+juju config graylog elasticsearch_cluster_name="&lt;es-cluster&gt;"
+</textarea></div>
+			<div class="crayon-main" style="">
+				<table class="crayon-table">
+					<tr class="crayon-row">
+				<td class="crayon-nums " data-settings="show">
+					<div class="crayon-nums-content" style="font-size: 13px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5ad7ff2d6cb2e243272575-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5ad7ff2d6cb2e243272575-2">2</div><div class="crayon-num" data-line="crayon-5ad7ff2d6cb2e243272575-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5ad7ff2d6cb2e243272575-4">4</div><div class="crayon-num" data-line="crayon-5ad7ff2d6cb2e243272575-5">5</div><div class="crayon-num crayon-striped-num" data-line="crayon-5ad7ff2d6cb2e243272575-6">6</div><div class="crayon-num" data-line="crayon-5ad7ff2d6cb2e243272575-7">7</div><div class="crayon-num crayon-striped-num" data-line="crayon-5ad7ff2d6cb2e243272575-8">8</div><div class="crayon-num" data-line="crayon-5ad7ff2d6cb2e243272575-9">9</div></div>
+				</td>
+						<td class="crayon-code"><div class="crayon-pre" style="font-size: 13px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5ad7ff2d6cb2e243272575-1"><span class="crayon-p">## configure graylog applications</span></div><div class="crayon-line crayon-striped-line" id="crayon-5ad7ff2d6cb2e243272575-2"><span class="crayon-e">juju </span><span class="crayon-e">config </span><span class="crayon-e">apache2 </span><span class="crayon-v">enable_modules</span><span class="crayon-o">=</span><span class="crayon-s">"headers proxy_html proxy_http"</span></div><div class="crayon-line" id="crayon-5ad7ff2d6cb2e243272575-3"><span class="crayon-e">juju </span><span class="crayon-e">config </span><span class="crayon-e">apache2 </span><span class="crayon-v">vhost_http_template</span><span class="crayon-o">=</span><span class="crayon-s">"$(base64 &lt;vhost-tmpl&gt;)"</span></div><div class="crayon-line crayon-striped-line" id="crayon-5ad7ff2d6cb2e243272575-4"><span class="crayon-e">juju </span><span class="crayon-e">config </span><span class="crayon-e">elasticsearch </span><span class="crayon-v">firewall_enabled</span><span class="crayon-o">=</span><span class="crayon-s">"false"</span></div><div class="crayon-line" id="crayon-5ad7ff2d6cb2e243272575-5"><span class="crayon-e">juju </span><span class="crayon-e">config </span><span class="crayon-i">filebeat</span><span class="crayon-h"> </span><span class="crayon-sy">\</span></div><div class="crayon-line crayon-striped-line" id="crayon-5ad7ff2d6cb2e243272575-6"><span class="crayon-h"> </span><span class="crayon-v">logpath</span><span class="crayon-o">=</span><span class="crayon-s">"/var/log/*.log /var/log/containers/*.log"</span></div><div class="crayon-line" id="crayon-5ad7ff2d6cb2e243272575-7"><span class="crayon-e">juju </span><span class="crayon-e">config </span><span class="crayon-e">filebeat </span><span class="crayon-v">logstash_hosts</span><span class="crayon-o">=</span><span class="crayon-o">&lt;</span><span class="crayon-v">graylog</span><span class="crayon-o">-</span><span class="crayon-v">ip</span><span class="crayon-o">&gt;</span><span class="crayon-s">":5044"</span></div><div class="crayon-line crayon-striped-line" id="crayon-5ad7ff2d6cb2e243272575-8"><span class="crayon-e">juju </span><span class="crayon-e">config </span><span class="crayon-e">graylog </span><span class="crayon-v">elasticsearch_cluster_name</span><span class="crayon-o">=</span><span class="crayon-s">"&lt;es-cluster&gt;"</span></div><div class="crayon-line" id="crayon-5ad7ff2d6cb2e243272575-9">&nbsp;</div></div></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+<!-- [Format Time: 0.0013 seconds] -->
+<p></p><!-- Crayon Syntax Highlighter v2.7.1.1 -->
+
+		<div id="crayon-5ad7ff2d6cb32033510348" class="crayon-syntax crayon-theme-github crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-always" style=" margin-top: 12px; margin-bottom: 12px; font-size: 13px !important; line-height: 15px !important;">
+		
+			<div class="crayon-toolbar" data-settings=" show" style="font-size: 13px !important;height: 19.5px !important; line-height: 19.5px !important;"><span class="crayon-title"></span>
+			<div class="crayon-tools" style="font-size: 13px !important;height: 19.5px !important; line-height: 19.5px !important;"><div class="crayon-button crayon-nums-button" title="切换是否显示行编号"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="纯文本显示代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="切换自动换行"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="点击展开代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="复制代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="在新窗口中显示代码"><div class="crayon-button-icon"></div></div></div></div>
+			<div class="crayon-info" style="min-height: 18.2px !important; line-height: 18.2px !important;"></div>
+			<div class="crayon-plain-wrap"><textarea wrap="soft" class="crayon-plain print-no" data-settings="dblclick" readonly style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 13px !important; line-height: 15px !important;">
+## configure prometheus applications
+juju config prometheus scrape-jobs="&lt;scraper-yaml&gt;"
+juju run-action --wait grafana/0 import-dashboard \
+ dashboard="$(base64 &lt;dashboard-json&gt;)"
+</textarea></div>
+			<div class="crayon-main" style="">
+				<table class="crayon-table">
+					<tr class="crayon-row">
+				<td class="crayon-nums " data-settings="show">
+					<div class="crayon-nums-content" style="font-size: 13px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5ad7ff2d6cb32033510348-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5ad7ff2d6cb32033510348-2">2</div><div class="crayon-num" data-line="crayon-5ad7ff2d6cb32033510348-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5ad7ff2d6cb32033510348-4">4</div><div class="crayon-num" data-line="crayon-5ad7ff2d6cb32033510348-5">5</div></div>
+				</td>
+						<td class="crayon-code"><div class="crayon-pre" style="font-size: 13px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5ad7ff2d6cb32033510348-1"><span class="crayon-p">## configure prometheus applications</span></div><div class="crayon-line crayon-striped-line" id="crayon-5ad7ff2d6cb32033510348-2"><span class="crayon-e">juju </span><span class="crayon-e">config </span><span class="crayon-e">prometheus </span><span class="crayon-v">scrape</span><span class="crayon-o">-</span><span class="crayon-v">jobs</span><span class="crayon-o">=</span><span class="crayon-s">"&lt;scraper-yaml&gt;"</span></div><div class="crayon-line" id="crayon-5ad7ff2d6cb32033510348-3"><span class="crayon-e">juju </span><span class="crayon-v">run</span><span class="crayon-o">-</span><span class="crayon-v">action</span><span class="crayon-h"> </span><span class="crayon-o">--</span><span class="crayon-e">wait </span><span class="crayon-v">grafana</span><span class="crayon-o">/</span><span class="crayon-cn">0</span><span class="crayon-h"> </span><span class="crayon-v">import</span><span class="crayon-o">-</span><span class="crayon-i">dashboard</span><span class="crayon-h"> </span><span class="crayon-sy">\</span></div><div class="crayon-line crayon-striped-line" id="crayon-5ad7ff2d6cb32033510348-4"><span class="crayon-h"> </span><span class="crayon-v">dashboard</span><span class="crayon-o">=</span><span class="crayon-s">"$(base64 &lt;dashboard-json&gt;)"</span></div><div class="crayon-line" id="crayon-5ad7ff2d6cb32033510348-5">&nbsp;</div></div></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+<!-- [Format Time: 0.0010 seconds] -->
+<p>以上的步骤需要根据你的部署来指定一些值。你可以用与 <code>conjure-up</code> 相同的方法得到这些：</p>
+<ul>
+<li><code>&lt;vhost-tmpl&gt;</code>： 从 github 获取我们的示例 <a href="https://raw.githubusercontent.com/conjure-up/spells/master/canonical-kubernetes/addons/graylog/steps/01_install-graylog/graylog-vhost.tmpl">模板</a></li>
+<li><code>&lt;graylog-ip&gt;</code>： <code>juju run --unit graylog/0 'unit-get private-address'</code></li>
+<li><code>&lt;es-cluster&gt;</code>： <code>juju config elasticsearch cluster-name</code></li>
+<li><code>&lt;scraper-yaml&gt;</code>： 从 github 获取我们的示例 <a href="https://raw.githubusercontent.com/conjure-up/spells/master/canonical-kubernetes/addons/prometheus/steps/01_install-prometheus/prometheus-scrape-k8s.yaml">scraper</a> ；<code>[K8S_PASSWORD][20]</code> 和 <code>[K8S_API_ENDPOINT][21]</code> <a href="https://github.com/conjure-up/spells/blob/master/canonical-kubernetes/addons/prometheus/steps/01_install-prometheus/after-deploy#L25">substitute</a> 的正确值</li>
+<li><code>&lt;dashboard-json&gt;</code>： 从 github 获取我们的 <a href="https://raw.githubusercontent.com/conjure-up/spells/master/canonical-kubernetes/addons/prometheus/steps/01_install-prometheus/grafana-telegraf.json">主机</a> 和 <a href="https://raw.githubusercontent.com/conjure-up/spells/master/canonical-kubernetes/addons/prometheus/steps/01_install-prometheus/grafana-k8s.json">k8s</a> 仪表板</li>
+</ul>
+<p>最后，发布 apache2 和 grafana 应用程序，以便于可以通过它们的 web 界面访问：</p><!-- Crayon Syntax Highlighter v2.7.1.1 -->
+
+		<div id="crayon-5ad7ff2d6cb36372127437" class="crayon-syntax crayon-theme-github crayon-font-monaco crayon-os-pc print-yes notranslate" data-settings=" minimize scroll-always" style=" margin-top: 12px; margin-bottom: 12px; font-size: 13px !important; line-height: 15px !important;">
+		
+			<div class="crayon-toolbar" data-settings=" show" style="font-size: 13px !important;height: 19.5px !important; line-height: 19.5px !important;"><span class="crayon-title"></span>
+			<div class="crayon-tools" style="font-size: 13px !important;height: 19.5px !important; line-height: 19.5px !important;"><div class="crayon-button crayon-nums-button" title="切换是否显示行编号"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-plain-button" title="纯文本显示代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-wrap-button" title="切换自动换行"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-expand-button" title="点击展开代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-copy-button" title="复制代码"><div class="crayon-button-icon"></div></div><div class="crayon-button crayon-popup-button" title="在新窗口中显示代码"><div class="crayon-button-icon"></div></div></div></div>
+			<div class="crayon-info" style="min-height: 18.2px !important; line-height: 18.2px !important;"></div>
+			<div class="crayon-plain-wrap"><textarea wrap="soft" class="crayon-plain print-no" data-settings="dblclick" readonly style="-moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4; font-size: 13px !important; line-height: 15px !important;">
+## expose relevant endpoints
+juju expose apache2
+juju expose grafana
+</textarea></div>
+			<div class="crayon-main" style="">
+				<table class="crayon-table">
+					<tr class="crayon-row">
+				<td class="crayon-nums " data-settings="show">
+					<div class="crayon-nums-content" style="font-size: 13px !important; line-height: 15px !important;"><div class="crayon-num" data-line="crayon-5ad7ff2d6cb36372127437-1">1</div><div class="crayon-num crayon-striped-num" data-line="crayon-5ad7ff2d6cb36372127437-2">2</div><div class="crayon-num" data-line="crayon-5ad7ff2d6cb36372127437-3">3</div><div class="crayon-num crayon-striped-num" data-line="crayon-5ad7ff2d6cb36372127437-4">4</div></div>
+				</td>
+						<td class="crayon-code"><div class="crayon-pre" style="font-size: 13px !important; line-height: 15px !important; -moz-tab-size:4; -o-tab-size:4; -webkit-tab-size:4; tab-size:4;"><div class="crayon-line" id="crayon-5ad7ff2d6cb36372127437-1"><span class="crayon-p">## expose relevant endpoints</span></div><div class="crayon-line crayon-striped-line" id="crayon-5ad7ff2d6cb36372127437-2"><span class="crayon-e">juju </span><span class="crayon-e">expose </span><span class="crayon-e">apache2</span></div><div class="crayon-line" id="crayon-5ad7ff2d6cb36372127437-3"><span class="crayon-e">juju </span><span class="crayon-e">expose </span><span class="crayon-i">grafana</span></div><div class="crayon-line crayon-striped-line" id="crayon-5ad7ff2d6cb36372127437-4">&nbsp;</div></div></td>
+					</tr>
+				</table>
+			</div>
+		</div>
+<!-- [Format Time: 0.0004 seconds] -->
+<p>现在我们已经完成了所有的部署、配置、和发布工作，你可以使用与上面的<strong>浏览日志</strong>和<strong>浏览指标</strong>部分相同的方法去查看它们。</p>
+<h3 id="toc_7">总结</h3>
+<p>我的目标是向你展示如何去部署一个 Kubernetes 集群，很方便地去监视它的日志和指标。无论你是喜欢向导的方式还是命令行的方式，我希望你清楚地看到部署一个监视系统并不复杂。关键是要搞清楚所有部分是如何工作的，并将它们连接到一起工作，通过断开/修复/重复的方式，直到它们每一个都能正常工作。</p>
+<p>这里有一些像 conjure-up 和 Juju 一样非常好的工具。充分发挥这个生态系统贡献者的专长让管理大型软件变得更容易。从一套可靠的应用程序开始，按需定制，然后投入到工作中！</p>
+<p>大胆去尝试吧，然后告诉我你用的如何。你可以在 Freenode IRC 的 <strong>#conjure-up</strong> 和 <strong>#juju</strong> 中找到像我这样的爱好者。感谢阅读！</p>
+<h3 id="toc_8">关于作者</h3>
+<p>Kevin 在 2014 年加入 Canonical 公司，他专注于复杂软件建模。他在 Juju 大型软件团队中找到了自己的位置，他的任务是将大数据和机器学习应用程序转化成可重复的（可靠的）解决方案。</p>
+<p>&nbsp;</p>
+
+        
+        
+        
+    <div class="post-adds">
+        <span data-post-id="113875" class=" btn-bluet-bigger href-style vote-post-up   register-user-only "><i class="fa  fa-thumbs-o-up"></i> <h10 id="113875votetotal">1</h10> 赞</span>
+        <span data-book-type="1" data-site-id="2" data-item-id="113875" data-item-type="1" class=" btn-bluet-bigger href-style bookmark-btn  register-user-only "><i class="fa fa-bookmark-o  "></i> 2 收藏</span>
+
+                    <a href="#article-comment"><span class="btn-bluet-bigger href-style hide-on-480"><i class="fa fa-comments-o"></i> 2 评论</span></a>
+        
+        
+        
+        <!-- JiaThis Button BEGIN -->
+        <div class="jiathis_style_24x24" style="display: inline-flex; position: relative; margin: 0; clear: both;float: right;">
+            <a class="jiathis_button_tsina"></a>
+            <a class="jiathis_button_weixin"></a>
+            <a class="jiathis_button_qzone"></a>
+            <a class="jiathis_button_fb hide-on-480"></a>
+            <a href="http://www.jiathis.com/share?uid=1745061" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank"></a>
+        </div>
+
+    </div>
+
+
+
+
+        <!-- BEGIN #author-bio -->
+
+
+<!-- END #author-bio -->
+	</div>
+	<!-- END .entry -->
+
+
+<script type="text/javascript" >
+var jiathis_config={
+	data_track_clickback:false,
+	title:"分享从伯乐在线看到的一篇好文章 ",
+	summary:"《使用 Graylog 和 Prometheus 监视 Kubernetes 集群》",
+	pic:"https://dn-linuxcn.qbox.me/data/attachment/album/201804/10/182842hu1toaq9hhh9uiou.png",
+	appkey:{
+         "tsina": 1473879058    },
+	ralateuid:{
+		"tsina": 1670481425	},
+	hideMore:false
+}
+</script>
+<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1745061" charset="utf-8"></script>
+<!-- JiaThis Button END -->
+			<div class="textwidget"><p><a href="http://group.jobbole.com/22945/" target='_blank'><img src='http://wx1.sinaimg.cn/mw690/bfdcef89gy1fq547hqqaij20h803cgm9.jpg' /></a></p>
+</div>
+		
+</div>
+<!-- END .post -->
+            <div style="text-align: left;">
+            <h3>相关文章</h3>
+            <ul style="font-size: 13px; list-style: disc inside;">
+                                    <li>
+                    <span class="digg-item-updated-title">
+                        <a title="简述 SQL2008 部署多实例集群" target="_blank" href="http://blog.jobbole.com/105180/?utm_source=blog.jobbole.com&utm_medium=relatedPosts">简述 SQL2008 部署多实例集群</a>
+                                            </span>
+                    </li>
+                                    <li>
+                    <span class="digg-item-updated-title">
+                        <a title="构建高可用 ZooKeeper 集群" target="_blank" href="http://blog.jobbole.com/104092/?utm_source=blog.jobbole.com&utm_medium=relatedPosts">构建高可用 ZooKeeper 集群</a>
+                                            </span>
+                    </li>
+                                    <li>
+                    <span class="digg-item-updated-title">
+                        <a title="如果有一万台机器，你想怎么玩？（2）：高可用" target="_blank" href="http://blog.jobbole.com/101467/?utm_source=blog.jobbole.com&utm_medium=relatedPosts">如果有一万台机器，你想怎么玩？（2）：高可用</a>
+                                            </span>
+                    </li>
+                                    <li>
+                    <span class="digg-item-updated-title">
+                        <a title="如果有一万台机器，你想怎么玩？（1）：概述" target="_blank" href="http://blog.jobbole.com/101466/?utm_source=blog.jobbole.com&utm_medium=relatedPosts">如果有一万台机器，你想怎么玩？（1）：概述</a>
+                                            </span>
+                    </li>
+                                    <li>
+                    <span class="digg-item-updated-title">
+                        <a title="Codis集群搭建摘要" target="_blank" href="http://blog.jobbole.com/99246/?utm_source=blog.jobbole.com&utm_medium=relatedPosts">Codis集群搭建摘要</a>
+                                            </span>
+                    </li>
+                            </ul>
+        </div>
+    
+    
+<div style="text-align: left;">
+    <h3>可能感兴趣的话题</h3>
+    <ul style="font-size: 13px; list-style: disc inside;">
+                        <li>
+                    <a href="http://group.jobbole.com/33082/?utm_source=blog.jobbole.com&utm_medium=article-related-group-topic" title="自然语言处理（NLP）如何入门？" target="_blank">自然语言处理（NLP）如何入门？</a>
+                                    </li>
+                            <li>
+                    <a href="http://group.jobbole.com/33055/?utm_source=blog.jobbole.com&utm_medium=article-related-group-topic" title="求助：计算机非全日制的困惑" target="_blank">求助：计算机非全日制的困惑</a>
+                                    </li>
+                            <li>
+                    <a href="http://group.jobbole.com/33054/?utm_source=blog.jobbole.com&utm_medium=article-related-group-topic" title="工作能力、工作年限、工作薪资存在因果关系吗" target="_blank">工作能力、工作年限、工作薪资存在因果关系吗</a>
+                                    </li>
+                            <li>
+                    <a href="http://group.jobbole.com/33053/?utm_source=blog.jobbole.com&utm_medium=article-related-group-topic" title="夹在两个开发中间的测试" target="_blank">夹在两个开发中间的测试</a>
+                                    </li>
+                            <li>
+                    <a href="http://group.jobbole.com/33052/?utm_source=blog.jobbole.com&utm_medium=article-related-group-topic" title="将来想做算法工作，刷题用处大吗？" target="_blank">将来想做算法工作，刷题用处大吗？</a>
+                                    </li>
+                            <li>
+                    <a href="http://group.jobbole.com/33040/?utm_source=blog.jobbole.com&utm_medium=article-related-group-topic" title="Micropython TPYBoard读取芯片上的温度传感器" target="_blank">Micropython TPYBoard读取芯片上的温度传感器</a>
+                                    </li>
+                </ul>
+</div>
+	
+            <div id="article-comment" class="dot-box center-align">
+
+                        <a href="http://www.jobbole.com/login?redirect=http://blog.jobbole.com/113875/"><button type="button" class="btn btn-non-transparent">登录后评论</button></a>
+            
+            <a target="_blank" href="http://www.jobbole.com/register"><button type="button" class="btn btn-primary">新用户注册</button></a>
+
+            <br/><br/>
+            <span>直接登录</span>
+            <style type="text/css">.t_login_text{margin:0; padding:0;}.t_login_button{margin:0; padding: 5px 0;}.t_login_button a{margin:0; padding-right:3px; line-height:25px}.t_login_button img{display:inline; border:none;}</style><!-- 使用社交帐号登录 来自 WordPress连接微博 插件 --><span class="connectBox1 t_login_button"><a href="http://blog.jobbole.com/wp-content/plugins/wp-connect/login.php?go=weixin&redirect_url=http%3A%2F%2Fblog.jobbole.com%2F113875%2F" title="微信" rel="nofollow"><img src="http://blog.jobbole.com/wp-content/plugins/wp-connect/images/login/btn_weixin.png" /></a><a href="http://blog.jobbole.com/wp-content/plugins/wp-connect/login.php?go=qzone&redirect_url=http%3A%2F%2Fblog.jobbole.com%2F113875%2F" title="QQ" rel="nofollow"><img src="http://blog.jobbole.com/wp-content/plugins/wp-connect/images/login/btn_qzone.png" /></a><a href="http://blog.jobbole.com/wp-content/plugins/wp-connect/login.php?go=sina&redirect_url=http%3A%2F%2Fblog.jobbole.com%2F113875%2F" title="新浪微博" rel="nofollow"><img src="http://blog.jobbole.com/wp-content/plugins/wp-connect/images/login/btn_sina.png" /></a><a href="http://blog.jobbole.com/wp-content/plugins/wp-connect/login.php?go=douban&redirect_url=http%3A%2F%2Fblog.jobbole.com%2F113875%2F" title="豆瓣" rel="nofollow"><img src="http://blog.jobbole.com/wp-content/plugins/wp-connect/images/login/btn_douban.png" /></a><a href="http://blog.jobbole.com/wp-content/plugins/wp-connect/login.php?go=github&redirect_url=http%3A%2F%2Fblog.jobbole.com%2F113875%2F" title="GitHub" rel="nofollow"><img src="http://blog.jobbole.com/wp-content/plugins/wp-connect/images/login/btn_github.png" /></a></span>        </div>
+    
+
+    <div id="comment_list" class="comments">
+
+                    <h5 id="comments" class="sub-title"><i class="glyphicon"></i>最新评论</h5>
+            <ul class="cmnt-list">
+
+                        <li id="comment-162404"  class="comment cmnt odd">
+    
+    <div class="cmnt-box">
+        <div class="cmnt-header">
+                            <a href="http://www.jobbole.com/members/星扉" class="cmnt-img"><img width="37" height="37" src="http://jbcdn2.b0.upaiyun.com/2015/04/8fbdaaa5ea6d3b49c8c1c825aafeb5d9.png" alt=""></a>
+                <div class="cmnt-meta">
+                    <span><a href="http://www.jobbole.com/members/星扉">星扉</a><label class="comment_author_data">&nbsp;</label></span>
+                    <span class="c-title">
+                        &nbsp;                    </span>
+
+                    <span class="c-date">
+                        <a href="http://blog.jobbole.com/113875/#comment-162404">4 天前</a>
+                    </span>
+
+                    
+                    
+                </div>
+                    </div>
+        <div class="cmnt-body">
+            <p>
+                <p>学习了</p>
+            </p>
+                    </div>
+                    <div class="cmnt-footer">
+
+                
+                <p class="c-like">
+                    <a title="赞同" alt="赞同" class="162404voteflag  t-up  href-style vote-comment-up  register-user-only   " data-comment-id="162404"><i class="fa fa-thumbs-o-up"></i> <span id="162404voteuptotal"> 赞</span></a>
+
+                    
+                    <a rel='nofollow' class='comment-reply-link register-user-only' href='http://blog.jobbole.com/113875/?replytocom=162404#respond' data-onclick='return addComment.moveForm( "comment-162404", "162404", "respond", "113875" )' aria-label='回复给星扉'>回复 <i class='fa fa-reply'></i></a>
+                </p>
+            </div>
+            </div>
+    </li>
+</li><!-- #comment-## -->
+        <li id="comment-162405"  class="comment cmnt even">
+    
+    <div class="cmnt-box">
+        <div class="cmnt-header">
+                            <a href="http://www.jobbole.com/members/星扉" class="cmnt-img"><img width="37" height="37" src="http://jbcdn2.b0.upaiyun.com/2015/04/8fbdaaa5ea6d3b49c8c1c825aafeb5d9.png" alt=""></a>
+                <div class="cmnt-meta">
+                    <span><a href="http://www.jobbole.com/members/星扉">星扉</a><label class="comment_author_data">&nbsp;</label></span>
+                    <span class="c-title">
+                        &nbsp;                    </span>
+
+                    <span class="c-date">
+                        <a href="http://blog.jobbole.com/113875/#comment-162405">4 天前</a>
+                    </span>
+
+                    
+                    
+                </div>
+                    </div>
+        <div class="cmnt-body">
+            <p>
+                <p>K8S很强大，结合Graylog</p>
+            </p>
+                    </div>
+                    <div class="cmnt-footer">
+
+                
+                <p class="c-like">
+                    <a title="赞同" alt="赞同" class="162405voteflag  t-up  href-style vote-comment-up  register-user-only   " data-comment-id="162405"><i class="fa fa-thumbs-o-up"></i> <span id="162405voteuptotal"> 赞</span></a>
+
+                    
+                    <a rel='nofollow' class='comment-reply-link register-user-only' href='http://blog.jobbole.com/113875/?replytocom=162405#respond' data-onclick='return addComment.moveForm( "comment-162405", "162405", "respond", "113875" )' aria-label='回复给星扉'>回复 <i class='fa fa-reply'></i></a>
+                </p>
+            </div>
+            </div>
+    </li>
+</li><!-- #comment-## -->
+            </ul>
+        
+    </div>
+		
+
+	
+</div>
+<!-- END .grid-8 -->
+
+<!-- BEGIN #sidebar -->
+<div id="sidebar" class="grid-4">
+
+	    <div id="text-110" class="widget widget_text">			<div class="textwidget"><p><a href="http://group.jobbole.com/22945/" target='_blank'><img src='http://wx4.sinaimg.cn/mw690/bfdcef89gy1fq547b3qybj208c046q3c.jpg' /></a></p>
+</div>
+		</div><div class="tabs tabbed_widget"><ul class="nav clearfix"><li><a id="link-tab1" href="#tab1" title="本周热门文章">本周热门文章</a></li><li><a id="link-tab2" href="#tab2" title="本月热门文章">本月热门文章</a></li><li><a id="link-tab3" href="#tab3" title="热门标签">热门标签</a></li></ul><div id="tab1" class="tab"><div class="floated-thumb">
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">0</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/113821/" title="机器学习如何发现你喜欢的音乐">机器学习如何发现你喜欢的音乐</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">1</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/113568/" title="最终一轮面试被 Google 刷掉，这是一种什么样的体验？">最终一轮面试被 Google 刷掉，这...</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">2</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/113858/" title="从 Linux 源码看 socket 的阻塞和非阻塞">从 Linux 源码看 socket 的阻塞...</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">3</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/113820/" title="软件复杂性正在杀死我们">软件复杂性正在杀死我们</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">4</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/113885/" title="Git 12 岁了，为你送上 12 个 Git 的使用技巧！">Git 12 岁了，为你送上 12 个 G...</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">5</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/113883/" title="用信鸽来解释 HTTPS">用信鸽来解释 HTTPS</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">6</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/113854/" title="命令行乐趣：嘲讽输错 Bash 命令的用户">命令行乐趣：嘲讽输错 Bash 命令...</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">7</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/113879/" title="SQL 入门">SQL 入门</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">8</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/113894/" title="精通 Linux 的 “kill” 命令">精通 Linux 的 “kill” 命令</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">9</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/113875/" title="使用 Graylog 和 Prometheus 监视 Kubernetes 集群">使用 Graylog 和 Prometheus 监视 Ku...</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                </div></div><div id="tab2" class="tab"><div class="floated-thumb">
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">0</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/113819/" title="直白介绍卷积神经网络（CNN）">直白介绍卷积神经网络（CNN）</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">1</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/113785/" title="刚开始学编程？这几款小工具能让你事半功倍">刚开始学编程？这几款小工具能让你事...</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">2</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/113828/" title="计算机语言的巨变">计算机语言的巨变</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">3</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/113789/" title="深入学习 Redis（1）：Redis 内存模型">深入学习 Redis（1）：Redis 内...</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">4</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/112038/" title="IT 职场新人碰到的几个常见误区">IT 职场新人碰到的几个常见误区</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">5</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/113778/" title="从业 24 年独立开发者：大多数同行都只看 5 年以内">从业 24 年独立开发者：大多数同行...</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">6</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/111954/" title="15 分钟参透比特币和区块链">15 分钟参透比特币和区块链</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">7</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/113821/" title="机器学习如何发现你喜欢的音乐">机器学习如何发现你喜欢的音乐</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">8</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/113568/" title="最终一轮面试被 Google 刷掉，这是一种什么样的体验？">最终一轮面试被 Google 刷掉，这...</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                
+                    
+                    <!-- BEGIN .post-meta -->
+                    <div class="post-meta  no-thumb">
+
+                        <p>
+                            <span class="numb">9</span>
+                            <a class="meta-title" target="_blank" href="http://blog.jobbole.com/113858/" title="从 Linux 源码看 socket 的阻塞和非阻塞">从 Linux 源码看 socket 的阻塞...</a><br />
+                        </p>
+
+                    </div>
+                    <!-- END .post-meta -->
+
+                    <div class="clear"></div>
+
+                </div></div><div id="tab3" class="tab"><p><a href='http://blog.jobbole.com/tag/net/' class='tag-link-1636 tag-link-position-1' title='272个话题' style='font-size: 16.521739130435px;'>.Net</a>
+<a href='http://blog.jobbole.com/tag/android/' class='tag-link-4884 tag-link-position-2' title='148个话题' style='font-size: 13.782608695652px;'>Android</a>
+<a href='http://blog.jobbole.com/tag/app/' class='tag-link-1941 tag-link-position-3' title='92个话题' style='font-size: 11.753623188406px;'>App</a>
+<a href='http://blog.jobbole.com/tag/bug/' class='tag-link-218 tag-link-position-4' title='81个话题' style='font-size: 11.144927536232px;'>Bug</a>
+<a href='http://blog.jobbole.com/tag/cpp/' class='tag-link-807 tag-link-position-5' title='236个话题' style='font-size: 15.811594202899px;'>C++</a>
+<a href='http://blog.jobbole.com/tag/c-sharp/' class='tag-link-2197 tag-link-position-6' title='102个话题' style='font-size: 12.159420289855px;'>C sharp</a>
+<a href='http://blog.jobbole.com/tag/css/' class='tag-link-711 tag-link-position-7' title='68个话题' style='font-size: 10.434782608696px;'>CSS</a>
+<a href='http://blog.jobbole.com/tag/c/' class='tag-link-757 tag-link-position-8' title='252个话题' style='font-size: 16.115942028986px;'>C语言</a>
+<a href='http://blog.jobbole.com/tag/facebook/' class='tag-link-164 tag-link-position-9' title='111个话题' style='font-size: 12.565217391304px;'>Facebook</a>
+<a href='http://blog.jobbole.com/tag/featuredpost/' class='tag-link-2241 tag-link-position-10' title='621个话题' style='font-size: 20.072463768116px;'>featuredpost</a>
+<a href='http://blog.jobbole.com/tag/git/' class='tag-link-885 tag-link-position-11' title='90个话题' style='font-size: 11.652173913043px;'>Git</a>
+<a href='http://blog.jobbole.com/tag/github/' class='tag-link-1253 tag-link-position-12' title='78个话题' style='font-size: 11.04347826087px;'>Github</a>
+<a href='http://blog.jobbole.com/tag/go/' class='tag-link-4888 tag-link-position-13' title='52个话题' style='font-size: 9.2173913043478px;'>Go</a>
+<a href='http://blog.jobbole.com/tag/google/' class='tag-link-198 tag-link-position-14' title='290个话题' style='font-size: 16.724637681159px;'>Google</a>
+<a href='http://blog.jobbole.com/tag/hadoop/' class='tag-link-862 tag-link-position-15' title='40个话题' style='font-size: 8.1014492753623px;'>Hadoop</a>
+<a href='http://blog.jobbole.com/tag/html5/' class='tag-link-182 tag-link-position-16' title='84个话题' style='font-size: 11.347826086957px;'>HTML5</a>
+<a href='http://blog.jobbole.com/tag/ios/' class='tag-link-4887 tag-link-position-17' title='230个话题' style='font-size: 15.710144927536px;'>iOS</a>
+<a href='http://blog.jobbole.com/tag/it/' class='tag-link-513 tag-link-position-18' title='42个话题' style='font-size: 8.304347826087px;'>IT</a>
+<a href='http://blog.jobbole.com/tag/java/' class='tag-link-457 tag-link-position-19' title='224个话题' style='font-size: 15.608695652174px;'>java</a>
+<a href='http://blog.jobbole.com/tag/javascript/' class='tag-link-683 tag-link-position-20' title='277个话题' style='font-size: 16.521739130435px;'>Javascript</a>
+<a href='http://blog.jobbole.com/tag/jquery/' class='tag-link-459 tag-link-position-21' title='55个话题' style='font-size: 9.5217391304348px;'>jQuery</a>
+<a href='http://blog.jobbole.com/tag/linux/' class='tag-link-190 tag-link-position-22' title='651个话题' style='font-size: 20.275362318841px;'>Linux</a>
+<a href='http://blog.jobbole.com/tag/mysql/' class='tag-link-191 tag-link-position-23' title='175个话题' style='font-size: 14.594202898551px;'>MySQL</a>
+<a href='http://blog.jobbole.com/tag/nginx/' class='tag-link-1172 tag-link-position-24' title='57个话题' style='font-size: 9.6231884057971px;'>Nginx</a>
+<a href='http://blog.jobbole.com/tag/node-js/' class='tag-link-896 tag-link-position-25' title='48个话题' style='font-size: 8.9130434782609px;'>Node.js</a>
+<a href='http://blog.jobbole.com/tag/nosql/' class='tag-link-967 tag-link-position-26' title='49个话题' style='font-size: 9.0144927536232px;'>NoSQL</a>
+<a href='http://blog.jobbole.com/tag/php/' class='tag-link-168 tag-link-position-27' title='167个话题' style='font-size: 14.391304347826px;'>php</a>
+<a href='http://blog.jobbole.com/tag/python/' class='tag-link-4886 tag-link-position-28' title='177个话题' style='font-size: 14.594202898551px;'>Python</a>
+<a href='http://blog.jobbole.com/tag/redis/' class='tag-link-2221 tag-link-position-29' title='67个话题' style='font-size: 10.333333333333px;'>Redis</a>
+<a href='http://blog.jobbole.com/tag/shell/' class='tag-link-1714 tag-link-position-30' title='75个话题' style='font-size: 10.840579710145px;'>shell</a>
+<a href='http://blog.jobbole.com/tag/soho/' class='tag-link-153 tag-link-position-31' title='40个话题' style='font-size: 8.1014492753623px;'>soho</a>
+<a href='http://blog.jobbole.com/tag/sql/' class='tag-link-857 tag-link-position-32' title='64个话题' style='font-size: 10.130434782609px;'>SQL</a>
+<a href='http://blog.jobbole.com/tag/sql-server/' class='tag-link-2681 tag-link-position-33' title='117个话题' style='font-size: 12.768115942029px;'>SQL Server</a>
+<a href='http://blog.jobbole.com/tag/ui/' class='tag-link-1143 tag-link-position-34' title='55个话题' style='font-size: 9.5217391304348px;'>UI</a>
+<a href='http://blog.jobbole.com/tag/ui%e8%ae%be%e8%ae%a1/' class='tag-link-2548 tag-link-position-35' title='142个话题' style='font-size: 13.68115942029px;'>UI设计</a>
+<a href='http://blog.jobbole.com/tag/vim/' class='tag-link-1640 tag-link-position-36' title='42个话题' style='font-size: 8.304347826087px;'>Vim</a>
+<a href='http://blog.jobbole.com/tag/web/' class='tag-link-404 tag-link-position-37' title='51个话题' style='font-size: 9.2173913043478px;'>Web</a>
+<a href='http://blog.jobbole.com/tag/web%e5%bc%80%e5%8f%91/' class='tag-link-493 tag-link-position-38' title='119个话题' style='font-size: 12.869565217391px;'>Web开发</a>
+<a href='http://blog.jobbole.com/tag/book/' class='tag-link-1022 tag-link-position-39' title='60个话题' style='font-size: 9.9275362318841px;'>书籍</a>
+<a href='http://blog.jobbole.com/tag/%e4%ba%92%e8%81%94%e7%bd%91/' class='tag-link-40 tag-link-position-40' title='86个话题' style='font-size: 11.449275362319px;'>互联网</a>
+<a href='http://blog.jobbole.com/tag/%e4%ba%a4%e4%ba%92%e8%ae%be%e8%ae%a1/' class='tag-link-648 tag-link-position-41' title='121个话题' style='font-size: 12.971014492754px;'>交互设计</a>
+<a href='http://blog.jobbole.com/tag/%e4%ba%a7%e5%93%81/' class='tag-link-522 tag-link-position-42' title='93个话题' style='font-size: 11.753623188406px;'>产品</a>
+<a href='http://blog.jobbole.com/tag/%e4%ba%a7%e5%93%81%e7%bb%8f%e7%90%86/' class='tag-link-549 tag-link-position-43' title='57个话题' style='font-size: 9.6231884057971px;'>产品经理</a>
+<a href='http://blog.jobbole.com/tag/%e4%bb%a3%e7%a0%81/' class='tag-link-489 tag-link-position-44' title='124个话题' style='font-size: 13.072463768116px;'>代码</a>
+<a href='http://blog.jobbole.com/tag/%e5%88%86%e5%b8%83%e5%bc%8f/' class='tag-link-1331 tag-link-position-45' title='46个话题' style='font-size: 8.7101449275362px;'>分布式</a>
+<a href='http://blog.jobbole.com/tag/startup/' class='tag-link-4878 tag-link-position-46' title='219个话题' style='font-size: 15.507246376812px;'>创业</a>
+<a href='http://blog.jobbole.com/tag/%e5%89%8d%e7%ab%af/' class='tag-link-1138 tag-link-position-47' title='70个话题' style='font-size: 10.536231884058px;'>前端</a>
+<a href='http://blog.jobbole.com/tag/%e5%9b%a2%e9%98%9f/' class='tag-link-551 tag-link-position-48' title='73个话题' style='font-size: 10.739130434783px;'>团队</a>
+<a href='http://blog.jobbole.com/tag/bigdata/' class='tag-link-884 tag-link-position-49' title='60个话题' style='font-size: 9.9275362318841px;'>大数据</a>
+<a href='http://blog.jobbole.com/tag/%e5%a5%b3%e7%a8%8b%e5%ba%8f%e5%91%98/' class='tag-link-1460 tag-link-position-50' title='56个话题' style='font-size: 9.6231884057971px;'>女程序员</a>
+<a href='http://blog.jobbole.com/tag/%e5%a8%81%e5%ae%a2/' class='tag-link-129 tag-link-position-51' title='40个话题' style='font-size: 8.1014492753623px;'>威客</a>
+<a href='http://blog.jobbole.com/tag/%e5%ad%a6%e4%b9%a0/' class='tag-link-442 tag-link-position-52' title='55个话题' style='font-size: 9.5217391304348px;'>学习</a>
+<a href='http://blog.jobbole.com/tag/%e5%ae%89%e5%85%a8/' class='tag-link-1214 tag-link-position-53' title='159个话题' style='font-size: 14.086956521739px;'>安全</a>
+<a href='http://blog.jobbole.com/tag/%e5%ae%89%e5%8d%93%e5%bc%80%e5%8f%91/' class='tag-link-3362 tag-link-position-54' title='60个话题' style='font-size: 9.9275362318841px;'>安卓开发</a>
+<a href='http://blog.jobbole.com/tag/%e5%ae%a2%e6%88%b7/' class='tag-link-174 tag-link-position-55' title='49个话题' style='font-size: 9.0144927536232px;'>客户</a>
+<a href='http://blog.jobbole.com/tag/%e5%b1%8c%e7%a8%8b/' class='tag-link-5126 tag-link-position-56' title='49个话题' style='font-size: 9.0144927536232px;'>屌程</a>
+<a href='http://blog.jobbole.com/tag/%e5%b7%a5%e5%85%b7/' class='tag-link-18 tag-link-position-57' title='136个话题' style='font-size: 13.478260869565px;'>工具</a>
+<a href='http://blog.jobbole.com/tag/%e5%b7%a5%e7%a8%8b%e5%b8%88/' class='tag-link-470 tag-link-position-58' title='39个话题' style='font-size: 8px;'>工程师</a>
+<a href='http://blog.jobbole.com/tag/%e5%bc%80%e5%8f%91%e4%ba%ba%e5%91%98/' class='tag-link-370 tag-link-position-59' title='120个话题' style='font-size: 12.869565217391px;'>开发人员</a>
+<a href='http://blog.jobbole.com/tag/%e5%bc%80%e6%ba%90/' class='tag-link-196 tag-link-position-60' title='122个话题' style='font-size: 12.971014492754px;'>开源</a>
+<a href='http://blog.jobbole.com/tag/%e5%be%ae%e8%bd%af/' class='tag-link-429 tag-link-position-61' title='95个话题' style='font-size: 11.855072463768px;'>微软</a>
+<a href='http://blog.jobbole.com/tag/%e6%8a%80%e6%9c%af%e9%9d%a2%e8%af%95/' class='tag-link-1876 tag-link-position-62' title='79个话题' style='font-size: 11.04347826087px;'>技术面试</a>
+<a href='http://blog.jobbole.com/tag/%e6%8b%9b%e8%81%98/' class='tag-link-326 tag-link-position-63' title='46个话题' style='font-size: 8.7101449275362px;'>招聘</a>
+<a href='http://blog.jobbole.com/tag/%e6%95%88%e7%8e%87/' class='tag-link-415 tag-link-position-64' title='56个话题' style='font-size: 9.6231884057971px;'>效率</a>
+<a href='http://blog.jobbole.com/tag/%e6%95%99%e7%a8%8b/' class='tag-link-600 tag-link-position-65' title='53个话题' style='font-size: 9.3188405797101px;'>教程</a>
+<a href='http://blog.jobbole.com/tag/%e6%95%b0%e5%ad%a6/' class='tag-link-495 tag-link-position-66' title='47个话题' style='font-size: 8.8115942028986px;'>数学</a>
+<a href='http://blog.jobbole.com/tag/database/' class='tag-link-353 tag-link-position-67' title='508个话题' style='font-size: 19.260869565217px;'>数据库</a>
+<a href='http://blog.jobbole.com/tag/%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84/' class='tag-link-649 tag-link-position-68' title='45个话题' style='font-size: 8.6086956521739px;'>数据结构</a>
+<a href='http://blog.jobbole.com/tag/time-management/' class='tag-link-271 tag-link-position-69' title='47个话题' style='font-size: 8.8115942028986px;'>时间管理</a>
+<a href='http://blog.jobbole.com/tag/%e6%9c%8d%e5%8a%a1%e5%99%a8/' class='tag-link-311 tag-link-position-70' title='58个话题' style='font-size: 9.7246376811594px;'>服务器</a>
+<a href='http://blog.jobbole.com/tag/machinelearning/' class='tag-link-1910 tag-link-position-71' title='110个话题' style='font-size: 12.565217391304px;'>机器学习</a>
+<a href='http://blog.jobbole.com/tag/architecture/' class='tag-link-603 tag-link-position-72' title='136个话题' style='font-size: 13.478260869565px;'>架构</a>
+<a href='http://blog.jobbole.com/tag/%e6%b5%8b%e8%af%95/' class='tag-link-678 tag-link-position-73' title='104个话题' style='font-size: 12.260869565217px;'>测试</a>
+<a href='http://blog.jobbole.com/tag/%e6%b5%8f%e8%a7%88%e5%99%a8/' class='tag-link-63 tag-link-position-74' title='53个话题' style='font-size: 9.3188405797101px;'>浏览器</a>
+<a href='http://blog.jobbole.com/tag/%e6%b8%b8%e6%88%8f/' class='tag-link-797 tag-link-position-75' title='83个话题' style='font-size: 11.246376811594px;'>游戏</a>
+<a href='http://blog.jobbole.com/tag/%e7%94%a8%e6%88%b7/' class='tag-link-460 tag-link-position-76' title='59个话题' style='font-size: 9.8260869565217px;'>用户</a>
+<a href='http://blog.jobbole.com/tag/%e7%94%a8%e6%88%b7%e4%bd%93%e9%aa%8c/' class='tag-link-580 tag-link-position-77' title='197个话题' style='font-size: 15.101449275362px;'>用户体验</a>
+<a href='http://blog.jobbole.com/tag/%e7%95%8c%e9%9d%a2/' class='tag-link-4190 tag-link-position-78' title='47个话题' style='font-size: 8.8115942028986px;'>界面</a>
+<a href='http://blog.jobbole.com/tag/%e7%a0%81%e5%86%9c%e6%95%85%e4%ba%8b/' class='tag-link-2863 tag-link-position-79' title='54个话题' style='font-size: 9.4202898550725px;'>码农故事</a>
+<a href='http://blog.jobbole.com/tag/%e7%a7%bb%e5%8a%a8%e5%ba%94%e7%94%a8/' class='tag-link-654 tag-link-position-80' title='71个话题' style='font-size: 10.63768115942px;'>移动应用</a>
+<a href='http://blog.jobbole.com/tag/%e7%a7%bb%e5%8a%a8%e7%ab%af/' class='tag-link-3904 tag-link-position-81' title='45个话题' style='font-size: 8.6086956521739px;'>移动端</a>
+<a href='http://blog.jobbole.com/tag/%e7%a8%8b%e5%ba%8f%e5%91%98/' class='tag-link-368 tag-link-position-82' title='961个话题' style='font-size: 22px;'>程序员</a>
+<a href='http://blog.jobbole.com/tag/algorithm/' class='tag-link-650 tag-link-position-83' title='291个话题' style='font-size: 16.826086956522px;'>算法</a>
+<a href='http://blog.jobbole.com/tag/management/' class='tag-link-4880 tag-link-position-84' title='46个话题' style='font-size: 8.7101449275362px;'>管理</a>
+<a href='http://blog.jobbole.com/tag/%e7%bc%96%e7%a8%8b/' class='tag-link-389 tag-link-position-85' title='155个话题' style='font-size: 13.985507246377px;'>编程</a>
+<a href='http://blog.jobbole.com/tag/%e7%bc%96%e7%a8%8b%e8%af%ad%e8%a8%80/' class='tag-link-596 tag-link-position-86' title='129个话题' style='font-size: 13.173913043478px;'>编程语言</a>
+<a href='http://blog.jobbole.com/tag/%e7%bd%91%e7%ab%99/' class='tag-link-150 tag-link-position-87' title='82个话题' style='font-size: 11.246376811594px;'>网站</a>
+<a href='http://blog.jobbole.com/tag/%e7%bd%91%e9%a1%b5%e8%ae%be%e8%ae%a1/' class='tag-link-454 tag-link-position-88' title='243个话题' style='font-size: 16.014492753623px;'>网页设计</a>
+<a href='http://blog.jobbole.com/tag/%e8%81%8c%e5%9c%ba/' class='tag-link-253 tag-link-position-89' title='443个话题' style='font-size: 18.652173913043px;'>职场</a>
+<a href='http://blog.jobbole.com/tag/%e8%87%aa%e7%94%b1%e8%81%8c%e4%b8%9a/' class='tag-link-315 tag-link-position-90' title='131个话题' style='font-size: 13.275362318841px;'>自由职业</a>
+<a href='http://blog.jobbole.com/tag/%e8%8b%b9%e6%9e%9c/' class='tag-link-183 tag-link-position-91' title='54个话题' style='font-size: 9.4202898550725px;'>苹果</a>
+<a href='http://blog.jobbole.com/tag/%e8%ae%be%e8%ae%a1/' class='tag-link-431 tag-link-position-92' title='130个话题' style='font-size: 13.275362318841px;'>设计</a>
+<a href='http://blog.jobbole.com/tag/%e8%ae%be%e8%ae%a1%e5%b8%88/' class='tag-link-436 tag-link-position-93' title='209个话题' style='font-size: 15.304347826087px;'>设计师</a>
+<a href='http://blog.jobbole.com/tag/%e8%ae%be%e8%ae%a1%e6%a8%a1%e5%bc%8f/' class='tag-link-1845 tag-link-position-94' title='73个话题' style='font-size: 10.739130434783px;'>设计模式</a>
+<a href='http://blog.jobbole.com/tag/%e8%b6%a3%e6%96%87/' class='tag-link-2105 tag-link-position-95' title='72个话题' style='font-size: 10.63768115942px;'>趣文</a>
+<a href='http://blog.jobbole.com/tag/%e8%bd%af%e4%bb%b6%e5%bc%80%e5%8f%91/' class='tag-link-38 tag-link-position-96' title='103个话题' style='font-size: 12.260869565217px;'>软件开发</a>
+<a href='http://blog.jobbole.com/tag/%e9%87%8d%e6%9e%84/' class='tag-link-728 tag-link-position-97' title='45个话题' style='font-size: 8.6086956521739px;'>重构</a>
+<a href='http://blog.jobbole.com/tag/%e9%9d%a2%e8%af%95/' class='tag-link-173 tag-link-position-98' title='123个话题' style='font-size: 12.971014492754px;'>面试</a>
+<a href='http://blog.jobbole.com/tag/%e9%a1%b9%e7%9b%ae%e7%bb%8f%e7%90%86/' class='tag-link-1049 tag-link-position-99' title='40个话题' style='font-size: 8.1014492753623px;'>项目经理</a>
+<a href='http://blog.jobbole.com/tag/%e9%bb%91%e5%ae%a2/' class='tag-link-617 tag-link-position-100' title='60个话题' style='font-size: 9.9275362318841px;'>黑客</a></p></div></div><div id="text-103" class="widget widget_text">			<div class="textwidget"><p><a href="http://blog.jobbole.com/106093/" target='_blank'><img src='http://ww2.sinaimg.cn/mw690/bfdcef89gw1f9cf776pjmj208c03c3yt.jpg' /></a></p>
+</div>
+		</div>
+        <h3 class="widget-title">
+            <a target="_blank" href="http://top.jobbole.com/category/news/">业界热点资讯</a>
+            <span style="float:right;"><a target="_blank" href="http://top.jobbole.com/category/news/">更多 &raquo;</a></span>
+        </h3>
+        <!-- BEGIN .container -->
+        <div class="container">
+            
+                <!-- BEGIN .grid-4 -->
+                <div class="grid-4 floated-thumb">
+
+                    
+                        <!-- BEGIN .post-thumb -->
+                        <div class="post-thumb">
+                            <a target="_blank" href="http://top.jobbole.com/38654/?utm_source=blog.jobbole.com&utm_medium=sidebar-top-news"><img src="http://jbcdn2.b0.upaiyun.com/2015/11/565719730ba5cef93633ac3fb10cd4e5.jpg" alt="" width="50" height="50" /></a>
+                        </div>
+                        <!-- END .post-thumb -->
+
+                        <!-- BEGIN .post-meta -->
+                        <div class="post-meta">
+
+                            <p>
+                                <a class="meta-title" title="地址 1.1.1.1，Cloudflare 推新公共 DNS 服务" target="_blank" href="http://top.jobbole.com/38654/?utm_source=blog.jobbole.com&utm_medium=sidebar-top-news">地址 1.1.1.1，Cloudflare 推新公共 DNS 服务</a><br />
+                                04/02                                &middot; <i class="fa fa-thumbs-o-up"></i> 14                                                                    &middot;  <a href="http://top.jobbole.com/38654/#comments" target="_blank"><i class="fa fa-comments-o"></i> 4</a>
+                                
+                            </p>
+
+                        </div>
+                        <!-- END .post-meta -->
+
+                        <div class="clear"></div>
+
+                    
+                        <!-- BEGIN .post-thumb -->
+                        <div class="post-thumb">
+                            <a target="_blank" href="http://top.jobbole.com/38647/?utm_source=blog.jobbole.com&utm_medium=sidebar-top-news"><img src="http://jbcdn2.b0.upaiyun.com/2015/11/565719730ba5cef93633ac3fb10cd4e5.jpg" alt="" width="50" height="50" /></a>
+                        </div>
+                        <!-- END .post-thumb -->
+
+                        <!-- BEGIN .post-meta -->
+                        <div class="post-meta">
+
+                            <p>
+                                <a class="meta-title" title="安卓用 Java 侵犯甲骨文版权，谷歌或赔 88 亿美元" target="_blank" href="http://top.jobbole.com/38647/?utm_source=blog.jobbole.com&utm_medium=sidebar-top-news">安卓用 Java 侵犯甲骨文版权，谷歌或赔 88 亿美元</a><br />
+                                03/28                                &middot; <i class="fa fa-thumbs-o-up"></i> 14                                
+                            </p>
+
+                        </div>
+                        <!-- END .post-meta -->
+
+                        <div class="clear"></div>
+
+                    
+                        <!-- BEGIN .post-thumb -->
+                        <div class="post-thumb">
+                            <a target="_blank" href="http://top.jobbole.com/38635/?utm_source=blog.jobbole.com&utm_medium=sidebar-top-news"><img src="http://jbcdn2.b0.upaiyun.com/2018/03/a69906b0e7345e52f9adbb5564378044.jpg" alt="" width="50" height="50" /></a>
+                        </div>
+                        <!-- END .post-thumb -->
+
+                        <!-- BEGIN .post-meta -->
+                        <div class="post-meta">
+
+                            <p>
+                                <a class="meta-title" title="李文星家属诉 BOSS直聘：哪怕赔一分 能给个交代也值" target="_blank" href="http://top.jobbole.com/38635/?utm_source=blog.jobbole.com&utm_medium=sidebar-top-news">李文星家属诉 BOSS直聘：哪怕赔一分 能给个交代也值</a><br />
+                                03/27                                &middot; <i class="fa fa-thumbs-o-up"></i> 19                                                                    &middot;  <a href="http://top.jobbole.com/38635/#comments" target="_blank"><i class="fa fa-comments-o"></i> 1</a>
+                                
+                            </p>
+
+                        </div>
+                        <!-- END .post-meta -->
+
+                        <div class="clear"></div>
+
+                    
+                        <!-- BEGIN .post-thumb -->
+                        <div class="post-thumb">
+                            <a target="_blank" href="http://top.jobbole.com/38641/?utm_source=blog.jobbole.com&utm_medium=sidebar-top-news"><img src="http://jbcdn2.b0.upaiyun.com/2018/03/35ffa1aa3f0128df440e896716fa9c8b.png" alt="" width="50" height="50" /></a>
+                        </div>
+                        <!-- END .post-thumb -->
+
+                        <!-- BEGIN .post-meta -->
+                        <div class="post-meta">
+
+                            <p>
+                                <a class="meta-title" title="Android Studio 3.1 正式发布，默认使用 D8 Dex 编译器" target="_blank" href="http://top.jobbole.com/38641/?utm_source=blog.jobbole.com&utm_medium=sidebar-top-news">Android Studio 3.1 正式发布，默认使用 D8 Dex...</a><br />
+                                03/27                                &middot; <i class="fa fa-thumbs-o-up"></i> 9                                
+                            </p>
+
+                        </div>
+                        <!-- END .post-meta -->
+
+                        <div class="clear"></div>
+
+                    
+                        <!-- BEGIN .post-thumb -->
+                        <div class="post-thumb">
+                            <a target="_blank" href="http://top.jobbole.com/38630/?utm_source=blog.jobbole.com&utm_medium=sidebar-top-news"><img src="http://jbcdn2.b0.upaiyun.com/2018/03/222e412e43b037d17fded890fec08756.jpg" alt="" width="50" height="50" /></a>
+                        </div>
+                        <!-- END .post-thumb -->
+
+                        <!-- BEGIN .post-meta -->
+                        <div class="post-meta">
+
+                            <p>
+                                <a class="meta-title" title="GitLab 发布全球开发者报告：开源仍是主流" target="_blank" href="http://top.jobbole.com/38630/?utm_source=blog.jobbole.com&utm_medium=sidebar-top-news">GitLab 发布全球开发者报告：开源仍是主流</a><br />
+                                03/25                                &middot; <i class="fa fa-thumbs-o-up"></i> 5                                
+                            </p>
+
+                        </div>
+                        <!-- END .post-meta -->
+
+                        <div class="clear"></div>
+
+                    
+                </div>
+                <!-- END .grid-4 -->
+
+            
+            <div class="clear"></div>
+
+        </div>
+        <!-- END .container -->
+        <div id="text-109" class="widget widget_text">			<div class="textwidget"><p><a href="http://blog.jobbole.com/84342/" target='_blank'><img src='http://ww2.sinaimg.cn/mw690/e5298966gw1evyjrd4iqcj208c03c0t0.jpg' /></a></p>
+</div>
+		</div>            <h3 class="widget-title">
+                <a href="http://hao.jobbole.com?utm_source=blog.jobbole.com&utm_medium=sidebar-resources-more" target="_blank">精选工具资源</a>
+                <span style="float:right;"><a target="_blank" href="http://hao.jobbole.com?utm_source=blog.jobbole.com&utm_medium=sidebar-resources-more">更多资源 &raquo;</a></span>
+            </h3>
+            <div class="container">
+                <div class="grid-4">
+                
+                    <div class="floated-thumb">
+                        <div class="post-thumb">
+                            <a target="_blank" href="http://hao.jobbole.com/mlpack/?utm_source=blog.jobbole.com&utm_medium=sidebar-resources" title="mlpack: 一个C++机器学习库"><img src="http://jbcdn1.b0.upaiyun.com/2017/12/07f81f9da52136cf8b9de917b295cb5a.png" alt="" width="50" height="50" /></a>
+                        </div>
+                        <div class="post-meta">
+                            <p>
+                                <a class="meta-title" target="_blank" href="http://hao.jobbole.com/mlpack/?utm_source=blog.jobbole.com&utm_medium=sidebar-resources" title="mlpack: 一个C++机器学习库">mlpack: 一个C++机器学习库</a><br />
+                                <a href="http://hao.jobbole.com/category/cpp-lang/" rel="category tag">C++</a>, <a href="http://hao.jobbole.com/category/cpp-lang/cpp-machine-learning/" rel="category tag">机器学习</a>
+                            </p>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                
+                    <div class="floated-thumb">
+                        <div class="post-thumb">
+                            <a target="_blank" href="http://hao.jobbole.com/whitewidow/?utm_source=blog.jobbole.com&utm_medium=sidebar-resources" title="Whitewidow：SQL 漏洞自动扫描工具"><img src="http://jbcdn2.b0.upaiyun.com/2015/11/ba617727e903bb7120989f0699fde13a.jpg" alt="" width="50" height="50" /></a>
+                        </div>
+                        <div class="post-meta">
+                            <p>
+                                <a class="meta-title" target="_blank" href="http://hao.jobbole.com/whitewidow/?utm_source=blog.jobbole.com&utm_medium=sidebar-resources" title="Whitewidow：SQL 漏洞自动扫描工具">Whitewidow：SQL 漏洞自动扫描工具</a><br />
+                                <a href="http://hao.jobbole.com/category/dotnet/dotnet-db/" rel="category tag">数据库</a> &middot; <a target='_blank' href='http://hao.jobbole.com/whitewidow/#comments'><i class='fa fa-comments-o'></i> 2</a>
+                            </p>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                
+                    <div class="floated-thumb">
+                        <div class="post-thumb">
+                            <a target="_blank" href="http://hao.jobbole.com/caffe/?utm_source=blog.jobbole.com&utm_medium=sidebar-resources" title="Caffe：一个深度学习框架"><img src="http://jbcdn1.b0.upaiyun.com/2017/04/1fafd8ec015d2306d9a91b4f8b8f34e3.png" alt="" width="50" height="50" /></a>
+                        </div>
+                        <div class="post-meta">
+                            <p>
+                                <a class="meta-title" target="_blank" href="http://hao.jobbole.com/caffe/?utm_source=blog.jobbole.com&utm_medium=sidebar-resources" title="Caffe：一个深度学习框架">Caffe：一个深度学习框架</a><br />
+                                <a href="http://hao.jobbole.com/category/cpp-lang/cpp-machine-learning/" rel="category tag">机器学习</a> &middot; <a target='_blank' href='http://hao.jobbole.com/caffe/#comments'><i class='fa fa-comments-o'></i> 3</a>
+                            </p>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                
+                    <div class="floated-thumb">
+                        <div class="post-thumb">
+                            <a target="_blank" href="http://hao.jobbole.com/static_code_analysis_tool_list_opensource_enterprise/?utm_source=blog.jobbole.com&utm_medium=sidebar-resources" title="静态代码分析工具清单：公司篇"><img src="http://jbcdn1.b0.upaiyun.com/2017/02/1947b75fb4553a3ed8a80b5ff4f46428-300x252.png" alt="" width="50" height="50" /></a>
+                        </div>
+                        <div class="post-meta">
+                            <p>
+                                <a class="meta-title" target="_blank" href="http://hao.jobbole.com/static_code_analysis_tool_list_opensource_enterprise/?utm_source=blog.jobbole.com&utm_medium=sidebar-resources" title="静态代码分析工具清单：公司篇">静态代码分析工具清单：公司篇</a><br />
+                                <a href="http://hao.jobbole.com/category/cpp-lang/cpp-static-code-analysis/" rel="category tag">静态代码分析</a>
+                            </p>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                
+                    <div class="floated-thumb">
+                        <div class="post-thumb">
+                            <a target="_blank" href="http://hao.jobbole.com/hotswapagent%ef%bc%9a%e6%94%af%e6%8c%81%e6%97%a0%e9%99%90%e6%ac%a1%e9%87%8d%e5%ae%9a%e4%b9%89%e8%bf%90%e8%a1%8c%e6%97%b6%e7%b1%bb%e4%b8%8e%e8%b5%84%e6%ba%90-2/?utm_source=blog.jobbole.com&utm_medium=sidebar-resources" title="HotswapAgent：支持无限次重定义运行时类与资源"><img src="http://jbcdn1.b0.upaiyun.com/2016/11/026cbd303dbbd4ba812fe1903fe2214e.png" alt="" width="50" height="50" /></a>
+                        </div>
+                        <div class="post-meta">
+                            <p>
+                                <a class="meta-title" target="_blank" href="http://hao.jobbole.com/hotswapagent%ef%bc%9a%e6%94%af%e6%8c%81%e6%97%a0%e9%99%90%e6%ac%a1%e9%87%8d%e5%ae%9a%e4%b9%89%e8%bf%90%e8%a1%8c%e6%97%b6%e7%b1%bb%e4%b8%8e%e8%b5%84%e6%ba%90-2/?utm_source=blog.jobbole.com&utm_medium=sidebar-resources" title="HotswapAgent：支持无限次重定义运行时类与资源">HotswapAgent：支持无限次重定义运行时类与资源</a><br />
+                                <a href="http://hao.jobbole.com/category/java/java-development/" rel="category tag">开发流程增强工具</a>
+                            </p>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                                </div>
+            </div>
+        	
+	<!-- BEGIN .container -->
+	<div class="container">
+	
+		<!-- BEGIN .grid-2 -->
+		<div class="grid-2">
+			
+						
+		</div>
+		<!-- END .grid-2 -->
+		
+		<!-- BEGIN .grid-2 -->
+		<div class="grid-2">
+			
+						
+		</div>
+		<!-- END .grid-2 -->
+		
+		<div class="clear"></div>
+			
+	</div>
+	<!-- END .container -->
+
+</div>
+<!-- END #sidebar -->
+<div class="clear"></div>	
+
+
+</div>
+<!-- END #wrapper -->
+
+<!-- BEGIN footer -->
+
+    <footer>
+
+        <!-- BEGIN .container -->
+        <div class="container">
+
+            <!-- BEGIN .grid-4 -->
+            <div class="grid-4">
+
+                <div id="text-3" class="widget widget_text"><h3 class="widget-title">关于伯乐在线博客</h3>			<div class="textwidget"><p>在这个信息爆炸的时代，人们已然被大量、快速并且简短的信息所包围。然而，我们相信：过多“快餐”式的阅读只会令人“虚胖”，缺乏实质的内涵。伯乐在线内容团队正试图以我们微薄的力量，把优秀的原创文章和译文分享给读者，为“快餐”添加一些“营养”元素。</p>
+<p><b>快速链接</b><br />
+<a target='_blank' href="http://blog.jobbole.com/87622/">网站使用指南 » </a><br />
+<a target='_blank' href="http://group.jobbole.com/category/feedback/thanks">问题反馈与求助 » </a><br />
+<a target='_blank' href="http://group.jobbole.com/22422/">加入我们 » </a><br />
+<a target='_blank' href="http://group.jobbole.com/158/">网站积分规则 » </a><br />
+<a target='_blank' href="http://group.jobbole.com/175/">网站声望规则 » </a></p>
+</div>
+		</div>
+            </div>
+            <!-- END .grid-4 -->
+
+            <!-- BEGIN .grid-4 -->
+            <div class="grid-4">
+
+                <div id="text-4" class="widget widget_text"><h3 class="widget-title">关注我们</h3>			<div class="textwidget"><p>新浪微博：<a href="http://weibo.com/jobbole" target='_blank'>@伯乐在线官方微博</a><br />
+RSS：<a href="http://blog.jobbole.com/feed/" target='_blank'>订阅地址</a><br />
+推荐微信号 <br />
+<img src='http://wx4.sinaimg.cn/small/63918611gy1fpy3pmhqpcj202s032aar.jpg' width='100' height='110' /><img src='http://wx2.sinaimg.cn/small/63918611gy1fpy5j1qub8j202s032jrn.jpg' width='100' height='110' /><img src='http://wx4.sinaimg.cn/small/63918611gy1fpy5j6cozdj202s032mxc.jpg' width='100' height='110' /></p>
+<p><strong>合作联系</strong><br />
+Email：<a href='mailto:bd@jobbole.com'>bd@Jobbole.com</a><br />
+QQ： 2302462408  （加好友请注明来意）</p>
+</div>
+		</div>
+            </div>
+            <!-- END .grid-4 -->
+
+            <!-- BEGIN .grid-4 -->
+            <div class="grid-4">
+
+                <div id="text-7" class="widget widget_text"><h3 class="widget-title">更多频道</h3>			<div class="textwidget"><p><a href="http://group.jobbole.com/?utm_source=blog.jobbole.com&#038;utm_medium=bottomText" target='_blank'>小组</a> &#8211; 好的话题、有启发的回复、值得信赖的圈子<br />
+<a href="http://top.jobbole.com/?utm_source=blog.jobbole.com&#038;utm_medium=bottomText" target='_blank'>头条</a> &#8211; 分享和发现有价值的内容与观点<br />
+<a href="http://date.jobbole.com/?utm_source=blog.jobbole.com&#038;utm_medium=bottomText" target='_blank'>相亲</a> &#8211; 为IT单身男女服务的征婚传播平台<br />
+<a href="http://hao.jobbole.com/?utm_source=blog.jobbole.com&#038;utm_medium=bottomText" target='_blank'>资源</a> &#8211; 优秀的工具资源导航<br />
+<a href="http://fanyi.jobbole.com/?utm_source=blog.jobbole.com&#038;utm_medium=bottomText" target='_blank'>翻译</a> &#8211; 翻译传播优秀的外文文章<br />
+<a href="http://blog.jobbole.com/?utm_source=blog.jobbole.com&#038;utm_medium=bottomText" target='_blank'>文章</a> &#8211; 国内外的精选文章<br />
+<a href="http://design.jobbole.com/?utm_source=blog.jobbole.com&#038;utm_medium=bottomText" target='_blank'>设计</a> &#8211; UI,网页，交互和用户体验<br />
+<a href="http://ios.jobbole.com/?utm_source=blog.jobbole.com&#038;utm_medium=bottomText" target='_blank'>iOS</a> &#8211; 专注iOS技术分享<br />
+<a href="http://android.jobbole.com/?utm_source=blog.jobbole.com&#038;utm_medium=bottomText" target='_blank'>安卓</a> &#8211; 专注Android技术分享<br />
+<a href="http://web.jobbole.com/?utm_source=blog.jobbole.com&#038;utm_medium=bottomText" target='_blank'>前端</a> &#8211; JavaScript, HTML5, CSS<br />
+<a href="http://www.importnew.com/?utm_source=blog.jobbole.com&#038;utm_medium=bottomText" target='_blank'>Java</a> &#8211; 专注Java技术分享<br />
+<a href="http://python.jobbole.com/?utm_source=blog.jobbole.com&#038;utm_medium=bottomText" target='_blank'>Python</a> &#8211; 专注Python技术分享</p>
+</div>
+		</div>
+            </div>
+            <!-- END .grid-4 -->
+
+            <div class="clear"></div>
+
+        </div>
+        <!-- END .container -->
+
+        <!-- BEGIN #bottom -->
+        <div id="bottom">
+
+            <!-- BEGIN .container -->
+            <div class="container">
+
+                <!-- BEGIN .grid-12 -->
+                <div class="grid-12">
+
+                    <p>&copy; 2018 伯乐在线
+                    <span style="margin: 0 40px;">
+                        <a href="http://blog.jobbole.com">文章</a>&nbsp;&nbsp;
+                        <a href="http://group.jobbole.com">小组</a>&nbsp;&nbsp;
+                        <a href="http://date.jobbole.com">相亲</a>&nbsp;&nbsp;
+                        <a href="http://group.jobbole.com/22422/">加入我们</a>&nbsp;&nbsp;
+                        <a href="http://group.jobbole.com/category/feedback/thanks/"><i class="fa fa-bullhorn"></i> 反馈</a>
+                    </span>
+                    <a target="_blank" href="http://www.miitbeian.gov.cn/publish/query/indexFirst.action">沪ICP备14046347号-1</a>
+                    </p>
+                </div>
+                <!-- END .grid-12 -->
+
+                <div class="clear"></div>
+
+            </div>
+            <!-- END .container -->
+
+        </div>
+        <!-- END #bottom -->
+    </footer>
+
+    
+<!-- END footer -->
+
+
+
+<script type='text/javascript'>
+/* <![CDATA[ */
+var thickboxL10n = {"next":"\u4e0b\u4e00\u9875 >","prev":"< \u4e0a\u4e00\u9875","image":"\u56fe\u50cf","of":"\/","close":"\u5173\u95ed","noiframes":"\u8fd9\u4e2a\u529f\u80fd\u9700\u8981iframe\u7684\u652f\u6301\u3002\u60a8\u53ef\u80fd\u7981\u6b62\u4e86iframe\u7684\u663e\u793a\uff0c\u6216\u60a8\u7684\u6d4f\u89c8\u5668\u4e0d\u652f\u6301\u6b64\u529f\u80fd\u3002","loadingAnimation":"http:\/\/blog.jobbole.com\/wp-includes\/js\/thickbox\/loadingAnimation.gif"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-includes/js/thickbox/thickbox.js?ver=3.1-20121105'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-includes/js/underscore.min.js?ver=1.8.3'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-includes/js/shortcode.min.js?ver=4.5.14'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-admin/js/media-upload.min.js?ver=4.5.14'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-includes/js/comment-reply.min.js?ver=4.5.14'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var quicktagsL10n = {"closeAllOpenTags":"\u5173\u95ed\u6240\u6709\u6253\u5f00\u7684\u6807\u7b7e","closeTags":"\u5173\u95ed\u6807\u7b7e","enterURL":"\u8f93\u5165URL","enterImageURL":"\u8f93\u5165\u56fe\u50cfURL","enterImageDescription":"\u4e3a\u56fe\u50cf\u8f93\u5165\u63cf\u8ff0","textdirection":"\u6587\u672c\u65b9\u5411","toggleTextdirection":"\u5207\u6362\u7f16\u8f91\u5668\u6587\u672c\u4e66\u5199\u65b9\u5411","dfw":"\u514d\u6253\u6270\u5199\u4f5c\u6a21\u5f0f","strong":"\u7c97\u4f53","strongClose":"\u5173\u95ed\u7c97\u4f53\u6807\u7b7e","em":"\u659c\u4f53","emClose":"\u5173\u95ed\u659c\u4f53\u6807\u7b7e","link":"\u63d2\u5165\u94fe\u63a5","blockquote":"\u5757\u5f15\u7528","blockquoteClose":"\u5173\u95ed\u5757\u5f15\u7528\u6807\u7b7e","del":"\u5220\u9664\u7684\u6587\u5b57\uff08\u5220\u9664\u7ebf\uff09","delClose":"\u5173\u95ed\u5220\u9664\u7ebf\u6807\u7b7e","ins":"\u63d2\u5165\u7684\u6587\u5b57","insClose":"\u5173\u95ed\u63d2\u5165\u7684\u6587\u5b57\u6807\u7b7e","image":"\u63d2\u5165\u56fe\u50cf","ul":"\u9879\u76ee\u7b26\u53f7\u5217\u8868","ulClose":"\u5173\u95ed\u9879\u76ee\u7b26\u53f7\u5217\u8868\u6807\u7b7e","ol":"\u7f16\u53f7\u5217\u8868","olClose":"\u5173\u95ed\u7f16\u53f7\u5217\u8868\u6807\u7b7e","li":"\u5217\u8868\u9879\u76ee","liClose":"\u5173\u95ed\u5217\u8868\u9879\u76ee\u6807\u7b7e","code":"\u4ee3\u7801","codeClose":"\u5173\u95ed\u4ee3\u7801\u6807\u7b7e","more":"\u63d2\u5165\u201cMore\u201d\u6807\u7b7e"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-includes/js/quicktags.min.js?ver=4.5.14'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/plugins/crayon-syntax-highlighter/util/tag-editor/crayon_qt.js?ver=2.7.1.1'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var viewsCacheL10n = {"admin_ajax_url":"http:\/\/blog.jobbole.com\/wp-admin\/admin-ajax.php","post_id":"113875"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/plugins/wp-postviews/postviews-cache.js?ver=1.68'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/ready.js?ver=1.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/easing.js?ver=1.3'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/validate.js?ver=1.9.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/touchwipe.js?ver=1.1.1'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/caroufredsel.js?ver=5.5.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/flexslider.js?ver=2.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/jplayer.js?ver=2.1.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/fitvids.js?ver=1.0'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/selectnav.js?ver=0.11'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/js/effects.js?ver=1.11'></script>
+<script type='text/javascript' src='http://blog.jobbole.com/wp-includes/js/wp-embed.min.js?ver=4.5.14'></script>
+
+
+<div id="full-btm">
+<a><img src="http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/img/back-btm.png" width="20" border=0 alt="跳到底部" title="跳到底部"></a>
+</div>
+
+<script type="text/javascript">
+jQuery('#full-btm').click(function(){
+    jQuery('html, body').animate({scrollTop:jQuery(document).height()}, 'slow');
+    return false;
+});
+</script>
+
+<div id="full-top">
+<a><img src="http://blog.jobbole.com/wp-content/themes/jobboleblogv3/_assets/img/back-top.png" width="20" border=0 alt="返回顶部" title="返回顶部"></a>
+</div>
+
+<script type="text/javascript">
+jQuery('#full-top').click(function(){
+    jQuery('html, body').animate({scrollTop:0}, 'slow');
+    return false;
+});
+
+</script>
+
+</body>
+<!-- END body -->
+
+</html>
+<!-- END html -->

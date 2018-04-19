@@ -1,0 +1,656 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head profile="http://gmpg.org/xfn/11">
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+
+	<title>MySQL数据库架构的演化观察 | 系统技术非业余研究</title>
+	<link rel="alternate" type="application/rss+xml" title="RSS 2.0 - all posts" href="http://blog.yufeng.info/feed" />
+	<link rel="alternate" type="application/rss+xml" title="RSS 2.0 - all comments" href="http://blog.yufeng.info/comments/feed" />
+	<link rel="pingback" href="http://blog.yufeng.info/xmlrpc.php" />
+
+	<!-- style START -->
+	<!-- default style -->
+	<style type="text/css" media="screen">@import url( http://blog.yufeng.info/wp-content/themes/inove/style.css );</style>
+	<!-- for translations -->
+		<!--[if IE]>
+		<link rel="stylesheet" href="http://blog.yufeng.info/wp-content/themes/inove/ie.css" type="text/css" media="screen" />
+	<![endif]-->
+	<!-- style END -->
+
+	<!-- script START -->
+	<script type="text/javascript" src="http://blog.yufeng.info/wp-content/themes/inove/js/base.js"></script>
+	<script type="text/javascript" src="http://blog.yufeng.info/wp-content/themes/inove/js/menu.js"></script>
+	<!-- script END -->
+
+	
+<!-- All in One SEO Pack 2.5 by Michael Torbert of Semper Fi Web Design[326,366] -->
+<link rel="author" href="https://plus.google.com/113696493914077990187" />
+<meta name="description"  content="AS北京2017-余锋-MySQL数据库架构的演化观察 祝玩得开心！" />
+
+<meta name="keywords"  content="mysql,数据库" />
+
+<link rel="canonical" href="http://blog.yufeng.info/archives/3225" />
+			<script type="text/javascript" >
+				window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+				ga('create', 'UA-6788139-3', 'auto');
+				// Plugins
+				
+				ga('send', 'pageview');
+			</script>
+			<script async src="https://www.google-analytics.com/analytics.js"></script>
+			<!-- /all in one seo pack -->
+<link rel='dns-prefetch' href='//s0.wp.com' />
+<link rel='dns-prefetch' href='//s.gravatar.com' />
+<link rel='dns-prefetch' href='//s.w.org' />
+<!-- This site uses the Google Analytics by MonsterInsights plugin v7.0.5 - Using Analytics tracking - https://www.monsterinsights.com/ -->
+<script type="text/javascript" data-cfasync="false">
+	var mi_track_user = true;
+	
+	var disableStr = 'ga-disable-UA-6788139-3';
+
+	/* Function to detect opted out users */
+	function __gaTrackerIsOptedOut() {
+		return document.cookie.indexOf(disableStr + '=true') > -1;
+	}
+
+	/* Disable tracking if the opt-out cookie exists. */
+	if ( __gaTrackerIsOptedOut() ) {
+		window[disableStr] = true;
+	}
+
+	/* Opt-out function */
+	function __gaTrackerOptout() {
+	  document.cookie = disableStr + '=true; expires=Thu, 31 Dec 2099 23:59:59 UTC; path=/';
+	  window[disableStr] = true;
+	}
+	
+	if ( mi_track_user ) {
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','//www.google-analytics.com/analytics.js','__gaTracker');
+
+		__gaTracker('create', 'UA-6788139-3', 'auto');
+		__gaTracker('set', 'forceSSL', true);
+		__gaTracker('send','pageview');
+	} else {
+		console.log( "" );
+		(function() {
+			/* https://developers.google.com/analytics/devguides/collection/analyticsjs/ */
+			var noopfn = function() {
+				return null;
+			};
+			var noopnullfn = function() {
+				return null;
+			};
+			var Tracker = function() {
+				return null;
+			};
+			var p = Tracker.prototype;
+			p.get = noopfn;
+			p.set = noopfn;
+			p.send = noopfn;
+			var __gaTracker = function() {
+				var len = arguments.length;
+				if ( len === 0 ) {
+					return;
+				}
+				var f = arguments[len-1];
+				if ( typeof f !== 'object' || f === null || typeof f.hitCallback !== 'function' ) {
+					console.log( 'Not running function __gaTracker(' + arguments[0] + " ....) because you\'re not being tracked. ");
+					return;
+				}
+				try {
+					f.hitCallback();
+				} catch (ex) {
+
+				}
+			};
+			__gaTracker.create = function() {
+				return new Tracker();
+			};
+			__gaTracker.getByName = noopnullfn;
+			__gaTracker.getAll = function() {
+				return [];
+			};
+			__gaTracker.remove = noopfn;
+			window['__gaTracker'] = __gaTracker;
+		})();
+		}
+</script>
+<!-- / Google Analytics by MonsterInsights -->
+		<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/2.4\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/2.4\/svg\/","svgExt":".svg","source":{"concatemoji":"http:\/\/blog.yufeng.info\/wp-includes\/js\/wp-emoji-release.min.js?ver=4.9.5"}};
+			!function(a,b,c){function d(a,b){var c=String.fromCharCode;l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,a),0,0);var d=k.toDataURL();l.clearRect(0,0,k.width,k.height),l.fillText(c.apply(this,b),0,0);var e=k.toDataURL();return d===e}function e(a){var b;if(!l||!l.fillText)return!1;switch(l.textBaseline="top",l.font="600 32px Arial",a){case"flag":return!(b=d([55356,56826,55356,56819],[55356,56826,8203,55356,56819]))&&(b=d([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]),!b);case"emoji":return b=d([55357,56692,8205,9792,65039],[55357,56692,8203,9792,65039]),!b}return!1}function f(a){var c=b.createElement("script");c.src=a,c.defer=c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var g,h,i,j,k=b.createElement("canvas"),l=k.getContext&&k.getContext("2d");for(j=Array("flag","emoji"),c.supports={everything:!0,everythingExceptFlag:!0},i=0;i<j.length;i++)c.supports[j[i]]=e(j[i]),c.supports.everything=c.supports.everything&&c.supports[j[i]],"flag"!==j[i]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[j[i]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(h=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",h,!1),a.addEventListener("load",h,!1)):(a.attachEvent("onload",h),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),g=c.source||{},g.concatemoji?f(g.concatemoji):g.wpemoji&&g.twemoji&&(f(g.twemoji),f(g.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+		<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+<link rel='stylesheet' id='yarppWidgetCss-css'  href='http://blog.yufeng.info/wp-content/plugins/yet-another-related-posts-plugin/style/widget.css?ver=4.9.5' type='text/css' media='all' />
+<link rel='stylesheet' id='wp-syntax-css-css'  href='http://blog.yufeng.info/wp-content/themes/inove/wp-syntax.css?ver=1.1' type='text/css' media='all' />
+<link rel='stylesheet' id='jetpack-widget-social-icons-styles-css'  href='http://blog.yufeng.info/wp-content/plugins/jetpack/modules/widgets/social-icons/social-icons.css?ver=20170506' type='text/css' media='all' />
+<link rel='stylesheet' id='jetpack_css-css'  href='http://blog.yufeng.info/wp-content/plugins/jetpack/css/jetpack.css?ver=6.0' type='text/css' media='all' />
+<script type='text/javascript'>
+/* <![CDATA[ */
+var monsterinsights_frontend = {"js_events_tracking":"true","is_debug_mode":"false","download_extensions":"doc,exe,js,pdf,ppt,tgz,zip,xls","inbound_paths":"","home_url":"http:\/\/blog.yufeng.info","track_download_as":"event","internal_label":"int","hash_tracking":"false"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://blog.yufeng.info/wp-content/plugins/google-analytics-for-wordpress/assets/js/frontend.min.js?ver=7.0.5'></script>
+<script type='text/javascript' src='http://blog.yufeng.info/wp-includes/js/jquery/jquery.js?ver=1.12.4'></script>
+<script type='text/javascript' src='http://blog.yufeng.info/wp-includes/js/jquery/jquery-migrate.min.js?ver=1.4.1'></script>
+<link rel='https://api.w.org/' href='http://blog.yufeng.info/wp-json/' />
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://blog.yufeng.info/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://blog.yufeng.info/wp-includes/wlwmanifest.xml" /> 
+<link rel='prev' title='阿里云RDS团队招募热烈进行中' href='http://blog.yufeng.info/archives/3213' />
+<link rel='next' title='新的工作和研究方向' href='http://blog.yufeng.info/archives/3232' />
+<meta name="generator" content="WordPress 4.9.5" />
+<link rel='shortlink' href='https://wp.me/p1sdcD-Q1' />
+<link rel="alternate" type="application/json+oembed" href="http://blog.yufeng.info/wp-json/oembed/1.0/embed?url=http%3A%2F%2Fblog.yufeng.info%2Farchives%2F3225" />
+<link rel="alternate" type="text/xml+oembed" href="http://blog.yufeng.info/wp-json/oembed/1.0/embed?url=http%3A%2F%2Fblog.yufeng.info%2Farchives%2F3225&#038;format=xml" />
+
+<script type='text/javascript'>
+var g_hanaFlash = false;
+try {
+  var fo = new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
+  if(fo) g_hanaFlash = true;
+}catch(e){
+  if(navigator.mimeTypes ['application/x-shockwave-flash'] != undefined) g_hanaFlash = true;
+}
+function hanaTrackEvents(arg1,arg2,arg3,arg4) { if ( typeof( pageTracker ) !=='undefined') { pageTracker._trackEvent(arg1, arg2, arg3, arg4);} else if ( typeof(_gaq) !=='undefined'){  _gaq.push(['_trackEvent', arg1, arg2, arg3, arg4]);}}
+function hana_check_mobile_device(){ if(navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/iPod/i) || navigator.userAgent.match(/iPad/i)  || navigator.userAgent.match(/Android/i)) { return true; }else return false; }
+</script>
+<style type="text/css">
+.sfs-subscriber-count { width: 88px; overflow: hidden; height: 26px; color: #424242; font: 9px Verdana, Geneva, sans-serif; letter-spacing: 1px; } .sfs-count { width: 86px; height: 17px; line-height: 17px; margin: 0 auto; background: #ccc; border: 1px solid #909090; border-top-color: #fff; border-left-color: #fff; } .sfs-count span { display: inline-block; height: 11px; line-height: 12px; margin: 2px 1px 2px 2px; padding: 0 2px 0 3px; background: #e4e4e4; border: 1px solid #a2a2a2; border-bottom-color: #fff; border-right-color: #fff; } .sfs-stats { font-size: 6px; line-height: 6px; margin: 1px 0 0 1px; word-spacing: 2px; text-align: center; text-transform: uppercase; }
+</style>
+
+<link rel='dns-prefetch' href='//v0.wordpress.com'/>
+		<style type="text/css">.recentcomments a{display:inline !important;padding:0 !important;margin:0 !important;}</style>
+		
+<!-- Jetpack Open Graph Tags -->
+<meta property="og:type" content="article" />
+<meta property="og:title" content="MySQL数据库架构的演化观察" />
+<meta property="og:url" content="http://blog.yufeng.info/archives/3225" />
+<meta property="og:description" content="AS北京2017-余锋-MySQL数据库架构的演化观察 祝玩得开心！" />
+<meta property="article:published_time" content="2017-12-13T16:23:13+00:00" />
+<meta property="article:modified_time" content="2017-12-13T16:24:46+00:00" />
+<meta property="og:site_name" content="系统技术非业余研究" />
+<meta property="og:image" content="https://s0.wp.com/i/blank.jpg" />
+<meta property="og:locale" content="en_US" />
+<meta name="twitter:text:title" content="MySQL数据库架构的演化观察" />
+<meta name="twitter:card" content="summary" />
+<style type="text/css" id="syntaxhighlighteranchor"></style>
+<!-- wp thread comment 1.4.9.4.002 -->
+<style type="text/css" media="screen">
+
+.editComment, .editableComment, .textComment{
+	display: inline;
+}
+.comment-childs{
+	border: 1px solid #999;
+	margin: 5px 2px 2px 4px;
+	padding: 4px 2px 2px 4px;
+	background-color: white;
+}
+.chalt{
+	background-color: #E2E2E2;
+}
+#newcomment{
+	border:1px dashed #777;width:90%;
+}
+#newcommentsubmit{
+	color:red;
+}
+.adminreplycomment{
+	border:1px dashed #777;
+	width:99%;
+	margin:4px;
+	padding:4px;
+}
+.mvccls{
+	color: #999;
+}
+			
+</style>
+</head>
+
+
+<body>                                                                                                                                                                                                                                                                                                                                                                                                                <!-- wrap START -->
+<div id="wrap">
+
+<!-- container START -->
+<div id="container"  >
+
+<!-- header START -->
+<div id="header">
+
+	<!-- banner START -->
+			<div class="banner">
+			捐赠：<a href="https://me.alipay.com/mryufeng">喜欢就请我喝一杯</a> 		</div>
+		<!-- banner END -->
+
+	<div id="caption">
+		<h1 id="title"><a href="http://blog.yufeng.info/">系统技术非业余研究</a></h1>
+		<div id="tagline">系统技术深度探索和应用</div>
+	</div>
+
+	<div class="fixed"></div>
+</div>
+<!-- header END -->
+
+<!-- navigation START -->
+<div id="navigation">
+	<!-- menus START -->
+	<ul id="menus">
+		<li class="page_item"><a class="home" title="Home" href="http://blog.yufeng.info/">Home</a></li>
+		<li class="page_item page-item-591"><a href="http://blog.yufeng.info/job">推荐工作机会</a></li>
+<li class="page_item page-item-122"><a href="http://blog.yufeng.info/ppt">资料下载</a></li>
+<li class="page_item page-item-65"><a href="http://blog.yufeng.info/%e7%95%99%e8%a8%80%e6%9d%bf">留言板</a></li>
+<li class="page_item page-item-2"><a href="http://blog.yufeng.info/about">关于我</a></li>
+		<li><a class="lastmenu" href="javascript:void(0);"></a></li>
+	</ul>
+	<!-- menus END -->
+
+	<!-- searchbox START -->
+	<div id="searchbox">
+					<form action="http://www.google.com/cse" method="get">
+				<div class="content">
+					<input type="text" class="textfield" name="q" size="24" />
+					<input type="submit" class="button" name="sa" value="" />
+					<input type="hidden" name="cx" value="011994216034381653247:b54vq7hrjse" />
+					<input type="hidden" name="ie" value="UTF-8" />
+				</div>
+			</form>
+			</div>
+<script type="text/javascript">
+//<![CDATA[
+	var searchbox = MGJS.$("searchbox");
+	var searchtxt = MGJS.getElementsByClassName("textfield", "input", searchbox)[0];
+	var searchbtn = MGJS.getElementsByClassName("button", "input", searchbox)[0];
+	var tiptext = "Type text to search here...";
+	if(searchtxt.value == "" || searchtxt.value == tiptext) {
+		searchtxt.className += " searchtip";
+		searchtxt.value = tiptext;
+	}
+	searchtxt.onfocus = function(e) {
+		if(searchtxt.value == tiptext) {
+			searchtxt.value = "";
+			searchtxt.className = searchtxt.className.replace(" searchtip", "");
+		}
+	}
+	searchtxt.onblur = function(e) {
+		if(searchtxt.value == "") {
+			searchtxt.className += " searchtip";
+			searchtxt.value = tiptext;
+		}
+	}
+	searchbtn.onclick = function(e) {
+		if(searchtxt.value == "" || searchtxt.value == tiptext) {
+			return false;
+		}
+	}
+//]]>
+</script>
+	<!-- searchbox END -->
+
+	<div class="fixed"></div>
+</div>
+<!-- navigation END -->
+
+<!-- content START -->
+<div id="content">
+
+	<!-- main START -->
+	<div id="main">
+
+
+	<div id="postpath">
+		<a title="Go to homepage" href="http://blog.yufeng.info/">Home</a>
+		 &gt; <a href="http://blog.yufeng.info/archives/category/database" rel="category tag">数据库</a>		 &gt; MySQL数据库架构的演化观察	</div>
+
+	<div class="post" id="post-3225">
+		<h2>MySQL数据库架构的演化观察</h2>
+		<div class="info">
+			<span class="date">December 14th, 2017</span>
+			<span class="author"><a href="http://blog.yufeng.info/archives/author/admin" title="Posts by Yu Feng" rel="author">Yu Feng</a></span>									<div class="fixed"></div>
+		</div>
+		<div class="content">
+			<div style="margin-top: 15px; font-style: italic">
+<p><strong>原创文章，转载请注明：</strong> 转载自<a href="http://blog.yufeng.info/">系统技术非业余研究</a></p>
+<p><strong>本文链接地址:</strong> <a href="http://blog.yufeng.info/archives/3225">MySQL数据库架构的演化观察</a></p>
+</div>
+<p><a href="http://blog.yufeng.info/archives/3225/screen-shot-2017-12-13-at-4-18-55-pm" rel="attachment wp-att-3226"><img data-attachment-id="3226" data-permalink="http://blog.yufeng.info/archives/3225/screen-shot-2017-12-13-at-4-18-55-pm" data-orig-file="http://blog.yufeng.info/wp-content/uploads/2017/12/Screen-Shot-2017-12-13-at-4.18.55-PM.png" data-orig-size="2552,1390" data-comments-opened="1" data-image-meta="{&quot;aperture&quot;:&quot;0&quot;,&quot;credit&quot;:&quot;&quot;,&quot;camera&quot;:&quot;&quot;,&quot;caption&quot;:&quot;&quot;,&quot;created_timestamp&quot;:&quot;0&quot;,&quot;copyright&quot;:&quot;&quot;,&quot;focal_length&quot;:&quot;0&quot;,&quot;iso&quot;:&quot;0&quot;,&quot;shutter_speed&quot;:&quot;0&quot;,&quot;title&quot;:&quot;&quot;,&quot;orientation&quot;:&quot;0&quot;}" data-image-title="Screen Shot 2017-12-13 at 4.18.55 PM" data-image-description="" data-medium-file="http://blog.yufeng.info/wp-content/uploads/2017/12/Screen-Shot-2017-12-13-at-4.18.55-PM-300x163.png" data-large-file="http://blog.yufeng.info/wp-content/uploads/2017/12/Screen-Shot-2017-12-13-at-4.18.55-PM-1024x558.png" class="alignnone size-full wp-image-3226" src="http://blog.yufeng.info/wp-content/uploads/2017/12/Screen-Shot-2017-12-13-at-4.18.55-PM.png" srcset="http://blog.yufeng.info/wp-content/uploads/2017/12/Screen-Shot-2017-12-13-at-4.18.55-PM.png 2552w, http://blog.yufeng.info/wp-content/uploads/2017/12/Screen-Shot-2017-12-13-at-4.18.55-PM-300x163.png 300w, http://blog.yufeng.info/wp-content/uploads/2017/12/Screen-Shot-2017-12-13-at-4.18.55-PM-768x418.png 768w, http://blog.yufeng.info/wp-content/uploads/2017/12/Screen-Shot-2017-12-13-at-4.18.55-PM-1024x558.png 1024w" sizes="(max-width: 2552px) 100vw, 2552px" /></a></p>
+<p><a href="http://blog.yufeng.info/wp-content/uploads/2017/12/AS%E5%8C%97%E4%BA%AC2017-%E4%BD%99%E9%94%8B-MySQL%E6%95%B0%E6%8D%AE%E5%BA%93%E6%9E%B6%E6%9E%84%E7%9A%84%E6%BC%94%E5%8C%96%E8%A7%82%E5%AF%9F.pdf">AS北京2017-余锋-MySQL数据库架构的演化观察</a></p>
+<p>祝玩得开心！</p>
+<div style="margin-top: 0; margin-bottom: 15px; color: #888888; font-size: 80%; font-style: italic">
+<p>Post Footer automatically generated by <a href="http://easwy.com/blog/wordpress/wp-posturl/" style="color: #8888FF; text-decoration: underline;">wp-posturl plugin</a> for wordpress.</p>
+</div>
+<div class='yarpp-related yarpp-related-none'>
+<p>No related posts.</p>
+</div>
+			<div class="fixed"></div>
+		</div>
+		<div class="under">
+			<span class="categories">Categories: </span><span><a href="http://blog.yufeng.info/archives/category/database" rel="category tag">数据库</a></span>			<span class="tags">Tags: </span><span><a href="http://blog.yufeng.info/archives/tag/mysql" rel="tag">mysql</a></span>		</div>
+	</div>
+
+	<!-- related posts START -->
+		<!-- related posts END -->
+
+	<script type="text/javascript" src="http://blog.yufeng.info/wp-content/themes/inove/js/comment.js"></script>
+
+
+
+
+	<div class="messagebox">
+		Comments are closed.	</div>
+
+	<div id="postnavi">
+		<span class="prev"><a href="http://blog.yufeng.info/archives/3232" rel="next">新的工作和研究方向</a></span>
+		<span class="next"><a href="http://blog.yufeng.info/archives/3213" rel="prev">阿里云RDS团队招募热烈进行中</a></span>
+		<div class="fixed"></div>
+	</div>
+
+
+	</div>
+	<!-- main END -->
+
+	
+<!-- sidebar START -->
+<div id="sidebar">
+
+<!-- sidebar north START -->
+<div id="northsidebar" class="sidebar">
+
+	<!-- feeds -->
+	<div class="widget widget_feeds">
+		<div class="content">
+			<div id="subscribe">
+				<a rel="external nofollow" id="feedrss" title="Subscribe to this blog..." href="http://blog.yufeng.info/feed"><abbr title="Really Simple Syndication">RSS</abbr></a>
+									<ul id="feed_readers">
+						<li id="google_reader"><a rel="external nofollow" class="reader" title="Subscribe with Google" href="http://fusion.google.com/add?feedurl=http://blog.yufeng.info/feed"><span>Google</span></a></li>
+						<li id="youdao_reader"><a rel="external nofollow" class="reader" title="Subscribe with Youdao" href="http://reader.youdao.com/#url=http://blog.yufeng.info/feed"><span>Youdao</span></a></li>
+						<li id="xianguo_reader"><a rel="external nofollow" class="reader" title="Subscribe with Xian Guo" href="http://www.xianguo.com/subscribe.php?url=http://blog.yufeng.info/feed"><span>Xian Guo</span></a></li>
+						<li id="zhuaxia_reader"><a rel="external nofollow" class="reader" title="Subscribe with Zhua Xia" href="http://www.zhuaxia.com/add_channel.php?url=http://blog.yufeng.info/feed"><span>Zhua Xia</span></a></li>
+						<li id="yahoo_reader"><a rel="external nofollow" class="reader" title="Subscribe with My Yahoo!"	href="http://add.my.yahoo.com/rss?url=http://blog.yufeng.info/feed"><span>My Yahoo!</span></a></li>
+						<li id="newsgator_reader"><a rel="external nofollow" class="reader" title="Subscribe with newsgator"	href="http://www.newsgator.com/ngs/subscriber/subfext.aspx?url=http://blog.yufeng.info/feed"><span>newsgator</span></a></li>
+						<li id="bloglines_reader"><a rel="external nofollow" class="reader" title="Subscribe with Bloglines"	href="http://www.bloglines.com/sub/http://blog.yufeng.info/feed"><span>Bloglines</span></a></li>
+						<li id="inezha_reader"><a rel="external nofollow" class="reader" title="Subscribe with iNezha"	href="http://inezha.com/add?url=http://blog.yufeng.info/feed"><span>iNezha</span></a></li>
+					</ul>
+							</div>
+							<a id="followme" title="Follow me!" href="http://twitter.com/eric33yu/">Twitter</a>
+						<div class="fixed"></div>
+		</div>
+	</div>
+
+	<!-- showcase -->
+	
+<div id="paypal_donations-3" class="widget widget_paypal_donations"><h3>buy me a coffee.</h3><!-- Begin PayPal Donations by https://www.tipsandtricks-hq.com/paypal-donations-widgets-plugin -->
+
+<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+    <div class="paypal-donations">
+        <input type="hidden" name="cmd" value="_donations" />
+        <input type="hidden" name="bn" value="TipsandTricks_SP" />
+        <input type="hidden" name="business" value="mryufeng@gmail.com" />
+        <input type="hidden" name="item_name" value="buy me a coffee." />
+        <input type="hidden" name="item_number" value="yufeng" />
+        <input type="hidden" name="amount" value="10" />
+        <input type="hidden" name="currency_code" value="USD" />
+        <input type="image" style="cursor: pointer;" src="https://www.paypal.com/en_US/i/btn/btn_donate_LG.gif" name="submit" alt="PayPal - The safer, easier way to pay online." />
+        <img alt="" src="https://www.paypal.com/en_US/i/scr/pixel.gif" width="1" height="1" />
+    </div>
+</form>
+<!-- End PayPal Donations -->
+</div><div id="text-3" class="widget widget_text"><h3>广告时间</h3>			<div class="textwidget"><p>阿里核心系统数据库组招募高手！</p>
+</div>
+		</div><div id="text-4" class="widget widget_text"><h3>工作机会</h3>			<div class="textwidget"><p>招聘信息：<a href="http://blog.yufeng.info/job">猛点这里获得工作机会</a>  </p>
+</div>
+		</div>		<div id="recent-posts-3" class="widget widget_recent_entries">		<h3>Recent Posts</h3>		<ul>
+											<li>
+					<a href="http://blog.yufeng.info/archives/3234">2017升的最快的几个数据库无责任点评</a>
+									</li>
+											<li>
+					<a href="http://blog.yufeng.info/archives/3232">新的工作和研究方向</a>
+									</li>
+											<li>
+					<a href="http://blog.yufeng.info/archives/3225">MySQL数据库架构的演化观察</a>
+									</li>
+											<li>
+					<a href="http://blog.yufeng.info/archives/3213">阿里云RDS团队招募热烈进行中</a>
+									</li>
+											<li>
+					<a href="http://blog.yufeng.info/archives/3202">Erlang 17.5引入+hpds命令行控制进程默认字典大小</a>
+									</li>
+					</ul>
+		</div><div id="recent-comments-3" class="widget widget_recent_comments"><h3>Recent Comments</h3><ul id="recentcomments"><li class="recentcomments"><span class="comment-author-link">leesirc</span> on <a href="http://blog.yufeng.info/about/comment-page-1#comment-115890">关于我</a></li><li class="recentcomments"><span class="comment-author-link">leesirc</span> on <a href="http://blog.yufeng.info/about/comment-page-1#comment-115889">关于我</a></li><li class="recentcomments"><span class="comment-author-link"><a href='http://www.casparzhang.com' rel='external nofollow' class='url'>Caspar Zhang</a></span> on <a href="http://blog.yufeng.info/archives/3232/comment-page-1#comment-115837">新的工作和研究方向</a></li></ul></div></div>
+<!-- sidebar north END -->
+
+<div id="centersidebar">
+
+	<!-- sidebar east START -->
+	<div id="eastsidebar" class="sidebar">
+	
+		<!-- categories -->
+		<div class="widget widget_categories">
+			<h3>Categories</h3>
+			<ul>
+					<li class="cat-item cat-item-3"><a href="http://blog.yufeng.info/archives/category/erlang" title="探索erlang的方方面面">Erlang探索</a>
+</li>
+	<li class="cat-item cat-item-240"><a href="http://blog.yufeng.info/archives/category/linux_kb" >Linux</a>
+</li>
+	<li class="cat-item cat-item-481"><a href="http://blog.yufeng.info/archives/category/%e4%ba%86%e8%a7%a3%e7%b3%bb%e5%88%97" >了解系列</a>
+</li>
+	<li class="cat-item cat-item-480"><a href="http://blog.yufeng.info/archives/category/%e4%bd%93%e7%b3%bb%e7%bb%93%e6%9e%84" >体系结构</a>
+</li>
+	<li class="cat-item cat-item-152"><a href="http://blog.yufeng.info/archives/category/tools" >工具介绍</a>
+</li>
+	<li class="cat-item cat-item-374"><a href="http://blog.yufeng.info/archives/category/database" title="MySQL和其他KV数据库">数据库</a>
+</li>
+	<li class="cat-item cat-item-4"><a href="http://blog.yufeng.info/archives/category/misc" title="无法分类 乱七八糟的东西">杂七杂八</a>
+</li>
+	<li class="cat-item cat-item-290"><a href="http://blog.yufeng.info/archives/category/%e6%ba%90%e7%a0%81%e5%88%86%e6%9e%90" >源码分析</a>
+</li>
+	<li class="cat-item cat-item-46"><a href="http://blog.yufeng.info/archives/category/life" title="情感交流">生活</a>
+</li>
+	<li class="cat-item cat-item-1"><a href="http://blog.yufeng.info/archives/category/network" title="网络编程和工具">网络编程</a>
+</li>
+	<li class="cat-item cat-item-311"><a href="http://blog.yufeng.info/archives/category/%e8%b0%83%e4%bc%98" >调优</a>
+</li>
+			</ul>
+		</div>
+
+		</div>
+	<!-- sidebar east END -->
+
+	<!-- sidebar west START -->
+	<div id="westsidebar" class="sidebar">
+	
+		<!-- blogroll -->
+		<div class="widget widget_links">
+			<h3>Blogroll</h3>
+			<ul>
+				<li><a href="http://www.bookandman.com/?from=yufeng" target="_blank">book and man</a></li>
+<li><a href="http://www.cnerlang.com">erlang中文社区</a></li>
+<li><a href="http://dinglin.javaeye.com/?from=yufeng">MySQL专家丁奇</a></li>
+<li><a href="http://logn.me" title="nessdb">一工(BohuTANG)博客</a></li>
+<li><a href="http://blog.coly.li/?from=yufeng" title="文件系统专家" target="_blank">伯松的blog</a></li>
+<li><a href="http://gaoyusong.com/?from=yufeng">剑川个人博客</a></li>
+<li><a href="http://zhuzhaoyuan.com/?from=yufeng" target="_blank">叔度博客(nginx专家)</a></li>
+<li><a href="http://www.imagerabit.com/?from=yufeng">小天后的图像处理博客</a></li>
+<li><a href="http://www.qingliangcn.com/?from=yufeng" target="_blank">庆亮的博客</a></li>
+<li><a href="http://www.osforce.cn/?from=yufeng" title="开源力量">开源力量</a></li>
+<li><a href="http://www.penglixun.com/?from=yufeng">彭爷MySQL研究博客</a></li>
+<li><a href="http://mryufeng.javaeye.com?from=yufeng" title="javaeye上的" target="_blank">我的旧非业余研究</a></li>
+<li><a href="http://donghao.org/?from=yufeng" title="内核和文件系统">斯巴达第二季</a></li>
+<li><a href="http://www.nosqlnotes.net/?from=yufeng">日照分布式存储</a></li>
+<li><a href="http://blog.lifeibo.com/?from=yufeng">李子非主流程序员</a></li>
+<li><a href="http://ybbct.iteye.com/?from=yufeng">武藏个人博客</a></li>
+<li><a href="http://nil-zhang.iteye.com/?from=yufeng">淘宝千石的博客</a></li>
+<li><a href="http://mysql.taobao.org" title="维护淘宝的MySQL分支">淘宝数据库组</a></li>
+<li><a href="http://csrd.aliapp.com/?from=yufeng" title="基础 极致 分享" target="_blank">淘宝核心系统博客</a></li>
+<li><a href="http://abloz.com?from=yufeng">瀚海星空</a></li>
+<li><a href="http://www.cnblogs.com/lispking/">点滴随笔(MySQL和集群相关)</a></li>
+<li><a href="http://hidba.org/?from=yufeng" title="玄惭MySQL运维博客">玄惭MySQL运维博客</a></li>
+<li><a href="http://wqtn22.iteye.com/?from=yufeng">皓庭Erlang开发博客</a></li>
+<li><a href="http://i.mtime.com/844165">祁奚个人博客</a></li>
+<li><a href="http://www.wangchi.info/?from=yufeng" title="音乐 电子 composer" target="_blank">老婆的交互式音乐</a></li>
+<li><a href="http://www.orczhou.com/">苏普的MySQL故事博客</a></li>
+<li><a href="http://www.hoterran.info/?from=yufeng" title="Erlang开发">运维和开发-hoterran</a></li>
+<li><a href="http://www.alibabatech.org/?from=yufeng">阿里巴巴技术协会</a></li>
+<li><a href="http://www.pagefault.info/?from=yufeng">雕梁nginx和内核</a></li>
+<li><a href="http://blog.csdn.net/wudongxu?from=yufeng">项仲个人博客</a></li>
+			</ul>
+		</div>
+
+		</div>
+	<!-- sidebar west END -->
+	<div class="fixed"></div>
+</div>
+
+<!-- sidebar south START -->
+<div id="southsidebar" class="sidebar">
+
+	<!-- archives -->
+	<div class="widget">
+		<h3>Archives</h3>
+					<ul>
+					<li><a href='http://blog.yufeng.info/archives/date/2018/01'>January 2018</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2017/12'>December 2017</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2016/05'>May 2016</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2015/04'>April 2015</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2014/05'>May 2014</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2014/04'>April 2014</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2014/03'>March 2014</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2014/02'>February 2014</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2014/01'>January 2014</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2013/12'>December 2013</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2013/11'>November 2013</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2013/10'>October 2013</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2013/08'>August 2013</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2013/07'>July 2013</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2013/06'>June 2013</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2013/05'>May 2013</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2013/04'>April 2013</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2013/03'>March 2013</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2013/02'>February 2013</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2013/01'>January 2013</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2012/12'>December 2012</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2012/10'>October 2012</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2012/09'>September 2012</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2012/08'>August 2012</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2012/07'>July 2012</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2012/06'>June 2012</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2012/05'>May 2012</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2012/04'>April 2012</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2012/03'>March 2012</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2012/02'>February 2012</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2012/01'>January 2012</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2011/12'>December 2011</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2011/11'>November 2011</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2011/10'>October 2011</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2011/09'>September 2011</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2011/07'>July 2011</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2011/06'>June 2011</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2011/05'>May 2011</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2011/04'>April 2011</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2011/03'>March 2011</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2011/02'>February 2011</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2011/01'>January 2011</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2010/12'>December 2010</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2010/11'>November 2010</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2010/10'>October 2010</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2010/09'>September 2010</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2010/08'>August 2010</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2010/07'>July 2010</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2010/06'>June 2010</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2010/05'>May 2010</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2010/04'>April 2010</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2010/03'>March 2010</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2010/02'>February 2010</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2010/01'>January 2010</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2009/11'>November 2009</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2009/10'>October 2009</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2009/09'>September 2009</a></li>
+	<li><a href='http://blog.yufeng.info/archives/date/2009/08'>August 2009</a></li>
+			</ul>
+			</div>
+
+	<!-- meta -->
+	<div class="widget">
+		<h3>Meta</h3>
+		<ul>
+						<li><a href="http://blog.yufeng.info/wp-login.php">Log in</a></li>
+		</ul>
+	</div>
+
+</div>
+<!-- sidebar south END -->
+
+</div>
+<!-- sidebar END -->
+	<div class="fixed"></div>
+</div>
+<!-- content END -->
+
+<!-- footer START -->
+<div id="footer">
+	<a id="gotop" href="#" onclick="MGJS.goTop();return false;">Top</a>
+	<a id="powered" href="http://wordpress.org/">WordPress</a>
+	<div id="copyright">
+		Copyright &copy; 2009-2018 系统技术非业余研究	</div>
+	<div id="themeinfo">
+		Theme by <a href="http://www.neoease.com/">NeoEase</a>. Valid <a href="http://validator.w3.org/check?uri=referer">XHTML 1.1</a> and <a href="http://jigsaw.w3.org/css-validator/check/referer?profile=css3">CSS 3</a>.	</div>
+</div>
+<!-- footer END -->
+
+</div>
+<!-- container END -->
+</div>
+<!-- wrap END -->
+
+	<div style="display:none">
+	</div>
+<link rel='stylesheet' id='yarppRelatedCss-css'  href='http://blog.yufeng.info/wp-content/plugins/yet-another-related-posts-plugin/style/related.css?ver=4.9.5' type='text/css' media='all' />
+<!--[if lte IE 8]>
+<link rel='stylesheet' id='jetpack-carousel-ie8fix-css'  href='http://blog.yufeng.info/wp-content/plugins/jetpack/modules/carousel/jetpack-carousel-ie8fix.css?ver=20121024' type='text/css' media='all' />
+<![endif]-->
+<script type='text/javascript' src='https://s0.wp.com/wp-content/js/devicepx-jetpack.js?ver=201816'></script>
+<script type='text/javascript' src='http://blog.yufeng.info/wp-content/plugins/wp-syntax/js/wp-syntax.js?ver=1.1'></script>
+<script type='text/javascript' src='http://s.gravatar.com/js/gprofiles.js?ver=2018Apraa'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var WPGroHo = {"my_hash":""};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://blog.yufeng.info/wp-content/plugins/jetpack/modules/wpgroho.js?ver=4.9.5'></script>
+<script type='text/javascript' src='http://blog.yufeng.info/wp-includes/js/wp-embed.min.js?ver=4.9.5'></script>
+<script type='text/javascript' src='http://blog.yufeng.info/wp-content/plugins/jetpack/_inc/build/spin.min.js?ver=1.3'></script>
+<script type='text/javascript' src='http://blog.yufeng.info/wp-content/plugins/jetpack/_inc/build/jquery.spin.min.js?ver=1.3'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var jetpackCarouselStrings = {"widths":[370,700,1000,1200,1400,2000],"is_logged_in":"","lang":"en","ajaxurl":"http:\/\/blog.yufeng.info\/wp-admin\/admin-ajax.php","nonce":"c3d01d3e20","display_exif":"1","display_geo":"1","single_image_gallery":"1","single_image_gallery_media_file":"","background_color":"black","comment":"Comment","post_comment":"Post Comment","write_comment":"Write a Comment...","loading_comments":"Loading Comments...","download_original":"View full size <span class=\"photo-size\">{0}<span class=\"photo-size-times\">\u00d7<\/span>{1}<\/span>","no_comment_text":"Please be sure to submit some text with your comment.","no_comment_email":"Please provide an email address to comment.","no_comment_author":"Please provide your name to comment.","comment_post_error":"Sorry, but there was an error posting your comment. Please try again later.","comment_approved":"Your comment was approved.","comment_unapproved":"Your comment is in moderation.","camera":"Camera","aperture":"Aperture","shutter_speed":"Shutter Speed","focal_length":"Focal Length","copyright":"Copyright","comment_registration":"0","require_name_email":"1","login_url":"http:\/\/blog.yufeng.info\/wp-login.php?redirect_to=http%3A%2F%2Fblog.yufeng.info%2Farchives%2F3225","blog_id":"1","meta_data":["camera","aperture","shutter_speed","focal_length","copyright"],"local_comments_commenting_as":"<fieldset><label for=\"email\">Email (Required)<\/label> <input type=\"text\" name=\"email\" class=\"jp-carousel-comment-form-field jp-carousel-comment-form-text-field\" id=\"jp-carousel-comment-form-email-field\" \/><\/fieldset><fieldset><label for=\"author\">Name (Required)<\/label> <input type=\"text\" name=\"author\" class=\"jp-carousel-comment-form-field jp-carousel-comment-form-text-field\" id=\"jp-carousel-comment-form-author-field\" \/><\/fieldset><fieldset><label for=\"url\">Website<\/label> <input type=\"text\" name=\"url\" class=\"jp-carousel-comment-form-field jp-carousel-comment-form-text-field\" id=\"jp-carousel-comment-form-url-field\" \/><\/fieldset>"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://blog.yufeng.info/wp-content/plugins/jetpack/_inc/build/carousel/jetpack-carousel.min.js?ver=20170209'></script>
+<script type='text/javascript' src='https://stats.wp.com/e-201816.js' async='async' defer='defer'></script>
+<script type='text/javascript'>
+	_stq = window._stq || [];
+	_stq.push([ 'view', {v:'ext',j:'1:6.0',blog:'21500275',post:'3225',tz:'8',srv:'blog.yufeng.info'} ]);
+	_stq.push([ 'clickTrackerInit', '21500275', '3225' ]);
+</script>
+
+</body>
+</html>
+
