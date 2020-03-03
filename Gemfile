@@ -3,7 +3,7 @@ ruby "2.6.1"
 
 gem "minima"
 
-gem "github-pages", '~> 203', group: :jekyll_plugins
+gem "github-pages", group: :jekyll_plugins
 
 group :jekyll_plugins do
    gem "jekyll-feed"
